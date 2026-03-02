@@ -1,0 +1,196 @@
+<?php require_once __DIR__ . '/../partials/header.php'; ?>
+
+<?php
+$admins = 0;
+$profesores = 0;
+$estudiantes = 0;
+
+foreach ($users as $user) {
+    if ($user->es_admin_institucion) {
+        $admins++;
+    } elseif ($user->es_profesor) {
+        $profesores++;
+    } elseif ($user->es_estudiante) {
+        $estudiantes++;
+    }
+}
+?>
+
+<div class="container">
+    <section class="page-hero mb-4">
+        <span class="eyebrow"><i class="bi bi-people-fill"></i> Administracion de usuarios</span>
+        <h1 class="page-title">Gestiona acceso, roles y limpieza operativa sin perder contexto.</h1>
+        <p class="page-subtitle">
+            Filtra por rol, localiza usuarios por nombre o correo y corrige cuentas desde una misma vista de trabajo.
+        </p>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-label">Resultados visibles</div>
+                <div class="metric-value"><?php echo count($users); ?></div>
+                <div class="metric-note">Usuarios cargados en la pagina actual.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Admins</div>
+                <div class="metric-value"><?php echo $admins; ?></div>
+                <div class="metric-note">Administradores dentro del resultado.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Profesores</div>
+                <div class="metric-value"><?php echo $profesores; ?></div>
+                <div class="metric-note">Docentes visibles con el filtro actual.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Estudiantes</div>
+                <div class="metric-value"><?php echo $estudiantes; ?></div>
+                <div class="metric-note">Aprendices listados en esta pagina.</div>
+            </div>
+        </div>
+    </section>
+
+    <?php require __DIR__ . '/../partials/flash.php'; ?>
+
+    <section class="filter-shell mb-4">
+        <div class="panel-body">
+            <div class="section-title">
+                <h2>Filtros de busqueda</h2>
+                <?php if (!empty($search) || !empty($role)): ?>
+                    <a href="<?php echo url('/admin/usuarios'); ?>" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-x-circle"></i> Limpiar filtros
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            <form method="GET" action="<?php echo url('/admin/usuarios'); ?>" class="row g-3 align-items-end">
+                <div class="col-lg-5">
+                    <label for="search" class="form-label">Buscar</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input
+                            type="text"
+                            id="search"
+                            name="search"
+                            class="form-control"
+                            placeholder="Nombre, apellido o correo"
+                            value="<?php echo htmlspecialchars($search ?? ''); ?>"
+                        >
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <label for="role" class="form-label">Rol</label>
+                    <select id="role" name="role" class="form-select">
+                        <option value="">Todos los roles</option>
+                        <option value="admin" <?php echo ($role ?? '') === 'admin' ? 'selected' : ''; ?>>Administrador</option>
+                        <option value="profesor" <?php echo ($role ?? '') === 'profesor' ? 'selected' : ''; ?>>Profesor</option>
+                        <option value="estudiante" <?php echo ($role ?? '') === 'estudiante' ? 'selected' : ''; ?>>Estudiante</option>
+                    </select>
+                </div>
+                <div class="col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> Aplicar
+                    </button>
+                </div>
+                <div class="col-lg-2">
+                    <span class="inline-stat">
+                        <i class="bi bi-files"></i> Pagina <?php echo (int) $currentPage; ?> / <?php echo (int) max($totalPages, 1); ?>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>Usuarios</h2>
+            <span class="soft-badge"><i class="bi bi-shield-check"></i> Control de roles</span>
+        </div>
+
+        <div class="data-table-shell">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($users)): ?>
+                            <tr>
+                                <td colspan="6" class="empty-state">No hay usuarios que coincidan con el filtro actual.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($users as $user): ?>
+                                <tr>
+                                    <td>#<?php echo (int) $user->id; ?></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="avatar-token"><?php echo strtoupper(substr($user->nombre, 0, 1)); ?></span>
+                                            <div>
+                                                <div class="fw-semibold"><?php echo htmlspecialchars(trim($user->nombre . ' ' . $user->apellido)); ?></div>
+                                                <div class="small text-muted">Cuenta de la instancia actual</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($user->email); ?></td>
+                                    <td>
+                                        <?php if ($user->es_admin_institucion): ?>
+                                            <span class="soft-badge">Administrador</span>
+                                        <?php elseif ($user->es_profesor): ?>
+                                            <span class="soft-badge">Profesor</span>
+                                        <?php elseif ($user->es_estudiante): ?>
+                                            <span class="soft-badge">Estudiante</span>
+                                        <?php else: ?>
+                                            <span class="soft-badge">Usuario</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo date('d/m/Y H:i', strtotime($user->creado_en)); ?></td>
+                                    <td>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a href="<?php echo url('/admin/usuarios/edit/' . $user->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar usuario">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <?php if ($user->id != $_SESSION['user_id']): ?>
+                                                <form method="POST" action="<?php echo url('/admin/usuarios/delete/' . $user->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este usuario?');">
+                                                    <?php echo csrf_input(); ?>
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar usuario">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <?php if ($totalPages > 1): ?>
+            <nav aria-label="Navegacion de usuarios" class="mt-4 pagination-shell">
+                <ul class="pagination justify-content-center flex-wrap">
+                    <li class="page-item <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="<?php echo url('/admin/usuarios?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . urlencode($role)); ?>">Anterior</a>
+                    </li>
+
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php echo $currentPage == $i ? 'active' : ''; ?>">
+                            <a class="page-link" href="<?php echo url('/admin/usuarios?page=' . $i . '&search=' . urlencode($search) . '&role=' . urlencode($role)); ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <li class="page-item <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="<?php echo url('/admin/usuarios?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . urlencode($role)); ?>">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        <?php endif; ?>
+    </section>
+</div>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>

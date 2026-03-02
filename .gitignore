@@ -1,0 +1,15 @@
+/credenciales.txt
+
+.DS_Store
+Thumbs.db
+
+.env
+.env.*
+
+node_modules/
+vendor/
+
+*.log
+
+.idea/
+.vscode/

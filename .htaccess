@@ -1,0 +1,28 @@
+# ADAPA LMS - URL Rewriting Rules
+
+# Enable URL rewriting
+RewriteEngine On
+
+# Base directory
+# IMPORTANTE: Ajustar RewriteBase según el directorio de instalación
+# Si está en la raíz: RewriteBase /
+# Si está en /adapa: RewriteBase /adapa/
+RewriteBase /adapa/
+
+# Prevent access to hidden files
+RewriteRule ^\. - [F]
+
+# Prevent access to config directory
+RewriteRule ^config/ - [F]
+
+# Prevent access to core directory
+RewriteRule ^core/ - [F]
+
+# Redirect to index.php if the file doesn't exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Handle trailing slashes
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ $1 [R=301,L]

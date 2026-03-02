@@ -1,0 +1,608 @@
+Xampp valores por defecto. si no existe crea la db adapa
+
+================================================================================
+MEGA LEVANTAMIENTO DE REQUERIMIENTOS - LMS DE IDIOMAS
+================================================================================
+Documento para Prompt en Trae IDE
+Proyecto: Plataforma de Aprendizaje de Idiomas (Inglés/Francés)
+Mercado: República Dominicana (Escuelas, Colegios, Institutos, Tutores)
+Stack: PHP Vanilla + MySQL + XAMPP + Trae IDE
+================================================================================
+
+================================================================================
+1. ARQUITECTURA GENERAL DEL SISTEMA
+================================================================================
+
+1.1 TIPO DE APLICACIÓN
+- Web App responsive (sin instalador, sin apps nativas)
+- Single-tenant por instancia (cada institución/profesor tiene su instalación)
+- Multi-tenant lógico: una base de datos con identificador de instancia
+- Desarrollo en XAMPP, producción en shared hosting (idastnet.com)
+- HTTPS obligatorio (requerido para Web Speech API)
+
+1.2 ESTRUCTURA DE CARPETAS
+/adapa/
+├── /config/                    # Configuración por instancia
+│   ├── database.php            # Conexión MySQL
+│   ├── constants.php           # URLs, límites, versión
+│   └── installer/              # Scripts de instalación
+├── /core/                      # Núcleo de la aplicación
+│   ├── Router.php              # Sistema de rutas
+│   ├── Database.php            # Wrapper PDO
+│   ├── Auth.php                # Sesiones, permisos, roles
+│   ├── InstanciaDetector.php   # Detecta instancia por dominio/slug
+│   ├── Permission.php          # Matriz de permisos
+│   └── Security.php            # CSRF, XSS, protección
+├── /controllers/               # Lógica de negocio
+│   ├── /shared/                # Controladores comunes
+│   ├── /estudiante/            # Vista estudiante
+│   ├── /profesor/              # Vista profesor (con toggle a estudiante)
+│   ├── /admin-institucion/     # Admin de institución
+│   └── /superadmin/            # Superadministrador
+├── /models/                    # Acceso a datos (una clase por tabla)
+├── /services/                  # Lógica de negocio compleja
+│   ├── EvaluadorEjercicio.php  # Normalización, tolerancias
+│   ├── NotificadorService.php  # Notificaciones
+│   ├── ReporteGenerator.php    # Generación de PDFs
+│   ├── AudioCleanupService.php # Limpieza de audios temporales
+│   └── StreakCalculator.php    # Cálculo de rachas
+├── /views/                     # Templates PHP
+│   ├── /layouts/               # Layouts por rol
+│   ├── /partials/              # Componentes reutilizables
+│   ├── /auth/                  # Login, registro
+│   ├── /estudiante/            # Vistas de estudiante
+│   ├── /profesor/              # Vistas de profesor
+│   ├── /admin/                 # Vistas de admin
+│   ├── /superadmin/            # Vistas de superadmin
+│   └── /ejercicios/            # Widgets de ejercicios
+├── /assets/                    # Recursos públicos
+│   ├── /js/widgets/            # Lógica de ejercicios (Web Speech API)
+│   ├── /css/
+│   └── /uploads/               # Audios, imágenes (protegido)
+├── /api/                       # Endpoints AJAX (JSON)
+├── /cron/                      # Scripts para tareas programadas
+├── /superadmin-panel/          # Panel de superadmin aislado
+├── index.php                   # Front controller
+└── .htaccess                   # Rewrite rules
+
+================================================================================
+2. MODELO DE USUARIOS Y ROLES
+================================================================================
+
+2.1 JERARQUÍA DE USUARIOS
+SUPERADMIN (Desarrollador/Owner)
+  └── Crea/ver/deshabilita usuarios de SOPORTE TÉCNICO
+  └── Acceso a todas las instancias para soporte
+  └── Crea plantillas globales de pensum
+  └── Ve auditoría completa del sistema
+
+SOPORTE TÉCNICO (Habilitable por Superadmin)
+  └── Permisos granulares (configurable por superadmin)
+  └── Puede ver instancias, generar reportes
+  └── NO puede ver datos sensibles de estudiantes menores (configurable)
+
+ADMIN DE INSTITUCIÓN
+  └── Gestiona profesores de su institución
+  └── Ve reportes institucionales
+  └── Configura cursos institucionales
+  └── Gestiona inscripciones masivas
+
+PROFESOR INDEPENDIENTE
+  └── Gestiona sus propios cursos (múltiples permitidos)
+  └── Ve reportes de sus estudiantes
+  └── Crea/edita contenido
+  └── Toggle vista: puede ser estudiante en otros cursos (vista Patreon)
+
+PROFESOR DE INSTITUCIÓN
+  └── Gestiona cursos asignados por admin
+  └── Ve reportes de sus estudiantes
+  └── NO puede crear cursos institucionales (solo admin)
+
+ESTUDIANTE
+  └── Toma cursos, completa ejercicios
+  └── Ve su progreso, rachas, logros
+  └── Puede ser profesor simultáneamente (roles cruzados)
+
+2.2 DATOS DEL USUARIO
+- Información básica: email, nombre, apellido, teléfono, fecha nacimiento
+- Contraseña hasheada (bcrypt)
+- Verificación de email
+- Flags de rol (polimórfico: un usuario puede tener múltiples roles)
+- Vista default para profesores: 'creador' o 'estudiante'
+- Protección de menores: es_menor, tutor_nombre, tutor_email, autorización
+
+================================================================================
+3. MODELO DE DATOS - BASE DE DATOS MYSQL
+================================================================================
+
+3.1 TABLA: instancias
+- id, slug (único), nombre, tipo ('institucion', 'independiente')
+- logo_url, colores (JSON)
+- max_estudiantes, max_storage_mb, max_cursos (0 = ilimitado)
+- estado ('activa', 'suspendida', 'cancelada')
+- fecha_creacion, fecha_expiracion
+- Responsable legal: responsable_nombre, responsable_email, tos_aceptada
+- Código MINERD (si aplica)
+
+3.2 TABLA: usuarios
+- id, instancia_id, email, password_hash, nombre, apellido
+- Flags de rol: es_estudiante, es_profesor, es_admin_institucion
+- vista_default ('creador', 'estudiante')
+- Datos de menor: es_menor, tutor_nombre, tutor_email, autorizacion_tutor_fecha
+- Seguridad: activo, email_verificado, ultimo_acceso, intentos_fallidos
+- Auditoría: creado_por, creado_en, modificado_en
+
+3.3 TABLA: instituciones
+- id, instancia_id (único), nombre_oficial, rnc, direccion
+- Contacto: admin_nombre, admin_cargo
+- Referencia MINERD: codigo_centro_minerd, distrito_educativo, regional
+
+3.4 TABLA: profesor_institucion
+- id, profesor_id, institucion_id, asignado_por, fecha_asignacion
+- asignatura, activo
+
+3.5 TABLA: plantillas_pensum
+- id, es_global, instancia_id (NULL si global)
+- creado_por, titulo, idioma ('ingles', 'frances')
+- nivel_cefr ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')
+- descripcion, horas_totales, estructura (JSON)
+- version, plantilla_base_id (para forks)
+- estado ('borrador', 'publicada', 'archivada')
+
+3.6 TABLA: cursos
+- id, instancia_id, plantilla_pensum_id (opcional), creado_por
+- titulo, descripcion, idioma, nivel_cefr
+- modalidad ('perpetuo', 'ciclo')
+- Fechas: fecha_inicio, fecha_fin, duracion_semanas
+- Visibilidad: es_publico, requiere_codigo
+- Código de acceso: codigo_acceso, tipo_codigo ('unico_curso', 'por_estudiante', 'combo_grupo')
+- Configuración: inscripcion_abierta, fecha_cierre_inscripcion, max_estudiantes
+- Estado: estado ('preparacion', 'activo', 'pausado', 'finalizado', 'archivado')
+- Notificaciones: notificar_profesor_completada, notificar_profesor_atascado, dias_para_atascado
+
+3.7 TABLA: codigos_acceso
+- id, curso_id, codigo, tipo ('general', 'individual', 'combo')
+- estudiante_email (si es individual), cantidad_usos, usos_actuales
+- activo, fecha_expiracion, usado_por, usado_en
+
+3.8 TABLA: inscripciones
+- id, curso_id, estudiante_id, codigo_acceso_id, inscrito_por
+- estado ('activa', 'completada', 'abandonada', 'expulsada', 'pendiente')
+- Fechas: fecha_inscripcion, fecha_inicio_personal, fecha_completada
+- Progreso: progreso_porcentaje, tiempo_total_minutos, ultima_actividad
+- Gamificación: racha_dias, racha_maxima
+- notificar_email
+
+3.9 TABLA: clases
+- id, curso_id, orden, titulo, descripcion, objetivos
+- Contenido: video_url, material_pdf_url, contenido_html
+- tiempo_estimado_minutos, desbloquear_al_completar (ID clase previa)
+- activa, visible_desde
+
+3.10 TABLA: ejercicios
+- id, clase_id, tipo, orden, titulo, instruccion, enunciado
+- contenido (JSON específico por tipo)
+- puntos, intentos_permitidos (0 = ilimitados)
+- mostrar_respuesta_correcta, mostrar_explicacion
+- habilidad ('vocabulario', 'gramatica', 'pronunciacion', 'comprension', 'expresion')
+- dificultad ('facil', 'medio', 'dificil')
+
+3.11 TABLA: ejercicio_config (Configuración específica)
+- id, ejercicio_id
+- Escritura: escritura_case_sensitive (false), escritura_ignorar_acentos (true)
+  escritura_ignorar_puntuacion (true), escritura_tolerancia_errores (0)
+- Micrófono: microfono_modo ('grabacion_solo', 'evaluacion_automatica')
+  microfono_idioma_stt ('en-US', 'fr-FR'), microfono_guardar_audio (true)
+  microfono_dias_retencion_audio (7)
+- Listening: listening_velocidad (1.0), listening_repeticiones_permitidas (3)
+
+3.12 TABLA: intentos
+- id, ejercicio_id, inscripcion_id
+- respuesta_enviada, respuesta_normalizada
+- audio_url, transcripcion_stt, confianza_stt
+- es_correcto, puntos_obtenidos, retroalimentacion
+- tiempo_segundos, intento_numero, dispositivo, navegador
+- ip_address, user_agent, creado_en
+
+3.13 TABLA: notificaciones
+- id, usuario_id, tipo ('clase_completada', 'estudiante_atascado', 'nueva_inscripcion', 'curso_finalizado', 'sistema')
+- referencia_tipo, referencia_id, titulo, mensaje, datos_json
+- leida, fecha_leida, creado_en
+
+3.14 TABLA: reporte_templates
+- id, instancia_id, creado_por, nombre, descripcion
+- tipo ('individual', 'grupal', 'institucional', 'curso')
+- formato_salida ('pdf', 'excel', 'ambos')
+- estructura (JSON del constructor visual), filtros_default (JSON)
+- css_personalizado, orientacion, tamano_papel
+- es_plantilla_publica, activo
+
+3.15 TABLA: reportes_generados
+- id, template_id, generado_por, parametros (JSON)
+- archivo_pdf, archivo_excel, tamano_kb, registros_incluidos
+- fecha_generacion, fecha_expiracion, descargas, ultima_descarga
+
+3.16 TABLA: auditoria (Cumplimiento legal RD)
+- id, accion, tabla_afectada, registro_id
+- usuario_id, usuario_tipo, instancia_id
+- datos_anteriores (JSON), datos_nuevos (JSON)
+- ip_address, user_agent, endpoint, metodo_http
+- es_dato_menor, requiere_autorizacion, fecha_hora
+
+3.17 TABLA: superadmins
+- id, email, password_hash, nombre, secret_2fa, activo, ultimo_acceso
+
+3.18 TABLA: soporte_tecnico
+- id, superadmin_id, nombre, email, password_hash
+- Permisos: puede_ver_instancias, puede_editar_configuracion
+  puede_ver_datos_estudiantes, puede_generar_reportes
+- activo, ultimo_acceso, desactivado_por, fecha_desactivacion
+
+3.19 TABLA: instancia_settings
+- id, instancia_id, clave, valor, tipo, modificable_por
+
+================================================================================
+4. WIDGETS DE EJERCICIOS - FUNCIONALIDAD
+================================================================================
+
+4.1 EJERCICIO DE ESCRITURA
+- Input de texto libre
+- Validación NO case sensitive (configurable por ejercicio)
+- Ignorar acentos (configurable, default: true)
+- Ignorar puntuación (configurable, default: true)
+- Tolerancia de errores: distancia Levenshtein configurable (default: 0)
+- Feedback visual inmediato o al enviar (configurable)
+- Algoritmo de normalización:
+  1. trim()
+  2. toLowerCase() si !case_sensitive
+  3. normalize("NFD").replace(/[\u0300-\u036f]/g, "") si ignorar_acentos
+  4. replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "") si ignorar_puntuacion
+  5. Comparar con tolerancia Levenshtein
+
+4.2 EJERCICIO DRAG AND DROP - TIPOS
+- Ordenar: ordenar palabras/frases para formar oración correcta
+- Emparejar: columna A con columna B (vocabulario)
+- Completar: arrastrar opciones a espacios en blanco
+- Soporta texto e imágenes
+- Biblioteca recomendada: SortableJS o implementación nativa HTML5 Drag API
+
+4.3 EJERCICIO LISTENING (TTS)
+- Usar Web Speech API del navegador (Chrome requerido)
+- Texto a leer desde contenido JSON
+- Velocidad configurable (0.5x a 2.0x)
+- Repeticiones permitidas configurables
+- Botones: reproducir, pausar, velocidad
+- Fallback si navegador no soporta TTS
+
+4.4 EJERCICIO MICRÓFONO (STT + Grabación)
+- Modo seleccionable por ejercicio:
+  a) Grabación solo: guarda audio para que profesor escuche después
+  b) Evaluación automática: Web Speech API transcribe y compara
+- Idioma STT configurable: 'en-US' (inglés), 'fr-FR' (francés)
+- Guardar audio: configurable (default: true)
+- Días de retención: 7 días después de finalizar curso (cron job de limpieza)
+- Comparación automática usa misma lógica de tolerancia que escritura
+- Feedback: transcripción reconocida, porcentaje de coincidencia
+
+================================================================================
+5. GESTIÓN DE CURSOS Y CICLOS
+================================================================================
+
+5.1 TIPOS DE CURSO
+- Perpetuo: sin fechas fijas, estudiante avanza a su ritmo
+- Por ciclo: fechas definidas (inicio/fin) o duración en semanas
+
+5.2 CÓDIGOS DE ACCESO
+- Único por curso: un código para todos los estudiantes
+- Por estudiante: código individual pre-asignado a email
+- Combo/grupo: código con N usos (ej: 30 usos para clase completa)
+
+5.3 INSCRIPCIÓN
+- Cursos públicos: visibles en catálogo, requieren código
+- Cursos privados: solo con invitación/código
+- Inscripción abierta/cerrada con fecha límite
+- Máximo de estudiantes configurable (0 = ilimitado)
+
+5.4 ARCHIVADO
+- Cuando un curso ciclo termina: estado cambia a 'archivado'
+- Datos NUNCA se borran físicamente, solo se desactivan
+- Los estudiantes pueden ver histórico pero no continuar
+- Los profesores pueden clonar cursos archivados para nuevos ciclos
+
+================================================================================
+6. NOTIFICACIONES
+================================================================================
+
+6.1 TIPOS DE NOTIFICACIÓN
+- Clase completada: estudiante termina una clase
+- Estudiante atascado: sin actividad por X días (configurable por curso)
+- Nueva inscripción: alguien se une al curso
+- Curso finalizado: estudiante completa el curso
+
+6.2 MECANISMO
+- Notificaciones en dashboard (al entrar, NO tiempo real)
+- Posibilidad futura: email (preparar estructura)
+- Marcado como leída
+- Datos JSON para contexto adicional
+
+================================================================================
+7. REPORTES Y PDF
+================================================================================
+
+7.1 PLANTILLAS PERSONALIZABLES
+- Constructor visual de reportes (JSON)
+- Secciones disponibles: tabla, gráfico (línea, barra, pastel), resumen
+- Campos disponibles por entidad:
+  * Estudiante: nombre, email, fecha inscripción, último acceso, racha, tiempo total
+  * Progreso: % completado, clases terminadas, ejercicios exitosos, promedio puntos
+  * Rendimiento: promedio por tipo de ejercicio, tendencia, tiempo promedio
+  * Grupal: ranking, comparativa vs promedio, tasa de finalización
+  * Temporal: actividad por día/semana/mes
+- Filtros configurables por defecto
+- Personalización visual: CSS, logo, orientación, tamaño de papel
+- Plantillas públicas: profesores pueden compartir templates
+
+7.2 GENERACIÓN
+- Librería: Dompdf o TCPDF
+- Formatos: PDF, Excel (PhpSpreadsheet)
+- Almacenamiento temporal con fecha de expiración
+- Contador de descargas
+
+7.3 REPORTES MINERD
+- Referencias obligatorias a normativas dominicanas
+- Código de centro, distrito, regional
+- Formato específico si es requerido por MINERD
+
+================================================================================
+8. CUMPLIMIENTO LEGAL - REPÚBLICA DOMINICANA
+================================================================================
+
+8.1 LEY 172-13 (PROTECCIÓN DE DATOS PERSONALES)
+- Checkbox de aceptación TOS en registro
+- Responsable legal identificado por instancia
+- Auditoría completa de quién accede a qué datos
+- Derecho al olvido: procedimiento para eliminación de datos
+- Portabilidad: exportación de datos del estudiante
+
+8.2 DATOS DE MENORES
+- Flag es_menor en usuarios
+- Datos del tutor: nombre, email, teléfono
+- Fecha de autorización del tutor
+- Posibilidad de subir documento de autorización
+- Auditoría especial marcada: es_dato_menor = true
+- Delegación de responsabilidad al profesor en TOS
+
+8.3 MINERD
+- Campos para código de centro, distrito, regional
+- Reportes con referencias MINERD
+- Formato de calificaciones si es requerido
+
+================================================================================
+9. TAREAS PROGRAMADAS (CRON JOBS)
+================================================================================
+
+9.1 limpiar-audios.php
+- Ejecutar: diariamente
+- Borrar archivos de audio con más de 7 días desde finalización del curso
+- Basado en: ejercicio_config.microfono_dias_retencion_audio
+
+9.2 calcular-rachas.php
+- Ejecutar: diariamente (medianoche)
+- Calcular racha_dias (días consecutivos con actividad) por estudiante
+- Actualizar racha_maxima si se supera récord
+
+9.3 notificar-atascados.php
+- Ejecutar: diariamente
+- Detectar estudiantes sin actividad por dias_para_atascado
+- Crear notificaciones para profesores
+
+9.4 limpiar-reportes.php
+- Ejecutar: semanalmente
+- Borrar archivos PDF/Excel de reportes_generados con fecha_expiracion vencida
+
+================================================================================
+10. SEGURIDAD
+================================================================================
+
+10.1 AUTENTICACIÓN
+- Contraseñas hasheadas con bcrypt
+- Intentos fallidos limitados (bloqueo temporal)
+- Verificación de email obligatoria
+- Sesiones seguras
+- Recuperación de contraseña por email (SMTP configurable)
+
+10.2 AUTORIZACIÓN
+- Middleware de roles en cada ruta
+- Permisos granulares por tipo de usuario
+- Validación de pertenencia a instancia en cada consulta
+
+10.3 PROTECCIÓN CONTRA ATAQUES
+- CSRF tokens en todos los formularios
+- XSS: escape de output en vistas
+- SQL Injection: prepared statements PDO
+- Uploads: validación de tipo, tamaño, renombrado seguro
+- Rate limiting en API endpoints
+
+10.4 AUDITORÍA
+- Log de todas las acciones CRUD
+- Log de logins/logouts/fallos
+- Log de acceso a datos de menores
+- IPs y user agents registrados
+
+================================================================================
+11. FLUJO DE INSTANCIA (DETECCIÓN)
+================================================================================
+
+Usuario entra a: maria.idastnet.com
+         ↓
+InstanciaDetector lee $_SERVER['HTTP_HOST']
+         ↓
+Extrae slug 'maria', busca en tabla instancias
+         ↓
+Carga configuración: colores, logo, límites, estado
+         ↓
+Si estado != 'activa' → mostrar página de mantenimiento/suspensión
+         ↓
+Router carga controllers según rol del usuario logueado
+         ↓
+Todas las queries incluyen WHERE instancia_id = X
+
+================================================================================
+12. API ENDPOINTS (AJAX)
+================================================================================
+
+/api/ejercicios/
+├── evaluar.php              # POST: evalúa respuesta, retorna resultado
+├── guardar-progreso.php     # POST: guarda progreso parcial
+└── subir-audio.php          # POST: sube archivo de audio, retorna URL
+
+/api/notificaciones/
+├── listar.php               # GET: notificaciones del usuario
+└── marcar-leida.php         # POST: marca notificación como leída
+
+/api/reportes/
+├── generar.php              # POST: genera reporte, retorna ID
+├── descargar.php            # GET: descarga archivo generado
+└── preview.php              # GET: preview en HTML del reporte
+
+/api/cursos/
+├── unirse.php               # POST: unirse a curso con código
+├── progreso.php             # GET: progreso del estudiante
+└── estudiantes.php          # GET: lista de estudiantes (profesor)
+
+================================================================================
+13. JAVASCRIPT - WIDGETS (Web Speech API)
+================================================================================
+
+13.1 EscrituraWidget.js
+- Manejo de input
+- Normalización según configuración del ejercicio
+- Comparación con tolerancia Levenshtein
+- Feedback visual
+
+13.2 DragDropWidget.js
+- Implementación de drag and drop
+- Tipos: ordenar, emparejar, completar
+- Validación de respuesta
+- Soporta touch para móviles
+
+13.3 ListeningWidget.js
+- Web Speech API - SpeechSynthesis (TTS)
+- Control de velocidad
+- Contador de repeticiones
+- Manejo de errores y fallback
+
+13.4 MicrofonoWidget.js
+- getUserMedia() para acceso a micrófono
+- MediaRecorder para grabación
+- SpeechRecognition para STT (modo automático)
+- Subida de audio al servidor
+- Comparación de transcripción con respuesta esperada
+- Visualización de nivel de audio
+
+================================================================================
+14. CONFIGURACIÓN DEL SERVIDOR
+================================================================================
+
+14.1 PHP (php.ini)
+- upload_max_filesize: 10M (para audios)
+- post_max_size: 10M
+- max_execution_time: 30s (aumentar para generación de reportes)
+- memory_limit: 256M
+- extensiones: PDO, PDO_MySQL, GD/Imagick (para PDFs)
+
+14.2 MySQL
+- Charset: utf8mb4
+- Collate: utf8mb4_unicode_ci
+- InnoDB para transacciones
+
+14.3 Apache (.htaccess)
+- RewriteEngine On
+- Redirigir todo a index.php (front controller)
+- Proteger /uploads/ con deny from all + PHP proxy para validación
+- Compresión gzip
+- Cache headers para assets
+
+14.4 HTTPS
+- Certificado SSL obligatorio
+- Web Speech API requiere contexto seguro
+
+================================================================================
+15. DATOS INICIALES (SEED)
+================================================================================
+
+15.1 Superadmin
+- Crear cuenta superadmin por defecto
+- Email y contraseña configurables en instalación
+
+15.2 Plantillas de Pensum
+- Plantillas vacías para Inglés A1-C2
+- Plantillas vacías para Francés A1-C2
+- Estructura JSON de ejemplo
+
+15.3 Configuración por Defecto
+- Colores por defecto
+- Límites: 0 (ilimitado) para estudiantes y cursos
+- Tolerancias de ejercicios por defecto
+
+================================================================================
+16. MIGRACIONES Y VERSIONADO
+================================================================================
+
+16.1 Sistema de Migraciones
+- /migrations/ carpeta con archivos SQL numerados
+- Tabla migrations_log para tracking
+- Script migrate.php para ejecutar migraciones pendientes
+
+16.2 Versionado
+- Versión en constants.php
+- Changelog.md
+
+================================================================================
+17. PRÓXIMOS PASOS DE DESARROLLO (PRIORIDAD)
+================================================================================
+
+FASE 1 - MVP CORE
+1. Instalador y configuración de base de datos
+2. Sistema de autenticación y roles
+3. CRUD de cursos básico (perpetuo)
+4. Widget de escritura funcional
+5. Dashboard básico de estudiante y profesor
+
+FASE 2 - CONTENIDO
+6. CRUD de clases y ejercicios
+7. Widgets: drag & drop, listening, micrófono
+8. Sistema de inscripción con códigos
+9. Seguimiento de progreso
+
+FASE 3 - REPORTES
+10. Generador de reportes PDF
+11. Plantillas personalizables
+12. Reportes MINERD
+
+FASE 4 - AVANZADO
+13. Cursos por ciclos con fechas
+14. Notificaciones
+15. Cron jobs
+16. Optimizaciones y seguridad
+
+================================================================================
+18. NOTAS PARA TRAE IDE
+================================================================================
+
+- Usar PHP 8.0+ con tipos estrictos donde sea posible
+- Seguir estructura de carpetas propuesta
+- Usar prepared statements SIEMPRE
+- Comentar código en español
+- Mantener separación de concerns: controllers ligeros, lógica en services
+- Usar JSON para campos flexibles (configuraciones, estructuras)
+- Preparar para internacionalización (i18n) aunque sea solo español inicial
+- Documentar funciones complejas con PHPDoc
+- Usar nombres de tablas en español (mantener consistencia)
+- Validar TODOS los inputs
+- Escapar TODOS los outputs en vistas
+
+================================================================================
+FIN DEL DOCUMENTO
+================================================================================
+LLamemos a la app y a la db adapa
