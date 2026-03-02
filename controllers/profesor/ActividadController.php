@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../models/Actividad.php';
 require_once __DIR__ . '/../../models/Leccion.php';
 require_once __DIR__ . '/../../models/Curso.php';
+require_once __DIR__ . '/../../models/MediaRecurso.php';
+require_once __DIR__ . '/../../models/ProfesorPlan.php';
 require_once __DIR__ . '/../../core/Auth.php';
 
 class ActividadController extends Controller
@@ -11,6 +13,8 @@ class ActividadController extends Controller
     private $actividadModel;
     private $leccionModel;
     private $cursoModel;
+    private $mediaModel;
+    private $planModel;
 
     public function __construct()
     {
@@ -18,6 +22,8 @@ class ActividadController extends Controller
         $this->actividadModel = new Actividad();
         $this->leccionModel = new Leccion();
         $this->cursoModel = new Curso();
+        $this->mediaModel = new MediaRecurso();
+        $this->planModel = new ProfesorPlan();
     }
 
     private function tiposActividad()
@@ -180,10 +186,15 @@ class ActividadController extends Controller
     {
         $leccion = $this->obtenerLeccionAutorizada($leccion_id);
         $actividades = $this->actividadModel->obtenerActividadesPorLeccion($leccion_id);
+        [$puedeCrearActividad, $mensajeLimiteActividad] = $this->planModel->puedeCrearActividad(Auth::getUserId(), $leccion_id);
+        $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
 
         $this->view('profesor/actividades/index', [
             'leccion' => $leccion,
-            'actividades' => $actividades
+            'actividades' => $actividades,
+            'puedeCrearActividad' => $puedeCrearActividad,
+            'mensajeLimiteActividad' => $mensajeLimiteActividad,
+            'planUso' => $planUso
         ]);
     }
 
@@ -191,6 +202,11 @@ class ActividadController extends Controller
     {
         $leccion = $this->obtenerLeccionAutorizada($leccion_id);
         $tiposActividad = $this->tiposActividad();
+        [$puedeCrear, $mensajeLimite] = $this->planModel->puedeCrearActividad(Auth::getUserId(), $leccion_id);
+        if (!$puedeCrear) {
+            $this->flash('error', $mensajeLimite);
+            $this->redirect('/profesor/lecciones/' . $leccion_id . '/actividades');
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_csrf();
@@ -224,6 +240,7 @@ class ActividadController extends Controller
         $this->view('profesor/actividades/create', [
             'leccion' => $leccion,
             'tipos_actividad' => $tiposActividad,
+            'planUso' => $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId()),
             'error' => $error ?? null
         ]);
     }
@@ -327,9 +344,15 @@ class ActividadController extends Controller
         }
 
         $vista = 'profesor/actividades/config_' . $tipo;
-        $this->view($vista, [
+        $datosVista = [
             'leccion' => $leccion,
             'error' => $error ?? null
-        ]);
+        ];
+
+        if ($tipo === 'opcion_multiple') {
+            $datosVista['recursosImagen'] = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
+        }
+
+        $this->view($vista, $datosVista);
     }
 }

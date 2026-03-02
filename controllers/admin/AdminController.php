@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 require_once __DIR__ . '/../../core/Database.php';
+require_once __DIR__ . '/../../models/ProfesorPlan.php';
 
 class AdminController extends Controller {
     private $db;
@@ -111,9 +112,10 @@ class AdminController extends Controller {
     public function cursos() {
         $instanciaId = Auth::getInstanciaId();
 
-        $this->db->query("SELECT c.*, u.nombre as profesor_nombre, u.apellido as profesor_apellido 
+        $this->db->query("SELECT c.*, u.nombre as profesor_nombre, u.apellido as profesor_apellido, mr.ruta_archivo as portada_url, mr.alt_text as portada_alt
                           FROM cursos c 
                           LEFT JOIN usuarios u ON c.creado_por = u.id 
+                          LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
                           WHERE c.instancia_id = :instancia_id
                           ORDER BY c.fecha_creacion DESC");
         $this->db->bind(':instancia_id', $instanciaId);
@@ -141,6 +143,8 @@ class AdminController extends Controller {
             $apellido = $_POST['apellido'];
             $email = $_POST['email'];
             $rol = $_POST['rol']; // admin, profesor, estudiante
+            $billingPlan = ProfesorPlan::normalizarPlan($_POST['billing_plan'] ?? ProfesorPlan::PLAN_FREE);
+            $isOfficial = isset($_POST['is_official']) ? 1 : 0;
 
             // Basic validation
             if (empty($nombre) || empty($apellido) || empty($email)) {
@@ -169,6 +173,7 @@ class AdminController extends Controller {
             }
 
             $sql .= ", es_admin_institucion = :es_admin, es_profesor = :es_profesor, es_estudiante = :es_estudiante";
+            $sql .= ", billing_plan = :billing_plan, is_official = :is_official";
             $sql .= " WHERE id = :id AND instancia_id = :instancia_id";
 
             $this->db->query($sql);
@@ -183,6 +188,8 @@ class AdminController extends Controller {
             $this->db->bind(':es_admin', $es_admin);
             $this->db->bind(':es_profesor', $es_profesor);
             $this->db->bind(':es_estudiante', $es_estudiante);
+            $this->db->bind(':billing_plan', $billingPlan);
+            $this->db->bind(':is_official', $isOfficial);
             $this->db->bind(':id', $id);
             $this->db->bind(':instancia_id', $instanciaId);
 

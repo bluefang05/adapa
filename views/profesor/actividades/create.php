@@ -37,6 +37,13 @@
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-lightbulb"></i>
+            Plan gratuito: esta leccion admite hasta 3 actividades antes de pasar al plan activo.
+        </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-9">
             <div class="form-shell">

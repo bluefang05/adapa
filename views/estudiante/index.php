@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../../models/Curso.php';
+?>
 
 <div class="container">
     <?php require __DIR__ . '/../partials/flash.php'; ?>
@@ -26,7 +29,7 @@
             <div class="metric-card">
                 <div class="metric-label">Disponibles</div>
                 <div class="metric-value"><?php echo count($cursosDisponibles); ?></div>
-                <div class="metric-note">Cursos que puedes iniciar ahora.</div>
+                <div class="metric-note">Cursos gratis que puedes iniciar ahora.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Promedio de avance</div>
@@ -48,6 +51,62 @@
     </section>
 
     <section class="mb-4">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="section-title mb-3">
+                            <h2>Tengo un codigo</h2>
+                            <span class="soft-badge"><i class="bi bi-key-fill"></i> Acceso privado</span>
+                        </div>
+                        <p class="page-subtitle mb-3">
+                            Si tu profesor te compartio un codigo, pegalo aqui para activar su clase sin buscarla en el catalogo abierto.
+                        </p>
+                        <form method="POST" action="<?php echo url('/estudiante/codigo'); ?>" class="form-shell border-0 shadow-none bg-transparent p-0">
+                            <?php echo csrf_input(); ?>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="codigo_acceso"
+                                    maxlength="255"
+                                    placeholder="Ejemplo: TEACH-ENGLISH-2026"
+                                    aria-label="Codigo de acceso del profesor"
+                                    required
+                                >
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-unlock"></i> Activar curso
+                                </button>
+                            </div>
+                            <div class="form-text mt-2">Este acceso es ideal para grupos privados, cohortes o clases dirigidas por profesor.</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="section-title mb-3">
+                            <h2>Como funciona</h2>
+                            <span class="soft-badge"><i class="bi bi-signpost-2"></i> Doble via</span>
+                        </div>
+                        <div class="stack-list">
+                            <div class="stack-item">
+                                <strong>Catalogo abierto</strong>
+                                <span>Te inscribes directamente en cursos gratis y publicos para explorar la plataforma.</span>
+                            </div>
+                            <div class="stack-item">
+                                <strong>Curso del profesor</strong>
+                                <span>Usas un codigo para entrar a una clase privada, una cohorte o un grupo guiado.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-4">
         <div class="section-title">
             <h2>Mis cursos</h2>
             <span class="soft-badge"><i class="bi bi-lightning-charge"></i> En marcha</span>
@@ -55,17 +114,29 @@
         <div class="row g-4">
             <?php if (!empty($cursosInscritos)): ?>
                 <?php foreach ($cursosInscritos as $curso): ?>
+                    <?php
+                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
+                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="course-card">
+                            <?php if (!empty($curso->portada_url)): ?>
+                                <img src="<?php echo htmlspecialchars(url('/' . ltrim($curso->portada_url, '/'))); ?>" alt="<?php echo htmlspecialchars($curso->portada_alt ?: $curso->titulo); ?>" class="course-cover-media">
+                            <?php endif; ?>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
                                     <div>
                                         <h5 class="card-title mb-1"><?php echo htmlspecialchars($curso->titulo); ?></h5>
                                         <div class="small text-muted">
-                                            <?php echo htmlspecialchars(strtoupper($curso->idioma ?? '')); ?> Â· <?php echo htmlspecialchars($curso->nivel_cefr ?? ''); ?>
+                                            <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?> · <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> · Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?>
                                         </div>
                                     </div>
                                     <span class="soft-badge"><?php echo (int) ($curso->porcentaje ?? 0); ?>%</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
+                                        <i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
+                                    </span>
                                 </div>
                                 <p class="card-text mb-0"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 140)); ?>...</p>
                                 <div class="course-meta">
@@ -103,17 +174,66 @@
             <h2>Cursos disponibles</h2>
             <span class="soft-badge"><i class="bi bi-compass"></i> Nuevas rutas</span>
         </div>
+        <div class="panel mb-4">
+            <div class="panel-body">
+                <form method="GET" action="<?php echo url('/estudiante'); ?>" class="row g-3 align-items-end">
+                    <div class="col-lg-4">
+                        <label for="idioma_objetivo" class="form-label">Idioma objetivo</label>
+                        <select name="idioma_objetivo" id="idioma_objetivo" class="form-select">
+                            <option value="">Todos</option>
+                            <?php foreach (app_course_target_languages() as $languageValue => $languageLabel): ?>
+                                <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo (($filtrosCatalogo['idioma_objetivo'] ?? '') === $languageValue) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($languageLabel); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="nivel_objetivo" class="form-label">Nivel que buscas</label>
+                        <select name="nivel_objetivo" id="nivel_objetivo" class="form-select">
+                            <option value="">Cualquier nivel</option>
+                            <?php foreach ($opcionesCefr as $nivel): ?>
+                                <option value="<?php echo htmlspecialchars($nivel); ?>" <?php echo (($filtrosCatalogo['nivel_objetivo'] ?? '') === $nivel) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($nivel); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="tipo_recorrido" class="form-label">Tipo de recorrido</label>
+                        <select name="tipo_recorrido" id="tipo_recorrido" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="nivel_unico" <?php echo (($filtrosCatalogo['tipo_recorrido'] ?? '') === 'nivel_unico') ? 'selected' : ''; ?>>Nivel unico</option>
+                            <option value="ruta_completa" <?php echo (($filtrosCatalogo['tipo_recorrido'] ?? '') === 'ruta_completa') ? 'selected' : ''; ?>>Ruta completa</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
+                        <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary">Limpiar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="row g-4">
             <?php if (!empty($cursosDisponibles)): ?>
                 <?php foreach ($cursosDisponibles as $curso): ?>
+                    <?php
+                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
+                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="surface-card">
+                            <?php if (!empty($curso->portada_url)): ?>
+                                <img src="<?php echo htmlspecialchars(url('/' . ltrim($curso->portada_url, '/'))); ?>" alt="<?php echo htmlspecialchars($curso->portada_alt ?: $curso->titulo); ?>" class="course-cover-media">
+                            <?php endif; ?>
                             <div class="card-body">
                                 <h5 class="card-title mb-2"><?php echo htmlspecialchars($curso->titulo); ?></h5>
                                 <p class="card-text text-muted mb-3"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 130)); ?>...</p>
                                 <div class="course-meta">
-                                    <span><i class="bi bi-translate"></i> <?php echo htmlspecialchars(strtoupper($curso->idioma ?? '')); ?></span>
-                                    <span><i class="bi bi-ladder"></i> <?php echo htmlspecialchars($curso->nivel_cefr ?? ''); ?></span>
+                                    <span><i class="bi bi-translate"></i> <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?></span>
+                                    <span><i class="bi bi-chat-left-text"></i> Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?></span>
+                                    <span><i class="bi bi-ladder"></i> <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?></span>
+                                    <span><i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?></span>
                                 </div>
                                 <form method="POST" action="<?php echo url('/estudiante/inscribir/' . $curso->id); ?>" class="d-inline">
                                     <?php echo csrf_input(); ?>

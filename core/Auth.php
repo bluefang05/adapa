@@ -35,6 +35,8 @@ class Auth {
 
         // Set user name directly from the user object
         $_SESSION['user_name'] = $user->nombre . ' ' . $user->apellido;
+        $_SESSION['billing_plan'] = $user->billing_plan ?? 'free';
+        $_SESSION['is_official'] = !empty($user->is_official) ? 1 : 0;
     }
 
     public static function logout() {
@@ -56,6 +58,14 @@ class Auth {
 
     public static function getUserRole() {
         return $_SESSION['user_role'] ?? 'user';
+    }
+
+    public static function getBillingPlan() {
+        return $_SESSION['billing_plan'] ?? 'free';
+    }
+
+    public static function isOfficial() {
+        return !empty($_SESSION['is_official']);
     }
 
     public static function hasRole($role) {

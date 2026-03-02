@@ -102,3 +102,37 @@ function require_csrf() {
         exit;
     }
 }
+
+function app_supported_languages() {
+    return [
+        'espanol' => 'Espanol',
+        'ingles' => 'Ingles',
+        'frances' => 'Frances',
+        'aleman' => 'Aleman',
+        'italiano' => 'Italiano',
+        'portugues' => 'Portugues',
+    ];
+}
+
+function app_course_target_languages() {
+    return [
+        'ingles' => 'Ingles',
+        'frances' => 'Frances',
+        'aleman' => 'Aleman',
+        'italiano' => 'Italiano',
+        'portugues' => 'Portugues',
+    ];
+}
+
+function app_tts_language_map() {
+    return [
+        'espanol' => 'es-ES',
+        'ingles' => 'en-US',
+        'frances' => 'fr-FR',
+        'aleman' => 'de-DE',
+        'italiano' => 'it-IT',
+        'portugues' => 'pt-BR',
+        'chino' => 'zh-CN',
+        'japones' => 'ja-JP',
+    ];
+}

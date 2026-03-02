@@ -16,6 +16,19 @@ if (!defined('BASE_URL')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?php echo url('/assets/css/app.css'); ?>">
+    <script>
+        (function () {
+            var savedTheme = null;
+            try {
+                savedTheme = localStorage.getItem('adapa-theme');
+            } catch (error) {
+                savedTheme = null;
+            }
+
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', savedTheme || (prefersDark ? 'dark' : 'light'));
+        }());
+    </script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Saltar al contenido</a>
@@ -29,6 +42,13 @@ if (!defined('BASE_URL')) {
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item d-flex align-items-center me-lg-2 mb-2 mb-lg-0">
+                    <button type="button" class="theme-toggle theme-toggle-navbar" data-theme-toggle aria-label="Cambiar tema" aria-pressed="false">
+                        <i class="bi bi-moon-stars-fill" data-theme-icon="dark"></i>
+                        <i class="bi bi-sun-fill d-none" data-theme-icon="light"></i>
+                        <span data-theme-label>Modo oscuro</span>
+                    </button>
+                </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item d-flex align-items-center me-lg-2 mb-2 mb-lg-0">
                         <span class="user-chip">
@@ -45,6 +65,11 @@ if (!defined('BASE_URL')) {
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo url('/profesor/estudiantes'); ?>">
                                 <i class="bi bi-people"></i> Estudiantes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/profesor/recursos'); ?>">
+                                <i class="bi bi-images"></i> Recursos
                             </a>
                         </li>
                         <li class="nav-item">

@@ -1,28 +1,43 @@
 <?php
 
 require_once __DIR__ . '/../../models/Curso.php';
+require_once __DIR__ . '/../../models/MediaRecurso.php';
+require_once __DIR__ . '/../../models/ProfesorPlan.php';
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 
 class CursoController extends Controller {
     private $cursoModel;
+    private $mediaModel;
+    private $planModel;
 
     public function __construct() {
         $this->requireRole('profesor');
         $this->cursoModel = new Curso();
+        $this->mediaModel = new MediaRecurso();
+        $this->planModel = new ProfesorPlan();
     }
 
     public function index() {
         $profesor_id = Auth::getUserId();
         $cursos = $this->cursoModel->obtenerResumenCursosPorProfesor($profesor_id);
+        $planUso = $this->planModel->obtenerResumenUsoProfesor($profesor_id);
         
         require_once __DIR__ . '/../../views/profesor/cursos/index.php';
     }
 
     public function create() {
+        [$puedeCrear, $mensajeLimite] = $this->planModel->puedeCrearCurso(Auth::getUserId());
+        if (!$puedeCrear) {
+            $this->flash('error', $mensajeLimite);
+            $this->redirect('/profesor/cursos');
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->guardarCurso();
         } else {
+            $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
+            $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
             require_once __DIR__ . '/../../views/profesor/cursos/create.php';
         }
     }
@@ -31,14 +46,24 @@ class CursoController extends Controller {
         require_csrf();
         $codigoAcceso = trim($_POST['codigo_acceso'] ?? '');
         $requiereCodigo = isset($_POST['requiere_codigo']) ? 1 : 0;
+        [$nivelPrincipal, $nivelDesde, $nivelHasta] = $this->normalizarRangoCefr(
+            $_POST['nivel_cefr'] ?? '',
+            $_POST['nivel_cefr_desde'] ?? '',
+            $_POST['nivel_cefr_hasta'] ?? ''
+        );
 
         $datos = [
             'instancia_id' => Auth::getInstanciaId(),
             'creado_por' => Auth::getUserId(),
             'titulo' => $_POST['titulo'],
             'descripcion' => $_POST['descripcion'],
-            'idioma' => $_POST['idioma'],
-            'nivel_cefr' => $_POST['nivel_cefr'],
+            'idioma' => $_POST['idioma_objetivo'],
+            'idioma_objetivo' => $_POST['idioma_objetivo'],
+            'idioma_ensenanza' => $_POST['idioma_ensenanza'],
+            'portada_media_id' => $this->resolverPortadaCurso($_POST['portada_media_id'] ?? null),
+            'nivel_cefr' => $nivelPrincipal,
+            'nivel_cefr_desde' => $nivelDesde,
+            'nivel_cefr_hasta' => $nivelHasta,
             'modalidad' => $_POST['modalidad'],
             'es_publico' => isset($_POST['es_publico']) ? 1 : 0,
             'requiere_codigo' => $requiereCodigo,
@@ -49,10 +74,20 @@ class CursoController extends Controller {
             'fecha_fin' => !empty($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null
         ];
 
+        [$datos, $ajustesPlan] = $this->planModel->normalizarDatosCursoParaPlan(Auth::getUserId(), $datos);
+        if (!empty($datos['requiere_codigo']) && empty($datos['codigo_acceso'])) {
+            $datos['codigo_acceso'] = $this->cursoModel->generarCodigoAcceso();
+        }
+
         if ($this->cursoModel->crearCurso($datos)) {
+            if ($ajustesPlan) {
+                $this->flash('success', 'Curso creado. En plan gratuito se aplicaron estos ajustes: ' . implode(', ', $ajustesPlan) . '.');
+            }
             $this->redirect('/profesor/cursos');
         } else {
             $error = "Error al crear el curso";
+            $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
+            $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
             require_once __DIR__ . '/../../views/profesor/cursos/create.php';
         }
     }
@@ -67,11 +102,21 @@ class CursoController extends Controller {
             require_csrf();
             $codigoAcceso = trim($_POST['codigo_acceso'] ?? '');
             $requiereCodigo = isset($_POST['requiere_codigo']) ? 1 : 0;
+            [$nivelPrincipal, $nivelDesde, $nivelHasta] = $this->normalizarRangoCefr(
+                $_POST['nivel_cefr'] ?? '',
+                $_POST['nivel_cefr_desde'] ?? '',
+                $_POST['nivel_cefr_hasta'] ?? ''
+            );
             $datos = [
                 'titulo' => $_POST['titulo'],
                 'descripcion' => $_POST['descripcion'],
-                'idioma' => $_POST['idioma'],
-                'nivel_cefr' => $_POST['nivel_cefr'],
+                'idioma' => $_POST['idioma_objetivo'],
+                'idioma_objetivo' => $_POST['idioma_objetivo'],
+                'idioma_ensenanza' => $_POST['idioma_ensenanza'],
+                'portada_media_id' => $this->resolverPortadaCurso($_POST['portada_media_id'] ?? null),
+                'nivel_cefr' => $nivelPrincipal,
+                'nivel_cefr_desde' => $nivelDesde,
+                'nivel_cefr_hasta' => $nivelHasta,
                 'modalidad' => $_POST['modalidad'],
                 'es_publico' => isset($_POST['es_publico']) ? 1 : 0,
                 'requiere_codigo' => $requiereCodigo,
@@ -80,13 +125,25 @@ class CursoController extends Controller {
                 'max_estudiantes' => (int) ($_POST['max_estudiantes'] ?? 0)
             ];
 
+            [$datos, $ajustesPlan] = $this->planModel->normalizarDatosCursoParaPlan(Auth::getUserId(), $datos);
+            if (!empty($datos['requiere_codigo']) && empty($datos['codigo_acceso'])) {
+                $datos['codigo_acceso'] = $this->cursoModel->generarCodigoAcceso();
+            }
+
             if ($this->cursoModel->actualizarCurso($id, $datos)) {
+                if ($ajustesPlan) {
+                    $this->flash('success', 'Curso actualizado. En plan gratuito se mantuvieron estos limites: ' . implode(', ', $ajustesPlan) . '.');
+                }
                 $this->redirect('/profesor/cursos');
             } else {
                 $error = "Error al actualizar el curso";
+                $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
+                $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
                 require_once __DIR__ . '/../../views/profesor/cursos/edit.php';
             }
         } else {
+            $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
+            $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
             require_once __DIR__ . '/../../views/profesor/cursos/edit.php';
         }
     }
@@ -102,5 +159,33 @@ class CursoController extends Controller {
 
         $this->cursoModel->eliminarCurso($id);
         $this->redirect('/profesor/cursos');
+    }
+
+    private function resolverPortadaCurso($mediaId) {
+        $mediaId = (int) $mediaId;
+        if ($mediaId <= 0) {
+            return null;
+        }
+
+        $recurso = $this->mediaModel->obtenerRecursoPorId($mediaId, Auth::getUserId(), Auth::getInstanciaId());
+        if (!$recurso || $recurso->tipo_media !== 'imagen') {
+            return null;
+        }
+
+        return $mediaId;
+    }
+
+    private function normalizarRangoCefr($nivelPrincipal, $nivelDesde, $nivelHasta) {
+        $orden = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+        $nivelPrincipal = in_array($nivelPrincipal, $orden, true) ? $nivelPrincipal : 'A1';
+        $nivelDesde = in_array($nivelDesde, $orden, true) ? $nivelDesde : $nivelPrincipal;
+        $nivelHasta = in_array($nivelHasta, $orden, true) ? $nivelHasta : $nivelDesde;
+
+        if (array_search($nivelDesde, $orden, true) > array_search($nivelHasta, $orden, true)) {
+            $nivelHasta = $nivelDesde;
+        }
+
+        return [$nivelPrincipal, $nivelDesde, $nivelHasta];
     }
 }

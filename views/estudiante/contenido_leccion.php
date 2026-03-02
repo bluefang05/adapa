@@ -1,4 +1,35 @@
-<?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../partials/header.php';
+
+function renderLessonBlockMedia($bloque) {
+    if (empty($bloque->ruta_archivo) || empty($bloque->tipo_media)) {
+        return '';
+    }
+
+    $assetUrl = url('/' . ltrim($bloque->ruta_archivo, '/'));
+    $label = htmlspecialchars($bloque->media_titulo ?: $bloque->tipo_media, ENT_QUOTES, 'UTF-8');
+    $escapedUrl = htmlspecialchars($assetUrl, ENT_QUOTES, 'UTF-8');
+
+    if ($bloque->tipo_media === 'imagen') {
+        $alt = htmlspecialchars($bloque->alt_text ?: $bloque->media_titulo ?: 'Recurso visual', ENT_QUOTES, 'UTF-8');
+        return '<img src="' . $escapedUrl . '" alt="' . $alt . '" class="media-preview-thumb lesson-media-thumb">';
+    }
+
+    if ($bloque->tipo_media === 'audio') {
+        return '<audio controls preload="none" class="media-preview-player"><source src="' . $escapedUrl . '"></audio>';
+    }
+
+    if ($bloque->tipo_media === 'video') {
+        return '<video controls preload="metadata" class="media-preview-player"><source src="' . $escapedUrl . '"></video>';
+    }
+
+    if ($bloque->tipo_media === 'pdf') {
+        return '<a href="' . $escapedUrl . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-file-earmark-pdf"></i> Abrir ' . $label . '</a>';
+    }
+
+    return '<a href="' . $escapedUrl . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-paperclip"></i> Abrir ' . $label . '</a>';
+}
+?>
 
 <div class="container">
     <?php require __DIR__ . '/../partials/flash.php'; ?>
@@ -85,7 +116,55 @@
                             <?php endif; ?>
                         </div>
                         <div class="card-text">
-                            <?php echo $teoria->contenido; ?>
+                            <?php if (!empty($teoria->tiene_bloques) && !empty($teoria->bloques)): ?>
+                                <div class="stack-list">
+                                    <?php foreach ($teoria->bloques as $bloque): ?>
+                                        <div class="stack-item">
+                                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                                <div>
+                                                    <div class="stack-item-title">
+                                                        <?php echo htmlspecialchars($bloque->titulo ?: ucfirst($bloque->tipo_bloque)); ?>
+                                                    </div>
+                                                    <div class="stack-item-subtitle">
+                                                        <?php echo htmlspecialchars(ucfirst($bloque->tipo_bloque)); ?>
+                                                        <?php if (!empty($bloque->idioma_bloque)): ?>
+                                                            · <?php echo htmlspecialchars(strtoupper($bloque->idioma_bloque)); ?>
+                                                        <?php endif; ?>
+                                                        <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1): ?>
+                                                            · Audio listo
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2 flex-wrap align-items-center">
+                                                    <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1 && !empty($bloque->contenido)): ?>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-primary tts-play-btn"
+                                                            data-tts-text="<?php echo htmlspecialchars($bloque->contenido, ENT_QUOTES, 'UTF-8'); ?>"
+                                                            data-tts-lang="<?php echo htmlspecialchars($bloque->idioma_bloque ?: 'espanol', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        >
+                                                            <i class="bi bi-volume-up"></i> Escuchar
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    <span class="soft-badge">Bloque</span>
+                                                </div>
+                                            </div>
+                                            <?php if (!empty($bloque->contenido)): ?>
+                                                <div class="mt-2">
+                                                    <?php echo nl2br(htmlspecialchars($bloque->contenido)); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($bloque->ruta_archivo) && !empty($bloque->tipo_media)): ?>
+                                                <div class="mt-3">
+                                                    <?php echo renderLessonBlockMedia($bloque); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <?php echo $teoria->contenido; ?>
+                            <?php endif; ?>
                         </div>
                         <?php if (empty($teoria->leido)): ?>
                             <form action="<?php echo url('/estudiante/teoria/' . $teoria->id . '/leer'); ?>" method="POST" class="mt-3">
@@ -142,5 +221,72 @@
         </a>
     </div>
 </div>
+
+<script>
+(function () {
+    if (!('speechSynthesis' in window)) {
+        return;
+    }
+
+    const languageMap = <?php echo json_encode(app_tts_language_map(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+
+    let activeButton = null;
+
+    function resetButton(button) {
+        if (!button) {
+            return;
+        }
+
+        button.classList.remove('is-speaking');
+        button.innerHTML = '<i class="bi bi-volume-up"></i> Escuchar';
+    }
+
+    document.querySelectorAll('.tts-play-btn').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const text = button.getAttribute('data-tts-text') || '';
+            const langKey = button.getAttribute('data-tts-lang') || 'espanol';
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            if (!text.trim()) {
+                return;
+            }
+
+            if (activeButton === button) {
+                window.speechSynthesis.cancel();
+                resetButton(button);
+                activeButton = null;
+                return;
+            }
+
+            if (activeButton) {
+                window.speechSynthesis.cancel();
+                resetButton(activeButton);
+            }
+
+            utterance.lang = languageMap[langKey] || 'es-ES';
+            utterance.rate = 0.95;
+
+            utterance.onend = function () {
+                resetButton(button);
+                activeButton = null;
+            };
+
+            utterance.onerror = function () {
+                resetButton(button);
+                activeButton = null;
+            };
+
+            activeButton = button;
+            button.classList.add('is-speaking');
+            button.innerHTML = '<i class="bi bi-stop-circle"></i> Detener';
+            window.speechSynthesis.speak(utterance);
+        });
+    });
+
+    window.addEventListener('beforeunload', function () {
+        window.speechSynthesis.cancel();
+    });
+})();
+</script>
 
 <?php require_once __DIR__ . '/../partials/footer.php'; ?>

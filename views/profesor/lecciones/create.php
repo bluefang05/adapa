@@ -18,6 +18,13 @@
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
 
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info">
+            <i class="bi bi-lightbulb"></i>
+            Plan gratuito: puedes crear hasta 3 lecciones dentro de este curso piloto.
+        </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-9">
             <div class="form-shell">

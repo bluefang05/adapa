@@ -93,11 +93,6 @@ require_once __DIR__ . '/../partials/header.php';
             </div>
         </section>
 
-        <div class="text-center mt-3">
-            <button type="button" class="btn btn-sm btn-outline-warning" onclick="toggleDebugMode()" title="Toggle Debug Mode">
-                <i class="bi bi-bug"></i> Debug mode
-            </button>
-        </div>
     </div>
 </div>
 
@@ -106,19 +101,6 @@ function fillLogin(email, password) {
     document.getElementById('email').value = email;
     document.getElementById('password').value = password;
     document.querySelector('button[type="submit"]').focus();
-}
-
-function toggleDebugMode() {
-    const url = new URL(window.location.href);
-    const debugParam = url.searchParams.get('debug');
-
-    if (debugParam === '1') {
-        url.searchParams.delete('debug');
-    } else {
-        url.searchParams.set('debug', '1');
-    }
-
-    window.location.href = url.toString();
 }
 </script>
 

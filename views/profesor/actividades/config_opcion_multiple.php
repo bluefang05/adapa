@@ -50,6 +50,11 @@
                                 <label for="pregunta" class="form-label">Instruccion global opcional</label>
                                 <input type="text" class="form-control" id="pregunta" name="pregunta" placeholder="Ejemplo: selecciona la respuesta correcta en cada caso" value="">
                             </div>
+
+                            <div class="alert alert-light border" role="alert">
+                                <i class="bi bi-image"></i>
+                                Puedes convertir cualquier pregunta en una actividad visual asociando una imagen desde tu biblioteca.
+                            </div>
                         </section>
 
                         <section class="form-section">
@@ -125,6 +130,24 @@
                 <label class="form-label">Texto de la pregunta</label>
                 <input type="text" class="form-control pregunta-texto" placeholder="Texto de la pregunta">
             </div>
+            <div class="mb-3">
+                <label class="form-label">Imagen opcional</label>
+                <select class="form-select pregunta-imagen">
+                    <option value="">Sin imagen</option>
+                    <?php foreach (($recursosImagen ?? []) as $recurso): ?>
+                        <option
+                            value="<?php echo (int) $recurso->id; ?>"
+                            data-url="<?php echo htmlspecialchars(url('/' . ltrim($recurso->ruta_archivo, '/'))); ?>"
+                            data-alt="<?php echo htmlspecialchars($recurso->alt_text ?: $recurso->titulo); ?>"
+                        >
+                            <?php echo htmlspecialchars($recurso->titulo); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="block-media-preview is-empty mt-3 pregunta-media-preview">
+                    <span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin imagen asociada</span>
+                </div>
+            </div>
             <div class="mb-2">
                 <label class="form-label">Opciones de respuesta</label>
                 <div class="opciones-container config-builder"></div>
@@ -143,6 +166,11 @@
         const eliminarPreguntaBtn = preguntaDiv.querySelector('.eliminar-pregunta');
         eliminarPreguntaBtn.addEventListener('click', function () {
             preguntaDiv.remove();
+        });
+
+        const selectImagen = preguntaDiv.querySelector('.pregunta-imagen');
+        selectImagen.addEventListener('change', function () {
+            renderPreguntaPreview(preguntaDiv, this);
         });
 
         agregarOpcion(preguntaDiv.dataset.preguntaId);
@@ -242,6 +270,24 @@
                 <label class="form-label">Texto de la pregunta</label>
                 <input type="text" class="form-control pregunta-texto" placeholder="Texto de la pregunta" value="${datosPregunta.texto || ''}">
             </div>
+            <div class="mb-3">
+                <label class="form-label">Imagen opcional</label>
+                <select class="form-select pregunta-imagen">
+                    <option value="">Sin imagen</option>
+                    <?php foreach (($recursosImagen ?? []) as $recurso): ?>
+                        <option
+                            value="<?php echo (int) $recurso->id; ?>"
+                            data-url="<?php echo htmlspecialchars(url('/' . ltrim($recurso->ruta_archivo, '/'))); ?>"
+                            data-alt="<?php echo htmlspecialchars($recurso->alt_text ?: $recurso->titulo); ?>"
+                        >
+                            <?php echo htmlspecialchars($recurso->titulo); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="block-media-preview is-empty mt-3 pregunta-media-preview">
+                    <span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin imagen asociada</span>
+                </div>
+            </div>
             <div class="mb-2">
                 <label class="form-label">Opciones de respuesta</label>
                 <div class="opciones-container config-builder"></div>
@@ -260,6 +306,15 @@
         const eliminarPreguntaBtn = preguntaDiv.querySelector('.eliminar-pregunta');
         eliminarPreguntaBtn.addEventListener('click', function () {
             preguntaDiv.remove();
+        });
+
+        const selectImagen = preguntaDiv.querySelector('.pregunta-imagen');
+        if (datosPregunta.image_media_id) {
+            selectImagen.value = String(datosPregunta.image_media_id);
+        }
+        renderPreguntaPreview(preguntaDiv, selectImagen);
+        selectImagen.addEventListener('change', function () {
+            renderPreguntaPreview(preguntaDiv, this);
         });
 
         if (datosPregunta.opciones && Array.isArray(datosPregunta.opciones)) {
@@ -324,6 +379,26 @@
         preguntaDiv.dataset.nextOpcionIndex = String(nextIndex + 1);
     }
 
+    function renderPreguntaPreview(preguntaDiv, select) {
+        const preview = preguntaDiv.querySelector('.pregunta-media-preview');
+        if (!preview || !select) {
+            return;
+        }
+
+        const selectedOption = select.options[select.selectedIndex];
+        const imageUrl = selectedOption ? selectedOption.dataset.url : '';
+        const imageAlt = selectedOption ? selectedOption.dataset.alt : '';
+
+        if (!imageUrl) {
+            preview.classList.add('is-empty');
+            preview.innerHTML = '<span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin imagen asociada</span>';
+            return;
+        }
+
+        preview.classList.remove('is-empty');
+        preview.innerHTML = `<img src="${imageUrl}" alt="${imageAlt || 'Imagen de la pregunta'}" class="block-media-thumb">`;
+    }
+
     document.getElementById('config-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -349,6 +424,9 @@
             if (opciones.length) {
                 preguntas.push({
                     texto: textoPregunta || 'Pregunta ' + (preguntas.length + 1),
+                    image_media_id: preguntaDiv.querySelector('.pregunta-imagen')?.value || null,
+                    image_url: preguntaDiv.querySelector('.pregunta-imagen option:checked')?.dataset?.url || null,
+                    image_alt: preguntaDiv.querySelector('.pregunta-imagen option:checked')?.dataset?.alt || null,
                     opciones: opciones
                 });
             }

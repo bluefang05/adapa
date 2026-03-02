@@ -9,23 +9,32 @@ require_once __DIR__ . '/../../models/Teoria.php';
 require_once __DIR__ . '/../../models/Actividad.php';
 require_once __DIR__ . '/../../models/Respuesta.php';
 require_once __DIR__ . '/../../models/OpcionMultiple.php';
+require_once __DIR__ . '/../../models/ProfesorPlan.php';
 
 class EstudianteController extends Controller {
     private $cursoModel;
     private $inscripcionModel;
     private $leccionModel;
+    private $planModel;
 
     public function __construct() {
         $this->requireRole('estudiante');
         $this->cursoModel = new Curso();
         $this->inscripcionModel = new Inscripcion();
         $this->leccionModel = new Leccion();
+        $this->planModel = new ProfesorPlan();
     }
 
     public function index() {
         $estudiante_id = Auth::getUserId();
         $cursosInscritos = $this->cursoModel->obtenerResumenCursosPorEstudiante($estudiante_id);
-        $cursosPublicos = $this->cursoModel->obtenerCursosPublicos();
+        $filtrosCatalogo = [
+            'idioma_objetivo' => trim($_GET['idioma_objetivo'] ?? ''),
+            'nivel_objetivo' => trim($_GET['nivel_objetivo'] ?? ''),
+            'tipo_recorrido' => trim($_GET['tipo_recorrido'] ?? ''),
+        ];
+        $cursosPublicos = $this->cursoModel->obtenerCursosDisponiblesParaExplorar($filtrosCatalogo);
+        $opcionesCefr = Curso::obtenerOpcionesCefr();
 
         // Filtrar cursos públicos para no mostrar los ya inscritos
         $cursosInscritosIds = array_map(function($curso) {
@@ -43,6 +52,18 @@ class EstudianteController extends Controller {
         $this->requirePost();
         require_csrf();
         $estudiante_id = Auth::getUserId();
+        $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
+
+        if (!$curso || !$curso->es_publico || (int) $curso->requiere_codigo === 1 || $curso->estado !== 'activo' || (int) $curso->inscripcion_abierta !== 1) {
+            $this->flash('error', 'Este curso no admite inscripcion directa. Usa el codigo de acceso del profesor.');
+            $this->redirect('/estudiante');
+        }
+
+        [$puedeInscribir, $mensajePlan] = $this->planModel->puedeAgregarEstudiante($curso_id);
+        if (!$puedeInscribir) {
+            $this->flash('error', $mensajePlan);
+            $this->redirect('/estudiante');
+        }
 
         if ($this->inscripcionModel->inscribirEstudiante($curso_id, $estudiante_id)) {
             $this->flash('mensaje', 'Inscripcion completada.');
@@ -51,6 +72,50 @@ class EstudianteController extends Controller {
             $this->flash('error', 'Error al inscribirse al curso.');
             $this->redirect('/estudiante');
         }
+    }
+
+    public function canjearCodigo() {
+        $this->requirePost();
+        require_csrf();
+
+        $estudiante_id = Auth::getUserId();
+        $instanciaId = Auth::getInstanciaId();
+        $codigo = trim($_POST['codigo_acceso'] ?? '');
+
+        if ($codigo === '') {
+            $this->flash('error', 'Introduce un codigo de acceso valido.');
+            $this->redirect('/estudiante');
+        }
+
+        $curso = $this->cursoModel->validarCodigoDeAcceso($codigo, $estudiante_id, $instanciaId);
+
+        if (!$curso) {
+            $this->flash('error', 'El codigo no existe, no esta activo o no corresponde a tu acceso.');
+            $this->redirect('/estudiante');
+        }
+
+        [$puedeInscribir, $mensajePlan] = $this->planModel->puedeAgregarEstudiante($curso->id);
+        if (!$puedeInscribir) {
+            $this->flash('error', $mensajePlan);
+            $this->redirect('/estudiante');
+        }
+
+        if ($this->inscripcionModel->verificarInscripcion($curso->id, $estudiante_id)) {
+            $this->flash('mensaje', 'Ya estabas inscrito en "' . $curso->titulo . '".');
+            $this->redirect('/estudiante');
+        }
+
+        if (!$this->inscripcionModel->inscribirEstudiante($curso->id, $estudiante_id)) {
+            $this->flash('error', 'No se pudo activar el curso con ese codigo.');
+            $this->redirect('/estudiante');
+        }
+
+        if (isset($curso->codigo_id)) {
+            $this->cursoModel->registrarUsoCodigo($curso->codigo_id, $estudiante_id);
+        }
+
+        $this->flash('mensaje', 'Acceso concedido a "' . $curso->titulo . '". Ya puedes tomar la clase de tu profesor.');
+        $this->redirect('/estudiante/cursos/' . $curso->id . '/lecciones');
     }
 
     public function continuarCurso($curso_id) {
@@ -273,6 +338,8 @@ class EstudianteController extends Controller {
                         $configActividad[] = (object)[
                             'id' => $idx,
                             'texto' => $preg->texto ?? '',
+                            'image_url' => $preg->image_url ?? null,
+                            'image_alt' => $preg->image_alt ?? ($preg->texto ?? 'Imagen de apoyo'),
                             'opciones' => $opciones
                         ];
                     }
@@ -299,6 +366,8 @@ class EstudianteController extends Controller {
                     $configActividad[] = (object)[
                         'id' => 'json_single',
                         'texto' => $actividad->descripcion,
+                        'image_url' => $contenido->image_url ?? null,
+                        'image_alt' => $contenido->image_alt ?? ($actividad->descripcion ?: 'Imagen de apoyo'),
                         'opciones' => $opciones
                     ];
                 }

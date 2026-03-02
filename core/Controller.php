@@ -25,7 +25,10 @@ abstract class Controller {
     protected function redirect($url) {
         $target = $url;
 
-        if (function_exists('url')) {
+        if (
+            function_exists('url') &&
+            !preg_match('/^https?:\/\//i', (string) $url)
+        ) {
             $target = url($url);
         }
 

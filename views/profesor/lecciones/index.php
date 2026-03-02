@@ -26,9 +26,15 @@ function getEstadoTexto($estado) {
         <h1 class="page-title"><?php echo htmlspecialchars($curso->titulo); ?></h1>
         <p class="page-subtitle"><?php echo nl2br(htmlspecialchars($curso->descripcion)); ?></p>
         <div class="hero-actions">
-            <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>" class="btn btn-success">
-                <i class="bi bi-plus-circle"></i> Nueva leccion
-            </a>
+            <?php if (!empty($puedeCrearLeccion)): ?>
+                <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nueva leccion
+                </a>
+            <?php else: ?>
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    <i class="bi bi-lock"></i> Limite de lecciones alcanzado
+                </button>
+            <?php endif; ?>
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a cursos
             </a>
@@ -54,14 +60,23 @@ function getEstadoTexto($estado) {
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-lightbulb"></i>
+            Plan gratuito: este curso admite hasta 3 lecciones. <?php echo !empty($mensajeLimiteLeccion) ? htmlspecialchars($mensajeLimiteLeccion) : 'Aun tienes espacio para seguir construyendo.'; ?>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($lecciones)): ?>
         <div class="panel">
             <div class="panel-body">
                 <h2 class="h4">Todavia no hay lecciones</h2>
                 <p class="mb-3">Crea la primera leccion para empezar a construir el recorrido del curso.</p>
-                <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Crear primera leccion
-                </a>
+                <?php if (!empty($puedeCrearLeccion)): ?>
+                    <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Crear primera leccion
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     <?php else: ?>

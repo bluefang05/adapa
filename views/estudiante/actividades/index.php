@@ -138,6 +138,10 @@
                 const textoPregunta = q.texto || `Pregunta ${qIndex + 1}`;
                 html += `<div class="mb-3"><p><strong>${textoPregunta}</strong></p>`;
 
+                if (q.image_url) {
+                    html += `<div class="mb-3"><img src="${q.image_url}" alt="${q.image_alt || textoPregunta}" class="img-fluid rounded-4 border activity-question-image"></div>`;
+                }
+
                 q.opciones.forEach((opcion, oIndex) => {
                     html += `<button class="option-button" onclick="selectOption(${qIndex}, ${oIndex})" data-q="${qIndex}" data-o="${oIndex}">${opcion.texto}</button>`;
                 });
@@ -159,6 +163,10 @@
             }
             
             let html = `<p><strong>${pregunta}</strong></p>`;
+
+            if (contenido.image_url) {
+                html += `<div class="mb-3"><img src="${contenido.image_url}" alt="${contenido.image_alt || pregunta}" class="img-fluid rounded-4 border activity-question-image"></div>`;
+            }
             
             currentOptions.forEach((opcion, index) => {
                 html += `<button class="option-button" onclick="selectOption(${index})" data-index="${index}">${opcion.texto}</button>`;

@@ -66,11 +66,15 @@ $router->add('POST', '/profesor/calificaciones/calificar/{id}', 'profesor/Califi
 
 // Placeholder: profesor estudiantes
 $router->add('GET', '/profesor/estudiantes', 'profesor/EstudiantesController', 'index');
+$router->add('GET', '/profesor/recursos', 'profesor/MediaController', 'index');
+$router->add('POST', '/profesor/recursos', 'profesor/MediaController', 'index');
+$router->add('POST', '/profesor/recursos/delete/{id}', 'profesor/MediaController', 'delete');
 
 // Estudiante routes
 $router->add('GET', '/estudiante', 'estudiante/EstudianteController', 'index');
 $router->add('GET', '/estudiante/cursos', 'estudiante/EstudianteController', 'index');
 $router->add('POST', '/estudiante/inscribir/{id}', 'estudiante/EstudianteController', 'inscribir');
+$router->add('POST', '/estudiante/codigo', 'estudiante/EstudianteController', 'canjearCodigo');
 $router->add('GET', '/estudiante/cursos/{id}/continuar', 'estudiante/EstudianteController', 'continuarCurso');
 $router->add('GET', '/estudiante/cursos/{id}/lecciones', 'estudiante/EstudianteController', 'lecciones');
 $router->add('GET', '/estudiante/lecciones/{id}/contenido', 'estudiante/EstudianteController', 'contenidoLeccion');

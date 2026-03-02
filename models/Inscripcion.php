@@ -10,6 +10,10 @@ class Inscripcion {
     }
 
     public function inscribirEstudiante($curso_id, $estudiante_id) {
+        if ($this->verificarInscripcion($curso_id, $estudiante_id)) {
+            return true;
+        }
+
         $this->db->query("INSERT INTO inscripciones (curso_id, estudiante_id) VALUES (:curso_id, :estudiante_id)");
         $this->db->bind(':curso_id', $curso_id);
         $this->db->bind(':estudiante_id', $estudiante_id);

@@ -9,6 +9,8 @@ function getEstadoColor($estado) {
         default: return 'secondary';
     }
 }
+
+require_once __DIR__ . '/../../../models/Curso.php';
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -30,6 +32,11 @@ function getEstadoColor($estado) {
         </div>
         <div class="metric-grid">
             <div class="metric-card">
+                <div class="metric-label">Cuenta</div>
+                <div class="metric-value"><?php echo htmlspecialchars($planUso['plan_label'] ?? 'Plan gratuito'); ?></div>
+                <div class="metric-note"><?php echo !empty($planUso['is_official']) ? 'Cuenta interna o institucional con acceso completo.' : 'Estado actual de tu cuenta docente.'; ?></div>
+            </div>
+            <div class="metric-card">
                 <div class="metric-label">Cursos</div>
                 <div class="metric-value"><?php echo count($cursos); ?></div>
                 <div class="metric-note">Catalogo actualmente a tu cargo.</div>
@@ -46,6 +53,13 @@ function getEstadoColor($estado) {
             </div>
         </div>
     </section>
+
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-lightbulb"></i>
+            Estas en plan gratuito: 1 curso, hasta 3 lecciones por curso, 3 actividades por leccion y 3 estudiantes por codigo.
+        </div>
+    <?php endif; ?>
 
     <section>
         <div class="section-title">
@@ -77,13 +91,34 @@ function getEstadoColor($estado) {
                             </tr>
                         <?php else: ?>
                             <?php foreach ($cursos as $curso): ?>
+                                <?php
+                                $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
+                                $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                                ?>
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
-                                        <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <?php if (!empty($curso->portada_url)): ?>
+                                                <img src="<?php echo htmlspecialchars(url('/' . ltrim($curso->portada_url, '/'))); ?>" alt="<?php echo htmlspecialchars($curso->portada_alt ?: $curso->titulo); ?>" class="course-thumb-sm">
+                                            <?php else: ?>
+                                                <span class="avatar-token"><i class="bi bi-book"></i></span>
+                                            <?php endif; ?>
+                                            <div>
+                                                <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
+                                                <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td><?php echo ucfirst($curso->idioma); ?></td>
-                                    <td><?php echo $curso->nivel_cefr; ?></td>
+                                    <td>
+                                        <?php echo ucfirst($idiomaObjetivo); ?>
+                                        <div class="small text-muted">Desde <?php echo ucfirst($idiomaEnsenanza); ?></div>
+                                    </td>
+                                    <td>
+                                        <div><?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?></div>
+                                        <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
+                                            <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
+                                        </span>
+                                    </td>
                                     <td><?php echo ucfirst($curso->modalidad); ?></td>
                                     <td><span class="badge bg-<?php echo getEstadoColor($curso->estado); ?>"><?php echo ucfirst($curso->estado); ?></span></td>
                                     <td><?php echo (int) ($curso->total_lecciones ?? 0); ?></td>

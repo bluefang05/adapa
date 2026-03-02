@@ -1,4 +1,5 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
 
 <?php
 $admins = 0;
@@ -113,6 +114,7 @@ foreach ($users as $user) {
                             <th>Usuario</th>
                             <th>Correo</th>
                             <th>Rol</th>
+                            <th>Plan</th>
                             <th>Registro</th>
                             <th>Acciones</th>
                         </tr>
@@ -120,7 +122,7 @@ foreach ($users as $user) {
                     <tbody>
                         <?php if (empty($users)): ?>
                             <tr>
-                                <td colspan="6" class="empty-state">No hay usuarios que coincidan con el filtro actual.</td>
+                                <td colspan="7" class="empty-state">No hay usuarios que coincidan con el filtro actual.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($users as $user): ?>
@@ -145,6 +147,14 @@ foreach ($users as $user) {
                                             <span class="soft-badge">Estudiante</span>
                                         <?php else: ?>
                                             <span class="soft-badge">Usuario</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="soft-badge <?php echo !empty($user->is_official) ? 'info' : ''; ?>">
+                                            <?php echo htmlspecialchars(ProfesorPlan::obtenerEtiquetaPlan($user->billing_plan ?? null)); ?>
+                                        </span>
+                                        <?php if (!empty($user->is_official)): ?>
+                                            <div class="small text-muted mt-1">Cuenta oficial</div>
                                         <?php endif; ?>
                                     </td>
                                     <td><?php echo date('d/m/Y H:i', strtotime($user->creado_en)); ?></td>

@@ -5,7 +5,7 @@
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nuevo curso</span>
         <h1 class="page-title">Crea un curso listo para escalar a contenido, cupos y acceso.</h1>
         <p class="page-subtitle">
-            Define idioma, nivel, modalidad y reglas de acceso desde un formulario mas claro en escritorio y movil.
+            Define idioma objetivo, idioma de ensenanza, nivel y reglas de acceso desde un formulario mas claro en escritorio y movil.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
@@ -18,6 +18,13 @@
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info">
+            <i class="bi bi-shield-check"></i>
+            Plan gratuito activo: este curso piloto quedara privado, funcionara por codigo y mantendra un cupo maximo de 3 estudiantes.
+        </div>
     <?php endif; ?>
 
     <div class="row justify-content-center">
@@ -48,19 +55,34 @@
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="idioma" class="form-label">Idioma *</label>
-                                    <select class="form-select" id="idioma" name="idioma" required>
-                                        <option value="">Seleccione un idioma</option>
-                                        <option value="ingles">Ingles</option>
-                                        <option value="frances">Frances</option>
+                                    <label for="idioma_objetivo" class="form-label">Idioma objetivo *</label>
+                                    <select class="form-select" id="idioma_objetivo" name="idioma_objetivo" required>
+                                        <option value="">Seleccione el idioma que se aprende</option>
+                                        <?php foreach (app_course_target_languages() as $languageValue => $languageLabel): ?>
+                                            <option value="<?php echo htmlspecialchars($languageValue); ?>"><?php echo htmlspecialchars($languageLabel); ?></option>
+                                        <?php endforeach; ?>
                                     </select>
-                                    <div class="invalid-feedback">Por favor seleccione un idioma.</div>
+                                    <div class="invalid-feedback">Por favor seleccione el idioma objetivo.</div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="nivel_cefr" class="form-label">Nivel CEFR *</label>
+                                    <label for="idioma_ensenanza" class="form-label">Idioma de ensenanza *</label>
+                                    <select class="form-select" id="idioma_ensenanza" name="idioma_ensenanza" required>
+                                        <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                                            <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($languageLabel); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">Idioma desde el cual explicas el curso.</div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <label for="nivel_cefr" class="form-label">Nivel principal *</label>
                                     <select class="form-select" id="nivel_cefr" name="nivel_cefr" required>
-                                        <option value="">Seleccione un nivel</option>
+                                        <option value="">Seleccione un nivel principal</option>
                                         <option value="A1">A1 - Principiante</option>
                                         <option value="A2">A2 - Elemental</option>
                                         <option value="B1">B1 - Intermedio bajo</option>
@@ -68,7 +90,60 @@
                                         <option value="C1">C1 - Avanzado</option>
                                         <option value="C2">C2 - Dominio</option>
                                     </select>
-                                    <div class="invalid-feedback">Por favor seleccione un nivel CEFR.</div>
+                                    <div class="form-text">Usado como compatibilidad y punto de entrada principal del curso.</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="nivel_cefr_desde" class="form-label">Rango desde *</label>
+                                    <select class="form-select" id="nivel_cefr_desde" name="nivel_cefr_desde" required>
+                                        <option value="A1">A1</option>
+                                        <option value="A2">A2</option>
+                                        <option value="B1">B1</option>
+                                        <option value="B2">B2</option>
+                                        <option value="C1">C1</option>
+                                        <option value="C2">C2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="nivel_cefr_hasta" class="form-label">Rango hasta *</label>
+                                    <select class="form-select" id="nivel_cefr_hasta" name="nivel_cefr_hasta" required>
+                                        <option value="A1">A1</option>
+                                        <option value="A2">A2</option>
+                                        <option value="B1">B1</option>
+                                        <option value="B2">B2</option>
+                                        <option value="C1">C1</option>
+                                        <option value="C2">C2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <div class="section-title">
+                                <h2 class="form-section-title">Portada visual</h2>
+                                <span class="soft-badge"><i class="bi bi-image"></i> Catalogo</span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <label for="portada_media_id" class="form-label">Imagen de portada</label>
+                                    <select class="form-select" id="portada_media_id" name="portada_media_id">
+                                        <option value="">Sin portada personalizada</option>
+                                        <?php foreach ($recursosImagen as $recurso): ?>
+                                            <option
+                                                value="<?php echo (int) $recurso->id; ?>"
+                                                data-preview-url="<?php echo htmlspecialchars(url('/' . ltrim($recurso->ruta_archivo, '/'))); ?>"
+                                                data-preview-alt="<?php echo htmlspecialchars($recurso->alt_text ?: $recurso->titulo); ?>"
+                                            >
+                                                <?php echo htmlspecialchars($recurso->titulo); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">Usa una imagen de tu biblioteca para que el curso se vea mejor en catalogos y paneles.</div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div id="courseCoverPreview" class="course-cover-preview is-empty">
+                                        <span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin portada</span>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -168,9 +243,16 @@ document.getElementById('formCrearCurso').addEventListener('submit', function(ev
         const fechaInicio = document.getElementById('fecha_inicio').value;
         const fechaFin = document.getElementById('fecha_fin').value;
         const modalidad = document.getElementById('modalidad').value;
+        const fromIndex = cefrOrder.indexOf(nivelDesde.value);
+        const toIndex = cefrOrder.indexOf(nivelHasta.value);
 
         if (modalidad === 'ciclo' && fechaInicio && fechaFin && new Date(fechaInicio) >= new Date(fechaFin)) {
             alert('La fecha de fin debe ser posterior a la fecha de inicio');
+            return false;
+        }
+
+        if (fromIndex > toIndex) {
+            alert('El rango CEFR no es valido: el nivel inicial no puede ser mayor que el final.');
             return false;
         }
 
@@ -225,6 +307,59 @@ function generarCodigoAcceso() {
 }
 
 document.getElementById('generar_codigo').addEventListener('click', generarCodigoAcceso);
+
+const nivelPrincipal = document.getElementById('nivel_cefr');
+const nivelDesde = document.getElementById('nivel_cefr_desde');
+const nivelHasta = document.getElementById('nivel_cefr_hasta');
+const cefrOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+function sincronizarNivelPrincipal() {
+    if (!nivelPrincipal.value) {
+        nivelPrincipal.value = nivelDesde.value;
+    }
+}
+
+function validarRangoCefr() {
+    const fromIndex = cefrOrder.indexOf(nivelDesde.value);
+    const toIndex = cefrOrder.indexOf(nivelHasta.value);
+
+    if (fromIndex > toIndex) {
+        nivelHasta.value = nivelDesde.value;
+    }
+
+    sincronizarNivelPrincipal();
+}
+
+nivelPrincipal.addEventListener('change', function () {
+    if (!nivelDesde.value) {
+        nivelDesde.value = this.value;
+    }
+});
+
+nivelDesde.addEventListener('change', validarRangoCefr);
+nivelHasta.addEventListener('change', validarRangoCefr);
+sincronizarNivelPrincipal();
+
+const portadaSelect = document.getElementById('portada_media_id');
+const portadaPreview = document.getElementById('courseCoverPreview');
+
+function actualizarPreviewPortada() {
+    const option = portadaSelect.options[portadaSelect.selectedIndex];
+    const previewUrl = option ? option.getAttribute('data-preview-url') : '';
+    const previewAlt = option ? option.getAttribute('data-preview-alt') : '';
+
+    if (previewUrl) {
+        portadaPreview.classList.remove('is-empty');
+        portadaPreview.innerHTML = '<img src="' + previewUrl + '" alt="' + previewAlt + '" class="course-cover-image">';
+        return;
+    }
+
+    portadaPreview.classList.add('is-empty');
+    portadaPreview.innerHTML = '<span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin portada</span>';
+}
+
+portadaSelect.addEventListener('change', actualizarPreviewPortada);
+actualizarPreviewPortada();
 
 document.getElementById('fecha_inicio').addEventListener('change', function() {
     const fechaFin = document.getElementById('fecha_fin');

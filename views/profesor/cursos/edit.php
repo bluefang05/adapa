@@ -5,7 +5,7 @@
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de curso</span>
         <h1 class="page-title">Ajusta la configuracion del curso sin perder claridad operativa.</h1>
         <p class="page-subtitle">
-            Revisa identidad, modalidad y acceso desde la misma estructura visual del formulario de creacion.
+            Revisa idioma objetivo, idioma de ensenanza, modalidad y acceso desde la misma estructura visual del formulario de creacion.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
@@ -18,6 +18,13 @@
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info">
+            <i class="bi bi-shield-check"></i>
+            Este curso opera como piloto gratuito: acceso por codigo, cupo maximo de 3 estudiantes y sin inscripcion publica directa.
+        </div>
     <?php endif; ?>
 
     <div class="row justify-content-center">
@@ -53,15 +60,31 @@
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="idioma" class="form-label">Idioma *</label>
-                                    <select class="form-select" id="idioma" name="idioma" required>
-                                        <option value="ingles" <?php echo $curso->idioma == 'ingles' ? 'selected' : ''; ?>>Ingles</option>
-                                        <option value="frances" <?php echo $curso->idioma == 'frances' ? 'selected' : ''; ?>>Frances</option>
+                                    <label for="idioma_objetivo" class="form-label">Idioma objetivo *</label>
+                                    <select class="form-select" id="idioma_objetivo" name="idioma_objetivo" required>
+                                        <?php foreach (app_course_target_languages() as $languageValue => $languageLabel): ?>
+                                            <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo ($curso->idioma_objetivo ?? $curso->idioma) == $languageValue ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($languageLabel); ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="nivel_cefr" class="form-label">Nivel CEFR *</label>
+                                    <label for="idioma_ensenanza" class="form-label">Idioma de ensenanza *</label>
+                                    <select class="form-select" id="idioma_ensenanza" name="idioma_ensenanza" required>
+                                        <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                                            <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo ($curso->idioma_ensenanza ?? 'espanol') == $languageValue ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($languageLabel); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6">
+                                    <label for="nivel_cefr" class="form-label">Nivel principal *</label>
                                     <select class="form-select" id="nivel_cefr" name="nivel_cefr" required>
                                         <option value="A1" <?php echo $curso->nivel_cefr == 'A1' ? 'selected' : ''; ?>>A1 - Principiante</option>
                                         <option value="A2" <?php echo $curso->nivel_cefr == 'A2' ? 'selected' : ''; ?>>A2 - Elemental</option>
@@ -70,6 +93,63 @@
                                         <option value="C1" <?php echo $curso->nivel_cefr == 'C1' ? 'selected' : ''; ?>>C1 - Avanzado</option>
                                         <option value="C2" <?php echo $curso->nivel_cefr == 'C2' ? 'selected' : ''; ?>>C2 - Dominio</option>
                                     </select>
+                                    <div class="form-text">Mantiene compatibilidad y representa el foco o punto de entrada principal.</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php $nivelDesde = $curso->nivel_cefr_desde ?? $curso->nivel_cefr; ?>
+                                    <label for="nivel_cefr_desde" class="form-label">Rango desde *</label>
+                                    <select class="form-select" id="nivel_cefr_desde" name="nivel_cefr_desde" required>
+                                        <option value="A1" <?php echo $nivelDesde == 'A1' ? 'selected' : ''; ?>>A1</option>
+                                        <option value="A2" <?php echo $nivelDesde == 'A2' ? 'selected' : ''; ?>>A2</option>
+                                        <option value="B1" <?php echo $nivelDesde == 'B1' ? 'selected' : ''; ?>>B1</option>
+                                        <option value="B2" <?php echo $nivelDesde == 'B2' ? 'selected' : ''; ?>>B2</option>
+                                        <option value="C1" <?php echo $nivelDesde == 'C1' ? 'selected' : ''; ?>>C1</option>
+                                        <option value="C2" <?php echo $nivelDesde == 'C2' ? 'selected' : ''; ?>>C2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php $nivelHasta = $curso->nivel_cefr_hasta ?? $curso->nivel_cefr; ?>
+                                    <label for="nivel_cefr_hasta" class="form-label">Rango hasta *</label>
+                                    <select class="form-select" id="nivel_cefr_hasta" name="nivel_cefr_hasta" required>
+                                        <option value="A1" <?php echo $nivelHasta == 'A1' ? 'selected' : ''; ?>>A1</option>
+                                        <option value="A2" <?php echo $nivelHasta == 'A2' ? 'selected' : ''; ?>>A2</option>
+                                        <option value="B1" <?php echo $nivelHasta == 'B1' ? 'selected' : ''; ?>>B1</option>
+                                        <option value="B2" <?php echo $nivelHasta == 'B2' ? 'selected' : ''; ?>>B2</option>
+                                        <option value="C1" <?php echo $nivelHasta == 'C1' ? 'selected' : ''; ?>>C1</option>
+                                        <option value="C2" <?php echo $nivelHasta == 'C2' ? 'selected' : ''; ?>>C2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <div class="section-title">
+                                <h2 class="form-section-title">Portada visual</h2>
+                                <span class="soft-badge"><i class="bi bi-image"></i> Catalogo</span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-lg-7">
+                                    <label for="portada_media_id" class="form-label">Imagen de portada</label>
+                                    <select class="form-select" id="portada_media_id" name="portada_media_id">
+                                        <option value="">Sin portada personalizada</option>
+                                        <?php foreach ($recursosImagen as $recurso): ?>
+                                            <option
+                                                value="<?php echo (int) $recurso->id; ?>"
+                                                data-preview-url="<?php echo htmlspecialchars(url('/' . ltrim($recurso->ruta_archivo, '/'))); ?>"
+                                                data-preview-alt="<?php echo htmlspecialchars($recurso->alt_text ?: $recurso->titulo); ?>"
+                                                <?php echo ((int) ($curso->portada_media_id ?? 0) === (int) $recurso->id) ? 'selected' : ''; ?>
+                                            >
+                                                <?php echo htmlspecialchars($recurso->titulo); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">Selecciona una imagen de la biblioteca para reforzar la identidad del curso.</div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div id="courseCoverPreview" class="course-cover-preview is-empty">
+                                        <span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin portada</span>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -157,6 +237,59 @@ document.getElementById('generar_codigo').addEventListener('click', function() {
     }
     document.getElementById('codigo_acceso').value = codigo;
 });
+
+const nivelPrincipal = document.getElementById('nivel_cefr');
+const nivelDesde = document.getElementById('nivel_cefr_desde');
+const nivelHasta = document.getElementById('nivel_cefr_hasta');
+const cefrOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+function sincronizarNivelPrincipal() {
+    if (!nivelPrincipal.value) {
+        nivelPrincipal.value = nivelDesde.value;
+    }
+}
+
+function validarRangoCefr() {
+    const fromIndex = cefrOrder.indexOf(nivelDesde.value);
+    const toIndex = cefrOrder.indexOf(nivelHasta.value);
+
+    if (fromIndex > toIndex) {
+        nivelHasta.value = nivelDesde.value;
+    }
+
+    sincronizarNivelPrincipal();
+}
+
+nivelPrincipal.addEventListener('change', function () {
+    if (!nivelDesde.value) {
+        nivelDesde.value = this.value;
+    }
+});
+
+nivelDesde.addEventListener('change', validarRangoCefr);
+nivelHasta.addEventListener('change', validarRangoCefr);
+sincronizarNivelPrincipal();
+
+const portadaSelect = document.getElementById('portada_media_id');
+const portadaPreview = document.getElementById('courseCoverPreview');
+
+function actualizarPreviewPortada() {
+    const option = portadaSelect.options[portadaSelect.selectedIndex];
+    const previewUrl = option ? option.getAttribute('data-preview-url') : '';
+    const previewAlt = option ? option.getAttribute('data-preview-alt') : '';
+
+    if (previewUrl) {
+        portadaPreview.classList.remove('is-empty');
+        portadaPreview.innerHTML = '<img src="' + previewUrl + '" alt="' + previewAlt + '" class="course-cover-image">';
+        return;
+    }
+
+    portadaPreview.classList.add('is-empty');
+    portadaPreview.innerHTML = '<span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin portada</span>';
+}
+
+portadaSelect.addEventListener('change', actualizarPreviewPortada);
+actualizarPreviewPortada();
 </script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

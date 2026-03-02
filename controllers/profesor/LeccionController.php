@@ -2,33 +2,36 @@
 
 require_once __DIR__ . '/../../models/Leccion.php';
 require_once __DIR__ . '/../../models/Curso.php';
+require_once __DIR__ . '/../../models/ProfesorPlan.php';
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 
 class LeccionController extends Controller {
     private $leccionModel;
     private $cursoModel;
+    private $planModel;
 
     public function __construct() {
         $this->requireRole('profesor');
         $this->leccionModel = new Leccion();
         $this->cursoModel = new Curso();
+        $this->planModel = new ProfesorPlan();
     }
 
     public function index($curso_id) {
-        // Verificar que el curso pertenezca al profesor
         $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
         if (!$curso || $curso->creado_por != Auth::getUserId()) {
             $this->redirect('/profesor/cursos');
         }
 
         $lecciones = $this->leccionModel->obtenerLeccionesConContenido($curso_id);
-        
+        [$puedeCrearLeccion, $mensajeLimiteLeccion] = $this->planModel->puedeCrearLeccion(Auth::getUserId(), $curso_id);
+        $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
+
         require_once __DIR__ . '/../../views/profesor/lecciones/index.php';
     }
 
     public function create($curso_id) {
-        // Verificar que el curso pertenezca al profesor
         $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
         if (!$curso || $curso->creado_por != Auth::getUserId()) {
             $this->redirect('/profesor/cursos');
@@ -36,14 +39,30 @@ class LeccionController extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->guardarLeccion($curso_id);
-        } else {
-            $siguiente_orden = $this->leccionModel->obtenerSiguienteOrden($curso_id);
-            require_once __DIR__ . '/../../views/profesor/lecciones/create.php';
+            return;
         }
+
+        [$puedeCrear, $mensajeLimite] = $this->planModel->puedeCrearLeccion(Auth::getUserId(), $curso_id);
+        if (!$puedeCrear) {
+            $this->flash('error', $mensajeLimite);
+            $this->redirect('/profesor/cursos/' . $curso_id . '/lecciones');
+        }
+
+        $siguiente_orden = $this->leccionModel->obtenerSiguienteOrden($curso_id);
+        $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
+        require_once __DIR__ . '/../../views/profesor/lecciones/create.php';
     }
 
     private function guardarLeccion($curso_id) {
         require_csrf();
+
+        [$puedeCrear, $mensajeLimite] = $this->planModel->puedeCrearLeccion(Auth::getUserId(), $curso_id);
+        if (!$puedeCrear) {
+            $this->flash('error', $mensajeLimite);
+            $this->redirect('/profesor/cursos/' . $curso_id . '/lecciones');
+        }
+
+        $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
         $datos = [
             'curso_id' => $curso_id,
             'titulo' => $_POST['titulo'],
@@ -56,10 +75,12 @@ class LeccionController extends Controller {
 
         if ($this->leccionModel->crearLeccion($datos)) {
             $this->redirect('/profesor/cursos/' . $curso_id . '/lecciones');
-        } else {
-            $error = "Error al crear la lección";
-            require_once __DIR__ . '/../../views/profesor/lecciones/create.php';
         }
+
+        $error = 'Error al crear la leccion';
+        $siguiente_orden = $this->leccionModel->obtenerSiguienteOrden($curso_id);
+        $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
+        require_once __DIR__ . '/../../views/profesor/lecciones/create.php';
     }
 
     public function edit($id) {
@@ -68,7 +89,6 @@ class LeccionController extends Controller {
             $this->redirect('/profesor/cursos');
         }
 
-        // Verificar que el curso pertenezca al profesor
         $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
         if (!$curso || $curso->creado_por != Auth::getUserId()) {
             $this->redirect('/profesor/cursos');
@@ -87,13 +107,14 @@ class LeccionController extends Controller {
 
             if ($this->leccionModel->actualizarLeccion($id, $datos)) {
                 $this->redirect('/profesor/cursos/' . $leccion->curso_id . '/lecciones');
-            } else {
-                $error = "Error al actualizar la lección";
-                require_once __DIR__ . '/../../views/profesor/lecciones/edit.php';
             }
-        } else {
+
+            $error = 'Error al actualizar la leccion';
             require_once __DIR__ . '/../../views/profesor/lecciones/edit.php';
+            return;
         }
+
+        require_once __DIR__ . '/../../views/profesor/lecciones/edit.php';
     }
 
     public function delete($id) {
@@ -105,7 +126,6 @@ class LeccionController extends Controller {
             $this->redirect('/profesor/cursos');
         }
 
-        // Verificar que el curso pertenezca al profesor
         $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
         if (!$curso || $curso->creado_por != Auth::getUserId()) {
             $this->redirect('/profesor/cursos');

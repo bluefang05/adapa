@@ -12,13 +12,16 @@
 
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nueva teoria</span>
-        <h1 class="page-title">Crea una pieza teorica clara para la leccion actual.</h1>
+        <h1 class="page-title">Crea una teoria lista para evolucionar a bloques.</h1>
         <p class="page-subtitle">
-            Define el tipo de contenido, el orden y el tiempo estimado antes de publicar el bloque teorico.
+            Mantienes el contenido clasico, pero ya puedes estructurar la teoria en bloques con idioma y opcion de audio.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a teoria
+            </a>
+            <a href="<?php echo url('/profesor/recursos'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Abrir biblioteca
             </a>
         </div>
     </section>
@@ -50,10 +53,35 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="contenido" class="form-label">Contenido</label>
+                                <label for="contenido" class="form-label">Contenido clasico</label>
                                 <textarea class="form-control" id="contenido" name="contenido" rows="10"></textarea>
-                                <div class="invalid-feedback">Por favor ingrese el contenido.</div>
+                                <div class="form-text">Puedes seguir usando el contenido clasico o convertirlo en bloques debajo.</div>
                             </div>
+                        </section>
+
+                        <section class="form-section">
+                            <div class="section-title">
+                                <h2 class="form-section-title">Bloques de contenido</h2>
+                                <span class="soft-badge"><i class="bi bi-collection"></i> Autoría guiada</span>
+                            </div>
+
+                            <div class="panel mb-3">
+                                <div class="panel-body">
+                                    <div class="builder-toolbar">
+                                        <button type="button" class="btn btn-outline-primary" id="addBlockBtn">
+                                            <i class="bi bi-plus-circle"></i> Anadir bloque
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="generateBlocksBtn">
+                                            <i class="bi bi-magic"></i> Separar por parrafos
+                                        </button>
+                                    </div>
+                                    <div class="form-text mt-3">
+                                        Usa bloques para explicacion, ejemplo, traduccion o vocabulario. Cada bloque puede marcar idioma y habilitar TTS.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="blocksBuilder" class="config-builder"></div>
                         </section>
 
                         <section class="form-section">
@@ -70,7 +98,7 @@
                                         <option value="video">Video</option>
                                         <option value="imagen">Imagen</option>
                                         <option value="audio">Audio</option>
-                                        <option value="presentacion">Presentacion</option>
+                                        <option value="mixto">Mixto</option>
                                     </select>
                                 </div>
 
@@ -101,20 +129,259 @@
     </div>
 </div>
 
+<template id="blockTemplate">
+    <div class="builder-item content-block-item">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div>
+                <div class="stack-item-title">Bloque de teoria</div>
+                <div class="stack-item-subtitle">Explicacion estructurada con idioma y audio opcional.</div>
+            </div>
+            <div class="block-actions">
+                <button type="button" class="btn btn-sm btn-outline-secondary move-up-block-btn" title="Mover arriba">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary move-down-block-btn" title="Mover abajo">
+                    <i class="bi bi-arrow-down"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-block-btn">
+                    <i class="bi bi-trash"></i> Quitar
+                </button>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Tipo</label>
+                <select class="form-select" data-field="tipo">
+                    <option value="explicacion">Explicacion</option>
+                    <option value="ejemplo">Ejemplo</option>
+                    <option value="traduccion">Traduccion</option>
+                    <option value="vocabulario">Vocabulario</option>
+                    <option value="dialogo">Dialogo</option>
+                    <option value="instruccion">Instruccion</option>
+                    <option value="recurso">Recurso</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Idioma del bloque</label>
+                <select class="form-select" data-field="idioma">
+                    <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                        <option value="<?php echo htmlspecialchars($languageValue); ?>"><?php echo htmlspecialchars($languageLabel); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" data-field="tts">
+                    <label class="form-check-label">Habilitar TTS</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Recurso multimedia</label>
+                <select class="form-select" data-field="media">
+                    <option value="">Sin recurso asociado</option>
+                    <?php foreach ($recursos as $recurso): ?>
+                        <option value="<?php echo (int) $recurso->id; ?>">
+                            <?php echo htmlspecialchars($recurso->titulo . ' (' . $recurso->tipo_media . ')'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="block-media-gallery mt-3" data-role="media-gallery"></div>
+                <div class="block-media-preview is-empty mt-3" data-role="media-preview">
+                    <span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin recurso seleccionado</span>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Titulo opcional</label>
+                <input type="text" class="form-control" data-field="titulo" placeholder="Ejemplo: Frase clave o nota cultural">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Contenido</label>
+                <textarea class="form-control" rows="4" data-field="contenido" placeholder="Escribe aqui el texto del bloque"></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
+window.availableMediaResources = <?php
+echo json_encode(array_reduce($recursos, function ($carry, $recurso) {
+    $carry[$recurso->id] = [
+        'id' => (int) $recurso->id,
+        'titulo' => $recurso->titulo,
+        'tipo_media' => $recurso->tipo_media,
+        'ruta_archivo' => url('/' . ltrim($recurso->ruta_archivo, '/')),
+        'alt_text' => $recurso->alt_text ?: $recurso->titulo,
+    ];
+    return $carry;
+}, []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+?>;
+
 tinymce.init({
     selector: '#contenido',
     plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
     language: 'es',
-    height: 400,
+    height: 360,
     setup: function (editor) {
         editor.on('change', function () {
             editor.save();
         });
     }
 });
+
+(function () {
+    const builder = document.getElementById('blocksBuilder');
+    const template = document.getElementById('blockTemplate');
+    const addBlockBtn = document.getElementById('addBlockBtn');
+    const generateBlocksBtn = document.getElementById('generateBlocksBtn');
+    const mediaResources = window.availableMediaResources || {};
+
+    function renderMediaPreview(resource) {
+        if (!resource) {
+            return '<span class="course-cover-placeholder"><i class="bi bi-image"></i> Sin recurso seleccionado</span>';
+        }
+
+        if (resource.tipo_media === 'imagen') {
+            return '<img src="' + resource.ruta_archivo + '" alt="' + resource.alt_text + '" class="block-media-thumb">';
+        }
+
+        if (resource.tipo_media === 'audio') {
+            return '<audio controls preload="none" class="media-preview-player"><source src="' + resource.ruta_archivo + '"></audio>';
+        }
+
+        if (resource.tipo_media === 'video') {
+            return '<video controls preload="metadata" class="media-preview-player"><source src="' + resource.ruta_archivo + '"></video>';
+        }
+
+        const icon = resource.tipo_media === 'pdf' ? 'bi-file-earmark-pdf' : 'bi-paperclip';
+        return '<div class="media-preview-file"><i class="bi ' + icon + '"></i><span>' + resource.titulo + '</span></div>';
+    }
+
+    function renderMediaGallery(block) {
+        const gallery = block.querySelector('[data-role="media-gallery"]');
+        const select = block.querySelector('[data-field="media"]');
+        const selectedId = select.value || '';
+        const items = Object.values(mediaResources);
+
+        if (!items.length) {
+            gallery.innerHTML = '';
+            return;
+        }
+
+        gallery.innerHTML = items.map(function (resource) {
+            const isActive = String(resource.id) === selectedId;
+            const iconMap = {
+                imagen: 'bi-image',
+                audio: 'bi-mic',
+                video: 'bi-camera-video',
+                pdf: 'bi-file-earmark-pdf',
+                documento: 'bi-paperclip'
+            };
+
+            return '<button type="button" class="media-chip' + (isActive ? ' is-active' : '') + '" data-media-chip="' + resource.id + '">' +
+                '<i class="bi ' + (iconMap[resource.tipo_media] || 'bi-paperclip') + '"></i>' +
+                '<span>' + resource.titulo + '</span>' +
+                '</button>';
+        }).join('');
+
+        gallery.querySelectorAll('[data-media-chip]').forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                select.value = chip.getAttribute('data-media-chip');
+                updateMediaPreview(block);
+                renderMediaGallery(block);
+            });
+        });
+    }
+
+    function updateMediaPreview(block) {
+        const select = block.querySelector('[data-field="media"]');
+        const preview = block.querySelector('[data-role="media-preview"]');
+        const resource = mediaResources[select.value] || null;
+
+        preview.classList.toggle('is-empty', !resource);
+        preview.innerHTML = renderMediaPreview(resource);
+    }
+
+    function bindBlock(block) {
+        block.querySelector('.remove-block-btn').addEventListener('click', function () {
+            block.remove();
+        });
+
+        block.querySelector('.move-up-block-btn').addEventListener('click', function () {
+            const previous = block.previousElementSibling;
+            if (previous) {
+                builder.insertBefore(block, previous);
+            }
+        });
+
+        block.querySelector('.move-down-block-btn').addEventListener('click', function () {
+            const next = block.nextElementSibling;
+            if (next) {
+                builder.insertBefore(next, block);
+            }
+        });
+
+        block.querySelector('[data-field="media"]').addEventListener('change', function () {
+            updateMediaPreview(block);
+            renderMediaGallery(block);
+        });
+
+        renderMediaGallery(block);
+        updateMediaPreview(block);
+    }
+
+    function addBlock(data) {
+        const fragment = template.content.cloneNode(true);
+        const block = fragment.querySelector('.content-block-item');
+
+        block.querySelector('[data-field="tipo"]').name = 'bloque_tipo[]';
+        block.querySelector('[data-field="titulo"]').name = 'bloque_titulo[]';
+        block.querySelector('[data-field="contenido"]').name = 'bloque_contenido[]';
+        block.querySelector('[data-field="idioma"]').name = 'bloque_idioma[]';
+        block.querySelector('[data-field="tts"]').name = 'bloque_tts[]';
+        block.querySelector('[data-field="media"]').name = 'bloque_media_id[]';
+        block.querySelector('[data-field="tts"]').value = '1';
+
+        if (data) {
+            block.querySelector('[data-field="tipo"]').value = data.tipo || 'explicacion';
+            block.querySelector('[data-field="titulo"]').value = data.titulo || '';
+            block.querySelector('[data-field="contenido"]').value = data.contenido || '';
+            block.querySelector('[data-field="idioma"]').value = data.idioma || 'espanol';
+            block.querySelector('[data-field="media"]').value = data.media_id || '';
+            block.querySelector('[data-field="tts"]').checked = !!data.tts;
+        }
+
+        bindBlock(block);
+        builder.appendChild(block);
+    }
+
+    addBlock();
+
+    addBlockBtn.addEventListener('click', function () {
+        addBlock();
+    });
+
+    generateBlocksBtn.addEventListener('click', function () {
+        if (tinymce.get('contenido')) {
+            tinymce.triggerSave();
+        }
+
+        const source = document.getElementById('contenido').value
+            .split(/\n\s*\n/)
+            .map(function (part) { return part.replace(/\s+/g, ' ').trim(); })
+            .filter(Boolean);
+
+        if (!source.length) {
+            return;
+        }
+
+        builder.innerHTML = '';
+        source.forEach(function (paragraph) {
+            addBlock({ tipo: 'explicacion', contenido: paragraph, idioma: 'espanol', tts: false });
+        });
+    });
+})();
 
 (function() {
     'use strict';
@@ -124,13 +391,6 @@ tinymce.init({
             form.addEventListener('submit', function(event) {
                 if (tinymce.get('contenido')) {
                     tinymce.triggerSave();
-                    var content = tinymce.get('contenido').getContent();
-                    var textarea = document.getElementById('contenido');
-                    if (!content || content.trim() === '') {
-                        textarea.setCustomValidity('Por favor complete este campo.');
-                    } else {
-                        textarea.setCustomValidity('');
-                    }
                 }
 
                 if (form.checkValidity() === false) {

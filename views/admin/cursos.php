@@ -1,14 +1,19 @@
-<?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../../models/Curso.php';
+?>
 
 <?php
-$paidCourses = 0;
-$freeCourses = 0;
+$publicCourses = 0;
+$fullRoutes = 0;
 
 foreach ($courses as $course) {
-    if ((float) $course->precio > 0) {
-        $paidCourses++;
-    } else {
-        $freeCourses++;
+    if (!empty($course->es_publico)) {
+        $publicCourses++;
+    }
+
+    if (Curso::esRutaCompleta($course)) {
+        $fullRoutes++;
     }
 }
 ?>
@@ -18,7 +23,7 @@ foreach ($courses as $course) {
         <span class="eyebrow"><i class="bi bi-book-fill"></i> Oferta academica</span>
         <h1 class="page-title">Lee el catalogo completo sin entrar a cada curso por separado.</h1>
         <p class="page-subtitle">
-            Revisa responsable, costo y fecha de creacion para entender rapidamente el estado del catalogo institucional.
+            Revisa responsable, visibilidad y alcance formativo para entender rapidamente el estado del catalogo institucional.
         </p>
         <div class="metric-grid">
             <div class="metric-card">
@@ -27,14 +32,14 @@ foreach ($courses as $course) {
                 <div class="metric-note">Cursos visibles dentro de la instancia.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Gratis</div>
-                <div class="metric-value"><?php echo $freeCourses; ?></div>
-                <div class="metric-note">Cursos sin costo publicado.</div>
+                <div class="metric-label">Publicos</div>
+                <div class="metric-value"><?php echo $publicCourses; ?></div>
+                <div class="metric-note">Cursos abiertos a exploracion directa.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">De pago</div>
-                <div class="metric-value"><?php echo $paidCourses; ?></div>
-                <div class="metric-note">Catalogo con precio configurado.</div>
+                <div class="metric-label">Rutas completas</div>
+                <div class="metric-value"><?php echo $fullRoutes; ?></div>
+                <div class="metric-note">Cursos que cubren mas de un tramo CEFR.</div>
             </div>
         </div>
     </section>
@@ -53,7 +58,8 @@ foreach ($courses as $course) {
                             <th>ID</th>
                             <th>Curso</th>
                             <th>Profesor</th>
-                            <th>Precio</th>
+                            <th>Rango</th>
+                            <th>Visibilidad</th>
                             <th>Creacion</th>
                             <th>Acciones</th>
                         </tr>
@@ -61,7 +67,7 @@ foreach ($courses as $course) {
                     <tbody>
                         <?php if (empty($courses)): ?>
                             <tr>
-                                <td colspan="6" class="empty-state">Todavia no hay cursos registrados en la instancia.</td>
+                                <td colspan="7" class="empty-state">Todavia no hay cursos registrados en la instancia.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($courses as $course): ?>
@@ -69,14 +75,16 @@ foreach ($courses as $course) {
                                     <td>#<?php echo (int) $course->id; ?></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
-                                            <?php if (!empty($course->imagen_url)): ?>
-                                                <img src="<?php echo htmlspecialchars($course->imagen_url); ?>" class="rounded" style="width: 44px; height: 44px; object-fit: cover;" alt="Imagen del curso">
+                                            <?php if (!empty($course->portada_url)): ?>
+                                                <img src="<?php echo htmlspecialchars(url('/' . ltrim($course->portada_url, '/'))); ?>" class="course-thumb-sm" alt="<?php echo htmlspecialchars($course->portada_alt ?: $course->titulo); ?>">
                                             <?php else: ?>
                                                 <span class="avatar-token"><i class="bi bi-book"></i></span>
                                             <?php endif; ?>
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($course->titulo); ?></div>
-                                                <div class="small text-muted">Curso visible para seguimiento administrativo.</div>
+                                                <div class="small text-muted">
+                                                    <?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?> · <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($course)); ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -87,12 +95,11 @@ foreach ($courses as $course) {
                                             <span class="text-muted">Sin asignar</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td><?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?></td>
                                     <td>
-                                        <?php if ((float) $course->precio > 0): ?>
-                                            $<?php echo number_format((float) $course->precio, 2); ?>
-                                        <?php else: ?>
-                                            <span class="soft-badge">Gratis</span>
-                                        <?php endif; ?>
+                                        <span class="soft-badge <?php echo !empty($course->es_publico) ? 'badge-accent' : ''; ?>">
+                                            <?php echo !empty($course->es_publico) ? 'Publico' : 'Privado'; ?>
+                                        </span>
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($course->fecha_creacion)); ?></td>
                                     <td>

@@ -33,13 +33,72 @@ function theory_html(string $intro, array $sections, string $tip): string
     return $html;
 }
 
+function theory_blocks(string $intro, array $sections, string $tip): array
+{
+    $blocks = [
+        [
+            'tipo_bloque' => 'explicacion',
+            'titulo' => 'Overview',
+            'contenido' => $intro,
+            'idioma_bloque' => 'ingles',
+            'tts_habilitado' => 1,
+        ],
+    ];
+
+    foreach ($sections as $section) {
+        if (!empty($section['text'])) {
+            $blocks[] = [
+                'tipo_bloque' => 'explicacion',
+                'titulo' => $section['title'],
+                'contenido' => $section['text'],
+                'idioma_bloque' => 'ingles',
+                'tts_habilitado' => 1,
+            ];
+        }
+
+        if (!empty($section['bullets'])) {
+            $blocks[] = [
+                'tipo_bloque' => !empty($section['title']) && str_contains(strtolower($section['title']), 'vocabulary') ? 'vocabulario' : 'explicacion',
+                'titulo' => $section['title'],
+                'contenido' => implode("\n", array_map(fn($item) => '- ' . $item, $section['bullets'])),
+                'idioma_bloque' => 'ingles',
+                'tts_habilitado' => 1,
+            ];
+        }
+
+        if (!empty($section['example'])) {
+            $blocks[] = [
+                'tipo_bloque' => 'ejemplo',
+                'titulo' => $section['title'],
+                'contenido' => $section['example'],
+                'idioma_bloque' => 'ingles',
+                'tts_habilitado' => 1,
+            ];
+        }
+    }
+
+    $blocks[] = [
+        'tipo_bloque' => 'instruccion',
+        'titulo' => 'Coach tip',
+        'contenido' => $tip,
+        'idioma_bloque' => 'espanol',
+        'tts_habilitado' => 1,
+    ];
+
+    return $blocks;
+}
+
 $course = [
     'instancia_id' => 1,
     'creado_por' => 13,
     'titulo' => 'English Zero to Hero: Foundations for Real Communication',
     'descripcion' => 'A polished English course for Spanish-speaking beginners that feels like a product demo, not a database fill. It builds confidence from introductions to everyday routines, descriptions, service language, past events, future plans and a final integrated mission.',
     'idioma' => 'ingles',
+    'idioma_objetivo' => 'ingles',
+    'idioma_ensenanza' => 'espanol',
     'nivel_cefr' => 'A1',
+    'nivel_cefr_desde' => 'A1',
+    'nivel_cefr_hasta' => 'A1',
     'modalidad' => 'perpetuo',
     'fecha_inicio' => date('Y-m-d'),
     'fecha_fin' => null,
@@ -560,12 +619,13 @@ $lessons = [
 
 $pdo->beginTransaction();
 
-$insertCourse = $pdo->prepare('INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, nivel_cefr, modalidad, fecha_inicio, fecha_fin, duracion_semanas, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, inscripcion_abierta, fecha_cierre_inscripcion, max_estudiantes, estado, notificar_profesor_completada, notificar_profesor_atascado) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :nivel_cefr, :modalidad, :fecha_inicio, :fecha_fin, :duracion_semanas, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :inscripcion_abierta, :fecha_cierre_inscripcion, :max_estudiantes, :estado, :notificar_profesor_completada, :notificar_profesor_atascado)');
+$insertCourse = $pdo->prepare('INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_ensenanza, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, fecha_inicio, fecha_fin, duracion_semanas, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, inscripcion_abierta, fecha_cierre_inscripcion, max_estudiantes, estado, notificar_profesor_completada, notificar_profesor_atascado) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_ensenanza, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :fecha_inicio, :fecha_fin, :duracion_semanas, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :inscripcion_abierta, :fecha_cierre_inscripcion, :max_estudiantes, :estado, :notificar_profesor_completada, :notificar_profesor_atascado)');
 $insertCourse->execute($course);
 $courseId = (int) $pdo->lastInsertId();
 
 $insertLesson = $pdo->prepare('INSERT INTO lecciones (curso_id, titulo, descripcion, orden, duracion_minutos, es_obligatoria, estado) VALUES (?, ?, ?, ?, ?, 1, "publicada")');
 $insertTheory = $pdo->prepare('INSERT INTO teoria (leccion_id, titulo, contenido, tipo_contenido, duracion_minutos, orden, es_interactivo) VALUES (?, ?, ?, "texto", ?, ?, 0)');
+$insertBlock = $pdo->prepare('INSERT INTO contenido_bloques (teoria_id, tipo_bloque, titulo, contenido, idioma_bloque, tts_habilitado, media_id, orden) VALUES (?, ?, ?, ?, ?, ?, NULL, ?)');
 $insertActivity = $pdo->prepare('INSERT INTO actividades (leccion_id, titulo, descripcion, tipo_actividad, instrucciones, contenido, puntos_maximos, tiempo_limite_minutos, intentos_permitidos, es_calificable, orden, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 3, 1, ?, "activa")');
 $insertEnrollment = $pdo->prepare('INSERT INTO inscripciones (curso_id, estudiante_id) VALUES (?, ?)');
 
@@ -587,6 +647,19 @@ foreach ($lessons as $lessonIndex => $lesson) {
             $theoryIndex + 1,
         ]);
         $theoryCount++;
+        $theoryId = (int) $pdo->lastInsertId();
+
+        foreach (theory_blocks($theory['intro'], $theory['sections'], $theory['tip']) as $blockIndex => $block) {
+            $insertBlock->execute([
+                $theoryId,
+                $block['tipo_bloque'],
+                $block['titulo'],
+                $block['contenido'],
+                $block['idioma_bloque'],
+                $block['tts_habilitado'],
+                $blockIndex + 1,
+            ]);
+        }
     }
 
     foreach ($lesson['actividades'] as $activityIndex => $activity) {

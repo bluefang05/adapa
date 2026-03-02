@@ -62,6 +62,7 @@
 
                             <div class="course-meta">
                                 <span><i class="bi bi-clock"></i> <?php echo (int) $teoria->duracion_minutos; ?> min</span>
+                                <span><i class="bi bi-collection"></i> <?php echo !empty($teoria->bloques) ? count($teoria->bloques) : 0; ?> bloques</span>
                             </div>
 
                             <div class="responsive-actions mt-4">

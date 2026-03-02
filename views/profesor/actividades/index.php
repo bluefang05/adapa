@@ -19,9 +19,15 @@
             <a href="<?php echo url('/profesor/cursos/' . $leccion->curso_id . '/lecciones'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a lecciones
             </a>
-            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nueva actividad
-            </a>
+            <?php if (!empty($puedeCrearActividad)): ?>
+                <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nueva actividad
+                </a>
+            <?php else: ?>
+                <button type="button" class="btn btn-outline-secondary" disabled>
+                    <i class="bi bi-lock"></i> Limite de actividades alcanzado
+                </button>
+            <?php endif; ?>
         </div>
         <div class="metric-grid">
             <div class="metric-card">
@@ -39,11 +45,20 @@
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
+    <?php if (!empty($planUso['is_free'])): ?>
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-lightbulb"></i>
+            Plan gratuito: cada leccion admite hasta 3 actividades. <?php echo !empty($mensajeLimiteActividad) ? htmlspecialchars($mensajeLimiteActividad) : 'Aun tienes espacio para una practica mas.'; ?>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($actividades)): ?>
         <div class="panel">
             <div class="panel-body">
                 Todavia no hay actividades para esta leccion.
-                <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary ms-2">Crear la primera</a>
+                <?php if (!empty($puedeCrearActividad)): ?>
+                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary ms-2">Crear la primera</a>
+                <?php endif; ?>
             </div>
         </div>
     <?php else: ?>

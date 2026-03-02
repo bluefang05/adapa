@@ -1,4 +1,5 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -67,6 +68,26 @@
                                 <option value="admin" <?php echo $user->es_admin_institucion ? 'selected' : ''; ?>>Administrador</option>
                             </select>
                             <div class="form-text text-muted">Cambiar el rol modifica el acceso disponible en la plataforma.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="billing_plan" class="form-label">Plan de cuenta</label>
+                            <select class="form-select" id="billing_plan" name="billing_plan">
+                                <?php foreach (ProfesorPlan::obtenerPlanesDisponibles() as $planValue => $planLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($planValue); ?>" <?php echo ProfesorPlan::normalizarPlan($user->billing_plan ?? null) === $planValue ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($planLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text text-muted">`Lifetime` solo debe asignarse desde administracion.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-md-4">
+                                <input class="form-check-input" type="checkbox" id="is_official" name="is_official" value="1" <?php echo !empty($user->is_official) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="is_official">Cuenta oficial de la plataforma</label>
+                            </div>
+                            <div class="form-text text-muted">Solo para demos, showcase o cuentas internas del producto.</div>
                         </div>
 
                         <div class="col-12 d-flex gap-2 flex-wrap pt-2">

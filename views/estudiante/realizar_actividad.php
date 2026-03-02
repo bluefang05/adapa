@@ -63,19 +63,11 @@ require_once __DIR__ . '/../partials/header.php';
                 <div class="card-body">
                     <?php 
                         // Determinar el codigo de idioma para la actividad (Speech API y atributos HTML)
-                        $idiomaCurso = isset($curso->idioma) ? strtolower($curso->idioma) : 'ingles';
-                        $langCode = 'en-US'; // Default
-                        switch ($idiomaCurso) {
-                            case 'ingles': $langCode = 'en-US'; break;
-                            case 'espanol': $langCode = 'es-ES'; break;
-                            case 'frances': $langCode = 'fr-FR'; break;
-                            case 'aleman': $langCode = 'de-DE'; break;
-                            case 'italiano': $langCode = 'it-IT'; break;
-                            case 'portugues': $langCode = 'pt-BR'; break;
-                            case 'chino': $langCode = 'zh-CN'; break;
-                            case 'japones': $langCode = 'ja-JP'; break;
-                            default: $langCode = 'en-US';
-                        }
+                        $idiomaCurso = isset($curso->idioma_objetivo) && $curso->idioma_objetivo
+                            ? strtolower($curso->idioma_objetivo)
+                            : (isset($curso->idioma) ? strtolower($curso->idioma) : 'ingles');
+                        $ttsLanguageMap = app_tts_language_map();
+                        $langCode = $ttsLanguageMap[$idiomaCurso] ?? 'en-US';
                     ?>
                     
                     <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
@@ -122,12 +114,22 @@ require_once __DIR__ . '/../partials/header.php';
                         <?php if (($actividad->tipo_actividad === 'opcion_multiple' || $actividad->tipo_actividad === 'verdadero_falso') && !empty($configActividad)): ?>
                             <!-- Actividad de opcion multiple / verdadero o falso -->
                             <?php foreach ($configActividad as $preguntaIndex => $pregunta): ?>
-                                <div class="card mb-4 border-light shadow-sm">
+                                    <div class="card mb-4 border-light shadow-sm">
                                     <div class="card-body">
                                         <?php if (!empty($pregunta->texto)): ?>
                                             <h5 class="card-title mb-3"><?php echo htmlspecialchars($pregunta->texto); ?></h5>
                                         <?php elseif (!empty($actividad->descripcion) && $preguntaIndex === 0): ?>
                                              <h5 class="card-title mb-3"><?php echo htmlspecialchars($actividad->descripcion); ?></h5>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($pregunta->image_url)): ?>
+                                            <div class="mb-3">
+                                                <img
+                                                    src="<?php echo htmlspecialchars($pregunta->image_url); ?>"
+                                                    alt="<?php echo htmlspecialchars($pregunta->image_alt ?? ($pregunta->texto ?? 'Imagen de apoyo')); ?>"
+                                                    class="img-fluid rounded-4 border activity-question-image"
+                                                >
+                                            </div>
                                         <?php endif; ?>
                                         
                                         <?php if (!empty($pregunta->opciones)): ?>

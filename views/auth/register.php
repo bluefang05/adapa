@@ -16,7 +16,7 @@ require_once __DIR__ . '/../partials/header.php';
         <section class="page-hero auth-hero auth-hero-success">
             <span class="eyebrow"><i class="bi bi-person-plus"></i> Registro</span>
             <h1 class="page-title">Crea tu cuenta</h1>
-            <p class="page-subtitle">Empieza con una cuenta de estudiante y entra al LMS de idiomas con un flujo simple y claro.</p>
+            <p class="page-subtitle">Empieza tu acceso en ADAPA para explorar cursos, seguir tu progreso y preparar tu espacio docente cuando actives ese modo.</p>
             <div class="metric-grid">
                 <div class="metric-card">
                     <div class="metric-label">Cursos</div>
@@ -29,9 +29,9 @@ require_once __DIR__ . '/../partials/header.php';
                     <div class="metric-note">Sigue tu avance por leccion y por curso.</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Cuenta</div>
-                    <div class="metric-value">Rapida</div>
-                    <div class="metric-note">Solo necesitas tus datos basicos para empezar.</div>
+                    <div class="metric-label">Docente</div>
+                    <div class="metric-value">Escalable</div>
+                    <div class="metric-note">Tambien puedes iniciar como profesor y probar un curso piloto antes de activar tu plan.</div>
                 </div>
             </div>
         </section>
@@ -54,6 +54,32 @@ require_once __DIR__ . '/../partials/header.php';
 
                 <form method="POST" action="<?php echo url('/register'); ?>" class="auth-form">
                     <?php echo csrf_input(); ?>
+                    <div class="row g-3 mb-2">
+                        <div class="col-12">
+                            <label class="form-label">Tipo de cuenta inicial</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-check h-100">
+                                        <input class="form-check-input" type="radio" name="account_type" value="estudiante" checked>
+                                        <span class="form-check-label d-block">
+                                            <strong>Estudiante</strong><br>
+                                            <span class="text-muted">Entra a cursos, sigue tu progreso y aprende desde el primer dia.</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-check h-100">
+                                        <input class="form-check-input" type="radio" name="account_type" value="profesor">
+                                        <span class="form-check-label d-block">
+                                            <strong>Profesor</strong><br>
+                                            <span class="text-muted">Empieza con 1 curso piloto, hasta 3 lecciones, 3 actividades por leccion y 3 estudiantes por codigo.</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="nombre" class="form-label">Nombre *</label>

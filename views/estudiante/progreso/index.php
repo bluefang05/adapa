@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+require_once __DIR__ . '/../../../models/Curso.php';
+?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -58,6 +61,10 @@
         <?php else: ?>
             <div class="row g-4">
                 <?php foreach ($resumenCursos as $curso): ?>
+                    <?php
+                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
+                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    ?>
                     <div class="col-xl-6">
                         <div class="course-card">
                             <div class="card-body">
@@ -65,10 +72,16 @@
                                     <div>
                                         <h3 class="h4 mb-1"><?php echo htmlspecialchars($curso->titulo); ?></h3>
                                         <div class="small text-muted">
-                                            <?php echo htmlspecialchars(strtoupper($curso->idioma)); ?> · <?php echo htmlspecialchars($curso->nivel_cefr); ?>
+                                            <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?> · <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> · Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?>
                                         </div>
                                     </div>
                                     <span class="soft-badge"><?php echo (int) $curso->porcentaje; ?>%</span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
+                                        <i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
+                                    </span>
                                 </div>
 
                                 <div class="course-progress">
