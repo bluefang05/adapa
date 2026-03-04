@@ -104,4 +104,28 @@ class MediaRecurso {
         $this->db->bind(':instancia_id', $instanciaId);
         return $this->db->execute();
     }
+
+    public function obtenerResumenUso($id, $profesorId, $instanciaId) {
+        $this->db->query("
+            SELECT
+                (SELECT COUNT(*) FROM cursos WHERE portada_media_id = :id) AS cursos_portada,
+                (SELECT COUNT(*) FROM contenido_bloques WHERE media_id = :id) AS bloques_contenido
+        ");
+        $this->db->bind(':id', $id);
+        $resumen = $this->db->single();
+
+        if (!$resumen) {
+            return (object) [
+                'cursos_portada' => 0,
+                'bloques_contenido' => 0,
+                'total_usos' => 0,
+            ];
+        }
+
+        $resumen->cursos_portada = (int) ($resumen->cursos_portada ?? 0);
+        $resumen->bloques_contenido = (int) ($resumen->bloques_contenido ?? 0);
+        $resumen->total_usos = $resumen->cursos_portada + $resumen->bloques_contenido;
+
+        return $resumen;
+    }
 }

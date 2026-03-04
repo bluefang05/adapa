@@ -92,8 +92,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
                         <?php else: ?>
                             <?php foreach ($cursos as $curso): ?>
                                 <?php
-                                $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
-                                $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                                $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
+                                $idiomaBase = Curso::obtenerIdiomaBase($curso);
                                 ?>
                                 <tr>
                                     <td>
@@ -110,8 +110,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                         </div>
                                     </td>
                                     <td>
-                                        <?php echo ucfirst($idiomaObjetivo); ?>
-                                        <div class="small text-muted">Desde <?php echo ucfirst($idiomaEnsenanza); ?></div>
+                                        <?php echo htmlspecialchars(app_language_label($idiomaObjetivo, ucfirst($idiomaObjetivo))); ?>
+                                        <div class="small text-muted">Desde <?php echo htmlspecialchars(app_language_label($idiomaBase, ucfirst($idiomaBase))); ?></div>
                                     </td>
                                     <td>
                                         <div><?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?></div>

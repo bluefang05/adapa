@@ -858,7 +858,7 @@ require_once __DIR__ . '/../partials/header.php';
                                             <?php
                                                 // Determine user answer for this question
                                                 $userAnswer = [];
-                                                if (isset($respuestasUsuario) && is_array($respuestasUsuario)) {
+                                                if ($showFeedback && isset($respuestasUsuario) && is_array($respuestasUsuario)) {
                                                     if (isset($respuestasUsuario[$pregunta->id])) {
                                                         $userAnswer = $respuestasUsuario[$pregunta->id];
                                                         // Handle if it's a JSON string

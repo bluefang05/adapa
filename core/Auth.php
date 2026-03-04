@@ -37,6 +37,8 @@ class Auth {
         $_SESSION['user_name'] = $user->nombre . ' ' . $user->apellido;
         $_SESSION['billing_plan'] = $user->billing_plan ?? 'free';
         $_SESSION['is_official'] = !empty($user->is_official) ? 1 : 0;
+        $_SESSION['user_base_language'] = $user->idioma_base ?? 'espanol';
+        $_SESSION['user_interface_language'] = $user->idioma_interfaz ?? 'espanol';
     }
 
     public static function logout() {
@@ -70,6 +72,14 @@ class Auth {
 
     public static function hasRole($role) {
         return self::getUserRole() === $role;
+    }
+
+    public static function getUserBaseLanguage() {
+        return $_SESSION['user_base_language'] ?? 'espanol';
+    }
+
+    public static function getUserInterfaceLanguage() {
+        return $_SESSION['user_interface_language'] ?? 'espanol';
     }
 
     public static function isProfesor() {

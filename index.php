@@ -17,6 +17,7 @@ $router->add('GET', '/', 'shared/HomeController', 'index');
 
 // About route
 $router->add('GET', '/about', 'shared/AboutController', 'index');
+$router->add('POST', '/theme/preference', 'shared/ThemeController', 'store');
 
 // Profesor routes
 $router->add('GET', '/profesor/cursos', 'profesor/CursoController', 'index');

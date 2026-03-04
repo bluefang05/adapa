@@ -2,9 +2,17 @@
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config.php';
 }
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<?php
+$serverTheme = $_SESSION['theme_preference'] ?? ($_COOKIE['adapa-theme'] ?? '');
+$serverTheme = in_array($serverTheme, ['light', 'dark'], true) ? $serverTheme : '';
+?>
+<html lang="es" <?php echo $serverTheme !== '' ? 'data-theme="' . htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,18 +27,28 @@ if (!defined('BASE_URL')) {
     <script>
         (function () {
             var savedTheme = null;
+            var cookieTheme = null;
             try {
                 savedTheme = localStorage.getItem('adapa-theme');
             } catch (error) {
                 savedTheme = null;
             }
 
+            try {
+                var match = document.cookie.match(/(?:^|;\s*)adapa-theme=([^;]+)/);
+                cookieTheme = match ? decodeURIComponent(match[1]) : null;
+            } catch (error) {
+                cookieTheme = null;
+            }
+
             var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.setAttribute('data-theme', savedTheme || (prefersDark ? 'dark' : 'light'));
+            var serverTheme = <?php echo json_encode($serverTheme); ?>;
+            var initialTheme = savedTheme || cookieTheme || serverTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', initialTheme);
         }());
     </script>
 </head>
-<body>
+<body data-server-theme="<?php echo htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8'); ?>">
 <a class="skip-link" href="#main-content">Saltar al contenido</a>
 <nav class="navbar navbar-expand-lg app-navbar">
     <div class="container">

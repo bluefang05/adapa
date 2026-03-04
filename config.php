@@ -111,17 +111,27 @@ function app_supported_languages() {
         'aleman' => 'Aleman',
         'italiano' => 'Italiano',
         'portugues' => 'Portugues',
+        'neerlandes' => 'Neerlandes',
+        'ruso' => 'Ruso',
+        'chino' => 'Chino',
+        'japones' => 'Japones',
     ];
 }
 
 function app_course_target_languages() {
+    return app_supported_languages();
+}
+
+function app_interface_languages() {
     return [
+        'espanol' => 'Espanol',
         'ingles' => 'Ingles',
-        'frances' => 'Frances',
-        'aleman' => 'Aleman',
-        'italiano' => 'Italiano',
-        'portugues' => 'Portugues',
     ];
+}
+
+function app_language_label($languageKey, $fallback = 'Sin definir') {
+    $languages = app_supported_languages();
+    return $languages[$languageKey] ?? $fallback;
 }
 
 function app_tts_language_map() {

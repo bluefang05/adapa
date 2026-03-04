@@ -23,6 +23,8 @@ class RegisterController extends Controller {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $accountType = $_POST['account_type'] ?? 'estudiante';
+        $idiomaBase = trim($_POST['idioma_base'] ?? 'espanol');
+        $idiomaInterfaz = trim($_POST['idioma_interfaz'] ?? 'espanol');
 
         if ($nombre === '' || $email === '' || $password === '') {
             $this->flash('register_error', 'Completa los campos obligatorios.');
@@ -36,6 +38,16 @@ class RegisterController extends Controller {
 
         if (!in_array($accountType, ['estudiante', 'profesor'], true)) {
             $this->flash('register_error', 'Selecciona un tipo de cuenta valido.');
+            $this->redirect('/register');
+        }
+
+        if (!array_key_exists($idiomaBase, app_supported_languages())) {
+            $this->flash('register_error', 'Selecciona un idioma base valido.');
+            $this->redirect('/register');
+        }
+
+        if (!array_key_exists($idiomaInterfaz, app_interface_languages())) {
+            $this->flash('register_error', 'Selecciona un idioma de interfaz valido.');
             $this->redirect('/register');
         }
 
@@ -58,11 +70,12 @@ class RegisterController extends Controller {
             $instanciaId = $instancia ? $instancia->id : 1;
 
             $db->query(
-                'INSERT INTO usuarios (nombre, apellido, email, password_hash, es_estudiante, es_profesor, es_admin_institucion, billing_plan, is_official, vista_default, instancia_id, activo, creado_en)
-                 VALUES (:nombre, :apellido, :email, :password, :es_estudiante, :es_profesor, :es_admin_institucion, :billing_plan, :is_official, :vista_default, :instancia_id, :activo, NOW())'
+                'INSERT INTO usuarios (nombre, apellido, idioma_base, email, password_hash, es_estudiante, es_profesor, es_admin_institucion, billing_plan, is_official, vista_default, idioma_interfaz, instancia_id, activo, creado_en)
+                 VALUES (:nombre, :apellido, :idioma_base, :email, :password, :es_estudiante, :es_profesor, :es_admin_institucion, :billing_plan, :is_official, :vista_default, :idioma_interfaz, :instancia_id, :activo, NOW())'
             );
             $db->bind(':nombre', $nombre);
             $db->bind(':apellido', $apellido);
+            $db->bind(':idioma_base', $idiomaBase);
             $db->bind(':email', $email);
             $db->bind(':password', $hash);
             $db->bind(':es_estudiante', $accountType === 'estudiante' ? 1 : 0);
@@ -71,6 +84,7 @@ class RegisterController extends Controller {
             $db->bind(':billing_plan', ProfesorPlan::PLAN_FREE);
             $db->bind(':is_official', 0);
             $db->bind(':vista_default', $accountType === 'profesor' ? 'creador' : 'estudiante');
+            $db->bind(':idioma_interfaz', $idiomaInterfaz);
             $db->bind(':instancia_id', $instanciaId);
             $db->bind(':activo', 1);
 

@@ -50,6 +50,13 @@ function renderLessonBlockMedia($bloque) {
         <span class="eyebrow"><i class="bi bi-journal-richtext"></i> Leccion activa</span>
         <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle"><?php echo nl2br(htmlspecialchars($leccion->descripcion)); ?></p>
+        <?php if (isset($resumenProgreso) && !empty($resumenProgreso->completada)): ?>
+            <div class="mt-3">
+                <span class="soft-badge">
+                    <i class="bi bi-check-circle-fill"></i> Leccion completada
+                </span>
+            </div>
+        <?php endif; ?>
         <?php if (isset($resumenProgreso)): ?>
             <div class="metric-grid">
                 <div class="metric-card">
@@ -76,7 +83,13 @@ function renderLessonBlockMedia($bloque) {
             <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                     <div class="metric-label">Siguiente paso sugerido</div>
-                    <div class="fw-semibold mt-1"><?php echo htmlspecialchars($siguienteItem['mensaje']); ?>: <?php echo htmlspecialchars($siguienteItem['titulo']); ?></div>
+                    <div class="fw-semibold mt-1">
+                        <?php if ($siguienteItem['tipo'] === 'curso_completado'): ?>
+                            Has completado esta leccion. <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
+                        <?php else: ?>
+                            <?php echo htmlspecialchars($siguienteItem['mensaje']); ?>: <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div>
                     <?php if ($siguienteItem['tipo'] === 'teoria'): ?>
@@ -85,6 +98,8 @@ function renderLessonBlockMedia($bloque) {
                         <a href="<?php echo url('/estudiante/actividades/' . $siguienteItem['id']); ?>" class="btn btn-primary">Realizar actividad</a>
                     <?php elseif ($siguienteItem['tipo'] === 'leccion'): ?>
                         <a href="<?php echo url('/estudiante/lecciones/' . $siguienteItem['id'] . '/contenido'); ?>" class="btn btn-success">Ir a la siguiente leccion</a>
+                    <?php elseif ($siguienteItem['tipo'] === 'curso_completado'): ?>
+                        <a href="<?php echo url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones'); ?>" class="btn btn-success">Curso completado</a>
                     <?php else: ?>
                         <a href="<?php echo url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones'); ?>" class="btn btn-success">Ver curso completo</a>
                     <?php endif; ?>
@@ -112,7 +127,7 @@ function renderLessonBlockMedia($bloque) {
                         <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
                             <h5 class="mb-0"><?php echo htmlspecialchars($teoria->titulo); ?></h5>
                             <?php if (!empty($teoria->leido)): ?>
-                                <span class="soft-badge"><i class="bi bi-check-circle-fill"></i> Leido</span>
+                                <span class="soft-badge"><i class="bi bi-check-circle-fill"></i> Completado</span>
                             <?php endif; ?>
                         </div>
                         <div class="card-text">

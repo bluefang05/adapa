@@ -69,6 +69,8 @@
     let questionMode = 'single';
     let questions = [];
     let selectedOptionsByQuestion = {};
+    let pronunciationRecognition = null;
+    let pronunciationActiveTarget = null;
     
     // Función para barajar un array
     function shuffleArray(array) {
@@ -102,8 +104,10 @@
                 loadSortable(contentDiv);
                 break;
             case 'pronunciacion':
+                loadPronunciation(contentDiv);
+                break;
             case 'escucha':
-                contentDiv.innerHTML = '<div class="alert alert-warning">Esta actividad requiere recursos multimedia no disponibles en este entorno de prueba.</div>';
+                loadListening(contentDiv);
                 break;
             default:
                 contentDiv.innerHTML = '<p>Tipo de actividad no soportado.</p>';
@@ -258,6 +262,144 @@
             
             container.innerHTML = html;
         }
+    }
+
+    function loadListening(container) {
+        const textToSpeak = contenido.texto_tts || contenido.transcripcion || '';
+        const transcript = contenido.transcripcion || '';
+        let html = '<div class="alert alert-info">Vista previa de actividad de escucha.</div>';
+
+        if (textToSpeak) {
+            const encodedText = encodeURIComponent(textToSpeak);
+            html += `
+                <div class="text-center mb-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="speakPreviewText(decodeURIComponent('${encodedText}'))">
+                        <i class="bi bi-volume-up-fill"></i> Reproducir audio
+                    </button>
+                    <p class="text-muted mt-2 mb-0"><small>Usa sintesis de voz del navegador para la prueba rapida.</small></p>
+                </div>
+            `;
+        } else {
+            html += '<div class="alert alert-warning">Esta actividad no tiene audio o texto TTS configurado.</div>';
+        }
+
+        html += `
+            <label for="listening-answer" class="form-label">Escribe lo que escuchaste:</label>
+            <textarea id="listening-answer" class="form-control text-input" rows="4" placeholder="Escribe aqui tu respuesta..."></textarea>
+        `;
+
+        if (userRole === 'profesor' || userRole === 'admin') {
+            html += `<div class="alert alert-light border mt-3 mb-0"><strong>Referencia:</strong> ${escapeHtml(transcript || 'Sin transcripcion configurada.')}</div>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function loadPronunciation(container) {
+        const prompts = Array.isArray(contenido) ? contenido : [];
+
+        if (!prompts.length) {
+            container.innerHTML = '<div class="alert alert-warning">Esta actividad no tiene frases configuradas para pronunciacion.</div>';
+            return;
+        }
+
+        let html = '<div class="alert alert-info">Vista previa de actividad de pronunciacion.</div>';
+        prompts.forEach((prompt, index) => {
+            const promptId = prompt.id || `pron-${index}`;
+            const phrase = prompt.frase || '';
+            html += `
+                <div class="card mb-3 border-light shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">"${escapeHtml(phrase)}"</h5>
+                        <div class="text-center mb-3">
+                            <button type="button" class="btn btn-outline-primary btn-lg rounded-circle p-3" onclick="startPronunciationListening('${promptId}')">
+                                <i class="bi bi-mic-fill fs-3"></i>
+                            </button>
+                            <div id="pron-status-${promptId}" class="text-muted mt-2 small" style="min-height: 20px;">Pulsa para probar reconocimiento.</div>
+                        </div>
+                        <label for="pron-input-${promptId}" class="form-label text-muted small">Texto reconocido:</label>
+                        <input type="text" id="pron-input-${promptId}" class="form-control text-input" placeholder="Tu pronunciacion aparecera aqui...">
+                    </div>
+                </div>
+            `;
+        });
+
+        if (userRole === 'profesor' || userRole === 'admin') {
+            html += '<div class="alert alert-light border mb-0">El preview usa reconocimiento de voz del navegador. No reemplaza la experiencia completa del alumno.</div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    function speakPreviewText(text) {
+        if (!('speechSynthesis' in window)) {
+            alert('Tu navegador no soporta sintesis de voz.');
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = detectSpeechLang();
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function startPronunciationListening(promptId) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const statusEl = document.getElementById(`pron-status-${promptId}`);
+        const inputEl = document.getElementById(`pron-input-${promptId}`);
+
+        if (!SpeechRecognition) {
+            if (statusEl) statusEl.innerText = 'Reconocimiento de voz no disponible en este navegador.';
+            return;
+        }
+
+        if (pronunciationRecognition) {
+            pronunciationRecognition.stop();
+        }
+
+        pronunciationActiveTarget = promptId;
+        pronunciationRecognition = new SpeechRecognition();
+        pronunciationRecognition.lang = detectSpeechLang();
+        pronunciationRecognition.interimResults = false;
+        pronunciationRecognition.maxAlternatives = 1;
+
+        pronunciationRecognition.onstart = () => {
+            if (statusEl) statusEl.innerText = 'Escuchando...';
+        };
+
+        pronunciationRecognition.onresult = (event) => {
+            const transcript = event.results?.[0]?.[0]?.transcript || '';
+            if (inputEl) inputEl.value = transcript;
+            if (statusEl) statusEl.innerText = 'Captura completada.';
+        };
+
+        pronunciationRecognition.onerror = () => {
+            if (statusEl) statusEl.innerText = 'No pudimos capturar audio.';
+        };
+
+        pronunciationRecognition.onend = () => {
+            if (statusEl && statusEl.innerText === 'Escuchando...') {
+                statusEl.innerText = 'Sin resultados.';
+            }
+        };
+
+        pronunciationRecognition.start();
+    }
+
+    function detectSpeechLang() {
+        const languageMap = {
+            ingles: 'en-US',
+            frances: 'fr-FR',
+            aleman: 'de-DE'
+        };
+        return languageMap[actividadData.idioma_objetivo] || languageMap[actividadData.idioma] || 'es-ES';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
     }
 
     function loadSortable(container) {
@@ -511,6 +653,34 @@
                         currentOrder.every((text, idx) => text === correctOrder[idx]);
                     respuesta = currentOrder.join(' | ');
                 }
+                break;
+            case 'escucha':
+                const listeningAnswer = document.getElementById('listening-answer');
+                if (listeningAnswer) {
+                    respuesta = listeningAnswer.value.trim();
+                    const expectedTranscript = (contenido.transcripcion || '').trim().toLowerCase();
+                    const normalizedAnswer = respuesta.toLowerCase().trim();
+                    esCorrecta = normalizedAnswer !== '' && normalizedAnswer === expectedTranscript;
+                }
+                break;
+            case 'pronunciacion':
+                const prompts = Array.isArray(contenido) ? contenido : [];
+                const pronunciationAnswers = [];
+                esCorrecta = prompts.length > 0;
+                prompts.forEach((prompt, index) => {
+                    const promptId = prompt.id || `pron-${index}`;
+                    const input = document.getElementById(`pron-input-${promptId}`);
+                    const recognized = input ? input.value.trim() : '';
+                    pronunciationAnswers.push({
+                        id: promptId,
+                        frase: prompt.frase || '',
+                        respuesta: recognized
+                    });
+                    if (!recognized) {
+                        esCorrecta = false;
+                    }
+                });
+                respuesta = JSON.stringify(pronunciationAnswers);
                 break;
         }
         

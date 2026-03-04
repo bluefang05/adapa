@@ -62,8 +62,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
             <div class="row g-4">
                 <?php foreach ($resumenCursos as $curso): ?>
                     <?php
-                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
-                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
+                    $idiomaBase = Curso::obtenerIdiomaBase($curso);
                     ?>
                     <div class="col-xl-6">
                         <div class="course-card">
@@ -72,7 +72,9 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                     <div>
                                         <h3 class="h4 mb-1"><?php echo htmlspecialchars($curso->titulo); ?></h3>
                                         <div class="small text-muted">
-                                            <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?> · <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> · Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?>
+                                            <?php echo htmlspecialchars(app_language_label($idiomaObjetivo, strtoupper($idiomaObjetivo))); ?> |
+                                            <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> |
+                                            Desde <?php echo htmlspecialchars(app_language_label($idiomaBase, ucfirst($idiomaBase))); ?>
                                         </div>
                                     </div>
                                     <span class="soft-badge"><?php echo (int) $curso->porcentaje; ?>%</span>
@@ -82,6 +84,15 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                     <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
                                         <i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
                                     </span>
+                                    <?php if (($curso->estado_progreso ?? '') === 'completado'): ?>
+                                        <span class="soft-badge">
+                                            <i class="bi bi-check-circle-fill"></i> Completado
+                                        </span>
+                                    <?php elseif (($curso->estado_progreso ?? '') === 'en_progreso'): ?>
+                                        <span class="soft-badge">
+                                            <i class="bi bi-arrow-repeat"></i> En progreso
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="course-progress">

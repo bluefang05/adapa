@@ -5,7 +5,7 @@
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nuevo curso</span>
         <h1 class="page-title">Crea un curso listo para escalar a contenido, cupos y acceso.</h1>
         <p class="page-subtitle">
-            Define idioma objetivo, idioma de ensenanza, nivel y reglas de acceso desde un formulario mas claro en escritorio y movil.
+            Define idioma objetivo, idioma base del estudiante, nivel y reglas de acceso desde un formulario mas claro en escritorio y movil.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
@@ -66,15 +66,15 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="idioma_ensenanza" class="form-label">Idioma de ensenanza *</label>
-                                    <select class="form-select" id="idioma_ensenanza" name="idioma_ensenanza" required>
+                                    <label for="idioma_base" class="form-label">Idioma base del estudiante *</label>
+                                    <select class="form-select" id="idioma_base" name="idioma_base" required>
                                         <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
                                             <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($languageLabel); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <div class="form-text">Idioma desde el cual explicas el curso.</div>
+                                    <div class="form-text">Idioma desde el cual recibe explicaciones, instrucciones y feedback el alumno ideal.</div>
                                 </div>
                             </div>
 

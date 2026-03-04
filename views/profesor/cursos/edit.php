@@ -5,7 +5,7 @@
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de curso</span>
         <h1 class="page-title">Ajusta la configuracion del curso sin perder claridad operativa.</h1>
         <p class="page-subtitle">
-            Revisa idioma objetivo, idioma de ensenanza, modalidad y acceso desde la misma estructura visual del formulario de creacion.
+            Revisa idioma objetivo, idioma base del estudiante, modalidad y acceso desde la misma estructura visual del formulario de creacion.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
@@ -71,14 +71,15 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="idioma_ensenanza" class="form-label">Idioma de ensenanza *</label>
-                                    <select class="form-select" id="idioma_ensenanza" name="idioma_ensenanza" required>
+                                    <label for="idioma_base" class="form-label">Idioma base del estudiante *</label>
+                                    <select class="form-select" id="idioma_base" name="idioma_base" required>
                                         <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
-                                            <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo ($curso->idioma_ensenanza ?? 'espanol') == $languageValue ? 'selected' : ''; ?>>
+                                            <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo (Curso::obtenerIdiomaBase($curso) === $languageValue) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($languageLabel); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <div class="form-text">Idioma desde el cual se explica y contextualiza el curso.</div>
                                 </div>
                             </div>
 

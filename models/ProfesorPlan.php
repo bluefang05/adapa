@@ -190,12 +190,12 @@ class ProfesorPlan
     public function puedeAgregarEstudiante($cursoId)
     {
         $this->db->query('
-            SELECT c.id, c.creado_por, u.billing_plan, u.is_official, COUNT(i.id) AS total_inscritos
+            SELECT c.id, c.creado_por, c.max_estudiantes, u.billing_plan, u.is_official, COUNT(i.id) AS total_inscritos
             FROM cursos c
             INNER JOIN usuarios u ON u.id = c.creado_por
             LEFT JOIN inscripciones i ON i.curso_id = c.id
             WHERE c.id = :curso_id
-            GROUP BY c.id, c.creado_por, u.billing_plan, u.is_official
+            GROUP BY c.id, c.creado_por, c.max_estudiantes, u.billing_plan, u.is_official
             LIMIT 1
         ');
         $this->db->bind(':curso_id', $cursoId);
@@ -205,11 +205,18 @@ class ProfesorPlan
             return [false, 'Curso no encontrado.'];
         }
 
+        $totalInscritos = (int) ($resumen->total_inscritos ?? 0);
+        $maxEstudiantes = (int) ($resumen->max_estudiantes ?? 0);
+
+        if ($maxEstudiantes > 0 && $totalInscritos >= $maxEstudiantes) {
+            return [false, 'Este curso ya alcanzo su cupo maximo de estudiantes.'];
+        }
+
         if (self::tieneAccesoCompleto($resumen)) {
             return [true, null];
         }
 
-        if ((int) ($resumen->total_inscritos ?? 0) >= self::FREE_MAX_STUDENTS_PER_COURSE) {
+        if ($totalInscritos >= self::FREE_MAX_STUDENTS_PER_COURSE) {
             return [false, 'Este curso piloto ya alcanzo su limite de 3 estudiantes activos.'];
         }
 

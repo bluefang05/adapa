@@ -30,6 +30,7 @@ class EstudianteController extends Controller {
         $cursosInscritos = $this->cursoModel->obtenerResumenCursosPorEstudiante($estudiante_id);
         $filtrosCatalogo = [
             'idioma_objetivo' => trim($_GET['idioma_objetivo'] ?? ''),
+            'idioma_base' => trim($_GET['idioma_base'] ?? ''),
             'nivel_objetivo' => trim($_GET['nivel_objetivo'] ?? ''),
             'tipo_recorrido' => trim($_GET['tipo_recorrido'] ?? ''),
         ];

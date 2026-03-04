@@ -40,12 +40,31 @@ class MediaController extends Controller
             $this->redirect('/profesor/recursos');
         }
 
+        $uso = $this->mediaModel->obtenerResumenUso($id, $profesorId, $instanciaId);
+        if (($uso->total_usos ?? 0) > 0) {
+            $partes = [];
+            if (!empty($uso->cursos_portada)) {
+                $partes[] = $uso->cursos_portada . ' portada(s) de curso';
+            }
+            if (!empty($uso->bloques_contenido)) {
+                $partes[] = $uso->bloques_contenido . ' bloque(s) de contenido';
+            }
+
+            $this->flash('error', 'No puedes eliminar este recurso porque esta en uso en ' . implode(' y ', $partes) . '.');
+            $this->redirect('/profesor/recursos');
+        }
+
         $absolutePath = dirname(__DIR__, 2) . '/' . ltrim($recurso->ruta_archivo, '/');
+
+        if (!$this->mediaModel->eliminarRecurso($id, $profesorId, $instanciaId)) {
+            $this->flash('error', 'No se pudo eliminar el recurso.');
+            $this->redirect('/profesor/recursos');
+        }
+
         if (is_file($absolutePath)) {
             @unlink($absolutePath);
         }
 
-        $this->mediaModel->eliminarRecurso($id, $profesorId, $instanciaId);
         $this->flash('success', 'Recurso eliminado.');
         $this->redirect('/profesor/recursos');
     }

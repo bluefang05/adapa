@@ -103,17 +103,33 @@ class Leccion {
     public function obtenerResumenProgreso($leccion_id, $estudiante_id) {
         $this->db->query("
             SELECT
-                COUNT(DISTINCT t.id) AS total_teorias,
-                COUNT(DISTINCT CASE WHEN pt.leido = 1 THEN t.id END) AS teorias_completadas,
-                COUNT(DISTINCT a.id) AS total_actividades,
-                COUNT(DISTINCT CASE WHEN r.id IS NOT NULL THEN a.id END) AS actividades_completadas
+                (
+                    SELECT COUNT(*)
+                    FROM teoria t
+                    WHERE t.leccion_id = l.id
+                ) AS total_teorias,
+                (
+                    SELECT COUNT(DISTINCT pt.teoria_id)
+                    FROM progreso_teoria pt
+                    INNER JOIN teoria t ON t.id = pt.teoria_id
+                    WHERE t.leccion_id = l.id
+                      AND pt.estudiante_id = :estudiante_id
+                      AND pt.leido = 1
+                ) AS teorias_completadas,
+                (
+                    SELECT COUNT(*)
+                    FROM actividades a
+                    WHERE a.leccion_id = l.id
+                ) AS total_actividades,
+                (
+                    SELECT COUNT(DISTINCT r.actividad_id)
+                    FROM respuestas r
+                    INNER JOIN actividades a ON a.id = r.actividad_id
+                    WHERE a.leccion_id = l.id
+                      AND r.estudiante_id = :estudiante_id
+                ) AS actividades_completadas
             FROM lecciones l
-            LEFT JOIN teoria t ON t.leccion_id = l.id
-            LEFT JOIN progreso_teoria pt ON pt.teoria_id = t.id AND pt.estudiante_id = :estudiante_id
-            LEFT JOIN actividades a ON a.leccion_id = l.id
-            LEFT JOIN respuestas r ON r.actividad_id = a.id AND r.estudiante_id = :estudiante_id
             WHERE l.id = :leccion_id
-            GROUP BY l.id
         ");
         $this->db->bind(':estudiante_id', $estudiante_id);
         $this->db->bind(':leccion_id', $leccion_id);
@@ -136,6 +152,7 @@ class Leccion {
         $totalItems = (int) $resumen->total_teorias + (int) $resumen->total_actividades;
         $completados = (int) $resumen->teorias_completadas + (int) $resumen->actividades_completadas;
         $porcentaje = $totalItems > 0 ? (int) round(($completados / $totalItems) * 100) : 0;
+        $porcentaje = max(0, min(100, $porcentaje));
 
         if ($totalItems === 0) {
             $estado = 'pendiente';

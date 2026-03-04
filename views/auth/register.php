@@ -113,6 +113,30 @@ require_once __DIR__ . '/../partials/header.php';
                             </div>
                             <div class="form-text">La contrasena debe tener al menos 6 caracteres.</div>
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="idioma_base" class="form-label">Idioma base *</label>
+                            <select class="form-select" id="idioma_base" name="idioma_base" required>
+                                <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($languageLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Idioma que mejor entiendes hoy para recibir explicaciones.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="idioma_interfaz" class="form-label">Idioma de interfaz *</label>
+                            <select class="form-select" id="idioma_interfaz" name="idioma_interfaz" required>
+                                <?php foreach (app_interface_languages() as $languageValue => $languageLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($languageLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Prepara la cuenta para futura internacionalizacion visual.</div>
+                        </div>
                     </div>
 
                     <div class="responsive-actions mt-4">

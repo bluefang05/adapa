@@ -18,6 +18,10 @@ require_once __DIR__ . '/../partials/header.php';
         <p class="page-subtitle">
             Entra al siguiente bloque, revisa tu avance y detecta rapido que partes del curso ya estan cerradas o siguen en progreso.
         </p>
+        <div class="small text-muted">
+            Aprendes <?php echo htmlspecialchars(app_language_label(Curso::obtenerIdiomaObjetivo($curso), Curso::obtenerIdiomaObjetivo($curso))); ?>
+            desde <?php echo htmlspecialchars(app_language_label(Curso::obtenerIdiomaBase($curso), Curso::obtenerIdiomaBase($curso))); ?>.
+        </div>
         <div class="hero-actions">
             <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver al dashboard

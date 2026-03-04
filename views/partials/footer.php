@@ -25,6 +25,7 @@
         (function () {
             var root = document.documentElement;
             var toggles = document.querySelectorAll('[data-theme-toggle]');
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
 
             if (!toggles.length) {
                 return;
@@ -55,7 +56,18 @@
                 });
             }
 
-            applyTheme(root.getAttribute('data-theme') || 'light');
+            var initialTheme = root.getAttribute('data-theme') || 'light';
+            applyTheme(initialTheme);
+
+            try {
+                localStorage.setItem('adapa-theme', initialTheme);
+            } catch (error) {
+            }
+
+            try {
+                document.cookie = 'adapa-theme=' + encodeURIComponent(initialTheme) + '; path=/; max-age=31536000; SameSite=Lax';
+            } catch (error) {
+            }
 
             toggles.forEach(function (toggle) {
                 toggle.addEventListener('click', function () {
@@ -66,7 +78,28 @@
                     } catch (error) {
                     }
 
+                    try {
+                        document.cookie = 'adapa-theme=' + encodeURIComponent(nextTheme) + '; path=/; max-age=31536000; SameSite=Lax';
+                    } catch (error) {
+                    }
+
                     applyTheme(nextTheme);
+
+                    if (csrfMeta && window.fetch) {
+                        var formData = new URLSearchParams();
+                        formData.append('_csrf', csrfMeta.getAttribute('content') || '');
+                        formData.append('theme', nextTheme);
+
+                        fetch('<?php echo url('/theme/preference'); ?>', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                            },
+                            body: formData.toString()
+                        }).catch(function () {
+                        });
+                    }
                 });
             });
         }());

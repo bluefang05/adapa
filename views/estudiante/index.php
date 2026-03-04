@@ -115,8 +115,8 @@ require_once __DIR__ . '/../../models/Curso.php';
             <?php if (!empty($cursosInscritos)): ?>
                 <?php foreach ($cursosInscritos as $curso): ?>
                     <?php
-                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
-                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
+                    $idiomaBase = Curso::obtenerIdiomaBase($curso);
                     ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="course-card">
@@ -128,7 +128,9 @@ require_once __DIR__ . '/../../models/Curso.php';
                                     <div>
                                         <h5 class="card-title mb-1"><?php echo htmlspecialchars($curso->titulo); ?></h5>
                                         <div class="small text-muted">
-                                            <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?> · <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> · Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?>
+                                            <?php echo htmlspecialchars(app_language_label($idiomaObjetivo, strtoupper($idiomaObjetivo))); ?> |
+                                            <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?> |
+                                            Desde <?php echo htmlspecialchars(app_language_label($idiomaBase, ucfirst($idiomaBase))); ?>
                                         </div>
                                     </div>
                                     <span class="soft-badge"><?php echo (int) ($curso->porcentaje ?? 0); ?>%</span>
@@ -137,6 +139,15 @@ require_once __DIR__ . '/../../models/Curso.php';
                                     <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
                                         <i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
                                     </span>
+                                    <?php if (($curso->estado_progreso ?? '') === 'completado'): ?>
+                                        <span class="soft-badge">
+                                            <i class="bi bi-check-circle-fill"></i> Completado
+                                        </span>
+                                    <?php elseif (($curso->estado_progreso ?? '') === 'en_progreso'): ?>
+                                        <span class="soft-badge">
+                                            <i class="bi bi-arrow-repeat"></i> En progreso
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                                 <p class="card-text mb-0"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 140)); ?>...</p>
                                 <div class="course-meta">
@@ -189,6 +200,17 @@ require_once __DIR__ . '/../../models/Curso.php';
                         </select>
                     </div>
                     <div class="col-lg-3">
+                        <label for="idioma_base" class="form-label">Explicado desde</label>
+                        <select name="idioma_base" id="idioma_base" class="form-select">
+                            <option value="">Cualquier idioma base</option>
+                            <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                                <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo (($filtrosCatalogo['idioma_base'] ?? '') === $languageValue) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($languageLabel); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
                         <label for="nivel_objetivo" class="form-label">Nivel que buscas</label>
                         <select name="nivel_objetivo" id="nivel_objetivo" class="form-select">
                             <option value="">Cualquier nivel</option>
@@ -199,7 +221,7 @@ require_once __DIR__ . '/../../models/Curso.php';
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <label for="tipo_recorrido" class="form-label">Tipo de recorrido</label>
                         <select name="tipo_recorrido" id="tipo_recorrido" class="form-select">
                             <option value="">Todos</option>
@@ -207,7 +229,7 @@ require_once __DIR__ . '/../../models/Curso.php';
                             <option value="ruta_completa" <?php echo (($filtrosCatalogo['tipo_recorrido'] ?? '') === 'ruta_completa') ? 'selected' : ''; ?>>Ruta completa</option>
                         </select>
                     </div>
-                    <div class="col-lg-2 d-flex gap-2">
+                    <div class="col-lg-12 d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
                         <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary">Limpiar</a>
                     </div>
@@ -218,8 +240,8 @@ require_once __DIR__ . '/../../models/Curso.php';
             <?php if (!empty($cursosDisponibles)): ?>
                 <?php foreach ($cursosDisponibles as $curso): ?>
                     <?php
-                    $idiomaObjetivo = $curso->idioma_objetivo ?? $curso->idioma ?? '';
-                    $idiomaEnsenanza = $curso->idioma_ensenanza ?? 'espanol';
+                    $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
+                    $idiomaBase = Curso::obtenerIdiomaBase($curso);
                     ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="surface-card">
@@ -230,8 +252,8 @@ require_once __DIR__ . '/../../models/Curso.php';
                                 <h5 class="card-title mb-2"><?php echo htmlspecialchars($curso->titulo); ?></h5>
                                 <p class="card-text text-muted mb-3"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 130)); ?>...</p>
                                 <div class="course-meta">
-                                    <span><i class="bi bi-translate"></i> <?php echo htmlspecialchars(strtoupper($idiomaObjetivo)); ?></span>
-                                    <span><i class="bi bi-chat-left-text"></i> Desde <?php echo htmlspecialchars(ucfirst($idiomaEnsenanza)); ?></span>
+                                    <span><i class="bi bi-translate"></i> <?php echo htmlspecialchars(app_language_label($idiomaObjetivo, strtoupper($idiomaObjetivo))); ?></span>
+                                    <span><i class="bi bi-chat-left-text"></i> Desde <?php echo htmlspecialchars(app_language_label($idiomaBase, ucfirst($idiomaBase))); ?></span>
                                     <span><i class="bi bi-ladder"></i> <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?></span>
                                     <span><i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?></span>
                                 </div>

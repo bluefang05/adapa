@@ -36,6 +36,14 @@ class Curso {
         return self::esRutaCompleta($curso) ? 'Ruta completa' : 'Nivel unico';
     }
 
+    public static function obtenerIdiomaObjetivo($curso) {
+        return $curso->idioma_objetivo ?? $curso->idioma ?? '';
+    }
+
+    public static function obtenerIdiomaBase($curso) {
+        return $curso->idioma_base ?? $curso->idioma_ensenanza ?? 'espanol';
+    }
+
     public static function obtenerOpcionesCefr() {
         return self::CEFR_ORDER;
     }
@@ -86,9 +94,9 @@ class Curso {
         $fechaFin = !empty($datos['fecha_fin']) ? $datos['fecha_fin'] : null;
 
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
-        $idiomaEnsenanza = $datos['idioma_ensenanza'] ?? 'espanol';
+        $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, max_estudiantes, fecha_inicio, fecha_fin) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :max_estudiantes, :fecha_inicio, :fecha_fin)");
+        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_base, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, max_estudiantes, fecha_inicio, fecha_fin) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :max_estudiantes, :fecha_inicio, :fecha_fin)");
         
         $this->db->bind(':instancia_id', $datos['instancia_id']);
         $this->db->bind(':creado_por', $datos['creado_por']);
@@ -96,7 +104,8 @@ class Curso {
         $this->db->bind(':descripcion', $datos['descripcion']);
         $this->db->bind(':idioma', $idiomaObjetivo);
         $this->db->bind(':idioma_objetivo', $idiomaObjetivo);
-        $this->db->bind(':idioma_ensenanza', $idiomaEnsenanza);
+        $this->db->bind(':idioma_base', $idiomaBase);
+        $this->db->bind(':idioma_ensenanza', $idiomaBase);
         $this->db->bind(':portada_media_id', $datos['portada_media_id'] ?? null);
         $this->db->bind(':nivel_cefr', $datos['nivel_cefr']);
         $this->db->bind(':nivel_cefr_desde', $datos['nivel_cefr_desde'] ?? $datos['nivel_cefr']);
@@ -118,16 +127,17 @@ class Curso {
         $tipoCodigo = !empty($datos['tipo_codigo']) ? $datos['tipo_codigo'] : null;
 
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
-        $idiomaEnsenanza = $datos['idioma_ensenanza'] ?? 'espanol';
+        $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, max_estudiantes = :max_estudiantes WHERE id = :id");
+        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_base = :idioma_base, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, max_estudiantes = :max_estudiantes WHERE id = :id");
         
         $this->db->bind(':id', $id);
         $this->db->bind(':titulo', $datos['titulo']);
         $this->db->bind(':descripcion', $datos['descripcion']);
         $this->db->bind(':idioma', $idiomaObjetivo);
         $this->db->bind(':idioma_objetivo', $idiomaObjetivo);
-        $this->db->bind(':idioma_ensenanza', $idiomaEnsenanza);
+        $this->db->bind(':idioma_base', $idiomaBase);
+        $this->db->bind(':idioma_ensenanza', $idiomaBase);
         $this->db->bind(':portada_media_id', $datos['portada_media_id'] ?? null);
         $this->db->bind(':nivel_cefr', $datos['nivel_cefr']);
         $this->db->bind(':nivel_cefr_desde', $datos['nivel_cefr_desde'] ?? $datos['nivel_cefr']);
@@ -179,6 +189,11 @@ class Curso {
             $sql .= " AND c.idioma_objetivo = :idioma_objetivo";
         }
 
+        $idiomaBase = trim($filtros['idioma_base'] ?? '');
+        if ($idiomaBase !== '') {
+            $sql .= " AND COALESCE(NULLIF(c.idioma_base, ''), c.idioma_ensenanza, 'espanol') = :idioma_base";
+        }
+
         $nivelObjetivo = trim($filtros['nivel_objetivo'] ?? '');
         if (in_array($nivelObjetivo, self::CEFR_ORDER, true)) {
             $sql .= "
@@ -200,6 +215,10 @@ class Curso {
 
         if ($idiomaObjetivo !== '') {
             $this->db->bind(':idioma_objetivo', $idiomaObjetivo);
+        }
+
+        if ($idiomaBase !== '') {
+            $this->db->bind(':idioma_base', $idiomaBase);
         }
 
         if (in_array($nivelObjetivo, self::CEFR_ORDER, true)) {
@@ -277,21 +296,44 @@ class Curso {
                 c.*,
                 mr.ruta_archivo AS portada_url,
                 mr.alt_text AS portada_alt,
-                COUNT(DISTINCT l.id) AS total_lecciones,
-                COUNT(DISTINCT t.id) AS total_teorias,
-                COUNT(DISTINCT a.id) AS total_actividades,
-                COUNT(DISTINCT CASE WHEN pt.leido = 1 THEN t.id END) AS teorias_leidas,
-                COUNT(DISTINCT CASE WHEN r.id IS NOT NULL THEN a.id END) AS actividades_respondidas
+                (
+                    SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                ) AS total_lecciones,
+                (
+                    SELECT COUNT(*)
+                    FROM teoria t
+                    INNER JOIN lecciones l ON l.id = t.leccion_id
+                    WHERE l.curso_id = c.id
+                ) AS total_teorias,
+                (
+                    SELECT COUNT(*)
+                    FROM actividades a
+                    INNER JOIN lecciones l ON l.id = a.leccion_id
+                    WHERE l.curso_id = c.id
+                ) AS total_actividades,
+                (
+                    SELECT COUNT(DISTINCT pt.teoria_id)
+                    FROM progreso_teoria pt
+                    INNER JOIN teoria t ON t.id = pt.teoria_id
+                    INNER JOIN lecciones l ON l.id = t.leccion_id
+                    WHERE l.curso_id = c.id
+                      AND pt.estudiante_id = i.estudiante_id
+                      AND pt.leido = 1
+                ) AS teorias_leidas,
+                (
+                    SELECT COUNT(DISTINCT r.actividad_id)
+                    FROM respuestas r
+                    INNER JOIN actividades a ON a.id = r.actividad_id
+                    INNER JOIN lecciones l ON l.id = a.leccion_id
+                    WHERE l.curso_id = c.id
+                      AND r.estudiante_id = i.estudiante_id
+                ) AS actividades_respondidas
             FROM inscripciones i
             JOIN cursos c ON c.id = i.curso_id
             LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
-            LEFT JOIN lecciones l ON l.curso_id = c.id
-            LEFT JOIN teoria t ON t.leccion_id = l.id
-            LEFT JOIN progreso_teoria pt ON pt.teoria_id = t.id AND pt.estudiante_id = i.estudiante_id
-            LEFT JOIN actividades a ON a.leccion_id = l.id
-            LEFT JOIN respuestas r ON r.actividad_id = a.id AND r.estudiante_id = i.estudiante_id
             WHERE i.estudiante_id = :estudiante_id
-            GROUP BY c.id
             ORDER BY c.fecha_creacion DESC
         ");
         $this->db->bind(':estudiante_id', $estudiante_id);
@@ -303,6 +345,7 @@ class Curso {
             $curso->porcentaje = $curso->total_items > 0
                 ? (int) round(($curso->completados / $curso->total_items) * 100)
                 : 0;
+            $curso->porcentaje = max(0, min(100, $curso->porcentaje));
             if ($curso->total_items === 0) {
                 $curso->estado_progreso = 'pendiente';
             } elseif ($curso->porcentaje >= 100) {
