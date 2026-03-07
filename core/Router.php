@@ -69,6 +69,10 @@ class Router {
         if ($uri[0] !== '/') {
             $uri = '/' . $uri;
         }
+        // Normalize trailing slash except root
+        if (strlen($uri) > 1) {
+            $uri = rtrim($uri, '/');
+        }
         return $uri;
     }
 }

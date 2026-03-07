@@ -1,5 +1,13 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
+<?php
+$tieneActividades = !empty($actividades);
+$activitySummary = [
+    'total_puntos' => array_reduce($actividades, fn($carry, $item) => $carry + (int) ($item->puntos_maximos ?? 0), 0),
+    'total_tiempo' => array_reduce($actividades, fn($carry, $item) => $carry + (int) ($item->tiempo_limite_minutos ?? 0), 0),
+];
+?>
+
 <div class="container">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -28,6 +36,12 @@
                     <i class="bi bi-lock"></i> Limite de actividades alcanzado
                 </button>
             <?php endif; ?>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/preview'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-eye"></i> Vista completa
+            </a>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-book"></i> Revisar teoria
+            </a>
         </div>
         <div class="metric-grid">
             <div class="metric-card">
@@ -37,8 +51,13 @@
             </div>
             <div class="metric-card">
                 <div class="metric-label">Puntos totales</div>
-                <div class="metric-value"><?php echo array_reduce($actividades, fn($carry, $item) => $carry + (int) $item->puntos_maximos, 0); ?></div>
+                <div class="metric-value"><?php echo $activitySummary['total_puntos']; ?></div>
                 <div class="metric-note">Suma de puntuacion maxima disponible.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Tiempo total</div>
+                <div class="metric-value"><?php echo $activitySummary['total_tiempo']; ?></div>
+                <div class="metric-note">Minutos estimados si el alumno completa toda la practica.</div>
             </div>
         </div>
     </section>
@@ -62,8 +81,24 @@
             </div>
         </div>
     <?php else: ?>
+        <section class="panel mb-4">
+            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="metric-label">Siguiente paso recomendado</div>
+                    <div class="fw-semibold mt-1">Prueba una actividad como alumno y detecta friccion antes de publicarla.</div>
+                    <div class="small text-muted mt-1">La vista de estudiante sirve para revisar copy, tiempos y claridad de respuesta.</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary">Nueva actividad</a>
+                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-primary">Volver a teoria</a>
+                </div>
+            </div>
+        </section>
         <div class="row g-4">
             <?php foreach ($actividades as $actividad): ?>
+                <?php
+                $activityReady = !empty(trim((string) ($actividad->descripcion ?? ''))) && (int) ($actividad->puntos_maximos ?? 0) > 0;
+                ?>
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
                         <div class="card-body">
@@ -80,12 +115,31 @@
                             <div class="course-meta">
                                 <span><i class="bi bi-clock"></i> <?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
                                 <span><i class="bi bi-award"></i> <?php echo (int) $actividad->puntos_maximos; ?> puntos</span>
+                                <span><i class="bi bi-check2-circle"></i> <?php echo $activityReady ? 'Lista para probar' : 'Revisar ficha'; ?></span>
                             </div>
 
                             <div class="responsive-actions mt-4">
+                                <form method="POST" action="<?php echo url('/profesor/actividad/move-up/' . $actividad->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary" title="Subir actividad">
+                                        <i class="bi bi-arrow-up"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="<?php echo url('/profesor/actividad/move-down/' . $actividad->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary" title="Bajar actividad">
+                                        <i class="bi bi-arrow-down"></i>
+                                    </button>
+                                </form>
                                 <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id); ?>" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
+                                <form method="POST" action="<?php echo url('/profesor/actividad/duplicate/' . $actividad->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-copy"></i> Duplicar
+                                    </button>
+                                </form>
                                 <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/preview'); ?>" class="btn btn-outline-secondary">
                                     <i class="bi bi-eye"></i> Vista estudiante
                                 </a>

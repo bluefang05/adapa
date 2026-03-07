@@ -29,13 +29,22 @@
         <div class="col-xl-8 col-lg-9">
             <div class="form-shell">
                 <div class="card-body">
-                    <form method="POST" action="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>">
+                    <form method="POST" action="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones/create'); ?>" id="formCrearLeccion">
                         <?php echo csrf_input(); ?>
 
                         <section class="form-section">
                             <div class="section-title">
                                 <h2 class="form-section-title">Base de la leccion</h2>
                                 <span class="soft-badge"><i class="bi bi-book"></i> Curso: <?php echo htmlspecialchars($curso->titulo); ?></span>
+                            </div>
+
+                            <div class="production-hint-card tone-info mb-3">
+                                <div class="production-hint-title">Checklist rapido antes de crear</div>
+                                <ul class="quality-checklist-list mb-0">
+                                    <li>El titulo deja claro que habilidad, tema o situacion cubre la leccion.</li>
+                                    <li>La descripcion ayuda al alumno a entender que lograra al completarla.</li>
+                                    <li>El orden, la duracion y el estado coinciden con el momento real del curso.</li>
+                                </ul>
                             </div>
 
                             <div class="mb-3">
@@ -107,5 +116,21 @@
         </div>
     </div>
 </div>
+
+<script>
+const lessonCreateForm = document.getElementById('formCrearLeccion');
+const lessonCreateState = document.getElementById('estado');
+
+if (lessonCreateForm && lessonCreateState) {
+    lessonCreateForm.addEventListener('submit', function (event) {
+        if (lessonCreateState.value === 'publicada') {
+            const shouldContinue = window.confirm('La leccion se creara como publicada desde el inicio. Todavia faltara teoria y practica despues de guardarla. ¿Quieres continuar?');
+            if (!shouldContinue) {
+                event.preventDefault();
+            }
+        }
+    });
+}
+</script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

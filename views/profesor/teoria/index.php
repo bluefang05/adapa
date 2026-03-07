@@ -1,5 +1,13 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
+<?php
+$puedePasarAPractica = !empty($teorias);
+$teoriaSummary = [
+    'total_bloques' => array_reduce($teorias, fn($carry, $item) => $carry + (int) (!empty($item->bloques) ? count($item->bloques) : 0), 0),
+    'duracion_total' => array_reduce($teorias, fn($carry, $item) => $carry + (int) ($item->duracion_minutos ?? 0), 0),
+];
+?>
+
 <div class="container">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -22,6 +30,12 @@
             <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria/create'); ?>" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Anadir teoria
             </a>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/preview'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-eye"></i> Vista completa
+            </a>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-lightning-charge"></i> Ver practica
+            </a>
         </div>
         <div class="metric-grid">
             <div class="metric-card">
@@ -31,8 +45,13 @@
             </div>
             <div class="metric-card">
                 <div class="metric-label">Duracion total</div>
-                <div class="metric-value"><?php echo array_reduce($teorias, fn($carry, $item) => $carry + (int) $item->duracion_minutos, 0); ?></div>
+                <div class="metric-value"><?php echo $teoriaSummary['duracion_total']; ?></div>
                 <div class="metric-note">Minutos estimados de estudio.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Bloques</div>
+                <div class="metric-value"><?php echo $teoriaSummary['total_bloques']; ?></div>
+                <div class="metric-note">Piezas estructuradas visibles para el alumno.</div>
             </div>
         </div>
     </section>
@@ -47,8 +66,27 @@
             </div>
         </div>
     <?php else: ?>
+        <section class="panel mb-4">
+            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="metric-label">Siguiente paso recomendado</div>
+                    <div class="fw-semibold mt-1"><?php echo $puedePasarAPractica ? 'La base teorica ya existe. Conviene revisar o pasar a practica.' : 'Crea al menos una pieza teorica antes de seguir.'; ?></div>
+                    <div class="small text-muted mt-1"><?php echo $puedePasarAPractica ? 'Usa esta vista para detectar piezas flojas o pasar a actividades.' : 'La leccion todavia no tiene soporte conceptual.'; ?></div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria/create'); ?>" class="btn btn-primary">Anadir teoria</a>
+                    <?php if ($puedePasarAPractica): ?>
+                        <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades'); ?>" class="btn btn-outline-primary">Pasar a practica</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
         <div class="row g-4">
             <?php foreach ($teorias as $teoria): ?>
+                <?php
+                $blockCount = !empty($teoria->bloques) ? count($teoria->bloques) : 0;
+                $qualityLabel = $blockCount >= 4 ? 'Base solida' : 'Puede crecer';
+                ?>
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
                         <div class="card-body">
@@ -62,13 +100,32 @@
 
                             <div class="course-meta">
                                 <span><i class="bi bi-clock"></i> <?php echo (int) $teoria->duracion_minutos; ?> min</span>
-                                <span><i class="bi bi-collection"></i> <?php echo !empty($teoria->bloques) ? count($teoria->bloques) : 0; ?> bloques</span>
+                                <span><i class="bi bi-collection"></i> <?php echo $blockCount; ?> bloques</span>
+                                <span><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($qualityLabel); ?></span>
                             </div>
 
                             <div class="responsive-actions mt-4">
+                                <form method="POST" action="<?php echo url('/profesor/teoria/move-up/' . $teoria->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary" title="Subir teoria">
+                                        <i class="bi bi-arrow-up"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="<?php echo url('/profesor/teoria/move-down/' . $teoria->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary" title="Bajar teoria">
+                                        <i class="bi bi-arrow-down"></i>
+                                    </button>
+                                </form>
                                 <a href="<?php echo url('/profesor/teoria/edit/' . $teoria->id); ?>" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
+                                <form method="POST" action="<?php echo url('/profesor/teoria/duplicate/' . $teoria->id); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-copy"></i> Duplicar
+                                    </button>
+                                </form>
                                 <form method="POST" action="<?php echo url('/profesor/teoria/delete/' . $teoria->id); ?>" onsubmit="return confirm('Estas seguro de eliminar esta teoria?');">
                                     <?php echo csrf_input(); ?>
                                     <button type="submit" class="btn btn-danger">

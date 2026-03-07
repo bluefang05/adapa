@@ -1,0 +1,37 @@
+ADAPA HOSTING DEPLOY - THEME ITERATOR
+Date: 2026-03-06
+
+Objetivo
+- El boton de tema ahora itera entre 4 temas: warm -> paper -> sky -> dark.
+- Se mantiene dark como modo de accesibilidad.
+- Persistencia completa en localStorage + cookie + servidor.
+
+Archivos a subir
+- views/partials/header.php
+- views/partials/footer.php
+- controllers/shared/ThemeController.php
+- assets/css/app.css
+
+Detalles tecnicos
+1) Nuevos temas soportados:
+   - warm (calido, default)
+   - paper (off-white)
+   - sky (azul suave)
+   - dark (oscuro)
+2) Bootstrap:
+   - data-bs-theme = dark solo en tema dark
+   - data-bs-theme = light en warm/paper/sky
+3) Compatibilidad:
+   - si existe valor legacy "light", se mapea a "warm".
+4) Boton de tema:
+   - un click = siguiente tema del ciclo.
+
+Impacto DB
+- Ninguno.
+- No requiere SQL.
+
+Prueba rapida en hosting
+1) Entrar a cualquier vista.
+2) Clic repetido en boton "Tema" en navbar.
+3) Validar orden: warm -> paper -> sky -> dark -> warm.
+4) Recargar y navegar: debe recordar el ultimo tema.

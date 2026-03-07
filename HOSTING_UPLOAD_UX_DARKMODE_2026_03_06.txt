@@ -1,0 +1,43 @@
+ADAPA HOSTING UPLOAD - UX FOCUS PASS + DARK THEME STABILITY
+Date: 2026-03-06
+
+Subir estos archivos:
+- assets/css/app.css
+- views/partials/header.php
+- views/partials/footer.php
+- views/shared/home/index.php
+- views/auth/login.php
+- views/auth/register.php
+- views/estudiante/index.php
+- views/estudiante/lecciones.php
+- views/estudiante/contenido_leccion.php
+
+Cambios aplicados
+1) Tema oscuro estable en Chrome
+- Arranque por tema de servidor (sin recalc inicial desde localStorage).
+- pageshow usa tema actual/servidor, evitando salto dark->light.
+- Se elimina sincronizacion por storage para evitar cambios inesperados.
+
+2) UX simplificada (menos ruido, mas accion)
+- Landing: mensaje y beneficios mas directos.
+- Login/Register: menos texto introductorio, foco en completar tarea.
+- Dashboard estudiante: bloque dominante de "Continuar ahora".
+- Seccion "Como funciona" removida del dashboard.
+- Lecciones: menos badges y meta secundaria.
+- Detalle leccion: teoria en bloques expandibles (details/summary).
+- Toggle de tema retirado del footer (queda en navbar).
+
+Impacto DB
+- Ninguno.
+- No requiere SQL.
+
+Checklist rapido post-upload
+1) Hard refresh (Ctrl+F5).
+2) Probar en Chrome normal:
+   - cambiar tema
+   - navegar login/register/estudiante/lecciones
+   - confirmar que no salta a claro solo.
+3) Validar UX:
+   - dashboard muestra CTA claro de continuidad
+   - teoria colapsable en contenido de leccion
+   - footer mas discreto

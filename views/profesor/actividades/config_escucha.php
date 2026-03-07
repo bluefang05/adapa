@@ -16,6 +16,11 @@
         <p class="page-subtitle">
             Vincula el audio, añade transcripcion opcional y construye preguntas de comprension para el estudiante.
         </p>
+        <div class="hero-actions">
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/escucha/' . $leccion->id)) . '&context=actividad_escucha'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir audio en biblioteca
+            </a>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -25,6 +30,14 @@
     <div class="alert alert-info">
         <i class="bi bi-info-circle"></i> Puedes usar una URL directa de audio. La subida de archivos todavia no esta integrada en esta pantalla.
     </div>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso listo para escuchar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            Si es audio o video, la URL se colocara automaticamente.
+        </div>
+    <?php endif; ?>
 
     <div class="row justify-content-center">
         <div class="col-xl-10">
@@ -149,6 +162,7 @@
     const preguntasContainer = document.getElementById('preguntas-container');
     const preguntaTemplate = document.getElementById('pregunta-template');
     const opcionTemplate = document.getElementById('opcion-template');
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     function agregarPregunta(datos = null) {
         const clone = preguntaTemplate.content.cloneNode(true);
@@ -213,6 +227,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        const selectedMediaUrl = selectedMediaParams.get('selected_media_url');
+        const selectedMediaType = selectedMediaParams.get('selected_media_type');
         try {
             const contenido = <?php 
                 $c = $_SESSION['actividad_temp']['contenido'] ?? '{}';
@@ -221,6 +237,10 @@
             
             if (contenido.audio_url) {
                 document.getElementById('audio_url').value = contenido.audio_url;
+            }
+
+            if (!contenido.audio_url && selectedMediaUrl && (selectedMediaType === 'audio' || selectedMediaType === 'video')) {
+                document.getElementById('audio_url').value = selectedMediaUrl;
             }
             
             if (contenido.transcripcion) {
@@ -234,6 +254,9 @@
             }
         } catch(e) { 
             console.error(e);
+            if (selectedMediaUrl && (selectedMediaType === 'audio' || selectedMediaType === 'video')) {
+                document.getElementById('audio_url').value = selectedMediaUrl;
+            }
             agregarPregunta();
         }
     });

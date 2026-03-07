@@ -20,6 +20,9 @@
             <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a actividades
             </a>
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/lecciones/' . $leccion->id . '/actividades/create')) . '&context=actividad'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Abrir biblioteca
+            </a>
         </div>
         <div class="metric-grid">
             <div class="metric-card">
@@ -44,6 +47,14 @@
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success mb-4">
+            <i class="bi bi-check2-circle"></i>
+            Recurso contextual listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            Si eliges una actividad de escucha o una configuracion con imagen, te recordare usarlo en el siguiente paso.
+        </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-9">
             <div class="form-shell">
@@ -55,6 +66,32 @@
                             <div class="section-title">
                                 <h2 class="form-section-title">Datos base</h2>
                                 <span class="soft-badge"><i class="bi bi-pencil-square"></i> Configuracion</span>
+                            </div>
+
+                            <div class="panel mb-3">
+                                <div class="panel-body">
+                                    <div class="section-title mb-3">
+                                        <h3 class="h5 mb-0">Elige mejor, crea mas rapido</h3>
+                                        <span class="soft-badge"><i class="bi bi-signpost-split"></i> Guía</span>
+                                    </div>
+                                    <div class="quality-checklist">
+                                        <div class="quality-checklist-title">Usa cada tipo para esto:</div>
+                                        <ul class="quality-checklist-list">
+                                            <li>Opcion multiple o verdadero/falso para comprobar comprension rapida.</li>
+                                            <li>Ordenar palabras o completar oracion para fijar estructura.</li>
+                                            <li>Escucha y pronunciacion para ritmo, sonido y reconocimiento.</li>
+                                            <li>Respuesta larga o proyecto para produccion abierta.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="production-hint-card tone-info mt-3">
+                                        <div class="production-hint-title">Checklist rapido antes de crear</div>
+                                        <ul class="quality-checklist-list mb-0">
+                                            <li>El tipo de actividad mide exactamente lo que ensena la leccion.</li>
+                                            <li>El titulo y la descripcion dicen que debe hacer el alumno.</li>
+                                            <li>Los puntos y el tiempo no castigan una tarea simple ni regalan una compleja.</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -120,3 +157,58 @@
 </div>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>
+
+<script>
+(function () {
+    const typeSelect = document.getElementById('tipo_actividad');
+    const titleInput = document.getElementById('titulo');
+    const descriptionInput = document.getElementById('descripcion');
+    const pointsInput = document.getElementById('puntos_maximos');
+    const timeInput = document.getElementById('tiempo_limite_minutos');
+    const selectedParams = new URLSearchParams(window.location.search);
+
+    const defaults = {
+        opcion_multiple: ['Chequeo rapido de comprension', 'Selecciona la opcion correcta segun lo trabajado en la leccion.', 10, 5],
+        verdadero_falso: ['Verdadero o falso en contexto', 'Decide si cada afirmacion coincide con la teoria o el dialogo revisado.', 10, 4],
+        completar_oracion: ['Completa la frase clave', 'Rellena los huecos con la palabra o estructura correcta.', 12, 6],
+        ordenar_palabras: ['Reconstruye la frase', 'Ordena las palabras hasta formar una frase natural y correcta.', 10, 4],
+        respuesta_corta: ['Respuesta breve de precision', 'Responde con una palabra o frase corta segun la consigna.', 10, 4],
+        respuesta_larga: ['Produccion guiada', 'Escribe una respuesta corta con tus propias palabras usando la estructura vista.', 20, 12],
+        escucha: ['Escucha y detecta la idea clave', 'Escucha el audio y responde segun lo que entiendas.', 15, 6],
+        pronunciacion: ['Imita y pronuncia la frase', 'Escucha, repite y comprueba si reproduces la frase con suficiente claridad.', 15, 6],
+        arrastrar_soltar: ['Relaciona y organiza', 'Arrastra cada elemento hasta su categoria o lugar correcto.', 12, 6],
+        emparejamiento: ['Empareja concepto y significado', 'Relaciona cada elemento con su pareja correcta.', 12, 5],
+        proyecto: ['Mini tarea aplicada', 'Entrega una produccion breve que combine vocabulario, estructura y sentido.', 25, 20]
+    };
+
+    if (!typeSelect) {
+        return;
+    }
+
+    typeSelect.addEventListener('change', function () {
+        const selected = defaults[typeSelect.value];
+        if (!selected) {
+            return;
+        }
+
+        if (!titleInput.value.trim()) {
+            titleInput.value = selected[0];
+        }
+        if (!descriptionInput.value.trim()) {
+            descriptionInput.value = selected[1];
+        }
+        pointsInput.value = selected[2];
+        timeInput.value = selected[3];
+
+        const selectedMediaTitle = selectedParams.get('selected_media_title');
+        if (selectedMediaTitle && (typeSelect.value === 'escucha' || typeSelect.value === 'opcion_multiple')) {
+            const extra = typeSelect.value === 'escucha'
+                ? ' Recurso sugerido para usar al configurar: ' + selectedMediaTitle + '.'
+                : ' Recurso sugerido para imagen de pregunta: ' + selectedMediaTitle + '.';
+            if (descriptionInput.value.indexOf(selectedMediaTitle) === -1) {
+                descriptionInput.value = descriptionInput.value.trim() + extra;
+            }
+        }
+    });
+})();
+</script>

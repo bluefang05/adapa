@@ -22,8 +22,47 @@
         <div class="col-xl-8 col-lg-9">
             <div class="form-shell">
                 <div class="card-body">
-                    <form method="POST" action="<?php echo url('/profesor/lecciones/edit/' . $leccion->id); ?>">
+                    <form method="POST" action="<?php echo url('/profesor/lecciones/edit/' . $leccion->id); ?>" id="formEditarLeccion">
                         <?php echo csrf_input(); ?>
+
+                        <section class="form-section">
+                            <div class="section-title">
+                                <h2 class="form-section-title">Checklist de publicacion</h2>
+                                <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Control rapido</span>
+                            </div>
+
+                            <div class="production-hint-card tone-info mb-3">
+                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                    <div>
+                                        <div class="production-hint-title">Preparacion actual: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</div>
+                                        <div class="text-muted mt-1"><?php echo htmlspecialchars($lessonPublishHint ?? ''); ?></div>
+                                    </div>
+                                    <div class="soft-badge"><?php echo (int) ($lessonPublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($lessonPublishSummary['total'] ?? 0); ?> puntos</div>
+                                </div>
+                                <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%"></span></div>
+                                <div class="course-meta mt-3">
+                                    <span><i class="bi bi-book"></i> <?php echo (int) ($lessonPublishSummary['theories'] ?? 0); ?> teorias</span>
+                                    <span><i class="bi bi-lightning"></i> <?php echo (int) ($lessonPublishSummary['activities'] ?? 0); ?> actividades</span>
+                                </div>
+                            </div>
+
+                            <div class="publish-checklist-grid">
+                                <?php foreach (($lessonPublishChecklist ?? []) as $item): ?>
+                                    <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
+                                        <div class="publish-check-head">
+                                            <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
+                                            <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                        </div>
+                                        <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div id="lessonPublishHint" class="alert alert-warning mt-3 mb-0" <?php echo ($leccion->estado ?? '') === 'publicada' && (int) ($lessonPublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                La leccion esta publicada, pero todavia tiene huecos que el alumno puede notar.
+                            </div>
+                        </section>
 
                         <section class="form-section">
                             <div class="section-title">
@@ -95,5 +134,36 @@
         </div>
     </div>
 </div>
+
+<script>
+const lessonStateSelect = document.getElementById('estado');
+const lessonPublishHint = document.getElementById('lessonPublishHint');
+const lessonPublishPercentage = <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>;
+const lessonEditForm = document.getElementById('formEditarLeccion');
+
+function syncLessonPublishHint() {
+    if (!lessonStateSelect || !lessonPublishHint) {
+        return;
+    }
+
+    lessonPublishHint.hidden = !(lessonStateSelect.value === 'publicada' && lessonPublishPercentage < 100);
+}
+
+if (lessonStateSelect) {
+    lessonStateSelect.addEventListener('change', syncLessonPublishHint);
+    syncLessonPublishHint();
+}
+
+if (lessonEditForm) {
+    lessonEditForm.addEventListener('submit', function (event) {
+        if (lessonStateSelect && lessonStateSelect.value === 'publicada' && lessonPublishPercentage < 100) {
+            const shouldContinue = window.confirm('Esta leccion se publicara aunque todavia tenga huecos editoriales. ¿Quieres continuar de todos modos?');
+            if (!shouldContinue) {
+                event.preventDefault();
+            }
+        }
+    });
+}
+</script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

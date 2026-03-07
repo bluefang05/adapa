@@ -16,6 +16,11 @@
         <p class="page-subtitle">
             Crea pares relacionados que luego el estudiante deba unir correctamente.
         </p>
+        <div class="hero-actions">
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/emparejamiento/' . $leccion->id)) . '&context=actividad_emparejamiento'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir recurso de apoyo
+            </a>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -25,6 +30,13 @@
     <div class="alert alert-info">
         <i class="bi bi-info-circle"></i> Ejemplos utiles: pais-capital, palabra-traduccion, termino-definicion.
     </div>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        </div>
+    <?php endif; ?>
 
     <div class="row justify-content-center">
         <div class="col-xl-10">
@@ -126,6 +138,7 @@
     const form = document.getElementById('config-form');
     const paresContainer = document.getElementById('pares-container');
     const parTemplate = document.getElementById('par-template');
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     function agregarPar(itemA = '', itemB = '') {
         const clone = parTemplate.content.cloneNode(true);
@@ -198,7 +211,11 @@
         }
 
         const contenido = {
-            pares: pares
+            pares: pares,
+            recurso_apoyo_media_id: selectedMediaParams.get('selected_media_id') || '',
+            recurso_apoyo_titulo: selectedMediaParams.get('selected_media_title') || '',
+            recurso_apoyo_url: selectedMediaParams.get('selected_media_url') || '',
+            recurso_apoyo_tipo: selectedMediaParams.get('selected_media_type') || ''
         };
         
         document.getElementById('contenido').value = JSON.stringify(contenido);

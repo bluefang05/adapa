@@ -56,6 +56,42 @@ class Actividad {
         return $this->db->resultSet();
     }
 
+    public function moverActividad($id, $direction) {
+        $actividad = $this->obtenerActividadPorId($id);
+        if (!$actividad) {
+            return false;
+        }
+
+        $operator = $direction === 'up' ? '<' : '>';
+        $orderBy = $direction === 'up' ? 'DESC' : 'ASC';
+
+        $this->db->query("
+            SELECT id, orden
+            FROM actividades
+            WHERE leccion_id = :leccion_id
+              AND orden {$operator} :orden
+            ORDER BY orden {$orderBy}, id {$orderBy}
+            LIMIT 1
+        ");
+        $this->db->bind(':leccion_id', $actividad->leccion_id);
+        $this->db->bind(':orden', $actividad->orden);
+        $vecina = $this->db->single();
+
+        if (!$vecina) {
+            return false;
+        }
+
+        $this->db->query("UPDATE actividades SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $vecina->orden);
+        $this->db->bind(':id', $actividad->id);
+        $this->db->execute();
+
+        $this->db->query("UPDATE actividades SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $actividad->orden);
+        $this->db->bind(':id', $vecina->id);
+        return $this->db->execute();
+    }
+
     public function obtenerActividadesConProgreso($leccion_id, $estudiante_id) {
         $this->db->query("
             SELECT a.*,
@@ -100,6 +136,71 @@ class Actividad {
         $this->db->bind(':leccion_id', $leccion_id);
         $resultado = $this->db->single();
         return $resultado ? $resultado->total : 0;
+    }
+
+    public function obtenerSiguienteOrdenPorLeccion($leccionId) {
+        $this->db->query("SELECT MAX(orden) as max_orden FROM actividades WHERE leccion_id = :leccion_id");
+        $this->db->bind(':leccion_id', $leccionId);
+        $resultado = $this->db->single();
+        return $resultado && $resultado->max_orden ? ((int) $resultado->max_orden + 1) : 1;
+    }
+
+    public function duplicarActividad($id, $targetLeccionId = null, $appendCopyLabel = true) {
+        $actividad = $this->obtenerActividadPorId($id);
+        if (!$actividad) {
+            return null;
+        }
+
+        $leccionId = $targetLeccionId ?: $actividad->leccion_id;
+        $titulo = trim((string) $actividad->titulo);
+        if ($appendCopyLabel) {
+            $titulo .= ' (copia)';
+        }
+
+        $datos = [
+            'leccion_id' => $leccionId,
+            'titulo' => $titulo,
+            'descripcion' => $actividad->descripcion,
+            'tipo_actividad' => $actividad->tipo_actividad,
+            'instrucciones' => $actividad->instrucciones,
+            'contenido' => $actividad->contenido,
+            'puntos_maximos' => $actividad->puntos_maximos,
+            'tiempo_limite_minutos' => $actividad->tiempo_limite_minutos,
+            'intentos_permitidos' => $actividad->intentos_permitidos,
+            'es_calificable' => $actividad->es_calificable,
+            'orden' => $this->obtenerSiguienteOrdenPorLeccion($leccionId),
+            'estado' => 'activa',
+        ];
+
+        if (!$this->crearActividad($datos)) {
+            return null;
+        }
+
+        $nuevoId = (int) $this->db->lastInsertId();
+        $this->duplicarOpcionesMultiples($id, $nuevoId);
+
+        return $nuevoId;
+    }
+
+    private function duplicarOpcionesMultiples($actividadOrigenId, $actividadNuevaId) {
+        $this->db->query("SELECT texto, es_correcta, orden FROM opciones_multiples WHERE actividad_id = :actividad_id ORDER BY orden ASC, id ASC");
+        $this->db->bind(':actividad_id', $actividadOrigenId);
+        $opciones = $this->db->resultSet();
+
+        if (empty($opciones)) {
+            return true;
+        }
+
+        $this->db->query("INSERT INTO opciones_multiples (actividad_id, texto, es_correcta, orden) VALUES (:actividad_id, :texto, :es_correcta, :orden)");
+        foreach ($opciones as $opcion) {
+            $this->db->bind(':actividad_id', $actividadNuevaId);
+            $this->db->bind(':texto', $opcion->texto);
+            $this->db->bind(':es_correcta', $opcion->es_correcta);
+            $this->db->bind(':orden', $opcion->orden);
+            $this->db->execute();
+        }
+
+        return true;
     }
 
     public function obtenerTiposActividadDisponibles() {

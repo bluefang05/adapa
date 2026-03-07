@@ -53,6 +53,13 @@ class Leccion {
         return $this->db->execute();
     }
 
+    public function reasignarCurso($id, $cursoId) {
+        $this->db->query("UPDATE lecciones SET curso_id = :curso_id WHERE id = :id");
+        $this->db->bind(':curso_id', $cursoId);
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
     public function eliminarLeccion($id) {
         $this->db->query("DELETE FROM lecciones WHERE id = :id");
         $this->db->bind(':id', $id);
@@ -66,6 +73,29 @@ class Leccion {
         return $resultado->max_orden ? $resultado->max_orden + 1 : 1;
     }
 
+    public function duplicarLeccion($id) {
+        $leccion = $this->obtenerLeccionPorId($id);
+        if (!$leccion) {
+            return null;
+        }
+
+        $datos = [
+            'curso_id' => $leccion->curso_id,
+            'titulo' => trim((string) $leccion->titulo) . ' (copia)',
+            'descripcion' => $leccion->descripcion,
+            'orden' => $this->obtenerSiguienteOrden($leccion->curso_id),
+            'duracion_minutos' => $leccion->duracion_minutos,
+            'es_obligatoria' => $leccion->es_obligatoria,
+            'estado' => 'borrador',
+        ];
+
+        if (!$this->crearLeccion($datos)) {
+            return null;
+        }
+
+        return (int) $this->obtenerUltimaLeccionCreada();
+    }
+
     public function obtenerLeccionesConContenido($curso_id) {
         $this->db->query("SELECT l.*, 
                         (SELECT COUNT(*) FROM teoria WHERE leccion_id = l.id) as total_teorias,
@@ -75,6 +105,42 @@ class Leccion {
                         ORDER BY l.orden ASC, l.id ASC");
         $this->db->bind(':curso_id', $curso_id);
         return $this->db->resultSet();
+    }
+
+    public function moverLeccion($id, $direction) {
+        $leccion = $this->obtenerLeccionPorId($id);
+        if (!$leccion) {
+            return false;
+        }
+
+        $operator = $direction === 'up' ? '<' : '>';
+        $orderBy = $direction === 'up' ? 'DESC' : 'ASC';
+
+        $this->db->query("
+            SELECT id, orden
+            FROM lecciones
+            WHERE curso_id = :curso_id
+              AND orden {$operator} :orden
+            ORDER BY orden {$orderBy}, id {$orderBy}
+            LIMIT 1
+        ");
+        $this->db->bind(':curso_id', $leccion->curso_id);
+        $this->db->bind(':orden', $leccion->orden);
+        $vecina = $this->db->single();
+
+        if (!$vecina) {
+            return false;
+        }
+
+        $this->db->query("UPDATE lecciones SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $vecina->orden);
+        $this->db->bind(':id', $leccion->id);
+        $this->db->execute();
+
+        $this->db->query("UPDATE lecciones SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $leccion->orden);
+        $this->db->bind(':id', $vecina->id);
+        return $this->db->execute();
     }
 
     public function obtenerProgresoEstudiante($estudiante_id, $leccion_id) {

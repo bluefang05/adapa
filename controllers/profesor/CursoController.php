@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../../models/Curso.php';
 require_once __DIR__ . '/../../models/MediaRecurso.php';
 require_once __DIR__ . '/../../models/ProfesorPlan.php';
+require_once __DIR__ . '/../../models/Leccion.php';
+require_once __DIR__ . '/../../models/Teoria.php';
+require_once __DIR__ . '/../../models/Actividad.php';
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 
@@ -10,12 +13,18 @@ class CursoController extends Controller {
     private $cursoModel;
     private $mediaModel;
     private $planModel;
+    private $leccionModel;
+    private $teoriaModel;
+    private $actividadModel;
 
     public function __construct() {
         $this->requireRole('profesor');
         $this->cursoModel = new Curso();
         $this->mediaModel = new MediaRecurso();
         $this->planModel = new ProfesorPlan();
+        $this->leccionModel = new Leccion();
+        $this->teoriaModel = new Teoria();
+        $this->actividadModel = new Actividad();
     }
 
     public function index() {
@@ -141,11 +150,13 @@ class CursoController extends Controller {
                 $error = "Error al actualizar el curso";
                 $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
                 $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
+                [$coursePublishChecklist, $coursePublishSummary, $coursePublishHint] = $this->buildCoursePublishData($curso);
                 require_once __DIR__ . '/../../views/profesor/cursos/edit.php';
             }
         } else {
             $recursosImagen = $this->mediaModel->obtenerImagenesPorProfesor(Auth::getUserId(), Auth::getInstanciaId());
             $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
+            [$coursePublishChecklist, $coursePublishSummary, $coursePublishHint] = $this->buildCoursePublishData($curso);
             require_once __DIR__ . '/../../views/profesor/cursos/edit.php';
         }
     }
@@ -160,6 +171,57 @@ class CursoController extends Controller {
         }
 
         $this->cursoModel->eliminarCurso($id);
+        $this->redirect('/profesor/cursos');
+    }
+
+    public function duplicate($id) {
+        $this->requirePost();
+        require_csrf();
+
+        $curso = $this->cursoModel->obtenerCursoPorId($id);
+        if (!$curso || $curso->creado_por != Auth::getUserId()) {
+            $this->redirect('/profesor/cursos');
+        }
+
+        [$puedeCrear, $mensajeLimite] = $this->planModel->puedeCrearCurso(Auth::getUserId());
+        if (!$puedeCrear) {
+            $this->flash('error', $mensajeLimite);
+            $this->redirect('/profesor/cursos');
+        }
+
+        $nuevoCursoId = $this->cursoModel->duplicarCurso($id, Auth::getInstanciaId(), Auth::getUserId());
+        if (!$nuevoCursoId) {
+            $this->flash('error', 'No se pudo duplicar el curso.');
+            $this->redirect('/profesor/cursos');
+        }
+
+        foreach ($this->leccionModel->obtenerLeccionesPorCurso($id) as $leccion) {
+            $nuevaLeccionId = $this->leccionModel->duplicarLeccion($leccion->id);
+            if (!$nuevaLeccionId) {
+                continue;
+            }
+
+            // Reasignar la leccion duplicada al nuevo curso.
+            $this->leccionModel->actualizarLeccion($nuevaLeccionId, [
+                'titulo' => str_replace(' (copia)', '', $leccion->titulo),
+                'descripcion' => $leccion->descripcion,
+                'orden' => $leccion->orden,
+                'duracion_minutos' => $leccion->duracion_minutos,
+                'es_obligatoria' => $leccion->es_obligatoria,
+                'estado' => 'borrador',
+            ]);
+            $this->leccionModel->reasignarCurso($nuevaLeccionId, $nuevoCursoId);
+
+            foreach ($this->teoriaModel->obtenerTeoriasPorLeccion($leccion->id) as $teoria) {
+                $this->teoriaModel->duplicarTeoria($teoria->id, $nuevaLeccionId, false);
+            }
+
+            foreach ($this->actividadModel->obtenerActividadesPorLeccion($leccion->id) as $actividad) {
+                $this->actividadModel->duplicarActividad($actividad->id, $nuevaLeccionId, false);
+            }
+        }
+
+        $this->flash('success', 'Curso duplicado con su estructura completa.');
         $this->redirect('/profesor/cursos');
     }
 
@@ -189,5 +251,79 @@ class CursoController extends Controller {
         }
 
         return [$nivelPrincipal, $nivelDesde, $nivelHasta];
+    }
+
+    private function buildCoursePublishData($curso) {
+        $lecciones = $this->leccionModel->obtenerLeccionesPorCurso($curso->id);
+        $lessonCount = count($lecciones);
+        $theoryCount = 0;
+        $activityCount = 0;
+        $publishedLessonCount = 0;
+
+        foreach ($lecciones as $leccion) {
+            $lessonTheories = $this->teoriaModel->obtenerTeoriasPorLeccion($leccion->id);
+            $lessonActivities = $this->actividadModel->obtenerActividadesPorLeccion($leccion->id);
+            $theoryCount += count($lessonTheories);
+            $activityCount += count($lessonActivities);
+            if (($leccion->estado ?? '') === 'publicada') {
+                $publishedLessonCount++;
+            }
+        }
+
+        $checklist = [
+            [
+                'label' => 'Identidad clara',
+                'ok' => trim((string) ($curso->titulo ?? '')) !== '' && trim((string) ($curso->descripcion ?? '')) !== '',
+                'hint' => 'Titulo y descripcion deben explicar idioma, alcance y valor real.',
+            ],
+            [
+                'label' => 'Portada lista',
+                'ok' => !empty($curso->portada_media_id),
+                'hint' => 'Una buena portada mejora mucho catalogo, panel y percepcion premium.',
+            ],
+            [
+                'label' => 'Ruta creada',
+                'ok' => $lessonCount > 0,
+                'hint' => $lessonCount > 0 ? "Ya tienes {$lessonCount} leccion(es) montadas." : 'Crea al menos una leccion antes de abrir el curso.',
+            ],
+            [
+                'label' => 'Teoria suficiente',
+                'ok' => $theoryCount > 0,
+                'hint' => $theoryCount > 0 ? "El curso ya suma {$theoryCount} pieza(s) de teoria." : 'Aun no hay teoria visible para el alumno.',
+            ],
+            [
+                'label' => 'Practica suficiente',
+                'ok' => $activityCount > 0,
+                'hint' => $activityCount > 0 ? "El curso ya suma {$activityCount} actividad(es)." : 'Falta convertir el contenido en practica.',
+            ],
+            [
+                'label' => 'Lecciones visibles',
+                'ok' => $publishedLessonCount > 0,
+                'hint' => $publishedLessonCount > 0 ? "{$publishedLessonCount} leccion(es) ya estan publicadas." : 'Ninguna leccion esta marcada como publicada todavia.',
+            ],
+        ];
+
+        $okCount = count(array_filter($checklist, static fn ($item) => !empty($item['ok'])));
+        $summary = [
+            'ok' => $okCount,
+            'total' => count($checklist),
+            'percentage' => (int) round(($okCount / max(1, count($checklist))) * 100),
+            'lessons' => $lessonCount,
+            'theories' => $theoryCount,
+            'activities' => $activityCount,
+            'published_lessons' => $publishedLessonCount,
+        ];
+
+        if ($summary['percentage'] >= 100) {
+            $hint = 'Listo para abrirlo con confianza: ya tiene estructura, teoria, practica y visibilidad basica.';
+        } elseif ($lessonCount === 0) {
+            $hint = 'Todavia esta en fase de configuracion: crea la primera leccion antes de pensar en hacerlo visible.';
+        } elseif ($activityCount === 0) {
+            $hint = 'La estructura existe, pero aun falta practica para que el curso no se sienta incompleto.';
+        } else {
+            $hint = 'Va bien encaminado. Pulsa las piezas que faltan antes de abrirlo a mas estudiantes.';
+        }
+
+        return [$checklist, $summary, $hint];
     }
 }

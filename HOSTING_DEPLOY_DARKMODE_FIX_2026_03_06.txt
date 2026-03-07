@@ -1,0 +1,36 @@
+ADAPA - HOSTING DEPLOY (Dark Theme Stability Fix)
+Date: 2026-03-06
+
+Resumen
+- Se corrige el salto de tema oscuro -> claro en Chrome al navegar/recargar.
+- No hay cambios de base de datos.
+
+Archivos a subir
+1) views/partials/header.php
+2) views/partials/footer.php
+
+Que se cambio
+- Fuente inicial del tema: ahora solo backend (session/cookie servidor).
+- Se evita recalcular tema desde localStorage/cookie en el arranque.
+- pageshow (bfcache) mantiene tema actual de DOM/servidor.
+- Se elimina sincronizacion por evento storage para evitar cambios inesperados entre pestanas.
+
+Impacto DB
+- Ninguno.
+- No requiere ejecutar SQL.
+
+Post-deploy checklist
+1) Subir ambos archivos al hosting respetando rutas.
+2) Limpiar cache del navegador (Ctrl+F5).
+3) Probar en Chrome normal (no incognito):
+   - Cambiar a oscuro.
+   - Navegar entre /login, /register y vistas de estudiante.
+   - Recargar pagina.
+   - Confirmar que no vuelve a claro solo.
+4) Si un usuario tenia estado viejo en navegador:
+   - borrar solo cookie/localStorage de adapa-theme para ese dominio.
+
+Rollback rapido
+- Restaurar versiones previas de:
+  - views/partials/header.php
+  - views/partials/footer.php

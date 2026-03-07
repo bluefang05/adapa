@@ -11,6 +11,46 @@ function getEstadoColor($estado) {
 }
 
 require_once __DIR__ . '/../../../models/Curso.php';
+
+function getCourseProductionHint($curso) {
+    $totalLessons = (int) ($curso->total_lecciones ?? 0);
+    $totalActivities = (int) ($curso->total_actividades ?? 0);
+    $estado = $curso->estado ?? 'preparacion';
+
+    if ($totalLessons === 0) {
+        return 'Crea la primera leccion para que este curso tenga forma real.';
+    }
+
+    if ($totalActivities === 0) {
+        return 'Ya tienes estructura minima. Lo siguiente es convertirla en practica.';
+    }
+
+    if ($estado !== 'activo') {
+        return 'El contenido ya existe. Revisa acceso, portada y estado final antes de moverlo.';
+    }
+
+    return 'Este curso ya puede operarse. Lo siguiente es pulir calidad y seguimiento.';
+}
+
+function getCourseReadinessSummary($curso) {
+    $totalLessons = (int) ($curso->total_lecciones ?? 0);
+    $totalActivities = (int) ($curso->total_actividades ?? 0);
+    $estado = $curso->estado ?? 'preparacion';
+
+    if ($totalLessons === 0) {
+        return ['label' => 'Sin estructura', 'progress' => 15];
+    }
+
+    if ($totalActivities === 0) {
+        return ['label' => 'Falta practica', 'progress' => 55];
+    }
+
+    if ($estado !== 'activo') {
+        return ['label' => 'Listo para revisar', 'progress' => 82];
+    }
+
+    return ['label' => 'Operativo', 'progress' => 100];
+}
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -94,6 +134,7 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                 <?php
                                 $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
                                 $idiomaBase = Curso::obtenerIdiomaBase($curso);
+                                $readiness = getCourseReadinessSummary($curso);
                                 ?>
                                 <tr>
                                     <td>
@@ -106,6 +147,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
                                                 <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
+                                                <div class="small text-muted mt-1"><?php echo htmlspecialchars(getCourseProductionHint($curso)); ?></div>
+                                                <div class="small mt-1"><span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> · <?php echo (int) $readiness['progress']; ?>%</span></div>
                                             </div>
                                         </div>
                                     </td>
@@ -127,16 +170,30 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                     <td><?php echo (int) $curso->max_estudiantes; ?></td>
                                     <td>
                                         <div class="d-flex gap-2 flex-wrap">
-                                            <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-sm btn-outline-primary" title="Ver lecciones">
+                                            <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-sm btn-outline-primary" title="Ver lecciones" aria-label="Ver lecciones de <?php echo htmlspecialchars($curso->titulo); ?>">
                                                 <i class="bi bi-book"></i>
+                                                <span class="visually-hidden">Ver lecciones</span>
                                             </a>
-                                            <a href="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso">
+                                            <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-sm btn-primary" title="Continuar construccion" aria-label="Continuar construccion de <?php echo htmlspecialchars($curso->titulo); ?>">
+                                                <i class="bi bi-arrow-right-circle"></i>
+                                                <span class="visually-hidden">Continuar construccion</span>
+                                            </a>
+                                            <a href="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso" aria-label="Editar curso <?php echo htmlspecialchars($curso->titulo); ?>">
                                                 <i class="bi bi-pencil"></i>
+                                                <span class="visually-hidden">Editar curso</span>
                                             </a>
+                                            <form method="POST" action="<?php echo url('/profesor/cursos/duplicate/' . $curso->id); ?>" class="d-inline">
+                                                <?php echo csrf_input(); ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Duplicar curso" aria-label="Duplicar curso <?php echo htmlspecialchars($curso->titulo); ?>">
+                                                    <i class="bi bi-copy"></i>
+                                                    <span class="visually-hidden">Duplicar curso</span>
+                                                </button>
+                                            </form>
                                             <form method="POST" action="<?php echo url('/profesor/cursos/delete/' . $curso->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este curso?');">
                                                 <?php echo csrf_input(); ?>
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar curso">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar curso" aria-label="Eliminar curso <?php echo htmlspecialchars($curso->titulo); ?>">
                                                     <i class="bi bi-trash"></i>
+                                                    <span class="visually-hidden">Eliminar curso</span>
                                                 </button>
                                             </form>
                                         </div>

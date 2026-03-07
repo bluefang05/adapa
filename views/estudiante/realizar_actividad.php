@@ -1,5 +1,22 @@
 <?php 
 require_once __DIR__ . '/../partials/header.php';
+
+function studentActivityTypeLabel($tipo) {
+    $labels = [
+        'opcion_multiple' => 'Opcion multiple',
+        'verdadero_falso' => 'Verdadero/Falso',
+        'completar_oracion' => 'Completar oracion',
+        'emparejamiento' => 'Emparejamiento',
+        'ordenar_palabras' => 'Ordenar palabras',
+        'pronunciacion' => 'Pronunciacion',
+        'escritura' => 'Escritura',
+        'escucha' => 'Escucha',
+        'arrastrar_soltar' => 'Arrastrar y soltar',
+        'respuesta_corta' => 'Respuesta corta'
+    ];
+
+    return $labels[$tipo] ?? ucfirst(str_replace('_', ' ', (string) $tipo));
+}
 ?>
 
 <div class="container">
@@ -42,7 +59,7 @@ require_once __DIR__ . '/../partials/header.php';
                 <div class="metric-grid">
                     <div class="metric-card">
                         <div class="metric-label">Tipo</div>
-                        <div class="metric-value text-capitalize"><?php echo htmlspecialchars(str_replace('_', ' ', $actividad->tipo_actividad)); ?></div>
+                        <div class="metric-value"><?php echo htmlspecialchars(studentActivityTypeLabel($actividad->tipo_actividad)); ?></div>
                         <div class="metric-note">Formato de esta practica.</div>
                     </div>
                     <div class="metric-card">
@@ -54,6 +71,11 @@ require_once __DIR__ . '/../partials/header.php';
                         <div class="metric-label">Leccion</div>
                         <div class="metric-value"><?php echo (int) $leccion->orden; ?></div>
                         <div class="metric-note"><?php echo htmlspecialchars($leccion->titulo); ?></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Objetivo</div>
+                        <div class="metric-value"><?php echo !empty($actividad->puntos_maximos) ? (int) $actividad->puntos_maximos . ' pts' : 'Practica'; ?></div>
+                        <div class="metric-note"><?php echo !empty($actividad->tiempo_limite_minutos) ? ((int) $actividad->tiempo_limite_minutos . ' min estimados') : 'Sin tiempo fijo'; ?></div>
                     </div>
                 </div>
             </div>
@@ -69,6 +91,15 @@ require_once __DIR__ . '/../partials/header.php';
                         $ttsLanguageMap = app_tts_language_map();
                         $langCode = $ttsLanguageMap[$idiomaCurso] ?? 'en-US';
                     ?>
+
+                    <?php if (!empty($actividad->instrucciones) || !empty($actividad->descripcion)): ?>
+                        <div class="alert alert-light border mb-4">
+                            <div class="fw-semibold mb-2">Como abordar esta actividad</div>
+                            <div class="small text-muted">
+                                <?php echo htmlspecialchars($actividad->instrucciones ?: $actividad->descripcion); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     
                     <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
                         <div class="alert alert-info mb-4 activity-feedback-alert" role="alert">
@@ -133,12 +164,24 @@ require_once __DIR__ . '/../partials/header.php';
                                         <?php endif; ?>
                                         
                                         <?php if (!empty($pregunta->opciones)): ?>
+                                            <?php
+                                                $respuestaUsuario = $respuestasUsuario[$pregunta->id] ?? null;
+                                                $preguntaTieneRespuesta = $respuestaUsuario !== null && $respuestaUsuario !== '';
+                                                $preguntaEsCorrecta = false;
+                                                if ($showFeedback && $preguntaTieneRespuesta) {
+                                                    foreach ($pregunta->opciones as $opcionRevision) {
+                                                        $opcionTextoRevision = $opcionRevision->opcion_texto ?? null;
+                                                        $opcionCorrectaRevision = isset($opcionRevision->es_correcta) && ($opcionRevision->es_correcta == 1 || $opcionRevision->es_correcta === true);
+                                                        if ($respuestaUsuario === $opcionTextoRevision && $opcionCorrectaRevision) {
+                                                            $preguntaEsCorrecta = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            ?>
                                             <div class="list-group">
                                                 <?php foreach ($pregunta->opciones as $opcion): ?>
                                                     <?php 
-                                                        // Usar el ID de la pregunta para buscar la respuesta, ya que el indice del bucle puede variar si se barajan
-                                                        $respuestaUsuario = $respuestasUsuario[$pregunta->id] ?? null;
-
                                                         $opcionTexto = $opcion->opcion_texto;
                                                         
                                                         $esSeleccionada = false;
@@ -189,6 +232,23 @@ require_once __DIR__ . '/../partials/header.php';
                                                     </label>
                                                 <?php endforeach; ?>
                                             </div>
+                                            <?php if ($showFeedback): ?>
+                                                <?php
+                                                    if (!$preguntaTieneRespuesta) {
+                                                        $feedbackPreguntaClase = 'text-warning';
+                                                        $feedbackPregunta = 'No respondiste esta pregunta en el intento anterior.';
+                                                    } elseif ($preguntaEsCorrecta) {
+                                                        $feedbackPreguntaClase = 'text-success';
+                                                        $feedbackPregunta = 'Bien resuelta. Puedes seguir con confianza.';
+                                                    } else {
+                                                        $feedbackPreguntaClase = 'text-danger';
+                                                        $feedbackPregunta = 'Revisa la opcion marcada en verde y compara por que encaja mejor.';
+                                                    }
+                                                ?>
+                                                <div class="small mt-3 <?php echo $feedbackPreguntaClase; ?>">
+                                                    <?php echo htmlspecialchars($feedbackPregunta); ?>
+                                                </div>
+                                            <?php endif; ?>
 
 
 
@@ -457,6 +517,9 @@ require_once __DIR__ . '/../partials/header.php';
                                 ?>
 
                                 <input type="hidden" name="respuesta" id="drag-drop-response" value="<?php echo htmlspecialchars(json_encode($userAnswers)); ?>">
+                                <div class="alert alert-light border mb-3">
+                                    <strong>Modo tactil:</strong> en movil puedes tocar un elemento y luego tocar el contenedor donde quieres dejarlo.
+                                </div>
 
                                 <!-- Pool of items -->
                                 <div class="card mb-4">
@@ -465,11 +528,13 @@ require_once __DIR__ . '/../partials/header.php';
                                     </div>
                                     <div class="card-body">
                                         <div id="pool" class="drag-container d-flex flex-wrap align-content-start" 
+                                             onclick="placeSelectedDragItem('pool')"
                                              ondrop="drop(event)" ondragover="allowDrop(event)">
                                             <?php foreach ($items as $item): ?>
                                                 <?php if (($itemLocations[$item] ?? 'pool') === 'pool'): ?>
                                                     <div class="draggable-item" draggable="<?php echo $showFeedback ? 'false' : 'true'; ?>" 
-                                                         ondragstart="drag(event)" id="item-<?php echo md5($item); ?>" 
+                                                         ondragstart="drag(event)" onclick="selectDragItem('<?php echo 'item-' . md5($item); ?>')"
+                                                         id="item-<?php echo md5($item); ?>" 
                                                          data-item="<?php echo htmlspecialchars($item); ?>">
                                                         <?php echo htmlspecialchars($item); ?>
                                                     </div>
@@ -491,6 +556,7 @@ require_once __DIR__ . '/../partials/header.php';
                                                     <div id="target-<?php echo md5($target); ?>" 
                                                          class="drag-container h-100" 
                                                          data-target="<?php echo htmlspecialchars($target); ?>"
+                                                         onclick="placeSelectedDragItem('target-<?php echo md5($target); ?>')"
                                                          ondrop="drop(event)" ondragover="allowDrop(event)">
                                                         <?php foreach ($items as $item): ?>
                                                             <?php if (($itemLocations[$item] ?? '') === $target): ?>
@@ -502,7 +568,7 @@ require_once __DIR__ . '/../partials/header.php';
                                                                 ?>
                                                                 <div class="<?php echo $class; ?>" 
                                                                      draggable="<?php echo $showFeedback ? 'false' : 'true'; ?>" 
-                                                                     ondragstart="drag(event)" 
+                                                                     ondragstart="drag(event)" onclick="selectDragItem('<?php echo 'item-' . md5($item); ?>')"
                                                                      id="item-<?php echo md5($item); ?>" 
                                                                      data-item="<?php echo htmlspecialchars($item); ?>">
                                                                     <?php echo htmlspecialchars($item); ?>
@@ -523,6 +589,47 @@ require_once __DIR__ . '/../partials/header.php';
                             </div>
 
                             <script>
+                                let selectedDragItemId = null;
+
+                                function clearSelectedDragItem() {
+                                    document.querySelectorAll('.draggable-item.is-selected-touch').forEach(el => {
+                                        el.classList.remove('is-selected-touch');
+                                    });
+                                    selectedDragItemId = null;
+                                }
+
+                                function selectDragItem(itemId) {
+                                    if (<?php echo $showFeedback ? 'true' : 'false'; ?>) return;
+
+                                    const item = document.getElementById(itemId);
+                                    if (!item) return;
+
+                                    if (selectedDragItemId === itemId) {
+                                        clearSelectedDragItem();
+                                        return;
+                                    }
+
+                                    clearSelectedDragItem();
+                                    selectedDragItemId = itemId;
+                                    item.classList.add('is-selected-touch');
+                                }
+
+                                function placeSelectedDragItem(containerId) {
+                                    if (<?php echo $showFeedback ? 'true' : 'false'; ?>) return;
+                                    if (!selectedDragItemId) return;
+
+                                    const draggedElement = document.getElementById(selectedDragItemId);
+                                    const targetEl = document.getElementById(containerId);
+
+                                    if (!draggedElement || !targetEl || !targetEl.classList.contains('drag-container')) {
+                                        return;
+                                    }
+
+                                    targetEl.appendChild(draggedElement);
+                                    clearSelectedDragItem();
+                                    updateDragDropResponse();
+                                }
+
                                 function allowDrop(ev) {
                                     if (<?php echo $showFeedback ? 'true' : 'false'; ?>) return;
                                     ev.preventDefault();
@@ -554,6 +661,7 @@ require_once __DIR__ . '/../partials/header.php';
                                     
                                     if (targetEl && draggedElement) {
                                         targetEl.appendChild(draggedElement);
+                                        clearSelectedDragItem();
                                         updateDragDropResponse();
                                     }
                                 }
@@ -849,6 +957,11 @@ require_once __DIR__ . '/../partials/header.php';
                             <?php foreach ($configActividad as $pregunta): ?>
                                 <div class="mb-4">
                                     <p class="mb-3 fw-bold"><?php echo htmlspecialchars($pregunta->instruction ?? 'Ordena correctamente:'); ?></p>
+                                    <?php if (!$showFeedback): ?>
+                                        <div class="alert alert-light border mb-3">
+                                            <strong>Modo tactil:</strong> toca las palabras para formar la frase y usa subir o bajar para ajustar el orden fino.
+                                        </div>
+                                    <?php endif; ?>
                                     
                                     <!-- Contenedor de Respuesta -->
                                     <div class="card mb-3">
@@ -952,7 +1065,63 @@ require_once __DIR__ . '/../partials/header.php';
                                 </div>
                             <?php endforeach; ?>
 
-                            <script>
+                                    <script>
+                                function normalizeSentenceWordControls(questionId) {
+                                    const sentenceContainer = document.getElementById('sentence-container-' + questionId);
+                                    if (!sentenceContainer) return;
+
+                                    Array.from(sentenceContainer.querySelectorAll('.draggable-word')).forEach((el, index, arr) => {
+                                        if (el.nextElementSibling && el.nextElementSibling.classList.contains('word-order-controls')) {
+                                            el.nextElementSibling.remove();
+                                        }
+
+                                        if (<?php echo $showFeedback ? 'true' : 'false'; ?>) {
+                                            return;
+                                        }
+
+                                        const controls = document.createElement('span');
+                                        controls.className = 'word-order-controls';
+                                        controls.innerHTML =
+                                            '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftWord(this, \'up\', \'' + questionId + '\')"><i class="bi bi-arrow-up"></i></button>' +
+                                            '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftWord(this, \'down\', \'' + questionId + '\')"><i class="bi bi-arrow-down"></i></button>';
+                                        sentenceContainer.insertBefore(controls, el.nextSibling);
+                                    });
+                                }
+
+                                function shiftWord(button, direction, questionId) {
+                                    const controls = button.closest('.word-order-controls');
+                                    if (!controls) return;
+
+                                    const word = controls.previousElementSibling;
+                                    const sentenceContainer = document.getElementById('sentence-container-' + questionId);
+                                    if (!word || !sentenceContainer) return;
+
+                                    if (direction === 'up') {
+                                        const previousControls = word.previousElementSibling;
+                                        const previousWord = previousControls && previousControls.classList.contains('word-order-controls')
+                                            ? previousControls.previousElementSibling
+                                            : null;
+
+                                        if (previousWord) {
+                                            sentenceContainer.insertBefore(word, previousWord);
+                                            sentenceContainer.insertBefore(controls, word.nextSibling);
+                                        }
+                                    } else {
+                                        const nextWord = controls.nextElementSibling;
+                                        const nextControls = nextWord && nextWord.nextElementSibling && nextWord.nextElementSibling.classList.contains('word-order-controls')
+                                            ? nextWord.nextElementSibling
+                                            : null;
+
+                                        if (nextWord && nextControls) {
+                                            sentenceContainer.insertBefore(nextWord, word);
+                                            sentenceContainer.insertBefore(nextControls, controls);
+                                        }
+                                    }
+
+                                    normalizeSentenceWordControls(questionId);
+                                    updateHiddenInput(questionId);
+                                }
+
                                 function moveWord(element, target, questionId) {
                                     if (<?php echo $showFeedback ? 'true' : 'false'; ?>) return; 
                                     
@@ -971,6 +1140,7 @@ require_once __DIR__ . '/../partials/header.php';
                                         element.setAttribute('onclick', "moveWord(this, 'sentence', '" + questionId + "')");
                                     }
                                     
+                                    normalizeSentenceWordControls(questionId);
                                     updateHiddenInput(questionId);
                                 }
                                 
@@ -996,6 +1166,10 @@ require_once __DIR__ . '/../partials/header.php';
                                         alert('Por favor, utiliza todas las palabras disponibles para completar las oraciones antes de enviar.');
                                     }
                                 });
+
+                                <?php foreach ($configActividad as $sortableQuestion): ?>
+                                normalizeSentenceWordControls('<?php echo $sortableQuestion->id; ?>');
+                                <?php endforeach; ?>
                             </script>
 
                         <?php elseif ($actividad->tipo_actividad === 'escritura'): ?>
@@ -1021,7 +1195,21 @@ require_once __DIR__ . '/../partials/header.php';
                             </div>
                             
                             <script>
-                                document.getElementById('respuesta').addEventListener('input', function() {
+                                const writingField = document.getElementById('respuesta');
+                                function updateWritingWordCount() {
+                                    const text = writingField.value.trim();
+                                    const count = text ? text.split(/\s+/).length : 0;
+                                    document.getElementById('word-count').textContent = count;
+
+                                    const min = <?php echo isset($configActividad->min_palabras) ? $configActividad->min_palabras : 0; ?>;
+                                    if (min > 0 && count < min) {
+                                        writingField.classList.add('is-invalid');
+                                    } else {
+                                        writingField.classList.remove('is-invalid');
+                                    }
+                                }
+
+                                writingField.addEventListener('input', function() {
                                     const text = this.value.trim();
                                     const count = text ? text.split(/\s+/).length : 0;
                                     document.getElementById('word-count').textContent = count;
@@ -1033,6 +1221,8 @@ require_once __DIR__ . '/../partials/header.php';
                                         this.classList.remove('is-invalid');
                                     }
                                 });
+
+                                updateWritingWordCount();
                             </script>
 
                         <?php elseif ($actividad->tipo_actividad === 'escucha'): ?>
@@ -1150,6 +1340,46 @@ require_once __DIR__ . '/../partials/header.php';
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="panel mt-4 issue-report-panel">
+                <div class="panel-body">
+                    <details class="issue-report-details">
+                        <summary class="issue-report-summary">
+                            <i class="bi bi-bug"></i> Reportar un fallo en esta actividad
+                        </summary>
+                        <form action="<?php echo url('/estudiante/reportar-fallo'); ?>" method="POST" class="mt-3">
+                            <?php echo csrf_input(); ?>
+                            <input type="hidden" name="context_type" value="actividad">
+                            <input type="hidden" name="curso_id" value="<?php echo (int) $leccion->curso_id; ?>">
+                            <input type="hidden" name="leccion_id" value="<?php echo (int) $leccion->id; ?>">
+                            <input type="hidden" name="actividad_id" value="<?php echo (int) $actividad->id; ?>">
+                            <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? url('/estudiante'), ENT_QUOTES, 'UTF-8'); ?>">
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="issue_type_actividad">Tipo de fallo</label>
+                                    <select id="issue_type_actividad" name="issue_type" class="form-select" required>
+                                        <option value="error_visual">Error visual</option>
+                                        <option value="contenido_incorrecto">Contenido incorrecto</option>
+                                        <option value="boton_no_funciona">Boton no funciona</option>
+                                        <option value="audio_video">Audio/Video</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label" for="issue_desc_actividad">Describe el problema</label>
+                                    <textarea id="issue_desc_actividad" name="description" class="form-control" rows="3" minlength="12" maxlength="2000" required placeholder="Que paso, en que pregunta y como lo reproduces."></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-outline-secondary">
+                                    <i class="bi bi-send"></i> Enviar reporte
+                                </button>
+                            </div>
+                        </form>
+                    </details>
                 </div>
             </div>
         </div>

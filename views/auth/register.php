@@ -16,24 +16,7 @@ require_once __DIR__ . '/../partials/header.php';
         <section class="page-hero auth-hero auth-hero-success">
             <span class="eyebrow"><i class="bi bi-person-plus"></i> Registro</span>
             <h1 class="page-title">Crea tu cuenta</h1>
-            <p class="page-subtitle">Empieza tu acceso en ADAPA para explorar cursos, seguir tu progreso y preparar tu espacio docente cuando actives ese modo.</p>
-            <div class="metric-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Cursos</div>
-                    <div class="metric-value">Idiomas</div>
-                    <div class="metric-note">Accede a teoria, practica y actividades interactivas.</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Progreso</div>
-                    <div class="metric-value">Visible</div>
-                    <div class="metric-note">Sigue tu avance por leccion y por curso.</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Docente</div>
-                    <div class="metric-value">Escalable</div>
-                    <div class="metric-note">Tambien puedes iniciar como profesor y probar un curso piloto antes de activar tu plan.</div>
-                </div>
-            </div>
+            <p class="page-subtitle">Configura tu cuenta en menos de un minuto.</p>
         </section>
 
         <section class="form-shell auth-card">
@@ -63,7 +46,7 @@ require_once __DIR__ . '/../partials/header.php';
                                         <input class="form-check-input" type="radio" name="account_type" value="estudiante" checked>
                                         <span class="form-check-label d-block">
                                             <strong>Estudiante</strong><br>
-                                            <span class="text-muted">Entra a cursos, sigue tu progreso y aprende desde el primer dia.</span>
+                                            <span class="text-muted">Aprende y sigue tu progreso.</span>
                                         </span>
                                     </label>
                                 </div>
@@ -72,7 +55,7 @@ require_once __DIR__ . '/../partials/header.php';
                                         <input class="form-check-input" type="radio" name="account_type" value="profesor">
                                         <span class="form-check-label d-block">
                                             <strong>Profesor</strong><br>
-                                            <span class="text-muted">Empieza con 1 curso piloto, hasta 3 lecciones, 3 actividades por leccion y 3 estudiantes por codigo.</span>
+                                            <span class="text-muted">Crea cursos y gestiona estudiantes.</span>
                                         </span>
                                     </label>
                                 </div>
@@ -85,7 +68,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <label for="nombre" class="form-label">Nombre *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Tu nombre">
+                                <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="given-name">
                             </div>
                         </div>
 
@@ -93,7 +76,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <label for="apellido" class="form-label">Apellido</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Tu apellido">
+                                <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Tu apellido" autocomplete="family-name">
                             </div>
                         </div>
 
@@ -101,7 +84,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <label for="email" class="form-label">Correo electronico *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" required placeholder="nombre@ejemplo.com">
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="nombre@ejemplo.com" autocomplete="email" autocapitalize="off" spellcheck="false">
                             </div>
                         </div>
 
@@ -109,7 +92,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <label for="password" class="form-label">Contrasena *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="password" class="form-control" id="password" name="password" required placeholder="********">
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="********" minlength="6" autocomplete="new-password">
                             </div>
                             <div class="form-text">La contrasena debe tener al menos 6 caracteres.</div>
                         </div>
@@ -123,7 +106,6 @@ require_once __DIR__ . '/../partials/header.php';
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div class="form-text">Idioma que mejor entiendes hoy para recibir explicaciones.</div>
                         </div>
 
                         <div class="col-md-6">
@@ -135,7 +117,6 @@ require_once __DIR__ . '/../partials/header.php';
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div class="form-text">Prepara la cuenta para futura internacionalizacion visual.</div>
                         </div>
                     </div>
 

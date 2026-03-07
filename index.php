@@ -14,6 +14,8 @@ $router->add('POST', '/logout', 'shared/AuthController', 'logout');
 
 // Home route
 $router->add('GET', '/', 'shared/HomeController', 'index');
+$router->add('GET', '/enm', 'shared/EnmController', 'index');
+$router->add('POST', '/enm/login', 'shared/EnmController', 'loginAs');
 
 // About route
 $router->add('GET', '/about', 'shared/AboutController', 'index');
@@ -25,14 +27,19 @@ $router->add('GET', '/profesor/cursos/create', 'profesor/CursoController', 'crea
 $router->add('POST', '/profesor/cursos/create', 'profesor/CursoController', 'create');
 $router->add('GET', '/profesor/cursos/edit/{id}', 'profesor/CursoController', 'edit');
 $router->add('POST', '/profesor/cursos/edit/{id}', 'profesor/CursoController', 'edit');
+$router->add('POST', '/profesor/cursos/duplicate/{id}', 'profesor/CursoController', 'duplicate');
 $router->add('POST', '/profesor/cursos/delete/{id}', 'profesor/CursoController', 'delete');
 
 // Rutas de lecciones
 $router->add('GET', '/profesor/cursos/{id}/lecciones', 'profesor/LeccionController', 'index');
 $router->add('GET', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
 $router->add('POST', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
+$router->add('GET', '/profesor/lecciones/{id}/preview', 'profesor/LeccionController', 'preview');
 $router->add('GET', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');
 $router->add('POST', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');
+$router->add('POST', '/profesor/lecciones/move-up/{id}', 'profesor/LeccionController', 'moveUp');
+$router->add('POST', '/profesor/lecciones/move-down/{id}', 'profesor/LeccionController', 'moveDown');
+$router->add('POST', '/profesor/lecciones/duplicate/{id}', 'profesor/LeccionController', 'duplicate');
 $router->add('POST', '/profesor/lecciones/delete/{id}', 'profesor/LeccionController', 'delete');
 
 // Rutas de teoría
@@ -41,6 +48,9 @@ $router->add('GET', '/profesor/lecciones/{id}/teoria/create', 'profesor/TeoriaCo
 $router->add('POST', '/profesor/lecciones/{id}/teoria/create', 'profesor/TeoriaController', 'create');
 $router->add('GET', '/profesor/teoria/edit/{id}', 'profesor/TeoriaController', 'edit');
 $router->add('POST', '/profesor/teoria/edit/{id}', 'profesor/TeoriaController', 'edit');
+$router->add('POST', '/profesor/teoria/move-up/{id}', 'profesor/TeoriaController', 'moveUp');
+$router->add('POST', '/profesor/teoria/move-down/{id}', 'profesor/TeoriaController', 'moveDown');
+$router->add('POST', '/profesor/teoria/duplicate/{id}', 'profesor/TeoriaController', 'duplicate');
 $router->add('POST', '/profesor/teoria/delete/{id}', 'profesor/TeoriaController', 'delete');
 
 // Rutas de actividades
@@ -51,6 +61,9 @@ $router->add('GET', '/profesor/actividades/config/{tipo}/{id}', 'profesor/Activi
 $router->add('POST', '/profesor/actividades/config/{tipo}/{id}', 'profesor/ActividadController', 'config');
 $router->add('GET', '/profesor/actividad/edit/{id}', 'profesor/ActividadController', 'edit');
 $router->add('POST', '/profesor/actividad/edit/{id}', 'profesor/ActividadController', 'edit');
+$router->add('POST', '/profesor/actividad/move-up/{id}', 'profesor/ActividadController', 'moveUp');
+$router->add('POST', '/profesor/actividad/move-down/{id}', 'profesor/ActividadController', 'moveDown');
+$router->add('POST', '/profesor/actividad/duplicate/{id}', 'profesor/ActividadController', 'duplicate');
 $router->add('POST', '/profesor/actividad/delete/{id}', 'profesor/ActividadController', 'delete');
 $router->add('GET', '/profesor/actividad/{id}/preview', 'profesor/ActividadController', 'preview');
 $router->add('GET', '/profesor/actividad/{id}/configurar', 'profesor/ActividadController', 'configurar');
@@ -74,6 +87,7 @@ $router->add('POST', '/profesor/recursos/delete/{id}', 'profesor/MediaController
 // Estudiante routes
 $router->add('GET', '/estudiante', 'estudiante/EstudianteController', 'index');
 $router->add('GET', '/estudiante/cursos', 'estudiante/EstudianteController', 'index');
+$router->add('GET', '/estudiante/recursos', 'estudiante/EstudianteController', 'recursos');
 $router->add('POST', '/estudiante/inscribir/{id}', 'estudiante/EstudianteController', 'inscribir');
 $router->add('POST', '/estudiante/codigo', 'estudiante/EstudianteController', 'canjearCodigo');
 $router->add('GET', '/estudiante/cursos/{id}/continuar', 'estudiante/EstudianteController', 'continuarCurso');
@@ -82,6 +96,7 @@ $router->add('GET', '/estudiante/lecciones/{id}/contenido', 'estudiante/Estudian
 $router->add('GET', '/estudiante/actividades/{id}', 'estudiante/EstudianteController', 'realizarActividad');
 $router->add('POST', '/estudiante/actividades/{id}/responder', 'estudiante/EstudianteController', 'responderActividad');
 $router->add('POST', '/estudiante/teoria/{id}/leer', 'estudiante/EstudianteController', 'marcarTeoria');
+$router->add('POST', '/estudiante/reportar-fallo', 'estudiante/IssueReportController', 'store');
 // $router->add('GET', '/estudiante/curso/{id}', 'estudiante/EstudianteController', 'curso'); // Removed as redundant
 // Placeholder: estudiante progreso y calificaciones
 $router->add('GET', '/estudiante/progreso', 'estudiante/ProgresoController', 'index');
@@ -90,10 +105,17 @@ $router->add('GET', '/estudiante/calificaciones', 'estudiante/CalificacionesCont
 // Admin routes (placeholders)
 $router->add('GET', '/admin', 'admin/AdminController', 'index');
 $router->add('GET', '/admin/usuarios', 'admin/AdminController', 'usuarios');
+$router->add('GET', '/admin/usuarios/create', 'admin/AdminController', 'createUsuario');
+$router->add('POST', '/admin/usuarios/create', 'admin/AdminController', 'createUsuario');
 $router->add('GET', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
 $router->add('POST', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
 $router->add('POST', '/admin/usuarios/delete/{id}', 'admin/AdminController', 'deleteUsuario');
 $router->add('GET', '/admin/cursos', 'admin/AdminController', 'cursos');
+$router->add('GET', '/admin/cursos/create', 'admin/AdminController', 'createCurso');
+$router->add('POST', '/admin/cursos/create', 'admin/AdminController', 'createCurso');
+$router->add('GET', '/admin/cursos/edit/{id}', 'admin/AdminController', 'editCurso');
+$router->add('POST', '/admin/cursos/edit/{id}', 'admin/AdminController', 'editCurso');
+$router->add('POST', '/admin/cursos/delete/{id}', 'admin/AdminController', 'deleteCurso');
 
 // Register routes (placeholders)
 $router->add('GET', '/register', 'shared/RegisterController', 'showRegisterForm');

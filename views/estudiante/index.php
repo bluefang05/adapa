@@ -5,31 +5,40 @@ require_once __DIR__ . '/../../models/Curso.php';
 
 <div class="container">
     <?php require __DIR__ . '/../partials/flash.php'; ?>
+    <?php
+    $cursoContinuar = null;
+    if (!empty($cursosInscritos)) {
+        foreach ($cursosInscritos as $cursoItem) {
+            if (($cursoItem->estado_progreso ?? '') === 'en_progreso') {
+                $cursoContinuar = $cursoItem;
+                break;
+            }
+        }
+        if ($cursoContinuar === null) {
+            $cursoContinuar = $cursosInscritos[0];
+        }
+    }
+    ?>
 
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-stars"></i> Panel de aprendizaje</span>
-        <h1 class="page-title">Tu progreso ya tiene una vista util.</h1>
+        <h1 class="page-title">Continua tu aprendizaje.</h1>
         <p class="page-subtitle">
-            Continua cursos activos, revisa avance real y detecta rapidamente que contenido te falta por cerrar.
+            Entra directo a lo siguiente que debes completar.
         </p>
         <div class="hero-actions">
-            <a href="<?php echo url('/estudiante/progreso'); ?>" class="btn btn-primary">
-                <i class="bi bi-graph-up-arrow"></i> Ver progreso
-            </a>
-            <a href="<?php echo url('/estudiante/calificaciones'); ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-award"></i> Ver calificaciones
-            </a>
+            <?php if ($cursoContinuar): ?>
+                <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/continuar'); ?>" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> Continuar ahora
+                </a>
+            <?php endif; ?>
+            <a href="<?php echo url('/estudiante/progreso'); ?>" class="btn btn-outline-secondary"><i class="bi bi-graph-up-arrow"></i> Progreso</a>
         </div>
         <div class="metric-grid">
             <div class="metric-card">
                 <div class="metric-label">Cursos inscritos</div>
                 <div class="metric-value"><?php echo count($cursosInscritos); ?></div>
                 <div class="metric-note">Tu espacio activo de estudio.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Disponibles</div>
-                <div class="metric-value"><?php echo count($cursosDisponibles); ?></div>
-                <div class="metric-note">Cursos gratis que puedes iniciar ahora.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Promedio de avance</div>
@@ -50,66 +59,83 @@ require_once __DIR__ . '/../../models/Curso.php';
         </div>
     </section>
 
-    <section class="mb-4">
-        <div class="row g-4">
-            <div class="col-lg-7">
-                <div class="panel">
-                    <div class="panel-body">
-                        <div class="section-title mb-3">
-                            <h2>Tengo un codigo</h2>
-                            <span class="soft-badge"><i class="bi bi-key-fill"></i> Acceso privado</span>
-                        </div>
-                        <p class="page-subtitle mb-3">
-                            Si tu profesor te compartio un codigo, pegalo aqui para activar su clase sin buscarla en el catalogo abierto.
-                        </p>
-                        <form method="POST" action="<?php echo url('/estudiante/codigo'); ?>" class="form-shell border-0 shadow-none bg-transparent p-0">
-                            <?php echo csrf_input(); ?>
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="codigo_acceso"
-                                    maxlength="255"
-                                    placeholder="Ejemplo: TEACH-ENGLISH-2026"
-                                    aria-label="Codigo de acceso del profesor"
-                                    required
-                                >
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-unlock"></i> Activar curso
-                                </button>
-                            </div>
-                            <div class="form-text mt-2">Este acceso es ideal para grupos privados, cohortes o clases dirigidas por profesor.</div>
-                        </form>
-                    </div>
+    <?php if ($cursoContinuar): ?>
+        <section class="panel mb-4 focus-next-panel">
+            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="metric-label">Siguiente accion recomendada</div>
+                    <div class="fw-semibold mt-1"><?php echo htmlspecialchars($cursoContinuar->titulo); ?></div>
+                    <div class="small text-muted mt-1"><?php echo (int) ($cursoContinuar->porcentaje ?? 0); ?>% completado</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/continuar'); ?>" class="btn btn-primary">Continuar</a>
+                    <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/lecciones'); ?>" class="btn btn-outline-primary">Ver lecciones</a>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="panel">
-                    <div class="panel-body">
-                        <div class="section-title mb-3">
-                            <h2>Como funciona</h2>
-                            <span class="soft-badge"><i class="bi bi-signpost-2"></i> Doble via</span>
-                        </div>
-                        <div class="stack-list">
-                            <div class="stack-item">
-                                <strong>Catalogo abierto</strong>
-                                <span>Te inscribes directamente en cursos gratis y publicos para explorar la plataforma.</span>
-                            </div>
-                            <div class="stack-item">
-                                <strong>Curso del profesor</strong>
-                                <span>Usas un codigo para entrar a una clase privada, una cohorte o un grupo guiado.</span>
-                            </div>
-                        </div>
-                    </div>
+        </section>
+    <?php endif; ?>
+
+    <section class="mb-4">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="section-title mb-3">
+                    <h2>Entrar con codigo</h2>
                 </div>
+                <form method="POST" action="<?php echo url('/estudiante/codigo'); ?>" class="form-shell border-0 shadow-none bg-transparent p-0">
+                    <?php echo csrf_input(); ?>
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="codigo_acceso"
+                            maxlength="255"
+                            placeholder="Codigo del profesor"
+                            aria-label="Codigo de acceso del profesor"
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-unlock"></i> Activar curso
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
 
+    <?php if (!empty($recommendedResources)): ?>
+        <section class="mb-4">
+            <div class="section-title">
+                <h2>Recursos utiles</h2>
+                <a href="<?php echo url('/estudiante/recursos' . (!empty($resourceLanguage) ? '?idioma=' . urlencode($resourceLanguage) : '')); ?>" class="btn btn-outline-secondary btn-sm">
+                    Ver todos
+                </a>
+            </div>
+            <div class="row g-4">
+                <?php foreach ($recommendedResources as $resource): ?>
+                    <div class="col-lg-3 col-md-6">
+                        <article class="surface-card useful-resource-card h-100">
+                            <div class="card-body d-flex flex-column gap-3">
+                                <div>
+                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
+                                    <h3 class="h5 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
+                                </div>
+                                <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
+                                <div class="mt-auto">
+                                    <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                                        <i class="bi bi-box-arrow-up-right"></i> Abrir
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
+
     <section class="mb-4">
         <div class="section-title">
             <h2>Mis cursos</h2>
-            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> En marcha</span>
         </div>
         <div class="row g-4">
             <?php if (!empty($cursosInscritos)): ?>
@@ -135,21 +161,14 @@ require_once __DIR__ . '/../../models/Curso.php';
                                     </div>
                                     <span class="soft-badge"><?php echo (int) ($curso->porcentaje ?? 0); ?>%</span>
                                 </div>
-                                <div class="mb-2">
-                                    <span class="soft-badge <?php echo Curso::esRutaCompleta($curso) ? 'badge-accent' : ''; ?>">
-                                        <i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?>
-                                    </span>
-                                    <?php if (($curso->estado_progreso ?? '') === 'completado'): ?>
-                                        <span class="soft-badge">
-                                            <i class="bi bi-check-circle-fill"></i> Completado
-                                        </span>
-                                    <?php elseif (($curso->estado_progreso ?? '') === 'en_progreso'): ?>
-                                        <span class="soft-badge">
-                                            <i class="bi bi-arrow-repeat"></i> En progreso
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                                <p class="card-text mb-0"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 140)); ?>...</p>
+                                <?php
+                                $descripcionCurso = trim((string) ($curso->descripcion ?? ''));
+                                $descripcionCorta = substr($descripcionCurso, 0, 100);
+                                $descripcionTruncada = strlen($descripcionCurso) > 100;
+                                ?>
+                                <p class="card-text mb-0">
+                                    <?php echo htmlspecialchars($descripcionCorta); ?><?php echo $descripcionTruncada ? '...' : ''; ?>
+                                </p>
                                 <div class="course-meta">
                                     <span><i class="bi bi-journal-text"></i> <?php echo (int) ($curso->total_lecciones ?? 0); ?> lecciones</span>
                                     <span><i class="bi bi-check2-circle"></i> <?php echo (int) ($curso->completados ?? 0); ?>/<?php echo (int) ($curso->total_items ?? 0); ?> items</span>
@@ -183,7 +202,6 @@ require_once __DIR__ . '/../../models/Curso.php';
     <section>
         <div class="section-title">
             <h2>Cursos disponibles</h2>
-            <span class="soft-badge"><i class="bi bi-compass"></i> Nuevas rutas</span>
         </div>
         <div class="panel mb-4">
             <div class="panel-body">
@@ -250,7 +268,14 @@ require_once __DIR__ . '/../../models/Curso.php';
                             <?php endif; ?>
                             <div class="card-body">
                                 <h5 class="card-title mb-2"><?php echo htmlspecialchars($curso->titulo); ?></h5>
-                                <p class="card-text text-muted mb-3"><?php echo htmlspecialchars(substr($curso->descripcion, 0, 130)); ?>...</p>
+                                <?php
+                                $descripcionDisponible = trim((string) ($curso->descripcion ?? ''));
+                                $descripcionDisponibleCorta = substr($descripcionDisponible, 0, 130);
+                                $descripcionDisponibleTruncada = strlen($descripcionDisponible) > 130;
+                                ?>
+                                <p class="card-text text-muted mb-3">
+                                    <?php echo htmlspecialchars($descripcionDisponibleCorta); ?><?php echo $descripcionDisponibleTruncada ? '...' : ''; ?>
+                                </p>
                                 <div class="course-meta">
                                     <span><i class="bi bi-translate"></i> <?php echo htmlspecialchars(app_language_label($idiomaObjetivo, strtoupper($idiomaObjetivo))); ?></span>
                                     <span><i class="bi bi-chat-left-text"></i> Desde <?php echo htmlspecialchars(app_language_label($idiomaBase, ucfirst($idiomaBase))); ?></span>

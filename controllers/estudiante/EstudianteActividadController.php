@@ -35,19 +35,13 @@ class EstudianteActividadController extends Controller
         }
 
         $estudiante_id = Auth::getUserId();
-        $estaInscrito = $this->inscripcionModel->verificarInscripcion($leccion->curso_id, $estudiante_id);
-
-        if (!$estaInscrito) {
+        if (!$this->inscripcionModel->verificarInscripcion($leccion->curso_id, $estudiante_id)) {
             $this->flash('error', 'No estas inscrito en este curso');
             $this->redirect('/estudiante');
         }
 
-        $siguienteActividad = $this->actividadModel->obtenerSiguienteActividadEnLeccion($actividad->leccion_id, $actividad->id);
-
-        $this->view('estudiante/actividades/index', [
-            'actividad' => $actividad,
-            'siguienteActividad' => $siguienteActividad
-        ]);
+        // La experiencia canonica del estudiante vive en /estudiante/actividades/{id}.
+        $this->redirect('/estudiante/actividades/' . $actividad_id);
     }
 
     public function guardarRespuesta()

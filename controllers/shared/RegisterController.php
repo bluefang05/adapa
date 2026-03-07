@@ -31,6 +31,16 @@ class RegisterController extends Controller {
             $this->redirect('/register');
         }
 
+        if (strlen($password) < 8) {
+            $this->flash('register_error', 'La contrasena debe tener al menos 8 caracteres.');
+            $this->redirect('/register');
+        }
+
+        if (!preg_match('/[A-Za-z]/', $password) || !preg_match('/\d/', $password)) {
+            $this->flash('register_error', 'La contrasena debe incluir letras y numeros.');
+            $this->redirect('/register');
+        }
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->flash('register_error', 'Email invalido.');
             $this->redirect('/register');
@@ -99,7 +109,7 @@ class RegisterController extends Controller {
             $this->redirect('/login');
         } catch (Exception $e) {
             error_log('Error en registro: ' . $e->getMessage());
-            $this->flash('register_error', 'Error al registrar: ' . $e->getMessage());
+            $this->flash('register_error', 'No se pudo completar el registro en este momento. Intenta de nuevo.');
             $this->redirect('/register');
         }
     }

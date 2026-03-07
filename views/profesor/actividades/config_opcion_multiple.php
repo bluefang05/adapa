@@ -20,8 +20,19 @@
             <a href="<?= url('/profesor/lecciones/' . $leccion->id . '/actividades') ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a actividades
             </a>
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/opcion_multiple/' . $leccion->id)) . '&context=actividad_opcion_multiple'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir imagen en biblioteca
+            </a>
         </div>
     </section>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Imagen lista para usar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            La aplicare a la primera pregunta sin imagen.
+        </div>
+    <?php endif; ?>
 
     <div class="row justify-content-center">
         <div class="col-xl-10">
@@ -109,6 +120,7 @@
 
 <script>
     let preguntasCount = 0;
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     function agregarPregunta() {
         preguntasCount++;
@@ -172,6 +184,14 @@
         selectImagen.addEventListener('change', function () {
             renderPreguntaPreview(preguntaDiv, this);
         });
+
+        const selectedMediaId = selectedMediaParams.get('selected_media_id');
+        const selectedMediaType = selectedMediaParams.get('selected_media_type');
+        if (selectedMediaId && selectedMediaType === 'imagen') {
+            selectImagen.value = selectedMediaId;
+            renderPreguntaPreview(preguntaDiv, selectImagen);
+            selectedMediaParams.delete('selected_media_id');
+        }
 
         agregarOpcion(preguntaDiv.dataset.preguntaId);
         agregarOpcion(preguntaDiv.dataset.preguntaId);
@@ -247,6 +267,16 @@
             });
         } else {
             agregarPregunta();
+        }
+
+        const selectedMediaId = selectedMediaParams.get('selected_media_id');
+        const selectedMediaType = selectedMediaParams.get('selected_media_type');
+        if (selectedMediaId && selectedMediaType === 'imagen') {
+            const firstEmpty = Array.from(document.querySelectorAll('.pregunta-imagen')).find(select => !select.value);
+            if (firstEmpty) {
+                firstEmpty.value = selectedMediaId;
+                renderPreguntaPreview(firstEmpty.closest('.question-item'), firstEmpty);
+            }
         }
     });
 

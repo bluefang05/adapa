@@ -172,4 +172,41 @@ class TeoriaController extends Controller
 
         $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
     }
+
+    public function duplicate($id)
+    {
+        $this->requirePost();
+        require_csrf();
+
+        [$teoria] = $this->obtenerTeoriaAutorizada($id);
+
+        $nuevoId = $this->teoriaModel->duplicarTeoria($id);
+        if ($nuevoId) {
+            $this->flash('success', 'Teoria duplicada en borrador operativo.');
+        } else {
+            $this->flash('error', 'No se pudo duplicar la teoria.');
+        }
+
+        $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+    }
+
+    public function moveUp($id)
+    {
+        $this->move($id, 'up');
+    }
+
+    public function moveDown($id)
+    {
+        $this->move($id, 'down');
+    }
+
+    private function move($id, $direction)
+    {
+        $this->requirePost();
+        require_csrf();
+
+        [$teoria] = $this->obtenerTeoriaAutorizada($id);
+        $this->teoriaModel->moverTeoria($id, $direction);
+        $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+    }
 }

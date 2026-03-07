@@ -102,7 +102,12 @@ foreach ($users as $user) {
     <section>
         <div class="section-title">
             <h2>Usuarios</h2>
-            <span class="soft-badge"><i class="bi bi-shield-check"></i> Control de roles</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="soft-badge"><i class="bi bi-shield-check"></i> Control de roles</span>
+                <a href="<?php echo url('/admin/usuarios/create'); ?>" class="btn btn-sm btn-primary">
+                    <i class="bi bi-person-plus"></i> Crear usuario
+                </a>
+            </div>
         </div>
 
         <div class="data-table-shell">

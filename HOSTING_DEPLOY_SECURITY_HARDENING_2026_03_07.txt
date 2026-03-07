@@ -1,0 +1,41 @@
+﻿HOSTING_DEPLOY_SECURITY_HARDENING_2026_03_07
+==========================================
+
+Subir estos archivos:
+- /index.php
+- /controllers/shared/EnmController.php
+- /controllers/shared/AuthController.php
+- /controllers/shared/RegisterController.php
+- /controllers/admin/AdminController.php
+- /views/shared/enm/index.php
+- /config/database.php
+- /config/database.hosting.example.php
+- /.htaccess
+- /.gitignore
+
+IMPORTANTE (produccion)
+1) Crear archivo /config/database.hosting.php (NO subirlo a git) con este formato:
+<?php
+return [
+    'host' => 'localhost',
+    'user' => 'TU_USUARIO_BD',
+    'pass' => 'TU_PASSWORD_BD',
+    'name' => 'TU_BASE_BD',
+    'port' => 3306,
+    'charset' => 'utf8mb4',
+];
+
+2) Si quieres habilitar /enm fuera de localhost:
+- Define variable de entorno ALLOW_INTERNAL_LOGIN=1
+- Y usa una sesion admin iniciada
+
+3) Si NO quieres /enm en hosting:
+- No definas ALLOW_INTERNAL_LOGIN (queda bloqueado por defecto)
+
+Cambios aplicados
+- /enm ya no expone passwords en HTML.
+- /enm ahora exige entorno local o admin + flag de seguridad.
+- Login endurecido: cuenta activa, bloqueo por intentos fallidos, reset en login exitoso.
+- Registro endurecido: password minimo 8 + letras y numeros.
+- Bloqueo HTTP a archivos .sql/.txt/.md/.log via .htaccess.
+- Se eliminaron credenciales hardcodeadas de produccion en config/database.php.

@@ -103,16 +103,42 @@ class ActividadController extends Controller
             case 'arrastrar_soltar':
                 $itemsInput = $_POST['items'] ?? [];
                 $targetsInput = $_POST['targets'] ?? [];
+                $targets = is_array($targetsInput) ? $targetsInput : (json_decode($targetsInput, true) ?? []);
+                $support = [];
+
+                if (isset($targets['targets'])) {
+                    $support = [
+                        'recurso_apoyo_media_id' => $targets['recurso_apoyo_media_id'] ?? '',
+                        'recurso_apoyo_titulo' => $targets['recurso_apoyo_titulo'] ?? '',
+                        'recurso_apoyo_url' => $targets['recurso_apoyo_url'] ?? '',
+                        'recurso_apoyo_tipo' => $targets['recurso_apoyo_tipo'] ?? '',
+                    ];
+                    $targets = $targets['targets'];
+                }
+
                 return [
                     'items' => is_array($itemsInput) ? $itemsInput : (json_decode($itemsInput, true) ?? []),
-                    'targets' => is_array($targetsInput) ? $targetsInput : (json_decode($targetsInput, true) ?? [])
-                ];
+                    'targets' => $targets,
+                ] + $support;
 
             case 'ordenar_palabras':
                 $itemsInput = $_POST['items'] ?? [];
+                $items = is_array($itemsInput) ? $itemsInput : (json_decode($itemsInput, true) ?? []);
+                $support = [];
+
+                if (isset($items['items'])) {
+                    $support = [
+                        'recurso_apoyo_media_id' => $items['recurso_apoyo_media_id'] ?? '',
+                        'recurso_apoyo_titulo' => $items['recurso_apoyo_titulo'] ?? '',
+                        'recurso_apoyo_url' => $items['recurso_apoyo_url'] ?? '',
+                        'recurso_apoyo_tipo' => $items['recurso_apoyo_tipo'] ?? '',
+                    ];
+                    $items = $items['items'];
+                }
+
                 return [
-                    'items' => is_array($itemsInput) ? $itemsInput : (json_decode($itemsInput, true) ?? [])
-                ];
+                    'items' => $items
+                ] + $support;
 
             case 'respuesta_corta':
                 $contenidoInput = $_POST['contenido'] ?? '{}';
@@ -293,6 +319,43 @@ class ActividadController extends Controller
             $this->flash('error', 'Error al eliminar la actividad');
         }
 
+        $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+    }
+
+    public function duplicate($id)
+    {
+        $this->requirePost();
+        require_csrf();
+
+        [$actividad] = $this->obtenerActividadAutorizada($id);
+
+        $nuevoId = $this->actividadModel->duplicarActividad($id);
+        if ($nuevoId) {
+            $this->flash('success', 'Actividad duplicada correctamente.');
+        } else {
+            $this->flash('error', 'No se pudo duplicar la actividad.');
+        }
+
+        $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+    }
+
+    public function moveUp($id)
+    {
+        $this->move($id, 'up');
+    }
+
+    public function moveDown($id)
+    {
+        $this->move($id, 'down');
+    }
+
+    private function move($id, $direction)
+    {
+        $this->requirePost();
+        require_csrf();
+
+        [$actividad] = $this->obtenerActividadAutorizada($id);
+        $this->actividadModel->moverActividad($id, $direction);
         $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
     }
 

@@ -1,0 +1,844 @@
+{
+  "course": {
+    "titulo": "Frances A1 Premium: conversaciones utiles desde la primera semana",
+    "descripcion": "Ruta premium de frances para hispanohablantes que necesitan hablar, entender y reaccionar en situaciones reales desde el nivel inicial. Combina teoria breve, vocabulario de alta frecuencia, practica inmediata, escucha, pronunciacion, orden de palabras, recursos multimedia y escenas memorables para fijar el idioma sin relleno.",
+    "idioma": "frances",
+    "idioma_objetivo": "frances",
+    "idioma_base": "espanol",
+    "idioma_ensenanza": "espanol",
+    "nivel_cefr": "A1",
+    "nivel_cefr_desde": "A1",
+    "nivel_cefr_hasta": "A1",
+    "modalidad": "perpetuo",
+    "duracion_semanas": 8,
+    "es_publico": 1,
+    "requiere_codigo": 0,
+    "codigo_acceso": null,
+    "tipo_codigo": null,
+    "inscripcion_abierta": 1,
+    "max_estudiantes": 1000,
+    "estado": "activo",
+    "notificar_profesor_completada": 1,
+    "notificar_profesor_atascado": 1
+  },
+  "lessons": [
+    {
+      "titulo": "Saludar, presentarte y no congelarte",
+      "descripcion": "Primera capa de supervivencia: saludos, nombre, origen y mini respuestas para entrar a una conversacion con soltura basica.",
+      "duracion": 95,
+      "objetivo": "Poder saludar, decir tu nombre y responder preguntas personales muy simples.",
+      "resultados": [
+        "saludar con naturalidad en registros basicos",
+        "presentarte con je m appelle",
+        "decir de donde vienes con je viens de",
+        "usar etre en frases iniciales"
+      ],
+      "teoria": [
+        {
+          "titulo": "Panorama de la leccion",
+          "duracion": 12,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "Que vas a resolver hoy",
+              "contenido": "Hoy no necesitas sonar sofisticado. Necesitas sonar claro. La meta es entrar a una interaccion, decir quien eres y sostener tres o cuatro intercambios sin quedarte en blanco.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Bloques de alta frecuencia",
+              "contenido": "- bonjour\n- salut\n- bonsoir\n- au revoir\n- je m appelle\n- je suis\n- je viens de",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Mini presentacion",
+              "contenido": "Bonjour, je m appelle Laura. Je viens du Chili. Je suis etudiante.",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            }
+          ]
+        },
+        {
+          "titulo": "Error frecuente y escena memorable",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No traduzcas palabra por palabra desde el espanol. En esta etapa conviene memorizar bloques completos como je m appelle o je viens de, no piezas sueltas.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Llegas a una fiesta en Lyon. Un gato con bufanda parece ser el anfitrion real. Tu unica mision es presentarte con dignidad antes de que el gato te juzgue.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Saluda de manera formal.\n- Di tu nombre.\n- Di de donde vienes.\n- Cierra con una despedida simple.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Selecciona la respuesta natural",
+          "descripcion": "Elige la forma mas natural para saludar y presentarte en micro escenas.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Marca la opcion mas natural en cada pregunta.",
+          "puntos": 15,
+          "tiempo": 6,
+          "contenido": {
+            "pregunta_global": "Elige la mejor respuesta.",
+            "preguntas": [
+              {
+                "texto": "Forma correcta para decir tu nombre:",
+                "opciones": [
+                  { "texto": "Je m appelle Marta.", "es_correcta": true },
+                  { "texto": "Je suis appelle Marta.", "es_correcta": false },
+                  { "texto": "Moi appelle Marta.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Respuesta natural a Tu viens d ou ?:",
+                "opciones": [
+                  { "texto": "Je viens du Guatemala.", "es_correcta": true },
+                  { "texto": "Je suis du Guatemala.", "es_correcta": false },
+                  { "texto": "Du Guatemala je suis viens.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Saludo neutro muy frecuente:",
+                "opciones": [
+                  { "texto": "Bonjour", "es_correcta": true },
+                  { "texto": "Gracias", "es_correcta": false },
+                  { "texto": "Fromage", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Ordena tu mini presentacion",
+          "descripcion": "Reconstruye frases cortas de presentacion.",
+          "tipo": "ordenar_palabras",
+          "instrucciones": "Ordena las palabras hasta formar frases naturales.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": [
+            {
+              "id": "fr_ref_intro_1",
+              "instruction": "Ordena la frase.",
+              "items": ["Je", "m appelle", "Lucia."]
+            },
+            {
+              "id": "fr_ref_intro_2",
+              "instruction": "Ordena la frase.",
+              "items": ["Je", "viens", "du", "Perou."]
+            }
+          ]
+        },
+        {
+          "titulo": "Escucha la presentacion",
+          "descripcion": "Escucha y transcribe una mini presentacion basica.",
+          "tipo": "escucha",
+          "instrucciones": "Escucha con atencion y escribe la frase exacta.",
+          "puntos": 18,
+          "tiempo": 6,
+          "contenido": {
+            "texto_tts": "Bonjour, je m appelle Daniel et je viens du Chili.",
+            "transcripcion": "Bonjour, je m appelle Daniel et je viens du Chili."
+          }
+        }
+      ]
+    },
+    {
+      "titulo": "Cafe, pan y pedidos sin panico",
+      "descripcion": "Aprende a pedir comida y bebida, preguntar por precios y moverte en una interaccion de cafeteria o panaderia.",
+      "duracion": 100,
+      "objetivo": "Poder pedir productos basicos y reaccionar con cortesia en una compra simple.",
+      "resultados": [
+        "usar je voudrais con seguridad",
+        "pedir productos basicos de comida y bebida",
+        "preguntar precios",
+        "cerrar una compra con formulas naturales"
+      ],
+      "teoria": [
+        {
+          "titulo": "Pedir sin sonar brusco",
+          "duracion": 14,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "La estructura que mas te sirve",
+              "contenido": "Je voudrais es una de las formas mas seguras para pedir algo con cortesia. No necesitas dominar todas las variantes todavia. Con una estructura limpia ya puedes sobrevivir.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Vocabulario de panaderia y cafeteria",
+              "contenido": "- un cafe\n- un the\n- un croissant\n- du pain\n- de l eau\n- combien ca coute",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Pedido base",
+              "contenido": "Bonjour, je voudrais un cafe et un croissant, s il vous plait.",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1,
+              "media": {
+                "titulo": "Pronunciacion base de pedido en cafeteria",
+                "descripcion": "Referencia externa para ritmo y entonacion en un pedido simple.",
+                "tipo_media": "video",
+                "ruta_archivo": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "mime_type": "video/external",
+                "idioma": "frances",
+                "alt_text": "Video externo de referencia para practicar un pedido basico",
+                "metadata": {
+                  "source": "youtube",
+                  "embed_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "titulo": "Escenario y control de errores",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No mezcles articulos al azar. En esta etapa es mejor fijar combinaciones enteras: un cafe, un croissant, de l eau. Eso evita errores innecesarios.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Entras a una panaderia y por nervios casi pides cuarenta croissants en vez de cuatro. Tu mision es corregirte antes de arruinar tu presupuesto semanal.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Pide una bebida.\n- Pide algo para comer.\n- Pregunta cuanto cuesta.\n- Da las gracias y cierra la compra.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Pedido correcto en la cafeteria",
+          "descripcion": "Selecciona la opcion mas natural para cada situacion de compra.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Marca la mejor opcion en cada escena.",
+          "puntos": 15,
+          "tiempo": 6,
+          "contenido": {
+            "pregunta_global": "Elige la respuesta mas natural.",
+            "preguntas": [
+              {
+                "texto": "Forma correcta de pedir agua:",
+                "opciones": [
+                  { "texto": "Je voudrais de l eau.", "es_correcta": true },
+                  { "texto": "Je voudrais du eau.", "es_correcta": false },
+                  { "texto": "Je voudrais des eau.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Pregunta natural para saber el precio:",
+                "opciones": [
+                  { "texto": "Combien ca coute ?", "es_correcta": true },
+                  { "texto": "Pourquoi coute ?", "es_correcta": false },
+                  { "texto": "Ou coute prix ?", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Completa el pedido",
+          "descripcion": "Escribe la pieza que falta en frases de compra.",
+          "tipo": "completar_oracion",
+          "instrucciones": "Escribe solo la palabra o expresion que falta.",
+          "puntos": 12,
+          "tiempo": 5,
+          "contenido": [
+            {
+              "id": "fr_ref_food_1",
+              "oracion": "Je ______ un cafe, s il vous plait.",
+              "respuesta_correcta": "voudrais"
+            },
+            {
+              "id": "fr_ref_food_2",
+              "oracion": "Combien ca ______ ?",
+              "respuesta_correcta": "coute"
+            }
+          ]
+        },
+        {
+          "titulo": "Respuesta corta de mostrador",
+          "descripcion": "Responde de forma minima y funcional en una situacion de compra.",
+          "tipo": "respuesta_corta",
+          "instrucciones": "Escribe la expresion correcta.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": {
+            "pregunta": "Completa la formula de cortesia: S il vous ____.",
+            "respuesta_correcta": "plait",
+            "respuestas_correctas": ["plait"],
+            "placeholder": "Escribe una palabra"
+          }
+        }
+      ]
+    },
+    {
+      "titulo": "Tu rutina diaria, pero con dignidad",
+      "descripcion": "Habla de horarios, habitos y acciones frecuentes con un presente util y natural.",
+      "duracion": 100,
+      "objetivo": "Describir una rutina diaria simple con presente y marcadores temporales frecuentes.",
+      "resultados": [
+        "hablar de acciones cotidianas",
+        "usar verbos frecuentes en presente",
+        "decir a que hora haces algo",
+        "expresar frecuencia basica"
+      ],
+      "teoria": [
+        {
+          "titulo": "Rutina diaria de alta frecuencia",
+          "duracion": 14,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "El presente que realmente necesitas",
+              "contenido": "No hace falta aprender decenas de verbos de golpe. Si controlas levantarte, trabajar, estudiar, comer y dormir, ya puedes describir gran parte de un dia normal.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Verbos y marcadores",
+              "contenido": "- je me reveille\n- je me leve\n- je travaille\n- j etudie\n- le matin\n- le soir\n- toujours\n- parfois",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Mini rutina",
+              "contenido": "Je me reveille a sept heures. Je travaille le matin et j etudie le soir.",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            }
+          ]
+        },
+        {
+          "titulo": "Memoria y correccion",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No intentes describir todo tu dia con detalle. En A1 lo importante es controlar una secuencia simple y repetible: hora, accion y momento del dia.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Tu despertador suena con una elegancia ofensiva. Sin cafe no eres una persona, eres un mueble. Aun asi debes describir tu rutina en frances.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Di a que hora te despiertas.\n- Di que haces por la manana.\n- Di que haces por la noche.\n- Usa siempre o a veces.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Ordena una rutina minima",
+          "descripcion": "Reconstruye frases de rutina con orden natural.",
+          "tipo": "ordenar_palabras",
+          "instrucciones": "Ordena las palabras correctamente.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": [
+            {
+              "id": "fr_ref_routine_1",
+              "instruction": "Ordena la frase.",
+              "items": ["Je", "me reveille", "a", "sept", "heures."]
+            },
+            {
+              "id": "fr_ref_routine_2",
+              "instruction": "Ordena la frase.",
+              "items": ["Je", "travaille", "le", "matin."]
+            }
+          ]
+        },
+        {
+          "titulo": "Selecciona la frase natural",
+          "descripcion": "Elige la frase que si describe una rutina normal.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Marca la opcion mas natural.",
+          "puntos": 14,
+          "tiempo": 5,
+          "contenido": {
+            "pregunta_global": "Elige la frase correcta.",
+            "preguntas": [
+              {
+                "texto": "Frase natural para hablar de la noche:",
+                "opciones": [
+                  { "texto": "J etudie le soir.", "es_correcta": true },
+                  { "texto": "Je soir etudie.", "es_correcta": false },
+                  { "texto": "Le soir je etudie suis.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Adverbio correcto para a veces:",
+                "opciones": [
+                  { "texto": "parfois", "es_correcta": true },
+                  { "texto": "toujours", "es_correcta": false },
+                  { "texto": "jamaisement", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Escribe tu verbo clave",
+          "descripcion": "Completa una rutina simple con el verbo correcto.",
+          "tipo": "respuesta_corta",
+          "instrucciones": "Escribe solo la palabra correcta.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": {
+            "pregunta": "Completa: Je me ______ a six heures.",
+            "respuesta_correcta": "leve",
+            "respuestas_correctas": ["leve"],
+            "placeholder": "Escribe una palabra"
+          }
+        }
+      ]
+    },
+    {
+      "titulo": "Moverte por la ciudad sin perder la calma",
+      "descripcion": "Pide direcciones, orientate y habla de movimientos inmediatos con formulas de alta frecuencia.",
+      "duracion": 105,
+      "objetivo": "Poder pedir y entender direcciones sencillas en una ciudad.",
+      "resultados": [
+        "usar aller en frases frecuentes",
+        "pedir direcciones con cortesia",
+        "entender izquierda, derecha y todo recto",
+        "hablar de un plan inmediato simple"
+      ],
+      "teoria": [
+        {
+          "titulo": "La ciudad en frases utiles",
+          "duracion": 14,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "Supervivencia urbana",
+              "contenido": "La prioridad no es describir toda una ciudad. La prioridad es encontrar el metro, la estacion, un hotel o una calle concreta con preguntas cortas y comprensibles.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Direcciones basicas",
+              "contenido": "- ou est le metro\n- a gauche\n- a droite\n- tout droit\n- pres de\n- loin de\n- je vais",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Pregunta util",
+              "contenido": "Excusez moi, ou est le metro ?",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            }
+          ]
+        },
+        {
+          "titulo": "Escenario y control",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No cargues una pregunta con demasiadas palabras. Una estructura clara y corta funciona mejor que intentar sonar avanzado en una situacion de urgencia.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Estas perdido en Paris y el unico ser dispuesto a ayudarte es un pato con bufanda. De algun modo entiendes que coin significa gira a la izquierda.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Pregunta donde esta el metro.\n- Da una direccion con izquierda o derecha.\n- Usa tout droit.\n- Di a donde vas con je vais.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Direcciones utiles",
+          "descripcion": "Selecciona la frase mas natural en escenas de ciudad.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Marca la mejor opcion.",
+          "puntos": 15,
+          "tiempo": 6,
+          "contenido": {
+            "pregunta_global": "Elige la opcion correcta.",
+            "preguntas": [
+              {
+                "texto": "Pregunta natural para ubicar el metro:",
+                "opciones": [
+                  { "texto": "Ou est le metro ?", "es_correcta": true },
+                  { "texto": "Ou le metro est va ?", "es_correcta": false },
+                  { "texto": "Metro ou est ce droite ?", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Expresion correcta para seguir recto:",
+                "opciones": [
+                  { "texto": "Tout droit", "es_correcta": true },
+                  { "texto": "Tres droitement", "es_correcta": false },
+                  { "texto": "Droit a gauche", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Ordena la direccion",
+          "descripcion": "Reconstruye frases cortas de orientacion.",
+          "tipo": "ordenar_palabras",
+          "instrucciones": "Ordena las palabras correctamente.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": [
+            {
+              "id": "fr_ref_city_1",
+              "instruction": "Ordena la frase.",
+              "items": ["Le", "musee", "est", "a", "gauche."]
+            },
+            {
+              "id": "fr_ref_city_2",
+              "instruction": "Ordena la frase.",
+              "items": ["Je", "vais", "a", "la", "gare."]
+            }
+          ]
+        },
+        {
+          "titulo": "Completa el movimiento",
+          "descripcion": "Completa una frase basica de desplazamiento.",
+          "tipo": "completar_oracion",
+          "instrucciones": "Escribe solo la palabra correcta.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": [
+            {
+              "id": "fr_ref_city_3",
+              "oracion": "Je ______ a la gare.",
+              "respuesta_correcta": "vais"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Hablar de ayer y de planes cercanos",
+      "descripcion": "Puente A1 fuerte: cuenta una accion pasada simple y di lo que vas a hacer en un futuro inmediato.",
+      "duracion": 105,
+      "objetivo": "Combinar pasado reciente y planes inmediatos en escenas cotidianas controladas.",
+      "resultados": [
+        "usar j ai y je suis en relatos basicos",
+        "hablar de una accion de ayer",
+        "usar je vais para planes inmediatos",
+        "mantener un mini relato de 2 o 3 frases"
+      ],
+      "teoria": [
+        {
+          "titulo": "Ayer y manana sin enredarte",
+          "duracion": 15,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "Lo minimo util del pasado y del futuro proximo",
+              "contenido": "En A1 no necesitas dominar todos los tiempos. Necesitas dos herramientas muy rentables: contar una accion sencilla que ya paso y decir un plan inmediato con je vais.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Bloques utiles",
+              "contenido": "- hier\n- j ai mange\n- je suis alle\n- demain\n- je vais etudier\n- je vais sortir",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Mini relato",
+              "contenido": "Hier, j ai travaille. Ce soir, je vais etudier le francais.",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            }
+          ]
+        },
+        {
+          "titulo": "Memoria y consolidacion",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No intentes contar historias largas. A1 mejora mucho mas cuando controlas una secuencia minima: marcador temporal, verbo y complemento claro.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Ayer una paloma criminal casi te roba la baguette. Hoy juras que manana la protegeras mejor. La historia no es noble, pero la estructura si.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Di algo que hiciste ayer.\n- Di a donde fuiste.\n- Di que vas a hacer manana.\n- Une dos frases con claridad.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Selecciona el tiempo correcto",
+          "descripcion": "Distingue entre accion pasada y plan inmediato.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Elige la opcion mas natural.",
+          "puntos": 15,
+          "tiempo": 6,
+          "contenido": {
+            "pregunta_global": "Elige la respuesta correcta.",
+            "preguntas": [
+              {
+                "texto": "Forma correcta para decir Fui al mercado:",
+                "opciones": [
+                  { "texto": "Je suis alle au marche.", "es_correcta": true },
+                  { "texto": "Je vais au marche hier.", "es_correcta": false },
+                  { "texto": "Je suis aller au marche.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Forma correcta para decir Voy a estudiar esta noche:",
+                "opciones": [
+                  { "texto": "Je vais etudier ce soir.", "es_correcta": true },
+                  { "texto": "J ai etudier ce soir.", "es_correcta": false },
+                  { "texto": "Je suis etudier ce soir.", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Completa el relato corto",
+          "descripcion": "Escribe la palabra que falta en frases muy cortas de pasado y plan inmediato.",
+          "tipo": "completar_oracion",
+          "instrucciones": "Escribe solo la palabra correcta.",
+          "puntos": 12,
+          "tiempo": 5,
+          "contenido": [
+            {
+              "id": "fr_ref_time_1",
+              "oracion": "Hier, j ____ mange au cafe.",
+              "respuesta_correcta": "ai"
+            },
+            {
+              "id": "fr_ref_time_2",
+              "oracion": "Je ____ etudier demain matin.",
+              "respuesta_correcta": "vais"
+            }
+          ]
+        },
+        {
+          "titulo": "Escucha un plan simple",
+          "descripcion": "Escucha y transcribe una frase corta con pasado y futuro proximo.",
+          "tipo": "escucha",
+          "instrucciones": "Escucha y escribe la frase exacta.",
+          "puntos": 18,
+          "tiempo": 6,
+          "contenido": {
+            "texto_tts": "Hier, j ai achete du pain et demain je vais voir mes amis.",
+            "transcripcion": "Hier, j ai achete du pain et demain je vais voir mes amis."
+          }
+        }
+      ]
+    },
+    {
+      "titulo": "Cierre A1: mini conversacion, pronunciacion y confianza",
+      "descripcion": "Leccion final de consolidacion para unir presentacion, pedidos, rutina y ciudad en una mini conversacion funcional.",
+      "duracion": 110,
+      "objetivo": "Cerrar el A1 con una mini conversacion usable, mejor control de pronunciacion y una sensacion clara de progreso.",
+      "resultados": [
+        "responder una mini conversacion funcional",
+        "pronunciar frases cortas con mas seguridad",
+        "unir vocabulario de varias lecciones",
+        "cerrar el curso con una tarea breve y clara"
+      ],
+      "teoria": [
+        {
+          "titulo": "Como sonar pequeno pero solido",
+          "duracion": 12,
+          "bloques": [
+            {
+              "tipo_bloque": "explicacion",
+              "titulo": "No necesitas hablar mucho para hablar bien",
+              "contenido": "El final de un A1 bueno no es un discurso largo. Es una mini conversacion clara, ordenada y suficientemente natural para presentarte, pedir algo, decir a donde vas y sostener dos o tres respuestas.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "vocabulario",
+              "titulo": "Frases de cierre",
+              "contenido": "- bonjour\n- je m appelle\n- je voudrais\n- je vais\n- merci beaucoup\n- a bientot",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "ejemplo",
+              "titulo": "Mini conversacion objetivo",
+              "contenido": "Bonjour, je m appelle Sofia. Je voudrais un cafe. Ensuite, je vais a la gare. Merci beaucoup, a bientot.",
+              "idioma_bloque": "frances",
+              "tts_habilitado": 1
+            }
+          ]
+        },
+        {
+          "titulo": "Consolidacion final",
+          "duracion": 10,
+          "bloques": [
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Error frecuente",
+              "contenido": "No intentes sonar avanzado en el cierre. Lo premium aqui es sonar estable, claro y correcto con frases de alta frecuencia bien ensambladas.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "dialogo",
+              "titulo": "Escenario memorable",
+              "contenido": "Tu mision final es sobrevivir a una manana en Paris: saludar, pedir un desayuno, decir a donde vas y no dejar que una paloma oportunista robe tu croissant.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            },
+            {
+              "tipo_bloque": "instruccion",
+              "titulo": "Chequeo rapido",
+              "contenido": "- Saluda.\n- Di tu nombre.\n- Pide algo.\n- Di a donde vas.\n- Cierra con una despedida amable.",
+              "idioma_bloque": "espanol",
+              "tts_habilitado": 1
+            }
+          ]
+        }
+      ],
+      "actividades": [
+        {
+          "titulo": "Escoge la mini conversacion correcta",
+          "descripcion": "Integra varias funciones del A1 en una escena breve.",
+          "tipo": "opcion_multiple",
+          "instrucciones": "Selecciona la respuesta mas natural en cada paso.",
+          "puntos": 16,
+          "tiempo": 6,
+          "contenido": {
+            "pregunta_global": "Elige la mejor respuesta.",
+            "preguntas": [
+              {
+                "texto": "Forma correcta de unir saludo y nombre:",
+                "opciones": [
+                  { "texto": "Bonjour, je m appelle Sofia.", "es_correcta": true },
+                  { "texto": "Bonjour, je suis appelle Sofia.", "es_correcta": false },
+                  { "texto": "Bonjour, m appelle Sofia je.", "es_correcta": false }
+                ]
+              },
+              {
+                "texto": "Frase natural para decir a donde vas:",
+                "opciones": [
+                  { "texto": "Je vais a la gare.", "es_correcta": true },
+                  { "texto": "Je suis a la gare demain aller.", "es_correcta": false },
+                  { "texto": "Je vais de la gare a.", "es_correcta": false }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "titulo": "Pronuncia tu cierre A1",
+          "descripcion": "Lee en voz alta frases cortas de cierre y deja que el navegador reconozca tu pronunciacion.",
+          "tipo": "pronunciacion",
+          "instrucciones": "Pulsa el microfono y lee cada frase con calma.",
+          "puntos": 20,
+          "tiempo": 8,
+          "contenido": [
+            {
+              "id": "fr_ref_pron_1",
+              "frase": "Bonjour, je m appelle Sofia."
+            },
+            {
+              "id": "fr_ref_pron_2",
+              "frase": "Je voudrais un cafe, s il vous plait."
+            },
+            {
+              "id": "fr_ref_pron_3",
+              "frase": "Je vais a la gare. Merci beaucoup."
+            }
+          ]
+        },
+        {
+          "titulo": "Respuesta final de confianza",
+          "descripcion": "Completa la despedida basica del cierre del curso.",
+          "tipo": "respuesta_corta",
+          "instrucciones": "Escribe la expresion correcta.",
+          "puntos": 10,
+          "tiempo": 4,
+          "contenido": {
+            "pregunta": "Completa la despedida: A ______.",
+            "respuesta_correcta": "bientot",
+            "respuestas_correctas": ["bientot"],
+            "placeholder": "Escribe una palabra"
+          }
+        }
+      ]
+    }
+  ]
+}

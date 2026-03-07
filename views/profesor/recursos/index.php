@@ -1,9 +1,31 @@
 <?php
 require_once __DIR__ . '/../../partials/header.php';
 
+function mediaReturnUrl($returnTo, $recurso) {
+    if ($returnTo === '') {
+        return '';
+    }
+
+    $separator = strpos($returnTo, '?') === false ? '?' : '&';
+    return $returnTo . $separator . http_build_query([
+        'selected_media_id' => (int) $recurso->id,
+        'selected_media_title' => $recurso->titulo,
+        'selected_media_type' => $recurso->tipo_media,
+        'selected_media_url' => app_media_public_url($recurso->ruta_archivo),
+    ]);
+}
+
 function renderMediaPreview($recurso) {
-    $assetUrl = url('/' . ltrim($recurso->ruta_archivo, '/'));
+    $assetUrl = app_media_public_url($recurso->ruta_archivo);
     $alt = htmlspecialchars($recurso->alt_text ?: $recurso->titulo, ENT_QUOTES, 'UTF-8');
+    $metadata = app_media_metadata($recurso->metadata ?? null);
+    $embedUrl = $metadata['embed_url'] ?? null;
+
+    if (!empty($embedUrl)) {
+        $frameClass = htmlspecialchars(app_media_embed_frame_class($recurso->ruta_archivo, $metadata), ENT_QUOTES, 'UTF-8');
+        return '<div class="' . $frameClass . '"><iframe src="' . htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8') . '" title="' . $alt . '" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+            . '<div class="mt-2"><a href="' . htmlspecialchars($assetUrl, ENT_QUOTES, 'UTF-8') . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right"></i> Abrir video</a></div>';
+    }
 
     if ($recurso->tipo_media === 'imagen') {
         return '<img src="' . htmlspecialchars($assetUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . $alt . '" class="media-preview-thumb">';
@@ -27,6 +49,14 @@ function renderMediaPreview($recurso) {
 
 <div class="container">
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
+
+    <?php if (!empty($returnTo)): ?>
+        <div class="alert alert-info">
+            <i class="bi bi-arrow-return-left"></i>
+            Biblioteca abierta en contexto <?php echo htmlspecialchars($resourceContext ?: 'de autoria'); ?>. Puedes elegir un recurso y volver directo al flujo donde estabas.
+            <a href="<?php echo htmlspecialchars($returnTo); ?>" class="btn btn-sm btn-outline-secondary ms-2">Volver sin seleccionar</a>
+        </div>
+    <?php endif; ?>
 
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-images"></i> Biblioteca</span>
@@ -63,6 +93,10 @@ function renderMediaPreview($recurso) {
                     </div>
                     <form method="POST" action="<?php echo url('/profesor/recursos'); ?>" enctype="multipart/form-data">
                         <?php echo csrf_input(); ?>
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-youtube"></i>
+                            Para video externo, trabaja solo con enlaces normales de YouTube. La app convierte automaticamente formatos `watch`, `shorts`, `youtu.be` y `embed`.
+                        </div>
                         <div class="mb-3">
                             <label for="titulo" class="form-label">Titulo</label>
                             <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ejemplo: Imagen de restaurante">
@@ -89,8 +123,13 @@ function renderMediaPreview($recurso) {
                         </div>
                         <div class="mt-3">
                             <label for="archivo" class="form-label">Archivo</label>
-                            <input type="file" class="form-control" id="archivo" name="archivo" required>
-                            <div class="form-text">Formatos comunes: imagen, audio, video, PDF o documento.</div>
+                            <input type="file" class="form-control" id="archivo" name="archivo" accept=".jpg,.jpeg,.png,.gif,.webp,.mp3,.wav,.ogg,.m4a,.aac,.mp4,.webm,.mov,.avi,.pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx">
+                            <div class="form-text">Formatos permitidos: JPG, PNG, GIF, WEBP, audio, video, PDF y documentos comunes. SVG no esta permitido.</div>
+                        </div>
+                        <div class="mt-3">
+                            <label for="url_externa" class="form-label">o enlace externo</label>
+                            <input type="url" class="form-control" id="url_externa" name="url_externa" placeholder="https://www.youtube.com/watch?v=...">
+                            <div class="form-text">Por ahora el embed soportado oficialmente es YouTube. Usa archivo o enlace, no ambos.</div>
                         </div>
                         <div class="responsive-actions mt-4">
                             <button type="submit" class="btn btn-primary">
@@ -159,7 +198,12 @@ function renderMediaPreview($recurso) {
                                         <td><?php echo htmlspecialchars($recurso->idioma ? ucfirst($recurso->idioma) : 'General'); ?></td>
                                         <td>
                                             <div class="d-flex gap-2 flex-wrap">
-                                                <a href="<?php echo htmlspecialchars(url('/' . ltrim($recurso->ruta_archivo, '/'))); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
+                                                <?php if (!empty($returnTo)): ?>
+                                                    <a href="<?php echo htmlspecialchars(mediaReturnUrl($returnTo, $recurso)); ?>" class="btn btn-sm btn-success">
+                                                        <i class="bi bi-check2-circle"></i> Usar aqui
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="<?php echo htmlspecialchars(app_media_public_url($recurso->ruta_archivo)); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <form method="POST" action="<?php echo url('/profesor/recursos/delete/' . $recurso->id); ?>" onsubmit="return confirm('Estas seguro de eliminar este recurso?');">

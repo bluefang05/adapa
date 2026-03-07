@@ -122,6 +122,42 @@ class Curso {
         return $this->db->execute();
     }
 
+    public function duplicarCurso($id, $instanciaId, $creadoPor) {
+        $curso = $this->obtenerCursoPorId($id);
+        if (!$curso) {
+            return null;
+        }
+
+        $datos = [
+            'instancia_id' => $instanciaId,
+            'creado_por' => $creadoPor,
+            'titulo' => trim((string) $curso->titulo) . ' (copia)',
+            'descripcion' => $curso->descripcion,
+            'idioma' => $curso->idioma_objetivo ?? $curso->idioma,
+            'idioma_objetivo' => $curso->idioma_objetivo ?? $curso->idioma,
+            'idioma_base' => $curso->idioma_base ?? $curso->idioma_ensenanza ?? 'espanol',
+            'idioma_ensenanza' => $curso->idioma_base ?? $curso->idioma_ensenanza ?? 'espanol',
+            'portada_media_id' => $curso->portada_media_id ?? null,
+            'nivel_cefr' => $curso->nivel_cefr ?? 'A1',
+            'nivel_cefr_desde' => $curso->nivel_cefr_desde ?? $curso->nivel_cefr ?? 'A1',
+            'nivel_cefr_hasta' => $curso->nivel_cefr_hasta ?? $curso->nivel_cefr ?? 'A1',
+            'modalidad' => $curso->modalidad ?? 'perpetuo',
+            'es_publico' => 0,
+            'requiere_codigo' => !empty($curso->requiere_codigo) ? 1 : 0,
+            'codigo_acceso' => !empty($curso->requiere_codigo) ? $this->generarCodigoAcceso() : null,
+            'tipo_codigo' => $curso->tipo_codigo ?? null,
+            'max_estudiantes' => $curso->max_estudiantes ?? 0,
+            'fecha_inicio' => $curso->fecha_inicio ?? null,
+            'fecha_fin' => $curso->fecha_fin ?? null,
+        ];
+
+        if (!$this->crearCurso($datos)) {
+            return null;
+        }
+
+        return (int) $this->db->lastInsertId();
+    }
+
     public function actualizarCurso($id, $datos) {
         $codigoAcceso = !empty($datos['codigo_acceso']) ? $datos['codigo_acceso'] : null;
         $tipoCodigo = !empty($datos['tipo_codigo']) ? $datos['tipo_codigo'] : null;

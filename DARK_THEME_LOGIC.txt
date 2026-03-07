@@ -1,0 +1,114 @@
+﻿ADAPA - LOGICA ACTUAL DEL DARK THEME
+Fecha: 2026-03-06
+
+1) OBJETIVO
+El sistema de tema oscuro/claro busca:
+- aplicar tema al cargar la pagina sin parpadeo (FOUC)
+- permitir cambio manual por usuario (toggle)
+- persistir preferencia en cliente y servidor
+- mantener consistencia entre navegaciones y pestañas
+
+2) ARCHIVOS CLAVE
+- views/partials/header.php
+- views/partials/footer.php
+- controllers/shared/ThemeController.php
+- assets/css/app.css
+
+3) FUENTE DE VERDAD DEL TEMA
+Actualmente se usa <html> como fuente de verdad:
+- data-theme="light|dark"
+- data-bs-theme="light|dark"
+- class="theme-light|theme-dark"
+
+Nota:
+- Antes se aplicaba tambien en <body>, pero se simplifico para evitar conflictos.
+- Se mantiene data-server-theme en <body> como fallback informativo.
+
+4) RESOLUCION DEL TEMA AL CARGAR (HEADER)
+En header.php:
+- PHP calcula $serverTheme desde:
+  a) $_SESSION['theme_preference']
+  b) cookie 'adapa-theme'
+  c) fallback 'light'
+- <html> se imprime ya con data-theme/data-bs-theme/class en SSR.
+
+Script temprano en <head>:
+- lee localStorage('adapa-theme')
+- lee cookie 'adapa-theme'
+- usa serverTheme
+- si nada valido, usa prefers-color-scheme (dark/light)
+- aplica tema en document.documentElement via applyRootTheme()
+- expone API global:
+  window.__adapaTheme.sanitizeTheme
+  window.__adapaTheme.applyRootTheme
+
+Prioridad efectiva de tema inicial:
+1) localStorage
+2) cookie
+3) server theme
+4) prefers-color-scheme
+5) light
+
+5) TOGGLE Y PERSISTENCIA (FOOTER)
+En footer.php:
+- inicializa una sola vez con guard: window.__adapaThemeInitDone
+- toma tema inicial (storage/cookie/root/data-server-theme)
+- aplica tema con applyTheme()
+- sincroniza iconos/labels de botones [data-theme-toggle]
+
+Al hacer click en toggle:
+- calcula nextTheme (dark/light)
+- guarda en localStorage
+- escribe cookie JS adapa-theme
+- aplica en <html>
+- POST a /theme/preference con CSRF
+
+6) PERSISTENCIA EN BACKEND
+ThemeController::store():
+- valida POST y CSRF
+- acepta solo light/dark
+- guarda en $_SESSION['theme_preference']
+- setcookie('adapa-theme', ...) con:
+  - expires 1 anio
+  - path '/'
+  - samesite 'Lax'
+  - secure segun HTTPS
+  - httponly false (JS debe poder leerla)
+
+7) SINCRONIZACION EXTRA
+- window.addEventListener('pageshow', ...): reaplica tema al volver por cache de navegacion
+- window.addEventListener('storage', ...): sincroniza cambios entre pestañas
+
+8) CSS Y SELECTORES
+- Base de variables: :root y :root[data-theme="dark"]
+- Bootstrap usa tambien data-bs-theme; por eso se define en <html>
+- Se agregaron overrides especificos para componentes conflictivos (ej. breadcrumb, form-check)
+
+9) PROBLEMA REPORTADO
+- En Chrome (no en Firefox) algunos componentes quedan con apariencia clara en dark mode.
+- Casos observados: breadcrumb y bloques form-check de /register.
+- Sospecha principal: orden/cascade/especificidad + repaint/cache en Chrome.
+
+10) CAMBIOS YA INTENTADOS
+- cache-busting de app.css con ?v=filemtime
+- simplificacion de selectores dark a :root[data-theme="dark"] en bloques conflictivos
+- forzado de background/border en algunos componentes
+- eliminacion de aplicacion duplicada en body
+- sincronizacion pageshow/storage
+
+11) QUE DEBERIA REVISAR OTRA IA
+- conflictos entre bootstrap.min.css y app.css (variables y specificity)
+- si algun componente usa color de sistema o var bootstrap no sobreescrita
+- si hay reglas duplicadas de breadcrumb/form-check en diferentes zonas del css
+- si data-theme/data-bs-theme se actualizan correctamente en todas las rutas
+- si cache de CDN/hosting sirve una version vieja de app.css
+
+12) PRUEBA RAPIDA MANUAL
+1. Abrir Chrome en /register
+2. Activar dark mode
+3. Navegar a una leccion/actividad
+4. Volver atras/adelante
+5. Confirmar si breadcrumb y form-check siguen oscuros
+6. Repetir en Firefox para comparar
+
+Fin.

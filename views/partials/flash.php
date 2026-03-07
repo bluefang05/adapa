@@ -1,5 +1,5 @@
 <?php if (isset($_SESSION['success'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="status" aria-live="polite">
         <?php echo htmlspecialchars($_SESSION['success']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -7,7 +7,7 @@
 <?php endif; ?>
 
 <?php if (isset($_SESSION['mensaje'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="status" aria-live="polite">
         <?php echo htmlspecialchars($_SESSION['mensaje']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -15,7 +15,7 @@
 <?php endif; ?>
 
 <?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="assertive">
         <?php echo htmlspecialchars($_SESSION['error']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>

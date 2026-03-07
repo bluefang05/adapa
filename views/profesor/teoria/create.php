@@ -33,6 +33,14 @@
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso listo para insertar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            Lo asignare al primer bloque sin recurso.
+        </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <div class="form-shell">
@@ -77,6 +85,20 @@
                                     </div>
                                     <div class="form-text mt-3">
                                         Usa bloques para explicacion, ejemplo, traduccion o vocabulario. Cada bloque puede marcar idioma y habilitar TTS.
+                                    </div>
+                                    <div class="production-hint-card tone-info mt-3">
+                                        <div class="production-hint-title">Checklist rapido antes de guardar</div>
+                                        <ul class="quality-checklist-list mb-0">
+                                            <li>El titulo explica la idea o habilidad que trabajara el alumno.</li>
+                                            <li>Hay al menos un bloque base y, si aplica, un ejemplo o recurso.</li>
+                                            <li>La duracion y el tipo de contenido coinciden con lo que vera el alumno.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="template-chip-group mt-3">
+                                        <button type="button" class="template-chip" data-block-recipe="core">Base teorica</button>
+                                        <button type="button" class="template-chip" data-block-recipe="dialogue">Dialogo + traduccion</button>
+                                        <button type="button" class="template-chip" data-block-recipe="video">Explicacion + video</button>
+                                        <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/lecciones/' . $leccion->id . '/teoria/create')) . '&context=teoria'); ?>" class="template-chip template-chip-link">Elegir recurso en biblioteca</a>
                                     </div>
                                 </div>
                             </div>
@@ -206,12 +228,15 @@
 <script>
 window.availableMediaResources = <?php
 echo json_encode(array_reduce($recursos, function ($carry, $recurso) {
+    $metadata = app_media_metadata($recurso->metadata ?? null);
     $carry[$recurso->id] = [
         'id' => (int) $recurso->id,
         'titulo' => $recurso->titulo,
         'tipo_media' => $recurso->tipo_media,
-        'ruta_archivo' => url('/' . ltrim($recurso->ruta_archivo, '/')),
+        'ruta_archivo' => app_media_public_url($recurso->ruta_archivo),
         'alt_text' => $recurso->alt_text ?: $recurso->titulo,
+        'embed_url' => $metadata['embed_url'] ?? null,
+        'is_vertical_embed' => strpos((string) $recurso->ruta_archivo, '/shorts/') !== false || (($metadata['layout'] ?? null) === 'vertical'),
     ];
     return $carry;
 }, []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -236,6 +261,26 @@ tinymce.init({
     const addBlockBtn = document.getElementById('addBlockBtn');
     const generateBlocksBtn = document.getElementById('generateBlocksBtn');
     const mediaResources = window.availableMediaResources || {};
+    const selectedMediaIdFromQuery = new URLSearchParams(window.location.search).get('selected_media_id');
+    const idiomaBloquePorDefecto = document.getElementById('tipo_contenido') ? 'espanol' : 'espanol';
+    const blockRecipes = {
+        core: [
+            { tipo: 'explicacion', titulo: 'Idea central', contenido: 'Explica la regla o idea principal en pocas lineas.', idioma: 'espanol' },
+            { tipo: 'ejemplo', titulo: 'Ejemplo guiado', contenido: 'Muestra una frase util y, debajo, explica por que funciona.', idioma: 'espanol' },
+            { tipo: 'instruccion', titulo: 'Error frecuente', contenido: 'Aclara el fallo tipico que suele cometer el alumno.', idioma: 'espanol' },
+            { tipo: 'instruccion', titulo: 'Chequeo rapido', contenido: 'Haz una pregunta corta para verificar si la idea quedo clara.', idioma: 'espanol', tts: false }
+        ],
+        dialogue: [
+            { tipo: 'dialogo', titulo: 'Mini dialogo', contenido: 'A: Bonjour, vous desirez ?\nB: Je voudrais un cafe, s il vous plait.', idioma: 'frances', tts: true },
+            { tipo: 'traduccion', titulo: 'Traduccion guiada', contenido: 'Explica el sentido de cada linea y la estructura clave.', idioma: 'espanol' },
+            { tipo: 'ejemplo', titulo: 'Variacion util', contenido: 'Cambia una palabra del dialogo para mostrar otra situacion real.', idioma: 'espanol' }
+        ],
+        video: [
+            { tipo: 'explicacion', titulo: 'Que debes mirar', contenido: 'Dile al alumno que observar en el video: ritmo, pronunciacion o estructura.', idioma: 'espanol' },
+            { tipo: 'recurso', titulo: 'Video de apoyo', contenido: 'Asocia aqui un video de YouTube desde la biblioteca.', idioma: 'espanol' },
+            { tipo: 'instruccion', titulo: 'Despues del video', contenido: 'Pide repetir una frase, detectar una palabra o escribir una reaccion.', idioma: 'espanol' }
+        ]
+    };
 
     function renderMediaPreview(resource) {
         if (!resource) {
@@ -244,6 +289,12 @@ tinymce.init({
 
         if (resource.tipo_media === 'imagen') {
             return '<img src="' + resource.ruta_archivo + '" alt="' + resource.alt_text + '" class="block-media-thumb">';
+        }
+
+        if (resource.embed_url) {
+            const frameClass = resource.is_vertical_embed ? 'media-embed-frame is-vertical' : 'media-embed-frame';
+            return '<div class="' + frameClass + '"><iframe src="' + resource.embed_url + '" title="' + resource.alt_text + '" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+                + '<div class="mt-2"><a href="' + resource.ruta_archivo + '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right"></i> Abrir video</a></div>';
         }
 
         if (resource.tipo_media === 'audio') {
@@ -358,8 +409,27 @@ tinymce.init({
 
     addBlock();
 
+    if (selectedMediaIdFromQuery && mediaResources[selectedMediaIdFromQuery]) {
+        const firstAvailableSelect = builder.querySelector('[data-field="media"]');
+        if (firstAvailableSelect) {
+            firstAvailableSelect.value = selectedMediaIdFromQuery;
+            updateMediaPreview(firstAvailableSelect.closest('.content-block-item'));
+            renderMediaGallery(firstAvailableSelect.closest('.content-block-item'));
+        }
+    }
+
     addBlockBtn.addEventListener('click', function () {
         addBlock();
+    });
+
+    document.querySelectorAll('[data-block-recipe]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const recipeKey = button.getAttribute('data-block-recipe');
+            const recipe = blockRecipes[recipeKey] || [];
+            recipe.forEach(function (blockData) {
+                addBlock(blockData);
+            });
+        });
     });
 
     generateBlocksBtn.addEventListener('click', function () {

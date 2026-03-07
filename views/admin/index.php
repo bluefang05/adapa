@@ -102,7 +102,7 @@
                                             Creado el <?php echo date('d/m/Y', strtotime($course->fecha_creacion)); ?>
                                         </div>
                                     </div>
-                                    <a href="<?php echo url('/estudiante/curso/' . $course->id); ?>" class="btn btn-outline-secondary btn-sm">
+                                    <a href="<?php echo url('/estudiante/cursos/' . $course->id . '/lecciones'); ?>" class="btn btn-outline-secondary btn-sm" aria-label="Ver curso <?php echo htmlspecialchars($course->titulo); ?>">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
                                 </article>

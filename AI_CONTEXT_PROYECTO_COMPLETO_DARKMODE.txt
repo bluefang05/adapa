@@ -1,0 +1,3283 @@
+﻿ADAPA - CONTEXTO COMPLETO PARA IA (DARK MODE CHROME)
+Generado: 2026-03-06 12:49:21
+
+1) RESUMEN DEL PROYECTO
+- Stack: PHP (sin framework), MySQL/MariaDB, Bootstrap 5.3, CSS propio.
+- Arquitectura: MVC simple con Router custom.
+- Entrada principal: index.php (define rutas).
+- Layout base: views/partials/header.php + views/partials/footer.php.
+
+2) PROBLEMA A RESOLVER
+- Problema: en Google Chrome, el modo oscuro NO se sostiene de forma consistente en algunos componentes.
+- En Firefox: comportamiento estable (no se reproduce igual).
+- Síntoma visual principal: elementos puntuales aparecen con estilo claro aun estando en dark mode.
+- Casos vistos: breadcrumb y bloques de seleccion de tipo de cuenta en /register.
+
+3) REPRODUCCION
+- URL ejemplo: https://aspierd.com/adapa/estudiante/lecciones/45/contenido#teoria-71
+- URL adicional: /register
+- Pasos:
+  1. Entrar en Chrome.
+  2. Activar modo oscuro con el toggle de navbar/footer.
+  3. Navegar entre vistas o recargar.
+  4. Observar elementos que mantienen fondo/texto de modo claro.
+- Resultado esperado: TODO el layout mantiene dark mode consistente.
+- Resultado actual: inconsistencias intermitentes en Chrome.
+
+4) IMPLEMENTACION ACTUAL DEL TEMA
+- Fuente de verdad: data-theme y data-bs-theme en <html>.
+- Clases auxiliares: theme-light / theme-dark en <html>.
+- Persistencia: localStorage + cookie adapa-theme + session (backend).
+- Inicializacion temprana en <head> para evitar flash.
+- Toggle en footer.js con POST a /theme/preference.
+- Sincronizacion extra: pageshow + storage event.
+
+5) CAMBIOS YA APLICADOS (PARA NO REPETIR)
+- CSS cache-busting en header (app.css?v=filemtime).
+- Selectores dark reforzados para breadcrumb (html/body/:root/.theme-dark).
+- Forzado de background/border en breadcrumb con alta prioridad.
+- form-check en /register con override dark dedicado.
+- Se simplifico la aplicacion del tema para usar html como fuente de verdad.
+
+6) PETICION A LA IA
+- Revisar de forma tecnica por qué Chrome conserva estilos claros en componentes aislados.
+- Proponer fix robusto y minimo, sin romper Firefox ni Bootstrap 5.3.
+- Evitar respuestas genericas; analizar el codigo real adjunto.
+- Incluir diagnostico de cascada CSS/especificidad/orden de carga/cache.
+- Si propone cambios, devolver patch por archivo con bloques concretos.
+
+7) ARBOLES Y ARCHIVOS DEL PROYECTO
+Top-level:
+- .git
+- api
+- assets
+- config
+- controllers
+- core
+- cron
+- models
+- scripts
+- services
+- superadmin-panel
+- views
+- .gitignore
+- .htaccess
+- adapa_db.sql
+- config.php
+- credenciales.txt
+- hosting_import_japanese_dual_track.sql
+- index.php
+- install.php
+- PRODUCT_BEHAVIOR.md
+- README_SETUP.md
+- requerimientos.txt
+
+Listado completo de archivos (rg --files):
+hosting_import_japanese_dual_track.sql
+README_SETUP.md
+PRODUCT_BEHAVIOR.md
+index.php
+install.php
+adapa_db.sql
+config\database.php
+models\Teoria.php
+models\Respuesta.php
+models\ProfesorPlan.php
+models\OpcionMultiple.php
+models\MediaRecurso.php
+models\Leccion.php
+models\Inscripcion.php
+models\Curso.php
+models\Actividad.php
+scripts\sync_french_activity_lab.php
+scripts\sync_english_demo_lesson.php
+scripts\seed_zero_to_hero.php
+scripts\seed_german_zero_to_hero.php
+scripts\seed_course18_content.sql
+scripts\migrate_professor_access.sql
+scripts\migrate_language_preferences.sql
+scripts\migrate_content_authoring.sql
+scripts\hosting_import_japanese_dual_track.sql
+scripts\german_course_blueprint.php
+scripts\backfill_theory_blocks.php
+requerimientos.txt
+views\estudiante\realizar_actividad.php
+views\estudiante\index.php
+views\estudiante\contenido_leccion.php
+core\Router.php
+core\Database.php
+core\Controller.php
+core\Auth.php
+views\auth\register.php
+views\auth\login.php
+views\estudiante\progreso\index.php
+views\estudiante\lecciones.php
+views\admin\usuarios_edit.php
+views\admin\usuarios.php
+views\admin\index.php
+views\admin\cursos.php
+views\partials\flash.php
+controllers\shared\ThemeController.php
+controllers\shared\RegisterController.php
+controllers\shared\HomeController.php
+controllers\shared\AuthController.php
+controllers\shared\AboutController.php
+views\partials\header.php
+views\partials\footer.php
+views\shared\home\index.php
+config.php
+views\estudiante\actividades\index.php
+assets\css\app.css
+controllers\profesor\CursoController.php
+controllers\profesor\CalificacionesController.php
+controllers\profesor\ActividadController.php
+controllers\profesor\TeoriaController.php
+controllers\profesor\MediaController.php
+controllers\profesor\LeccionController.php
+controllers\profesor\EstudiantesController.php
+views\profesor\calificaciones\revisar.php
+views\profesor\calificaciones\index.php
+views\profesor\calificaciones\curso.php
+views\profesor\teoria\edit.php
+views\profesor\teoria\create.php
+views\profesor\teoria\index.php
+controllers\estudiante\EstudianteActividadController.php
+controllers\estudiante\CalificacionesController.php
+controllers\estudiante\EstudianteController.php
+views\profesor\lecciones\edit.php
+views\profesor\lecciones\create.php
+views\profesor\lecciones\index.php
+controllers\estudiante\ProgresoController.php
+views\profesor\cursos\create.php
+views\profesor\cursos\edit.php
+views\profesor\recursos\index.php
+views\profesor\cursos\index.php
+views\estudiante\calificaciones\index.php
+controllers\admin\AdminController.php
+views\profesor\estudiantes\index.php
+views\profesor\actividades\config_escucha.php
+views\profesor\actividades\config_emparejamiento.php
+views\profesor\actividades\config_completar_oracion.php
+views\profesor\actividades\config_codigo.php
+views\profesor\actividades\config_arrastrar_soltar.php
+views\profesor\actividades\config_ordenar_palabras.php
+views\profesor\actividades\config_opcion_multiple.php
+views\profesor\actividades\config_proyecto.php
+views\profesor\actividades\config_respuesta_corta.php
+views\profesor\actividades\index.php
+views\profesor\actividades\edit.php
+views\profesor\actividades\create.php
+views\profesor\actividades\config_verdadero_falso.php
+views\profesor\actividades\config_respuesta_larga.php
+
+8) CODIGO RELEVANTE (COMPLETO)
+
+============================================================
+FILE: index.php
+============================================================
+<?php
+
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/core/Router.php';
+require_once __DIR__ . '/core/Auth.php';
+
+$router = new Router();
+
+// Auth routes
+$router->add('GET', '/login', 'shared/AuthController', 'showLoginForm');
+$router->add('POST', '/login', 'shared/AuthController', 'login');
+$router->add('POST', '/logout', 'shared/AuthController', 'logout');
+
+// Home route
+$router->add('GET', '/', 'shared/HomeController', 'index');
+
+// About route
+$router->add('GET', '/about', 'shared/AboutController', 'index');
+$router->add('POST', '/theme/preference', 'shared/ThemeController', 'store');
+
+// Profesor routes
+$router->add('GET', '/profesor/cursos', 'profesor/CursoController', 'index');
+$router->add('GET', '/profesor/cursos/create', 'profesor/CursoController', 'create');
+$router->add('POST', '/profesor/cursos/create', 'profesor/CursoController', 'create');
+$router->add('GET', '/profesor/cursos/edit/{id}', 'profesor/CursoController', 'edit');
+$router->add('POST', '/profesor/cursos/edit/{id}', 'profesor/CursoController', 'edit');
+$router->add('POST', '/profesor/cursos/delete/{id}', 'profesor/CursoController', 'delete');
+
+// Rutas de lecciones
+$router->add('GET', '/profesor/cursos/{id}/lecciones', 'profesor/LeccionController', 'index');
+$router->add('GET', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
+$router->add('POST', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
+$router->add('GET', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');
+$router->add('POST', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');
+$router->add('POST', '/profesor/lecciones/delete/{id}', 'profesor/LeccionController', 'delete');
+
+// Rutas de teorÃ­a
+$router->add('GET', '/profesor/lecciones/{id}/teoria', 'profesor/TeoriaController', 'index');
+$router->add('GET', '/profesor/lecciones/{id}/teoria/create', 'profesor/TeoriaController', 'create');
+$router->add('POST', '/profesor/lecciones/{id}/teoria/create', 'profesor/TeoriaController', 'create');
+$router->add('GET', '/profesor/teoria/edit/{id}', 'profesor/TeoriaController', 'edit');
+$router->add('POST', '/profesor/teoria/edit/{id}', 'profesor/TeoriaController', 'edit');
+$router->add('POST', '/profesor/teoria/delete/{id}', 'profesor/TeoriaController', 'delete');
+
+// Rutas de actividades
+$router->add('GET', '/profesor/lecciones/{id}/actividades', 'profesor/ActividadController', 'index');
+$router->add('GET', '/profesor/lecciones/{id}/actividades/create', 'profesor/ActividadController', 'create');
+$router->add('POST', '/profesor/lecciones/{id}/actividades/create', 'profesor/ActividadController', 'create');
+$router->add('GET', '/profesor/actividades/config/{tipo}/{id}', 'profesor/ActividadController', 'config');
+$router->add('POST', '/profesor/actividades/config/{tipo}/{id}', 'profesor/ActividadController', 'config');
+$router->add('GET', '/profesor/actividad/edit/{id}', 'profesor/ActividadController', 'edit');
+$router->add('POST', '/profesor/actividad/edit/{id}', 'profesor/ActividadController', 'edit');
+$router->add('POST', '/profesor/actividad/delete/{id}', 'profesor/ActividadController', 'delete');
+$router->add('GET', '/profesor/actividad/{id}/preview', 'profesor/ActividadController', 'preview');
+$router->add('GET', '/profesor/actividad/{id}/configurar', 'profesor/ActividadController', 'configurar');
+
+// Rutas de actividades para estudiantes
+$router->add('GET', '/estudiante/actividad/{id}', 'estudiante/EstudianteActividadController', 'index');
+$router->add('POST', '/estudiante/actividad/guardar-respuesta', 'estudiante/EstudianteActividadController', 'guardarRespuesta');
+
+// Rutas de calificaciones (Profesor)
+$router->add('GET', '/profesor/calificaciones', 'profesor/CalificacionesController', 'index');
+$router->add('GET', '/profesor/calificaciones/curso/{id}', 'profesor/CalificacionesController', 'curso');
+$router->add('GET', '/profesor/calificaciones/revisar/{id}', 'profesor/CalificacionesController', 'revisar');
+$router->add('POST', '/profesor/calificaciones/calificar/{id}', 'profesor/CalificacionesController', 'calificar');
+
+// Placeholder: profesor estudiantes
+$router->add('GET', '/profesor/estudiantes', 'profesor/EstudiantesController', 'index');
+$router->add('GET', '/profesor/recursos', 'profesor/MediaController', 'index');
+$router->add('POST', '/profesor/recursos', 'profesor/MediaController', 'index');
+$router->add('POST', '/profesor/recursos/delete/{id}', 'profesor/MediaController', 'delete');
+
+// Estudiante routes
+$router->add('GET', '/estudiante', 'estudiante/EstudianteController', 'index');
+$router->add('GET', '/estudiante/cursos', 'estudiante/EstudianteController', 'index');
+$router->add('POST', '/estudiante/inscribir/{id}', 'estudiante/EstudianteController', 'inscribir');
+$router->add('POST', '/estudiante/codigo', 'estudiante/EstudianteController', 'canjearCodigo');
+$router->add('GET', '/estudiante/cursos/{id}/continuar', 'estudiante/EstudianteController', 'continuarCurso');
+$router->add('GET', '/estudiante/cursos/{id}/lecciones', 'estudiante/EstudianteController', 'lecciones');
+$router->add('GET', '/estudiante/lecciones/{id}/contenido', 'estudiante/EstudianteController', 'contenidoLeccion');
+$router->add('GET', '/estudiante/actividades/{id}', 'estudiante/EstudianteController', 'realizarActividad');
+$router->add('POST', '/estudiante/actividades/{id}/responder', 'estudiante/EstudianteController', 'responderActividad');
+$router->add('POST', '/estudiante/teoria/{id}/leer', 'estudiante/EstudianteController', 'marcarTeoria');
+// $router->add('GET', '/estudiante/curso/{id}', 'estudiante/EstudianteController', 'curso'); // Removed as redundant
+// Placeholder: estudiante progreso y calificaciones
+$router->add('GET', '/estudiante/progreso', 'estudiante/ProgresoController', 'index');
+$router->add('GET', '/estudiante/calificaciones', 'estudiante/CalificacionesController', 'index');
+
+// Admin routes (placeholders)
+$router->add('GET', '/admin', 'admin/AdminController', 'index');
+$router->add('GET', '/admin/usuarios', 'admin/AdminController', 'usuarios');
+$router->add('GET', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
+$router->add('POST', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
+$router->add('POST', '/admin/usuarios/delete/{id}', 'admin/AdminController', 'deleteUsuario');
+$router->add('GET', '/admin/cursos', 'admin/AdminController', 'cursos');
+
+// Register routes (placeholders)
+$router->add('GET', '/register', 'shared/RegisterController', 'showRegisterForm');
+$router->add('POST', '/register', 'shared/RegisterController', 'register');
+
+$uri = strtok($_SERVER['REQUEST_URI'], '?');
+$method = $_SERVER['REQUEST_METHOD'];
+$router->dispatch($uri, $method);
+
+
+============================================================
+FILE: config.php
+============================================================
+<?php
+// Configuracion de la aplicacion
+
+// Permite override explicito desde entorno si el hosting lo requiere
+$envBaseUrl = getenv('APP_BASE_URL');
+if ($envBaseUrl !== false && $envBaseUrl !== '') {
+    $baseUrl = '/' . trim($envBaseUrl, '/');
+    if ($baseUrl === '/') {
+        $baseUrl = '';
+    }
+} else {
+    // Deteccion automatica de la URL base desde el script actual
+    $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+    $baseUrl = ($scriptName === '/' || $scriptName === '.') ? '' : rtrim($scriptName, '/');
+}
+
+define('BASE_URL', $baseUrl);
+
+/**
+ * Genera una URL absoluta basada en la ruta relativa
+ *
+ * @param string $path Ruta relativa (ej: '/login', '/profesor/cursos')
+ * @return string URL completa (ej: '/adapa/login')
+ */
+function url($path = '') {
+    if (empty($path)) {
+        return BASE_URL;
+    }
+
+    // Si la ruta ya empieza con BASE_URL, devolverla tal cual
+    if (BASE_URL !== '' && strpos($path, BASE_URL) === 0) {
+        return $path;
+    }
+
+    // Asegurarse de que la ruta empiece con /
+    if (strpos($path, '/') !== 0) {
+        $path = '/' . $path;
+    }
+
+    return BASE_URL . $path;
+}
+
+/**
+ * Redirige a una URL especifica
+ *
+ * @param string $path Ruta relativa
+ */
+function redirect($path = '') {
+    $url = url($path);
+    header('Location: ' . $url);
+    exit;
+}
+
+/**
+ * Obtiene la ruta actual sin BASE_URL
+ *
+ * @return string Ruta actual relativa
+ */
+function current_path() {
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $base_url_length = strlen(BASE_URL);
+
+    if (BASE_URL !== '' && strpos($request_uri, BASE_URL) === 0) {
+        return substr($request_uri, $base_url_length);
+    }
+
+    return $request_uri;
+}
+
+function csrf_token() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (empty($_SESSION['_csrf_token'])) {
+        $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['_csrf_token'];
+}
+
+function csrf_input() {
+    return '<input type="hidden" name="_csrf" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') . '">';
+}
+
+function csrf_token_from_request() {
+    return $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+}
+
+function verify_csrf_token($token = null) {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $sessionToken = $_SESSION['_csrf_token'] ?? '';
+    $token = $token ?? csrf_token_from_request();
+
+    return is_string($token) && $sessionToken !== '' && hash_equals($sessionToken, $token);
+}
+
+function require_csrf() {
+    if (!verify_csrf_token()) {
+        http_response_code(419);
+        echo 'CSRF token mismatch';
+        exit;
+    }
+}
+
+function app_supported_languages() {
+    return [
+        'espanol' => 'Espanol',
+        'ingles' => 'Ingles',
+        'frances' => 'Frances',
+        'aleman' => 'Aleman',
+        'italiano' => 'Italiano',
+        'portugues' => 'Portugues',
+        'neerlandes' => 'Neerlandes',
+        'ruso' => 'Ruso',
+        'chino' => 'Chino',
+        'japones' => 'Japones',
+    ];
+}
+
+function app_course_target_languages() {
+    return app_supported_languages();
+}
+
+function app_interface_languages() {
+    return [
+        'espanol' => 'Espanol',
+        'ingles' => 'Ingles',
+    ];
+}
+
+function app_language_label($languageKey, $fallback = 'Sin definir') {
+    $languages = app_supported_languages();
+    return $languages[$languageKey] ?? $fallback;
+}
+
+function app_tts_language_map() {
+    return [
+        'espanol' => 'es-ES',
+        'ingles' => 'en-US',
+        'frances' => 'fr-FR',
+        'aleman' => 'de-DE',
+        'italiano' => 'it-IT',
+        'portugues' => 'pt-BR',
+        'chino' => 'zh-CN',
+        'japones' => 'ja-JP',
+    ];
+}
+
+
+============================================================
+FILE: controllers\\shared\\ThemeController.php
+============================================================
+<?php
+
+require_once __DIR__ . '/../../core/Controller.php';
+
+class ThemeController extends Controller {
+    public function store() {
+        $this->requirePost();
+        require_csrf();
+
+        $theme = strtolower(trim($_POST['theme'] ?? ''));
+        if (!in_array($theme, ['light', 'dark'], true)) {
+            $this->json(['ok' => false, 'message' => 'Invalid theme'], 422);
+        }
+
+        $_SESSION['theme_preference'] = $theme;
+        $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        setcookie('adapa-theme', $theme, [
+            'expires' => time() + 31536000,
+            'path' => '/',
+            'samesite' => 'Lax',
+            'secure' => $isHttps,
+            'httponly' => false,
+        ]);
+
+        $this->json(['ok' => true, 'theme' => $theme]);
+    }
+}
+
+
+============================================================
+FILE: views\\partials\\header.php
+============================================================
+<?php
+if (!defined('BASE_URL')) {
+    require_once __DIR__ . '/../../config.php';
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+<!DOCTYPE html>
+<?php
+$serverTheme = $_SESSION['theme_preference'] ?? ($_COOKIE['adapa-theme'] ?? 'light');
+$serverTheme = in_array($serverTheme, ['light', 'dark'], true) ? $serverTheme : 'light';
+$serverThemeClass = 'theme-' . $serverTheme;
+$appCssPath = __DIR__ . '/../../assets/css/app.css';
+$appCssVersion = file_exists($appCssPath) ? (string) filemtime($appCssPath) : '1';
+?>
+<html
+    lang="es"
+    data-theme="<?php echo htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8'); ?>"
+    data-bs-theme="<?php echo htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8'); ?>"
+    class="<?php echo htmlspecialchars($serverThemeClass, ENT_QUOTES, 'UTF-8'); ?>"
+>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+    <title>Adapa - Plataforma de Aprendizaje</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="<?php echo url('/assets/css/app.css'); ?>?v=<?php echo urlencode($appCssVersion); ?>">
+    <script>
+        (function () {
+            var root = document.documentElement;
+
+            function sanitizeTheme(theme) {
+                return theme === 'dark' || theme === 'light' ? theme : null;
+            }
+
+            function applyRootTheme(theme) {
+                var safeTheme = sanitizeTheme(theme) || 'light';
+                root.setAttribute('data-theme', safeTheme);
+                root.setAttribute('data-bs-theme', safeTheme);
+                root.classList.remove('theme-light', 'theme-dark');
+                root.classList.add('theme-' + safeTheme);
+
+                return safeTheme;
+            }
+
+            window.__adapaTheme = window.__adapaTheme || {};
+            window.__adapaTheme.sanitizeTheme = sanitizeTheme;
+            window.__adapaTheme.applyRootTheme = applyRootTheme;
+
+            var savedTheme = null;
+            var cookieTheme = null;
+            try {
+                savedTheme = localStorage.getItem('adapa-theme');
+            } catch (error) {
+                savedTheme = null;
+            }
+
+            try {
+                var match = document.cookie.match(/(?:^|;\s*)adapa-theme=([^;]+)/);
+                cookieTheme = match ? decodeURIComponent(match[1]) : null;
+            } catch (error) {
+                cookieTheme = null;
+            }
+
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var serverTheme = <?php echo json_encode($serverTheme); ?>;
+            var explicitTheme = sanitizeTheme(savedTheme) || sanitizeTheme(cookieTheme) || sanitizeTheme(serverTheme);
+            var initialTheme = explicitTheme || (prefersDark ? 'dark' : 'light');
+            applyRootTheme(initialTheme);
+
+            if (!document.body) {
+                document.addEventListener('DOMContentLoaded', function () {
+                    applyRootTheme(initialTheme);
+                }, { once: true });
+            }
+        }());
+    </script>
+</head>
+<body
+    data-server-theme="<?php echo htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8'); ?>"
+>
+<a class="skip-link" href="#main-content">Saltar al contenido</a>
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="<?php echo url('/'); ?>">
+            <i class="bi bi-mortarboard-fill"></i> ADAPA
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir navegacion">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item d-flex align-items-center me-lg-2 mb-2 mb-lg-0">
+                    <button type="button" class="theme-toggle theme-toggle-navbar" data-theme-toggle aria-label="Cambiar tema" aria-pressed="false">
+                        <i class="bi bi-moon-stars-fill" data-theme-icon="dark"></i>
+                        <i class="bi bi-sun-fill d-none" data-theme-icon="light"></i>
+                        <span data-theme-label>Modo oscuro</span>
+                    </button>
+                </li>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item d-flex align-items-center me-lg-2 mb-2 mb-lg-0">
+                        <span class="user-chip">
+                            <span class="dot"></span>
+                            <?php echo htmlspecialchars(Auth::getUserName()); ?>
+                        </span>
+                    </li>
+                    <?php if ($_SESSION['user_role'] === 'profesor'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/profesor/cursos'); ?>">
+                                <i class="bi bi-journal-bookmark-fill"></i> Mis Cursos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/profesor/estudiantes'); ?>">
+                                <i class="bi bi-people"></i> Estudiantes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/profesor/recursos'); ?>">
+                                <i class="bi bi-images"></i> Recursos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/profesor/calificaciones'); ?>">
+                                <i class="bi bi-check2-square"></i> Calificaciones
+                            </a>
+                        </li>
+                    <?php elseif ($_SESSION['user_role'] === 'estudiante'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/estudiante'); ?>">
+                                <i class="bi bi-person-badge"></i> Mis Cursos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/estudiante/progreso'); ?>">
+                                <i class="bi bi-graph-up-arrow"></i> Progreso
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/estudiante/calificaciones'); ?>">
+                                <i class="bi bi-award"></i> Calificaciones
+                            </a>
+                        </li>
+                    <?php elseif ($_SESSION['user_role'] === 'admin'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin'); ?>">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin/usuarios'); ?>">
+                                <i class="bi bi-people-fill"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin/cursos'); ?>">
+                                <i class="bi bi-book-fill"></i> Cursos
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <li class="nav-item">
+                        <form method="POST" action="<?php echo url('/logout'); ?>" class="d-inline">
+                            <?php echo csrf_input(); ?>
+                            <button type="submit" class="nav-link btn btn-link border-0 p-0">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar sesion
+                            </button>
+                        </form>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo url('/login'); ?>">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar sesion
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo url('/register'); ?>">
+                            <i class="bi bi-person-plus"></i> Registrarse
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</nav>
+<main id="main-content" class="app-shell">
+
+
+============================================================
+FILE: views\\partials\\footer.php
+============================================================
+    </main>
+<?php
+$currentPath = function_exists('current_path') ? strtok((string) current_path(), '?') : '';
+$showLoginDemoQuickAccess = !isset($_SESSION['user_id']) && $currentPath === '/login';
+?>
+    <footer class="app-footer">
+        <div class="container">
+            <div class="footer-theme-bar">
+                <button type="button" class="theme-toggle theme-toggle-footer" data-theme-toggle aria-label="Cambiar modo oscuro" aria-pressed="false">
+                    <i class="bi bi-moon-stars-fill" data-theme-icon="dark"></i>
+                    <i class="bi bi-sun-fill d-none" data-theme-icon="light"></i>
+                    <span data-theme-label>Modo oscuro</span>
+                </button>
+            </div>
+            <div class="footer-shell d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="footer-brand">ADAPA</div>
+                    <div>Plataforma LMS enfocada en rutas de aprendizaje, teoria guiada y practica interactiva.</div>
+                </div>
+                <div class="footer-controls small text-lg-end">
+                    <div>Interfaz en consolidacion con seguimiento visible para estudiantes y docentes.</div>
+                    <div>Estado actual: operativa y en refinamiento de producto.</div>
+                    <?php if ($showLoginDemoQuickAccess): ?>
+                        <div class="footer-demo-access mt-1" aria-label="Acceso demo discreto">
+                            <span class="footer-demo-label">Demo:</span>
+                            <button type="button" class="footer-text-btn" onclick="fillLogin('estudiante1@adapa.edu', 'estudiante123')">Estudiante</button>
+                            <span class="footer-demo-sep">/</span>
+                            <button type="button" class="footer-text-btn" onclick="fillLogin('profesor@adapa.edu', 'profesor123')">Profesor</button>
+                            <span class="footer-demo-sep">/</span>
+                            <button type="button" class="footer-text-btn" onclick="fillLogin('admin@adapa.edu', 'admin123')">Interno</button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            if (window.__adapaThemeInitDone) {
+                return;
+            }
+            window.__adapaThemeInitDone = true;
+
+            var root = document.documentElement;
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            var themeApi = window.__adapaTheme || {};
+
+            function getToggles() {
+                return document.querySelectorAll('[data-theme-toggle]');
+            }
+
+            function sanitizeTheme(theme) {
+                if (typeof themeApi.sanitizeTheme === 'function') {
+                    return themeApi.sanitizeTheme(theme);
+                }
+
+                return theme === 'dark' || theme === 'light' ? theme : null;
+            }
+
+            function readStoredTheme() {
+                var savedTheme = null;
+                var cookieTheme = null;
+
+                try {
+                    savedTheme = localStorage.getItem('adapa-theme');
+                } catch (error) {
+                    savedTheme = null;
+                }
+
+                try {
+                    var match = document.cookie.match(/(?:^|;\s*)adapa-theme=([^;]+)/);
+                    cookieTheme = match ? decodeURIComponent(match[1]) : null;
+                } catch (error) {
+                    cookieTheme = null;
+                }
+
+                return sanitizeTheme(savedTheme) || sanitizeTheme(cookieTheme);
+            }
+
+            function persistTheme(theme) {
+                try {
+                    localStorage.setItem('adapa-theme', theme);
+                } catch (error) {
+                }
+
+                try {
+                    document.cookie = 'adapa-theme=' + encodeURIComponent(theme) + '; path=/; max-age=31536000; SameSite=Lax';
+                } catch (error) {
+                }
+            }
+
+            function syncToggles(theme) {
+                var isDark = theme === 'dark';
+                getToggles().forEach(function (toggle) {
+                    var darkIcon = toggle.querySelector('[data-theme-icon="dark"]');
+                    var lightIcon = toggle.querySelector('[data-theme-icon="light"]');
+                    var label = toggle.querySelector('[data-theme-label]');
+
+                    toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+
+                    if (label) {
+                        label.textContent = isDark ? 'Modo claro' : 'Modo oscuro';
+                    }
+
+                    if (darkIcon) {
+                        darkIcon.classList.toggle('d-none', isDark);
+                    }
+
+                    if (lightIcon) {
+                        lightIcon.classList.toggle('d-none', !isDark);
+                    }
+                });
+            }
+
+            function applyTheme(theme, options) {
+                var safeTheme = sanitizeTheme(theme) || 'light';
+
+                if (typeof themeApi.applyRootTheme === 'function') {
+                    safeTheme = themeApi.applyRootTheme(safeTheme);
+                } else {
+                    root.setAttribute('data-theme', safeTheme);
+                    root.setAttribute('data-bs-theme', safeTheme);
+                    root.classList.remove('theme-light', 'theme-dark');
+                    root.classList.add('theme-' + safeTheme);
+                }
+
+                syncToggles(safeTheme);
+
+                if (!options || !options.skipEvent) {
+                    window.dispatchEvent(new CustomEvent('adapa:themechange', {
+                        detail: { theme: safeTheme }
+                    }));
+                }
+
+                return safeTheme;
+            }
+
+            function saveThemeOnServer(theme) {
+                if (!csrfMeta || !window.fetch) {
+                    return;
+                }
+
+                var formData = new URLSearchParams();
+                formData.append('_csrf', csrfMeta.getAttribute('content') || '');
+                formData.append('theme', theme);
+
+                fetch('<?php echo url('/theme/preference'); ?>', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    },
+                    body: formData.toString()
+                }).catch(function () {
+                });
+            }
+
+            function normalizePath(path) {
+                if (!path) {
+                    return '/';
+                }
+
+                try {
+                    path = path.split('?')[0].split('#')[0];
+                } catch (error) {
+                }
+
+                if (path.length > 1 && path.endsWith('/')) {
+                    path = path.slice(0, -1);
+                }
+
+                return path || '/';
+            }
+
+            function markActiveNavLink() {
+                var currentPath = normalizePath(window.location.pathname);
+                var links = document.querySelectorAll('.app-navbar .nav-link[href]');
+
+                links.forEach(function (link) {
+                    var hrefPath = normalizePath(link.getAttribute('href'));
+                    var active = currentPath === hrefPath || (hrefPath !== '/' && currentPath.indexOf(hrefPath + '/') === 0);
+
+                    if (active) {
+                        link.classList.add('active');
+                        link.setAttribute('aria-current', 'page');
+                    } else {
+                        link.classList.remove('active');
+                        link.removeAttribute('aria-current');
+                    }
+                });
+            }
+
+            function lockSubmittingForms() {
+                document.addEventListener('submit', function (event) {
+                    var form = event.target;
+                    if (!(form instanceof HTMLFormElement) || form.hasAttribute('data-no-submit-lock')) {
+                        return;
+                    }
+
+                    var submitter = event.submitter;
+                    if (!submitter || !(submitter instanceof HTMLButtonElement) || submitter.disabled) {
+                        return;
+                    }
+
+                    submitter.dataset.originalText = submitter.innerHTML;
+                    submitter.disabled = true;
+                    submitter.classList.add('is-submitting');
+                    submitter.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Procesando...';
+                });
+            }
+
+            var initialTheme =
+                readStoredTheme() ||
+                sanitizeTheme(root.getAttribute('data-theme')) ||
+                sanitizeTheme(document.body ? document.body.getAttribute('data-server-theme') : null) ||
+                'light';
+            applyTheme(initialTheme, { skipEvent: true });
+            markActiveNavLink();
+            lockSubmittingForms();
+
+            document.addEventListener('click', function (event) {
+                var toggle = event.target.closest('[data-theme-toggle]');
+                if (!toggle) {
+                    return;
+                }
+
+                var currentTheme = sanitizeTheme(root.getAttribute('data-theme')) || 'light';
+                var nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                persistTheme(nextTheme);
+                applyTheme(nextTheme);
+                saveThemeOnServer(nextTheme);
+            });
+
+            window.addEventListener('pageshow', function () {
+                var restoredTheme = readStoredTheme() || sanitizeTheme(root.getAttribute('data-theme')) || 'light';
+                applyTheme(restoredTheme, { skipEvent: true });
+            });
+
+            window.addEventListener('storage', function (event) {
+                if (event.key !== 'adapa-theme') {
+                    return;
+                }
+
+                var storedTheme = sanitizeTheme(event.newValue);
+                if (storedTheme) {
+                    applyTheme(storedTheme, { skipEvent: true });
+                }
+            });
+        }());
+    </script>
+</body>
+</html>
+
+
+============================================================
+FILE: views\\partials\\flash.php
+============================================================
+<?php if (isset($_SESSION['success'])): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="status" aria-live="polite">
+        <?php echo htmlspecialchars($_SESSION['success']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['mensaje'])): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="status" aria-live="polite">
+        <?php echo htmlspecialchars($_SESSION['mensaje']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['mensaje']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="assertive">
+        <?php echo htmlspecialchars($_SESSION['error']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
+
+============================================================
+FILE: views\\auth\\login.php
+============================================================
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$error = $error ?? '';
+
+require_once __DIR__ . '/../partials/header.php';
+?>
+
+<div class="container auth-layout">
+    <div class="auth-shell">
+        <section class="page-hero auth-hero">
+            <span class="eyebrow"><i class="bi bi-door-open"></i> Acceso</span>
+            <h1 class="page-title">Inicia sesion en ADAPA</h1>
+            <p class="page-subtitle">Entra a tus cursos, retoma actividades pendientes y administra tu espacio segun tu rol.</p>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Estudiante</div>
+                    <div class="metric-value">Aprende</div>
+                    <div class="metric-note">Retoma teoria, practica y progreso.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Profesor</div>
+                    <div class="metric-value">Gestiona</div>
+                    <div class="metric-note">Crea cursos, lecciones y revisa respuestas.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Admin</div>
+                    <div class="metric-value">Coordina</div>
+                    <div class="metric-note">Supervisa usuarios, cursos e instancia.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-shell auth-card">
+            <div class="card-body">
+                <?php if ($error): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> <?php echo htmlspecialchars($error); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="<?php echo url('/login'); ?>" class="auth-form">
+                    <?php echo csrf_input(); ?>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo electronico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="nombre@ejemplo.com" autocomplete="email" autocapitalize="off" spellcheck="false">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contrasena</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" required placeholder="********" autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="responsive-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                        </button>
+                        <a href="<?php echo url('/'); ?>" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Volver al inicio
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+function fillLogin(email, password) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+    document.querySelector('button[type="submit"]').focus();
+}
+</script>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
+
+
+============================================================
+FILE: views\\auth\\register.php
+============================================================
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$success = $_SESSION['register_success'] ?? '';
+$error = $_SESSION['register_error'] ?? '';
+
+unset($_SESSION['register_success'], $_SESSION['register_error']);
+
+require_once __DIR__ . '/../partials/header.php';
+?>
+
+<div class="container auth-layout">
+    <div class="auth-shell">
+        <section class="page-hero auth-hero auth-hero-success">
+            <span class="eyebrow"><i class="bi bi-person-plus"></i> Registro</span>
+            <h1 class="page-title">Crea tu cuenta</h1>
+            <p class="page-subtitle">Empieza tu acceso en ADAPA para explorar cursos, seguir tu progreso y preparar tu espacio docente cuando actives ese modo.</p>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Cursos</div>
+                    <div class="metric-value">Idiomas</div>
+                    <div class="metric-note">Accede a teoria, practica y actividades interactivas.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Progreso</div>
+                    <div class="metric-value">Visible</div>
+                    <div class="metric-note">Sigue tu avance por leccion y por curso.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Docente</div>
+                    <div class="metric-value">Escalable</div>
+                    <div class="metric-note">Tambien puedes iniciar como profesor y probar un curso piloto antes de activar tu plan.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-shell auth-card">
+            <div class="card-body">
+                <?php if ($success): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill"></i> <?php echo htmlspecialchars($success); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($error): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> <?php echo htmlspecialchars($error); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="<?php echo url('/register'); ?>" class="auth-form">
+                    <?php echo csrf_input(); ?>
+                    <div class="row g-3 mb-2">
+                        <div class="col-12">
+                            <label class="form-label">Tipo de cuenta inicial</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-check h-100">
+                                        <input class="form-check-input" type="radio" name="account_type" value="estudiante" checked>
+                                        <span class="form-check-label d-block">
+                                            <strong>Estudiante</strong><br>
+                                            <span class="text-muted">Entra a cursos, sigue tu progreso y aprende desde el primer dia.</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-check h-100">
+                                        <input class="form-check-input" type="radio" name="account_type" value="profesor">
+                                        <span class="form-check-label d-block">
+                                            <strong>Profesor</strong><br>
+                                            <span class="text-muted">Empieza con 1 curso piloto, hasta 3 lecciones, 3 actividades por leccion y 3 estudiantes por codigo.</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="given-name">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="apellido" class="form-label">Apellido</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Tu apellido" autocomplete="family-name">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="email" class="form-label">Correo electronico *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="nombre@ejemplo.com" autocomplete="email" autocapitalize="off" spellcheck="false">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="password" class="form-label">Contrasena *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="********" minlength="6" autocomplete="new-password">
+                            </div>
+                            <div class="form-text">La contrasena debe tener al menos 6 caracteres.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="idioma_base" class="form-label">Idioma base *</label>
+                            <select class="form-select" id="idioma_base" name="idioma_base" required>
+                                <?php foreach (app_supported_languages() as $languageValue => $languageLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($languageLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Idioma que mejor entiendes hoy para recibir explicaciones.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="idioma_interfaz" class="form-label">Idioma de interfaz *</label>
+                            <select class="form-select" id="idioma_interfaz" name="idioma_interfaz" required>
+                                <?php foreach (app_interface_languages() as $languageValue => $languageLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($languageValue); ?>" <?php echo $languageValue === 'espanol' ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($languageLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Prepara la cuenta para futura internacionalizacion visual.</div>
+                        </div>
+                    </div>
+
+                    <div class="responsive-actions mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-person-plus"></i> Crear cuenta
+                        </button>
+                        <a href="<?php echo url('/login'); ?>" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Ya tengo cuenta
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
+
+
+============================================================
+FILE: views\\estudiante\\contenido_leccion.php
+============================================================
+<?php
+require_once __DIR__ . '/../partials/header.php';
+
+function renderLessonBlockMedia($bloque) {
+    if (empty($bloque->ruta_archivo) || empty($bloque->tipo_media)) {
+        return '';
+    }
+
+    $assetUrl = url('/' . ltrim($bloque->ruta_archivo, '/'));
+    $label = htmlspecialchars($bloque->media_titulo ?: $bloque->tipo_media, ENT_QUOTES, 'UTF-8');
+    $escapedUrl = htmlspecialchars($assetUrl, ENT_QUOTES, 'UTF-8');
+
+    if ($bloque->tipo_media === 'imagen') {
+        $alt = htmlspecialchars($bloque->alt_text ?: $bloque->media_titulo ?: 'Recurso visual', ENT_QUOTES, 'UTF-8');
+        return '<img src="' . $escapedUrl . '" alt="' . $alt . '" class="media-preview-thumb lesson-media-thumb">';
+    }
+
+    if ($bloque->tipo_media === 'audio') {
+        return '<audio controls preload="none" class="media-preview-player"><source src="' . $escapedUrl . '"></audio>';
+    }
+
+    if ($bloque->tipo_media === 'video') {
+        return '<video controls preload="metadata" class="media-preview-player"><source src="' . $escapedUrl . '"></video>';
+    }
+
+    if ($bloque->tipo_media === 'pdf') {
+        return '<a href="' . $escapedUrl . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-file-earmark-pdf"></i> Abrir ' . $label . '</a>';
+    }
+
+    return '<a href="' . $escapedUrl . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-paperclip"></i> Abrir ' . $label . '</a>';
+}
+?>
+
+<div class="container">
+    <?php require __DIR__ . '/../partials/flash.php'; ?>
+
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="<?php echo url('/estudiante'); ?>">Mis Cursos</a></li>
+                    <li class="breadcrumb-item"><a href="<?php echo url('/estudiante/cursos/' . $leccion->curso_id . '/lecciones'); ?>">Lecciones</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($leccion->titulo); ?></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <section class="page-hero mb-4">
+        <span class="eyebrow"><i class="bi bi-journal-richtext"></i> Leccion activa</span>
+        <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
+        <p class="page-subtitle"><?php echo nl2br(htmlspecialchars($leccion->descripcion)); ?></p>
+        <?php if (isset($resumenProgreso) && !empty($resumenProgreso->completada)): ?>
+            <div class="mt-3">
+                <span class="soft-badge">
+                    <i class="bi bi-check-circle-fill"></i> Leccion completada
+                </span>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($resumenProgreso)): ?>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Progreso</div>
+                    <div class="metric-value"><?php echo (int) $resumenProgreso->porcentaje; ?>%</div>
+                    <div class="metric-note">Avance total de esta leccion.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Teoria</div>
+                    <div class="metric-value"><?php echo (int) $resumenProgreso->teorias_completadas; ?>/<?php echo (int) $resumenProgreso->total_teorias; ?></div>
+                    <div class="metric-note">Bloques conceptuales ya leidos.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Actividades</div>
+                    <div class="metric-value"><?php echo (int) $resumenProgreso->actividades_completadas; ?>/<?php echo (int) $resumenProgreso->total_actividades; ?></div>
+                    <div class="metric-note">Practicas respondidas hasta ahora.</div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </section>
+
+    <?php if (isset($siguienteItem)): ?>
+        <div class="panel mb-4">
+            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="metric-label">Siguiente paso sugerido</div>
+                    <div class="fw-semibold mt-1">
+                        <?php if ($siguienteItem['tipo'] === 'curso_completado'): ?>
+                            Has completado esta leccion. <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
+                        <?php else: ?>
+                            <?php echo htmlspecialchars($siguienteItem['mensaje']); ?>: <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div>
+                    <?php if ($siguienteItem['tipo'] === 'teoria'): ?>
+                        <a href="#teoria-<?php echo $siguienteItem['id']; ?>" class="btn btn-primary">Ir a teoria</a>
+                    <?php elseif ($siguienteItem['tipo'] === 'actividad'): ?>
+                        <a href="<?php echo url('/estudiante/actividades/' . $siguienteItem['id']); ?>" class="btn btn-primary">Realizar actividad</a>
+                    <?php elseif ($siguienteItem['tipo'] === 'leccion'): ?>
+                        <a href="<?php echo url('/estudiante/lecciones/' . $siguienteItem['id'] . '/contenido'); ?>" class="btn btn-success">Ir a la siguiente leccion</a>
+                    <?php elseif ($siguienteItem['tipo'] === 'curso_completado'): ?>
+                        <a href="<?php echo url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones'); ?>" class="btn btn-success">Curso completado</a>
+                    <?php else: ?>
+                        <a href="<?php echo url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones'); ?>" class="btn btn-success">Ver curso completo</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <section class="mb-4">
+        <div class="section-title">
+            <h2>Teoria</h2>
+            <span class="soft-badge"><i class="bi bi-book-half"></i> Estudio guiado</span>
+        </div>
+        <?php if (empty($teorias)): ?>
+            <div class="panel empty-state-card">
+                <div class="panel-body">
+                    <span class="empty-state-icon"><i class="bi bi-book"></i></span>
+                    <div class="empty-state-copy">No hay contenido teorico para esta leccion.</div>
+                </div>
+            </div>
+        <?php else: ?>
+            <?php foreach ($teorias as $teoria): ?>
+                <div class="content-block" id="teoria-<?php echo $teoria->id; ?>">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                            <h5 class="mb-0"><?php echo htmlspecialchars($teoria->titulo); ?></h5>
+                            <?php if (!empty($teoria->leido)): ?>
+                                <span class="soft-badge"><i class="bi bi-check-circle-fill"></i> Completado</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-text">
+                            <?php if (!empty($teoria->tiene_bloques) && !empty($teoria->bloques)): ?>
+                                <div class="stack-list">
+                                    <?php foreach ($teoria->bloques as $bloque): ?>
+                                        <div class="stack-item">
+                                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                                <div>
+                                                    <div class="stack-item-title">
+                                                        <?php echo htmlspecialchars($bloque->titulo ?: ucfirst($bloque->tipo_bloque)); ?>
+                                                    </div>
+                                                    <div class="stack-item-subtitle">
+                                                        <?php echo htmlspecialchars(ucfirst($bloque->tipo_bloque)); ?>
+                                                        <?php if (!empty($bloque->idioma_bloque)): ?>
+                                                            &middot; <?php echo htmlspecialchars(strtoupper($bloque->idioma_bloque)); ?>
+                                                        <?php endif; ?>
+                                                        <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1): ?>
+                                                            &middot; Audio listo
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2 flex-wrap align-items-center">
+                                                    <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1 && !empty($bloque->contenido)): ?>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-primary tts-play-btn"
+                                                            data-tts-text="<?php echo htmlspecialchars($bloque->contenido, ENT_QUOTES, 'UTF-8'); ?>"
+                                                            data-tts-lang="<?php echo htmlspecialchars($bloque->idioma_bloque ?: 'espanol', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        >
+                                                            <i class="bi bi-volume-up"></i> Escuchar
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    <span class="soft-badge">Bloque</span>
+                                                </div>
+                                            </div>
+                                            <?php if (!empty($bloque->contenido)): ?>
+                                                <div class="mt-2">
+                                                    <?php echo nl2br(htmlspecialchars($bloque->contenido)); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($bloque->ruta_archivo) && !empty($bloque->tipo_media)): ?>
+                                                <div class="mt-3">
+                                                    <?php echo renderLessonBlockMedia($bloque); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <?php echo $teoria->contenido; ?>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (empty($teoria->leido)): ?>
+                            <form action="<?php echo url('/estudiante/teoria/' . $teoria->id . '/leer'); ?>" method="POST" class="mt-3">
+                                <?php echo csrf_input(); ?>
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-check2-circle"></i> Marcar como leido
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>Actividades</h2>
+            <span class="soft-badge"><i class="bi bi-lightning"></i> Practica</span>
+        </div>
+        <?php if (empty($actividades)): ?>
+            <div class="panel empty-state-card">
+                <div class="panel-body">
+                    <span class="empty-state-icon"><i class="bi bi-lightning"></i></span>
+                    <div class="empty-state-copy">No hay actividades para esta leccion.</div>
+                </div>
+            </div>
+        <?php else: ?>
+            <ul class="list-group lesson-stack">
+                <?php foreach ($actividades as $actividad): ?>
+                    <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                        <div>
+                            <div class="fw-semibold"><?php echo htmlspecialchars($actividad->titulo); ?></div>
+                            <?php if (!empty($actividad->completada)): ?>
+                                <div class="small text-muted mt-1">
+                                    Completada<?php if (isset($actividad->calificacion)): ?> - <?php echo $actividad->calificacion; ?> pts<?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="small text-muted mt-1">Pendiente</div>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?php echo url('/estudiante/actividades/' . $actividad->id); ?>" class="btn btn-primary">
+                            <?php echo !empty($actividad->completada) ? 'Ver resultados' : 'Realizar actividad'; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </section>
+
+    <div class="mt-4 mb-2">
+        <a href="<?php echo url('/estudiante/cursos/' . $leccion->curso_id . '/lecciones'); ?>" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a lecciones
+        </a>
+    </div>
+</div>
+
+<script>
+(function () {
+    if (!('speechSynthesis' in window)) {
+        return;
+    }
+
+    const languageMap = <?php echo json_encode(app_tts_language_map(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+
+    let activeButton = null;
+
+    function resetButton(button) {
+        if (!button) {
+            return;
+        }
+
+        button.classList.remove('is-speaking');
+        button.innerHTML = '<i class="bi bi-volume-up"></i> Escuchar';
+    }
+
+    document.querySelectorAll('.tts-play-btn').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const text = button.getAttribute('data-tts-text') || '';
+            const langKey = button.getAttribute('data-tts-lang') || 'espanol';
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            if (!text.trim()) {
+                return;
+            }
+
+            if (activeButton === button) {
+                window.speechSynthesis.cancel();
+                resetButton(button);
+                activeButton = null;
+                return;
+            }
+
+            if (activeButton) {
+                window.speechSynthesis.cancel();
+                resetButton(activeButton);
+            }
+
+            utterance.lang = languageMap[langKey] || 'es-ES';
+            utterance.rate = 0.95;
+
+            utterance.onend = function () {
+                resetButton(button);
+                activeButton = null;
+            };
+
+            utterance.onerror = function () {
+                resetButton(button);
+                activeButton = null;
+            };
+
+            activeButton = button;
+            button.classList.add('is-speaking');
+            button.innerHTML = '<i class="bi bi-stop-circle"></i> Detener';
+            window.speechSynthesis.speak(utterance);
+        });
+    });
+
+    window.addEventListener('beforeunload', function () {
+        window.speechSynthesis.cancel();
+    });
+})();
+</script>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
+
+
+============================================================
+FILE: assets\\css\\app.css
+============================================================
+:root {
+    --bg: #f4efe5;
+    --bg-accent: #efe4d3;
+    --surface: rgba(255, 251, 245, 0.92);
+    --surface-strong: #fffdf8;
+    --surface-muted: #f7f0e7;
+    --text: #1f1d1a;
+    --muted: #6e6559;
+    --line: rgba(78, 58, 33, 0.14);
+    --brand: #155e63;
+    --brand-2: #d97706;
+    --brand-3: #7c3f00;
+    --success: #177245;
+    --danger: #a63636;
+    --shadow-lg: 0 28px 80px rgba(73, 44, 14, 0.15);
+    --shadow-md: 0 16px 40px rgba(73, 44, 14, 0.1);
+    --shadow-sm: 0 10px 24px rgba(73, 44, 14, 0.08);
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+}
+
+:root[data-theme="dark"] {
+    --bg: #11161c;
+    --bg-accent: #17202a;
+    --surface: rgba(21, 29, 38, 0.92);
+    --surface-strong: #1b2530;
+    --surface-muted: #21303d;
+    --text: #edf3f8;
+    --muted: #9eb0c0;
+    --line: rgba(160, 185, 208, 0.16);
+    --brand: #6dd3dc;
+    --brand-2: #f5a947;
+    --brand-3: #ffd08a;
+    --success: #46c784;
+    --danger: #ff7a7a;
+    --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.34);
+    --shadow-md: 0 16px 40px rgba(0, 0, 0, 0.24);
+    --shadow-sm: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    font-family: "Manrope", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(217, 119, 6, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(21, 94, 99, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f2e8 0%, #f4efe5 46%, #efe7dc 100%);
+    transition: background-color 0.24s ease, color 0.24s ease, background 0.24s ease;
+}
+
+:root[data-theme="dark"] body {
+    background:
+        radial-gradient(circle at top left, rgba(245, 169, 71, 0.11), transparent 24%),
+        radial-gradient(circle at top right, rgba(109, 211, 220, 0.1), transparent 26%),
+        linear-gradient(180deg, #0d1318 0%, #111923 52%, #0f1720 100%);
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: "Fraunces", serif;
+    letter-spacing: -0.02em;
+}
+
+a {
+    color: var(--brand);
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.62rem 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 248, 241, 0.92);
+    font-weight: 700;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.theme-toggle i {
+    font-size: 0.95rem;
+}
+
+.theme-toggle-navbar {
+    min-width: 160px;
+    justify-content: center;
+}
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3.5rem;
+    z-index: 1100;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    background: #fff7ec;
+    color: var(--text);
+    box-shadow: var(--shadow-md);
+    transition: top 0.18s ease;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible {
+    outline: 3px solid rgba(217, 119, 6, 0.35);
+    outline-offset: 3px;
+    box-shadow: none;
+}
+
+.app-shell {
+    padding: 2rem 0 3rem;
+}
+
+.app-navbar {
+    background: rgba(25, 26, 28, 0.8);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-navbar .navbar-brand {
+    font-size: 1.35rem;
+    letter-spacing: 0.04em;
+}
+
+.app-navbar .nav-link,
+.app-navbar .btn-link.nav-link {
+    color: rgba(255, 248, 241, 0.82);
+    padding: 0.65rem 0.95rem;
+    border-radius: 999px;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.app-navbar .nav-link:hover,
+.app-navbar .btn-link.nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.app-navbar .nav-link.active,
+.app-navbar .nav-link[aria-current="page"] {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.app-navbar .user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.app-navbar .theme-toggle-navbar {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 248, 241, 0.92);
+}
+
+.app-navbar .theme-toggle-navbar:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.app-navbar .user-chip .dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f59e0b, #fcd34d);
+}
+
+:root[data-theme="dark"] .app-navbar {
+    background: rgba(10, 16, 24, 0.88);
+    border-bottom-color: rgba(180, 213, 235, 0.08);
+}
+
+:root[data-theme="dark"] .app-navbar .nav-link,
+:root[data-theme="dark"] .app-navbar .btn-link.nav-link {
+    color: rgba(235, 244, 251, 0.84);
+}
+
+:root[data-theme="dark"] .app-navbar .nav-link:hover,
+:root[data-theme="dark"] .app-navbar .btn-link.nav-link:hover,
+:root[data-theme="dark"] .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.11);
+}
+
+:root[data-theme="dark"] .app-navbar .nav-link.active,
+:root[data-theme="dark"] .app-navbar .nav-link[aria-current="page"] {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background:
+        radial-gradient(circle at 0% 0%, rgba(217, 119, 6, 0.12), transparent 32%),
+        radial-gradient(circle at 100% 0%, rgba(21, 94, 99, 0.12), transparent 34%),
+        var(--surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.page-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -10% -28% auto;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(21, 94, 99, 0.08);
+    filter: blur(10px);
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(21, 94, 99, 0.08);
+    color: var(--brand);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.page-title {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1.02;
+    margin: 0.85rem 0 0.65rem;
+}
+
+.page-subtitle {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 1.02rem;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-top: 1.4rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.section-title h2,
+.section-title h3 {
+    margin: 0;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.metric-card {
+    padding: 1.15rem 1.2rem;
+    border-radius: var(--radius-lg);
+    background: var(--surface-strong);
+    border: 1px solid rgba(21, 94, 99, 0.1);
+    box-shadow: var(--shadow-md);
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0.55rem 0 0.2rem;
+}
+
+.metric-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+}
+
+.panel-body {
+    padding: 1.5rem;
+}
+
+.empty-state-card {
+    border: 1px dashed rgba(117, 131, 150, 0.42);
+    border-radius: var(--radius-xl);
+    background: rgba(255, 251, 245, 0.78);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-state-card .panel-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+}
+
+.empty-state-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 18px;
+    background: rgba(21, 94, 99, 0.1);
+    color: var(--brand);
+    font-size: 1.2rem;
+}
+
+.empty-state-copy {
+    max-width: 580px;
+    color: var(--muted);
+}
+
+.course-card,
+.surface-card {
+    height: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.course-card .card-body,
+.surface-card .card-body {
+    padding: 1.35rem;
+}
+
+.course-cover-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--line);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    background: var(--surface-strong);
+}
+
+.course-thumb-sm {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    object-fit: cover;
+    display: block;
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
+}
+
+.course-cover-preview {
+    min-height: 180px;
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--line);
+    background: rgba(255, 251, 245, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: var(--shadow-xs);
+}
+
+.course-cover-preview.is-empty {
+    padding: 1rem;
+}
+
+.course-cover-image {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    display: block;
+    object-fit: cover;
+}
+
+.course-cover-placeholder {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.block-media-preview {
+    min-height: 120px;
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--line);
+    background: rgba(255, 251, 245, 0.68);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.85rem;
+}
+
+.block-media-preview.is-empty {
+    justify-content: center;
+}
+
+.block-media-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.media-chip {
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.media-chip.is-active {
+    border-color: rgba(21, 94, 99, 0.35);
+    background: rgba(21, 94, 99, 0.1);
+    color: var(--brand);
+}
+
+.block-media-thumb {
+    width: 100%;
+    max-width: 280px;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    display: block;
+}
+
+.activity-question-image {
+    width: 100%;
+    max-width: 360px;
+    max-height: 240px;
+    object-fit: cover;
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-sm);
+}
+
+.course-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin: 0.9rem 0 1rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.course-progress {
+    margin: 1rem 0;
+}
+
+.progress {
+    background-color: rgba(21, 94, 99, 0.08);
+    border-radius: 999px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--brand), #1d8a7f);
+    border-radius: 999px;
+}
+
+.soft-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(217, 119, 6, 0.12);
+    color: var(--brand-3);
+    font-weight: 700;
+    font-size: 0.84rem;
+}
+
+.soft-badge.success {
+    background: rgba(23, 114, 69, 0.14);
+    color: var(--success);
+}
+
+.soft-badge.info {
+    background: rgba(21, 94, 99, 0.14);
+    color: var(--brand);
+}
+
+.soft-badge.warning {
+    background: rgba(217, 119, 6, 0.14);
+    color: var(--brand-2);
+}
+
+.soft-badge.badge-accent {
+    background: rgba(21, 94, 99, 0.14);
+    color: var(--brand);
+}
+
+.data-table-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.data-table-shell .table {
+    margin-bottom: 0;
+}
+
+.data-table-shell .table thead th {
+    background: linear-gradient(180deg, rgba(21, 94, 99, 0.94), rgba(16, 74, 78, 0.94));
+    color: #fff;
+    border: none;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1rem 0.95rem;
+}
+
+.data-table-shell .table tbody td {
+    padding: 1rem 0.95rem;
+    vertical-align: middle;
+    border-color: rgba(78, 58, 33, 0.08);
+}
+
+.data-table-shell .table tbody tr:hover {
+    background: rgba(21, 94, 99, 0.04);
+}
+
+:root[data-theme="dark"] .page-hero,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .metric-card,
+:root[data-theme="dark"] .course-card,
+:root[data-theme="dark"] .surface-card,
+:root[data-theme="dark"] .form-shell,
+:root[data-theme="dark"] .activity-shell,
+:root[data-theme="dark"] .auth-card,
+:root[data-theme="dark"] .data-table-shell,
+:root[data-theme="dark"] .content-block,
+:root[data-theme="dark"] .empty-state-card,
+:root[data-theme="dark"] .filter-shell,
+:root[data-theme="dark"] .app-footer .footer-shell {
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+:root[data-theme="dark"] .page-hero::after {
+    background: rgba(109, 211, 220, 0.08);
+}
+
+:root[data-theme="dark"] .data-table-shell .table,
+:root[data-theme="dark"] .table {
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .data-table-shell .table thead th {
+    background: linear-gradient(180deg, rgba(25, 51, 65, 0.98), rgba(17, 37, 49, 0.98));
+    color: #e9f4fb;
+}
+
+:root[data-theme="dark"] .data-table-shell .table tbody td {
+    border-color: rgba(160, 185, 208, 0.12);
+}
+
+:root[data-theme="dark"] .data-table-shell .table tbody tr:hover {
+    background: rgba(109, 211, 220, 0.08);
+}
+
+:root[data-theme="dark"] .course-cover-preview {
+    background: rgba(17, 31, 43, 0.86);
+    border-color: rgba(136, 168, 196, 0.18);
+}
+
+:root[data-theme="dark"] .block-media-preview {
+    background: rgba(17, 31, 43, 0.86);
+    border-color: rgba(136, 168, 196, 0.18);
+}
+
+:root[data-theme="dark"] .media-chip {
+    background: var(--surface-strong);
+    border-color: rgba(136, 168, 196, 0.18);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .media-chip.is-active {
+    background: rgba(109, 211, 220, 0.14);
+    border-color: rgba(109, 211, 220, 0.32);
+    color: #aef0f4;
+}
+
+:root[data-theme="dark"] .form-control,
+:root[data-theme="dark"] .form-select,
+:root[data-theme="dark"] .input-group-text,
+:root[data-theme="dark"] .list-group-item,
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .dropdown-menu,
+:root[data-theme="dark"] .modal-content {
+    background-color: var(--surface-strong);
+    color: var(--text);
+    border-color: var(--line);
+}
+
+:root[data-theme="dark"] .form-control::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: #88a0b4;
+}
+
+:root[data-theme="dark"] .form-control:focus,
+:root[data-theme="dark"] .form-select:focus {
+    background-color: var(--surface-strong);
+    color: var(--text);
+    border-color: rgba(109, 211, 220, 0.45);
+    box-shadow: 0 0 0 0.2rem rgba(109, 211, 220, 0.14);
+}
+
+:root[data-theme="dark"] .btn-outline-secondary,
+:root[data-theme="dark"] .btn-outline-dark {
+    color: #d8e4ee;
+    border-color: rgba(160, 185, 208, 0.28);
+}
+
+:root[data-theme="dark"] .btn-outline-secondary:hover,
+:root[data-theme="dark"] .btn-outline-dark:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(160, 185, 208, 0.38);
+}
+
+:root[data-theme="dark"] .alert-light,
+:root[data-theme="dark"] .alert-info,
+:root[data-theme="dark"] .alert-warning {
+    background: rgba(24, 35, 46, 0.92);
+    color: var(--text);
+    border-color: var(--line);
+}
+
+:root[data-theme="dark"] .text-muted,
+:root[data-theme="dark"] .form-text,
+:root[data-theme="dark"] .page-subtitle,
+:root[data-theme="dark"] .metric-note,
+:root[data-theme="dark"] .mobile-table-hint,
+:root[data-theme="dark"] .app-footer {
+    color: var(--muted) !important;
+}
+
+.filter-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: rgba(255, 253, 248, 0.9);
+    box-shadow: var(--shadow-md);
+}
+
+.filter-shell .form-control,
+.filter-shell .form-select,
+.form-shell .form-control,
+.form-shell .form-select {
+    border-radius: 16px;
+    border-color: rgba(78, 58, 33, 0.14);
+    padding: 0.8rem 1rem;
+    background: #fffdf9;
+}
+
+.filter-shell .input-group-text {
+    border-radius: 16px 0 0 16px;
+    border-color: rgba(78, 58, 33, 0.14);
+    background: #fff8ef;
+    color: var(--brand-3);
+}
+
+.inline-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(21, 94, 99, 0.08);
+    color: var(--brand);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.avatar-token {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand), #2ba397);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(21, 94, 99, 0.22);
+}
+
+.stack-list {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.stack-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface-strong);
+}
+
+.stack-item-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.stack-item-subtitle {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.form-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-shell .card-body {
+    padding: 1.6rem;
+}
+
+.form-shell .form-label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.form-shell .form-text,
+.filter-shell .form-text {
+    color: var(--muted);
+}
+
+.input-group {
+    flex-wrap: nowrap;
+}
+
+.mobile-table-hint {
+    margin-top: 0.85rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.responsive-actions {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.responsive-actions > * {
+    flex: 0 0 auto;
+}
+
+.form-shell .form-check {
+    padding: 0.95rem 1rem 0.95rem 2.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: rgba(255, 253, 249, 0.92);
+}
+
+:root[data-theme="dark"] .form-shell .form-check,
+html[data-theme="dark"] .form-shell .form-check,
+body[data-theme="dark"] .form-shell .form-check,
+.theme-dark .form-shell .form-check {
+    background: rgba(24, 35, 46, 0.92);
+    border-color: rgba(160, 185, 208, 0.2);
+}
+
+:root[data-theme="dark"] .form-shell .form-check .form-check-label,
+html[data-theme="dark"] .form-shell .form-check .form-check-label,
+body[data-theme="dark"] .form-shell .form-check .form-check-label,
+.theme-dark .form-shell .form-check .form-check-label {
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .form-shell .form-check .text-muted,
+html[data-theme="dark"] .form-shell .form-check .text-muted,
+body[data-theme="dark"] .form-shell .form-check .text-muted,
+.theme-dark .form-shell .form-check .text-muted {
+    color: #b8c8d6 !important;
+}
+
+.form-shell .form-check + .form-check {
+    margin-top: 0.85rem;
+}
+
+.form-section + .form-section {
+    margin-top: 1.25rem;
+}
+
+.form-section-title {
+    margin-bottom: 0.85rem;
+    font-size: 1.1rem;
+}
+
+.config-builder {
+    display: grid;
+    gap: 1rem;
+}
+
+.builder-item,
+.pregunta-item,
+.question-item,
+.option-item {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.builder-item,
+.pregunta-item,
+.question-item {
+    padding: 1rem;
+}
+
+.option-item {
+    padding: 0.9rem;
+}
+
+.builder-toolbar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.builder-toolbar > * {
+    flex: 0 0 auto;
+}
+
+.block-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.block-actions .btn {
+    min-width: 2.5rem;
+}
+
+.rich-editor-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #fffdf9;
+}
+
+.pagination-shell .page-link {
+    border: none;
+    margin: 0 0.2rem;
+    border-radius: 999px;
+    color: var(--brand);
+    background: rgba(255, 251, 245, 0.94);
+    box-shadow: var(--shadow-md);
+}
+
+.pagination-shell .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--brand), #1d8a7f);
+    color: #fff;
+}
+
+.pagination-shell .page-item.disabled .page-link {
+    color: rgba(31, 29, 26, 0.35);
+    background: rgba(255, 251, 245, 0.6);
+}
+
+.empty-state {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--muted);
+}
+
+.lesson-stack .list-group-item {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    margin-bottom: 0.85rem;
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.content-block {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.content-block + .content-block {
+    margin-top: 1rem;
+}
+
+.content-block .card-body {
+    padding: 1.3rem;
+}
+
+.tts-play-btn.is-speaking {
+    background: rgba(21, 94, 99, 0.12);
+    border-color: rgba(21, 94, 99, 0.32);
+}
+
+.activity-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.activity-shell .card-body {
+    padding: 1.5rem;
+}
+
+.activity-feedback-alert {
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(224, 238, 255, 0.92), rgba(246, 251, 255, 0.98));
+    box-shadow: var(--shadow-sm);
+}
+
+.activity-shell .list-group-item {
+    border-color: var(--line);
+    padding: 1rem 1.1rem;
+}
+
+.activity-shell .alert {
+    border-radius: var(--radius-lg);
+}
+
+.activity-shell textarea.form-control,
+.activity-shell input.form-control,
+.activity-shell .form-select {
+    border-radius: 16px;
+}
+
+.activity-shell .btn + .btn {
+    margin-left: 0.35rem;
+}
+
+.auth-layout {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+}
+
+.auth-shell {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.auth-hero {
+    margin-bottom: 1.25rem;
+}
+
+.auth-hero-success {
+    background:
+        radial-gradient(circle at top left, rgba(61, 153, 118, 0.18), transparent 36%),
+        linear-gradient(135deg, rgba(246, 255, 250, 0.95), rgba(255, 252, 246, 0.98));
+}
+
+.auth-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.auth-form {
+    margin-top: 1.2rem;
+}
+
+.demo-access-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 248, 238, 0.9);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.demo-access-header h2 {
+    font-family: "Fraunces", serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+}
+
+.demo-access-header p {
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+}
+
+.demo-access-grid {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.demo-access-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    border-radius: 18px;
+    padding: 0.95rem 1rem;
+}
+
+.demo-access-btn span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-align: left;
+}
+
+:root[data-theme="dark"] .demo-access-shell {
+    background: rgba(24, 35, 46, 0.88);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-success {
+    color: #87ddb0;
+    border-color: rgba(70, 199, 132, 0.5);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-success:hover {
+    background: rgba(70, 199, 132, 0.12);
+    color: #a6ebc4;
+    border-color: rgba(70, 199, 132, 0.7);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-primary {
+    color: #8de4ea;
+    border-color: rgba(109, 211, 220, 0.48);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-primary:hover {
+    background: rgba(109, 211, 220, 0.12);
+    color: #b0f2f5;
+    border-color: rgba(109, 211, 220, 0.7);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-danger {
+    color: #ff9f9f;
+    border-color: rgba(255, 122, 122, 0.48);
+}
+
+:root[data-theme="dark"] .demo-access-btn.btn-outline-danger:hover {
+    background: rgba(255, 122, 122, 0.12);
+    color: #ffb9b9;
+    border-color: rgba(255, 122, 122, 0.7);
+}
+
+:root[data-theme="dark"] .soft-badge.success {
+    background: rgba(70, 199, 132, 0.16);
+    color: #9ce8bf;
+}
+
+:root[data-theme="dark"] .soft-badge.info {
+    background: rgba(109, 211, 220, 0.16);
+    color: #aef0f4;
+}
+
+:root[data-theme="dark"] .soft-badge.warning {
+    background: rgba(245, 169, 71, 0.16);
+    color: #ffd08a;
+}
+
+:root[data-theme="dark"] .soft-badge.badge-accent {
+    background: rgba(109, 211, 220, 0.16);
+    color: #aef0f4;
+}
+
+.activity-container {
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.activity-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    padding: 1.6rem;
+}
+
+.media-preview-thumb {
+    width: 100%;
+    max-width: 220px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    display: block;
+    object-fit: cover;
+    background: var(--surface-strong);
+}
+
+.lesson-media-thumb {
+    max-width: 320px;
+}
+
+.media-preview-player {
+    width: min(100%, 320px);
+    display: block;
+}
+
+.media-preview-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 0.95rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
+    color: var(--text);
+}
+
+.question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+}
+
+.option-button {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.05rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 251, 245, 0.92);
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.option-button:hover {
+    border-color: rgba(31, 92, 177, 0.28);
+    background: rgba(236, 244, 255, 0.98);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.option-button.selected {
+    border-color: rgba(31, 92, 177, 0.38);
+    background: rgba(225, 238, 255, 0.95);
+}
+
+.option-button.correct {
+    border-color: rgba(61, 153, 118, 0.35);
+    background: rgba(228, 248, 238, 0.98);
+}
+
+.option-button.incorrect {
+    border-color: rgba(193, 88, 75, 0.35);
+    background: rgba(255, 236, 232, 0.98);
+}
+
+.submit-button {
+    border-radius: 18px;
+    padding: 0.9rem 1.3rem;
+    font-weight: 700;
+}
+
+.feedback {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+.feedback.correct {
+    background: rgba(228, 248, 238, 0.98);
+    color: #1d6649;
+    border: 1px solid rgba(61, 153, 118, 0.24);
+}
+
+.feedback.incorrect {
+    background: rgba(255, 236, 232, 0.98);
+    color: #8a3f34;
+    border: 1px solid rgba(193, 88, 75, 0.22);
+}
+
+.feedback-msg {
+    margin-top: 0.4rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.drag-drop-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.2rem 0;
+}
+
+.drag-zone,
+.drop-zone {
+    min-height: 200px;
+    border: 1px dashed rgba(117, 131, 150, 0.55);
+    border-radius: 22px;
+    padding: 1rem;
+    background: rgba(255, 251, 245, 0.72);
+}
+
+.drop-zone.drag-over {
+    background: rgba(230, 240, 255, 0.92);
+    border-color: rgba(31, 92, 177, 0.42);
+}
+
+.draggable-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: linear-gradient(135deg, #1f5cb1, #4d8bd8);
+    color: #fff;
+    padding: 0.72rem 0.95rem;
+    margin: 0.3rem;
+    border-radius: 14px;
+    cursor: move;
+    box-shadow: var(--shadow-sm);
+}
+
+.draggable-item.dragging,
+.sortable-item.dragging {
+    opacity: 0.64;
+}
+
+.drag-container {
+    min-height: 200px;
+    background: rgba(255, 251, 245, 0.88);
+    border: 1px dashed rgba(117, 131, 150, 0.55);
+    border-radius: 22px;
+    padding: 1rem;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.drag-container.drag-over {
+    background: rgba(230, 240, 255, 0.92);
+    border-color: rgba(31, 92, 177, 0.42);
+}
+
+.draggable-item:active {
+    cursor: grabbing;
+}
+
+.draggable-item.correct {
+    background: rgba(228, 248, 238, 0.98);
+    border-color: rgba(61, 153, 118, 0.35);
+    color: #1d6649;
+}
+
+.draggable-item.incorrect {
+    background: rgba(255, 236, 232, 0.98);
+    border-color: rgba(193, 88, 75, 0.32);
+    color: #8a3f34;
+}
+
+.text-input {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    font-size: 1rem;
+    background: rgba(255, 251, 245, 0.95);
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: rgba(31, 92, 177, 0.38);
+    box-shadow: 0 0 0 0.22rem rgba(31, 92, 177, 0.1);
+}
+
+.sortable-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sortable-item {
+    background: rgba(255, 251, 245, 0.95);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.6rem;
+    cursor: move;
+    box-shadow: var(--shadow-xs);
+}
+
+.marketing-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 4.5rem 0 3.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 36px;
+    background:
+        linear-gradient(rgba(14, 30, 45, 0.58), rgba(14, 30, 45, 0.68)),
+        url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop') center/cover no-repeat;
+    box-shadow: var(--shadow-lg);
+}
+
+.marketing-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.marketing-hero .hero-copy {
+    max-width: 700px;
+    color: #fff;
+}
+
+.marketing-hero .eyebrow {
+    color: rgba(255, 249, 238, 0.82);
+}
+
+.marketing-hero .page-title,
+.marketing-hero .page-subtitle {
+    color: #fff;
+}
+
+.marketing-grid {
+    margin-top: 1.35rem;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.feature-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+    padding: 1.4rem;
+    height: 100%;
+}
+
+.feature-icon {
+    display: inline-flex;
+    width: 3rem;
+    height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: rgba(31, 92, 177, 0.12);
+    color: #1f5cb1;
+    font-size: 1.25rem;
+    margin-bottom: 0.85rem;
+}
+
+.flash-stack .alert {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.app-footer {
+    margin-top: 3rem;
+    padding: 2.2rem 0 2.8rem;
+    color: var(--muted);
+}
+
+.app-footer .footer-shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: rgba(255, 251, 245, 0.78);
+    box-shadow: var(--shadow-md);
+    padding: 1.25rem 1.35rem;
+}
+
+.app-footer .footer-brand {
+    font-family: "Fraunces", serif;
+    color: var(--text);
+    font-size: 1.15rem;
+}
+
+.footer-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-demo-access {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    opacity: 0.78;
+}
+
+.footer-demo-label,
+.footer-demo-sep {
+    color: var(--muted);
+}
+
+.footer-text-btn {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    color: var(--muted);
+    font: inherit;
+    line-height: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.footer-text-btn:hover,
+.footer-text-btn:focus-visible {
+    color: var(--text);
+    text-decoration: none;
+    outline: none;
+}
+
+.footer-theme-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.theme-toggle-footer {
+    border-color: rgba(78, 58, 33, 0.14);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--text);
+    box-shadow: 0 10px 22px rgba(78, 58, 33, 0.08);
+    min-width: 180px;
+    justify-content: center;
+}
+
+.theme-toggle-footer:hover {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .theme-toggle-footer {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 248, 241, 0.92);
+    box-shadow: none;
+}
+
+:root[data-theme="dark"] .theme-toggle-footer:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+@media (min-width: 992px) {
+    .footer-controls {
+        align-items: flex-end;
+    }
+
+    .footer-theme-bar {
+        justify-content: flex-end;
+    }
+}
+
+.btn {
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 0.72rem 1.15rem;
+}
+
+.btn-primary,
+.btn-success {
+    border: none;
+    box-shadow: 0 10px 24px rgba(21, 94, 99, 0.22);
+}
+
+.btn.is-submitting,
+.btn:disabled {
+    opacity: 0.78;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--brand), #1d8a7f);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #c26a0b, #ef9d1f);
+}
+
+.btn-outline-primary {
+    color: var(--brand);
+    border-color: rgba(21, 94, 99, 0.22);
+}
+
+.btn-outline-secondary {
+    color: var(--brand-3);
+    border-color: rgba(124, 63, 0, 0.2);
+}
+
+.breadcrumb {
+    --bs-breadcrumb-bg: rgba(255, 251, 245, 0.9);
+    --bs-breadcrumb-divider-color: rgba(31, 29, 26, 0.42);
+    padding: 0.9rem 1rem;
+    border-radius: 999px;
+    background: var(--bs-breadcrumb-bg) !important;
+    background-color: var(--bs-breadcrumb-bg) !important;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+    color: var(--text);
+}
+
+.breadcrumb .breadcrumb-item,
+.breadcrumb .breadcrumb-item.active {
+    color: var(--muted);
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: var(--brand);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.breadcrumb .breadcrumb-item a:hover {
+    color: var(--brand-3);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(31, 29, 26, 0.42);
+}
+
+html[data-theme="dark"] .breadcrumb,
+body[data-theme="dark"] .breadcrumb,
+:root[data-theme="dark"] .breadcrumb,
+.theme-dark .breadcrumb {
+    --bs-breadcrumb-bg: rgba(18, 29, 40, 0.92);
+    --bs-breadcrumb-divider-color: rgba(215, 228, 238, 0.62);
+    background: var(--bs-breadcrumb-bg) !important;
+    background-color: var(--bs-breadcrumb-bg) !important;
+    border-color: rgba(160, 185, 208, 0.22) !important;
+    color: var(--text);
+}
+
+html[data-theme="dark"] .breadcrumb .breadcrumb-item,
+html[data-theme="dark"] .breadcrumb .breadcrumb-item.active,
+body[data-theme="dark"] .breadcrumb .breadcrumb-item,
+body[data-theme="dark"] .breadcrumb .breadcrumb-item.active,
+:root[data-theme="dark"] .breadcrumb .breadcrumb-item,
+:root[data-theme="dark"] .breadcrumb .breadcrumb-item.active,
+.theme-dark .breadcrumb .breadcrumb-item,
+.theme-dark .breadcrumb .breadcrumb-item.active {
+    color: #d7e4ee;
+}
+
+html[data-theme="dark"] .breadcrumb .breadcrumb-item a,
+body[data-theme="dark"] .breadcrumb .breadcrumb-item a,
+:root[data-theme="dark"] .breadcrumb .breadcrumb-item a,
+.theme-dark .breadcrumb .breadcrumb-item a {
+    color: #8fe5eb;
+}
+
+html[data-theme="dark"] .breadcrumb .breadcrumb-item a:hover,
+body[data-theme="dark"] .breadcrumb .breadcrumb-item a:hover,
+:root[data-theme="dark"] .breadcrumb .breadcrumb-item a:hover,
+.theme-dark .breadcrumb .breadcrumb-item a:hover {
+    color: #b7f4f8;
+}
+
+html[data-theme="dark"] .breadcrumb-item + .breadcrumb-item::before,
+body[data-theme="dark"] .breadcrumb-item + .breadcrumb-item::before,
+:root[data-theme="dark"] .breadcrumb-item + .breadcrumb-item::before,
+.theme-dark .breadcrumb-item + .breadcrumb-item::before {
+    color: var(--bs-breadcrumb-divider-color) !important;
+}
+
+@media (max-width: 768px) {
+    .app-shell {
+        padding-top: 1.25rem;
+    }
+
+    .page-hero,
+    .panel-body {
+        padding: 1.15rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-actions,
+    .responsive-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-actions .btn,
+    .responsive-actions .btn,
+    .responsive-actions > * {
+        width: 100%;
+    }
+
+    .data-table-shell {
+        border-radius: 22px;
+    }
+
+    .data-table-shell .table {
+        min-width: 680px;
+    }
+
+    .data-table-shell .table thead th,
+    .data-table-shell .table tbody td {
+        padding: 0.8rem 0.75rem;
+        font-size: 0.92rem;
+    }
+
+    .stack-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stack-item .btn,
+    .stack-item .soft-badge {
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .breadcrumb {
+        border-radius: 20px;
+        padding: 0.85rem 0.9rem;
+    }
+
+    .breadcrumb-item {
+        font-size: 0.9rem;
+    }
+
+    .form-shell .card-body,
+    .activity-shell .card-body {
+        padding: 1.15rem;
+    }
+
+    .filter-shell .input-group {
+        flex-wrap: nowrap;
+    }
+
+    .form-shell .input-group {
+        flex-wrap: wrap;
+    }
+
+    .form-shell .input-group > .form-control,
+    .form-shell .input-group > .form-select,
+    .form-shell .input-group > .btn,
+    .form-shell .input-group > .input-group-text {
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    .form-shell .input-group > .btn,
+    .form-shell .input-group > .input-group-text {
+        justify-content: center;
+    }
+
+    .col-md-6 .form-check,
+    .col-lg-6 .form-check {
+        margin-bottom: 0;
+    }
+
+    .builder-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .builder-toolbar .btn {
+        width: 100%;
+    }
+
+    .block-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .demo-access-btn {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .theme-toggle-navbar {
+        width: 100%;
+        margin-bottom: 0.35rem;
+    }
+
+    .drag-drop-container {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+

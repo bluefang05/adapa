@@ -16,10 +16,22 @@
         <p class="page-subtitle">
             Define elementos arrastrables y zonas de destino para construir un ejercicio de clasificacion o relacion.
         </p>
+        <div class="hero-actions">
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/arrastrar_soltar/' . $leccion->id)) . '&context=actividad_arrastrar_soltar'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir recurso de apoyo
+            </a>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        </div>
     <?php endif; ?>
 
     <div class="row justify-content-center">
@@ -113,6 +125,7 @@
 <script>
     let itemsCount = 0;
     let targetsCount = 0;
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     function agregarItem(texto = '', targetId = '') {
         itemsCount++;
@@ -218,7 +231,13 @@
         }
 
         document.getElementById('items').value = JSON.stringify(items);
-        document.getElementById('targets').value = JSON.stringify(targets);
+        document.getElementById('targets').value = JSON.stringify({
+            targets: targets,
+            recurso_apoyo_media_id: selectedMediaParams.get('selected_media_id') || '',
+            recurso_apoyo_titulo: selectedMediaParams.get('selected_media_title') || '',
+            recurso_apoyo_url: selectedMediaParams.get('selected_media_url') || '',
+            recurso_apoyo_tipo: selectedMediaParams.get('selected_media_type') || ''
+        });
         return true;
     }
 

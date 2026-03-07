@@ -46,6 +46,12 @@ class EstudianteController extends Controller {
             return !in_array($curso->id, $cursosInscritosIds);
         });
 
+        $resourceLanguage = null;
+        if (!empty($cursosInscritos)) {
+            $resourceLanguage = Curso::obtenerIdiomaObjetivo($cursosInscritos[0]);
+        }
+        $recommendedResources = app_useful_resources_for_language($resourceLanguage, 4);
+
         require_once __DIR__ . '/../../views/estudiante/index.php';
     }
 
@@ -171,6 +177,8 @@ class EstudianteController extends Controller {
             }
         }
 
+        $courseResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 4);
+
         require_once __DIR__ . '/../../views/estudiante/lecciones.php';
     }
 
@@ -268,8 +276,22 @@ class EstudianteController extends Controller {
         }
 
         $resumenProgreso = $this->leccionModel->obtenerResumenProgreso($leccion_id, $estudiante_id);
+        $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
+        $courseResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 4);
 
         require_once __DIR__ . '/../../views/estudiante/contenido_leccion.php';
+    }
+
+    public function recursos() {
+        $language = trim($_GET['idioma'] ?? '');
+        $language = $language !== '' ? $language : null;
+
+        $resources = app_useful_resources_for_language($language);
+        $groupedResources = app_group_useful_resources_by_category($resources);
+        $resourceCategories = app_useful_resource_category_labels();
+        $languageLabel = $language ? app_language_label($language, ucfirst($language)) : 'Todos los idiomas';
+
+        require_once __DIR__ . '/../../views/estudiante/recursos.php';
     }
 
     public function realizarActividad($actividad_id) {

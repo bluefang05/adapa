@@ -16,6 +16,11 @@
         <p class="page-subtitle">
             Escribe la frase completa y marca entre corchetes las palabras que el estudiante debe rellenar.
         </p>
+        <div class="hero-actions">
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/completar_oracion/' . $leccion->id)) . '&context=actividad_completar_oracion'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir recurso de apoyo
+            </a>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -25,6 +30,13 @@
     <div class="alert alert-info">
         <i class="bi bi-info-circle"></i> Encierra entre <strong>[ ]</strong> las palabras que quieres convertir en huecos. Ejemplo: La capital de [Francia] es [Paris].
     </div>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        </div>
+    <?php endif; ?>
 
     <div class="row justify-content-center">
         <div class="col-xl-10">
@@ -103,6 +115,7 @@
     const textarea = document.getElementById('oracion_completa');
     const previewContainer = document.getElementById('preview-container');
     const previewContent = document.getElementById('preview-content');
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     textarea.addEventListener('input', updatePreview);
 
@@ -155,7 +168,11 @@
         const contenido = {
             texto_completo: texto,
             respuestas_correctas: respuestas,
-            segmentos: texto.split(/(\[[^\]]+\])/).filter(s => s !== '')
+            segmentos: texto.split(/(\[[^\]]+\])/).filter(s => s !== ''),
+            recurso_apoyo_media_id: selectedMediaParams.get('selected_media_id') || '',
+            recurso_apoyo_titulo: selectedMediaParams.get('selected_media_title') || '',
+            recurso_apoyo_url: selectedMediaParams.get('selected_media_url') || '',
+            recurso_apoyo_tipo: selectedMediaParams.get('selected_media_type') || ''
         };
 
         document.getElementById('contenido').value = JSON.stringify(contenido);

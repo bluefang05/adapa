@@ -1,0 +1,12 @@
+ADAPA HOSTING DEPLOY - FIX TRAILING SLASH ROUTES
+Date: 2026-03-06
+
+Problema
+- /enm/ devolvia 404 porque router solo hacia match exacto con /enm.
+
+Fix
+- Normalizacion de URI en Router: remove trailing slash en rutas != '/'.
+- Ahora /enm y /enm/ son equivalentes (igual para otras rutas).
+
+Archivo a subir
+- core/Router.php

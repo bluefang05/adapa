@@ -40,6 +40,29 @@
                                 <span class="soft-badge"><i class="bi bi-journal-text"></i> Base academica</span>
                             </div>
 
+                            <div class="panel mb-3">
+                                <div class="panel-body">
+                                    <div class="section-title mb-3">
+                                        <h3 class="h5 mb-0">Arranca con una base premium</h3>
+                                        <span class="soft-badge"><i class="bi bi-lightbulb"></i> Plantillas</span>
+                                    </div>
+                                    <div class="template-chip-group mb-3">
+                                        <button type="button" class="template-chip" data-course-template="conversacion">Curso de conversacion</button>
+                                        <button type="button" class="template-chip" data-course-template="ruta">Ruta completa</button>
+                                        <button type="button" class="template-chip" data-course-template="viajes">Curso para viajes</button>
+                                    </div>
+                                    <div class="quality-checklist">
+                                        <div class="quality-checklist-title">Checklist rapido</div>
+                                        <ul class="quality-checklist-list">
+                                            <li>El titulo dice idioma, nivel o uso real.</li>
+                                            <li>La descripcion explica para quien es y que resolvera.</li>
+                                            <li>El rango CEFR coincide con el recorrido que planeas crear.</li>
+                                            <li>La portada y el acceso ya se sienten listos para publicarse.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Titulo del curso *</label>
                                 <input type="text" class="form-control" id="titulo" name="titulo" required placeholder="Ejemplo: Ingles B1 para comunicacion profesional" maxlength="200">
@@ -256,6 +279,13 @@ document.getElementById('formCrearCurso').addEventListener('submit', function(ev
             return false;
         }
 
+        if (document.getElementById('es_publico').checked) {
+            const shouldContinue = window.confirm('El curso se creara como publico desde el inicio. Si todavia no tiene estructura interna, se vera prematuro. ¿Quieres continuar?');
+            if (!shouldContinue) {
+                return false;
+            }
+        }
+
         this.submit();
     }
 
@@ -312,6 +342,51 @@ const nivelPrincipal = document.getElementById('nivel_cefr');
 const nivelDesde = document.getElementById('nivel_cefr_desde');
 const nivelHasta = document.getElementById('nivel_cefr_hasta');
 const cefrOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const tituloInput = document.getElementById('titulo');
+const descripcionInput = document.getElementById('descripcion');
+const idiomaObjetivoSelect = document.getElementById('idioma_objetivo');
+const idiomaBaseSelect = document.getElementById('idioma_base');
+
+const courseTemplates = {
+    conversacion: {
+        title: '{idioma} {nivel}: conversaciones utiles desde la primera semana',
+        description: 'Ruta practica para estudiantes cuya base es {idioma_base}. El curso prioriza comprension, reaccion y produccion en situaciones reales, con teoria breve, practica inmediata y progreso visible.'
+    },
+    ruta: {
+        title: '{idioma} de cero a {nivel}: ruta guiada con teoria, practica y apoyo real',
+        description: 'Recorrido estructurado para estudiantes con base en {idioma_base}. Cada leccion combina vocabulario de alta frecuencia, gramatica funcional, escenarios memorables y actividades tipo app.'
+    },
+    viajes: {
+        title: '{idioma} {nivel} para viajar y resolver situaciones reales',
+        description: 'Curso orientado a viajeros que necesitan entender, pedir, reaccionar y salir de apuros en el idioma objetivo. Prioriza frases utiles, escucha, pronunciacion y mini escenas realistas.'
+    }
+};
+
+function selectedLabel(select) {
+    const option = select.options[select.selectedIndex];
+    return option ? option.text.trim() : '';
+}
+
+function aplicarPlantillaCurso(templateKey) {
+    const template = courseTemplates[templateKey];
+    if (!template) {
+        return;
+    }
+
+    const idioma = selectedLabel(idiomaObjetivoSelect) || 'Idioma';
+    const idiomaBase = selectedLabel(idiomaBaseSelect) || 'espanol';
+    const nivel = nivelPrincipal.value || 'A1';
+
+    tituloInput.value = template.title
+        .replace('{idioma}', idioma)
+        .replace('{idioma_base}', idiomaBase)
+        .replace('{nivel}', nivel);
+
+    descripcionInput.value = template.description
+        .replace('{idioma}', idioma.toLowerCase())
+        .replace('{idioma_base}', idiomaBase.toLowerCase())
+        .replace('{nivel}', nivel);
+}
 
 function sincronizarNivelPrincipal() {
     if (!nivelPrincipal.value) {
@@ -375,6 +450,12 @@ document.getElementById('fecha_fin').addEventListener('change', function() {
         this.value = '';
         alert('La fecha de fin debe ser posterior a la fecha de inicio');
     }
+});
+
+document.querySelectorAll('[data-course-template]').forEach(function (button) {
+    button.addEventListener('click', function () {
+        aplicarPlantillaCurso(button.getAttribute('data-course-template'));
+    });
 });
 </script>
 

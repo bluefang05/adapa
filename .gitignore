@@ -5,6 +5,9 @@ Thumbs.db
 
 .env
 .env.*
+config/database.hosting.php
+config/database.target.php
+PAYPAL_SANDBOX.local.txt
 
 node_modules/
 vendor/

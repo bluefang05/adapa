@@ -33,6 +33,14 @@
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso listo para insertar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            Lo asignare al primer bloque sin recurso de esta teoria.
+        </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <div class="form-shell">
@@ -77,6 +85,17 @@
                                     </div>
                                     <div class="form-text mt-3">
                                         Los bloques existentes pueden editarse, quitarse o regenerarse desde el contenido clasico.
+                                    </div>
+                                    <div class="production-hint-card tone-info mt-3">
+                                        <div class="production-hint-title">Checklist rapido antes de actualizar</div>
+                                        <ul class="quality-checklist-list mb-0">
+                                            <li>La teoria sigue teniendo una idea central clara.</li>
+                                            <li>Los bloques multimedia apoyan, no distraen.</li>
+                                            <li>La secuencia se entiende sin que el alumno adivine el siguiente paso.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="template-chip-group mt-3">
+                                        <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/teoria/edit/' . $teoria->id)) . '&context=teoria'); ?>" class="template-chip template-chip-link">Elegir recurso en biblioteca</a>
                                     </div>
                                 </div>
                             </div>
@@ -217,12 +236,15 @@ echo json_encode(array_map(function ($bloque) {
 ?>;
 window.availableMediaResources = <?php
 echo json_encode(array_reduce($recursos, function ($carry, $recurso) {
+    $metadata = app_media_metadata($recurso->metadata ?? null);
     $carry[$recurso->id] = [
         'id' => (int) $recurso->id,
         'titulo' => $recurso->titulo,
         'tipo_media' => $recurso->tipo_media,
-        'ruta_archivo' => url('/' . ltrim($recurso->ruta_archivo, '/')),
+        'ruta_archivo' => app_media_public_url($recurso->ruta_archivo),
         'alt_text' => $recurso->alt_text ?: $recurso->titulo,
+        'embed_url' => $metadata['embed_url'] ?? null,
+        'is_vertical_embed' => strpos((string) $recurso->ruta_archivo, '/shorts/') !== false || (($metadata['layout'] ?? null) === 'vertical'),
     ];
     return $carry;
 }, []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -250,6 +272,7 @@ tinymce.init({
     const generateBlocksBtn = document.getElementById('generateBlocksBtn');
     const initialBlocks = Array.isArray(window.initialTheoryBlocks) ? window.initialTheoryBlocks : [];
     const mediaResources = window.availableMediaResources || {};
+    const selectedMediaIdFromQuery = new URLSearchParams(window.location.search).get('selected_media_id');
 
     function renderMediaPreview(resource) {
         if (!resource) {
@@ -258,6 +281,12 @@ tinymce.init({
 
         if (resource.tipo_media === 'imagen') {
             return '<img src="' + resource.ruta_archivo + '" alt="' + resource.alt_text + '" class="block-media-thumb">';
+        }
+
+        if (resource.embed_url) {
+            const frameClass = resource.is_vertical_embed ? 'media-embed-frame is-vertical' : 'media-embed-frame';
+            return '<div class="' + frameClass + '"><iframe src="' + resource.embed_url + '" title="' + resource.alt_text + '" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+                + '<div class="mt-2"><a href="' + resource.ruta_archivo + '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer"><i class="bi bi-box-arrow-up-right"></i> Abrir video</a></div>';
         }
 
         if (resource.tipo_media === 'audio') {
@@ -374,6 +403,18 @@ tinymce.init({
         initialBlocks.forEach(addBlock);
     } else {
         addBlock();
+    }
+
+    if (selectedMediaIdFromQuery && mediaResources[selectedMediaIdFromQuery]) {
+        const firstEmptySelect = Array.from(builder.querySelectorAll('[data-field="media"]')).find(function (select) {
+            return !select.value;
+        });
+        const targetSelect = firstEmptySelect || builder.querySelector('[data-field="media"]');
+        if (targetSelect) {
+            targetSelect.value = selectedMediaIdFromQuery;
+            updateMediaPreview(targetSelect.closest('.content-block-item'));
+            renderMediaGallery(targetSelect.closest('.content-block-item'));
+        }
     }
 
     addBlockBtn.addEventListener('click', function () {

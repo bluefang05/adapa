@@ -31,8 +31,48 @@
         <div class="col-xl-9 col-lg-10">
             <div class="form-shell">
                 <div class="card-body">
-                    <form method="POST" action="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>">
+                    <form method="POST" action="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>" id="formEditarCurso">
                         <?php echo csrf_input(); ?>
+
+                        <section class="form-section">
+                            <div class="section-title">
+                                <h2 class="form-section-title">Checklist de publicacion</h2>
+                                <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Estado real</span>
+                            </div>
+
+                            <div class="production-hint-card tone-info mb-3">
+                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                    <div>
+                                        <div class="production-hint-title">Preparacion actual: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</div>
+                                        <div class="text-muted mt-1"><?php echo htmlspecialchars($coursePublishHint ?? ''); ?></div>
+                                    </div>
+                                    <div class="soft-badge"><?php echo (int) ($coursePublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($coursePublishSummary['total'] ?? 0); ?> puntos</div>
+                                </div>
+                                <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%"></span></div>
+                                <div class="course-meta mt-3">
+                                    <span><i class="bi bi-journal-richtext"></i> <?php echo (int) ($coursePublishSummary['lessons'] ?? 0); ?> lecciones</span>
+                                    <span><i class="bi bi-book"></i> <?php echo (int) ($coursePublishSummary['theories'] ?? 0); ?> teorias</span>
+                                    <span><i class="bi bi-lightning"></i> <?php echo (int) ($coursePublishSummary['activities'] ?? 0); ?> actividades</span>
+                                </div>
+                            </div>
+
+                            <div class="publish-checklist-grid">
+                                <?php foreach (($coursePublishChecklist ?? []) as $item): ?>
+                                    <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
+                                        <div class="publish-check-head">
+                                            <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
+                                            <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                        </div>
+                                        <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div id="courseVisibilityHint" class="alert alert-warning mt-3 mb-0" <?php echo !empty($curso->es_publico) && (int) ($coursePublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                El curso esta marcado como publico, pero aun le faltan piezas para verse redondo.
+                            </div>
+                        </section>
 
                         <section class="form-section">
                             <div class="section-title">
@@ -230,6 +270,23 @@ document.getElementById('requiere_codigo').addEventListener('change', function()
     document.getElementById('codigo_acceso_div').style.display = this.checked ? 'block' : 'none';
 });
 
+const courseVisibilityCheckbox = document.getElementById('es_publico');
+const courseVisibilityHint = document.getElementById('courseVisibilityHint');
+const coursePublishPercentage = <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>;
+
+function syncCourseVisibilityHint() {
+    if (!courseVisibilityCheckbox || !courseVisibilityHint) {
+        return;
+    }
+
+    courseVisibilityHint.hidden = !(courseVisibilityCheckbox.checked && coursePublishPercentage < 100);
+}
+
+if (courseVisibilityCheckbox) {
+    courseVisibilityCheckbox.addEventListener('change', syncCourseVisibilityHint);
+    syncCourseVisibilityHint();
+}
+
 document.getElementById('generar_codigo').addEventListener('click', function() {
     const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let codigo = '';
@@ -273,6 +330,7 @@ sincronizarNivelPrincipal();
 
 const portadaSelect = document.getElementById('portada_media_id');
 const portadaPreview = document.getElementById('courseCoverPreview');
+const courseEditForm = document.getElementById('formEditarCurso');
 
 function actualizarPreviewPortada() {
     const option = portadaSelect.options[portadaSelect.selectedIndex];
@@ -291,6 +349,17 @@ function actualizarPreviewPortada() {
 
 portadaSelect.addEventListener('change', actualizarPreviewPortada);
 actualizarPreviewPortada();
+
+if (courseEditForm) {
+    courseEditForm.addEventListener('submit', function (event) {
+        if (courseVisibilityCheckbox && courseVisibilityCheckbox.checked && coursePublishPercentage < 100) {
+            const shouldContinue = window.confirm('Este curso sigue marcado como publico, pero todavia tiene huecos editoriales. ¿Quieres guardarlo visible de todos modos?');
+            if (!shouldContinue) {
+                event.preventDefault();
+            }
+        }
+    });
+}
 </script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

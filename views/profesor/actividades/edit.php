@@ -23,6 +23,9 @@
             <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/configurar'); ?>" class="btn btn-success">
                 <i class="bi bi-sliders"></i> Configurar contenido
             </a>
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividad/edit/' . $actividad->id)) . '&context=actividad'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Abrir biblioteca
+            </a>
         </div>
     </section>
 
@@ -32,6 +35,14 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <?php echo htmlspecialchars($error); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso contextual listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+            Usa <em>Configurar contenido</em> para insertarlo donde corresponda.
         </div>
     <?php endif; ?>
 
@@ -46,6 +57,14 @@
                             <div class="section-title">
                                 <h2 class="form-section-title">Datos base</h2>
                                 <span class="soft-badge"><i class="bi bi-pencil-square"></i> Configuracion</span>
+                            </div>
+                            <div class="production-hint-card tone-info mb-3">
+                                <div class="production-hint-title">Checklist rapido antes de guardar</div>
+                                <ul class="quality-checklist-list mb-0">
+                                    <li>La ficha general dice que habilidad medira esta actividad.</li>
+                                    <li>El tipo sigue alineado con el contenido interno configurado.</li>
+                                    <li>Si usas media, aplicala en la configuracion especializada.</li>
+                                </ul>
                             </div>
 
                             <div class="mb-3">

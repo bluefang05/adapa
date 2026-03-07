@@ -2,9 +2,27 @@
 
 // Asegurar configuración de sesión antes de iniciarla
 if (session_status() === PHP_SESSION_NONE) {
+    $secureCookie = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
     // Configuración para evitar problemas en hosting compartido
     ini_set('session.gc_maxlifetime', 3600); // 1 hora
     ini_set('session.cookie_lifetime', 3600);
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.use_strict_mode', '1');
+
+    if ($secureCookie) {
+        ini_set('session.cookie_secure', '1');
+    }
+
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 3600,
+            'path' => '/',
+            'secure' => $secureCookie,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
     
     // Intentar iniciar sesión
     if (!session_start()) {
@@ -19,6 +37,11 @@ class Auth {
     }
 
     public static function login($user) {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user->id;
         $_SESSION['instancia_id'] = $user->instancia_id;
         
@@ -42,7 +65,18 @@ class Auth {
     }
 
     public static function logout() {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         session_unset();
+        $_SESSION = [];
+
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+        }
+
         session_destroy();
     }
 

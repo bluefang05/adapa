@@ -12,6 +12,9 @@ RewriteBase /adapa/
 # Prevent access to hidden files
 RewriteRule ^\. - [F]
 
+# Prevent access to plain-text sensitive files
+RewriteRule \.(sql|txt|md|log)$ - [F,NC]
+
 # Prevent access to config directory
 RewriteRule ^config/ - [F]
 

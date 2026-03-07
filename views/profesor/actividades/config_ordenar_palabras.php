@@ -16,10 +16,22 @@
         <p class="page-subtitle">
             Define el orden correcto de los elementos para que luego el estudiante los reorganice desde una secuencia mezclada.
         </p>
+        <div class="hero-actions">
+            <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/actividades/config/ordenar_palabras/' . $leccion->id)) . '&context=actividad_ordenar_palabras'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-images"></i> Elegir recurso de apoyo
+            </a>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($_GET['selected_media_id'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check2-circle"></i>
+            Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        </div>
     <?php endif; ?>
 
     <div class="row justify-content-center">
@@ -99,6 +111,7 @@
 
 <script>
     let itemsCount = 0;
+    const selectedMediaParams = new URLSearchParams(window.location.search);
 
     function agregarItem(valor = '') {
         itemsCount++;
@@ -142,7 +155,13 @@
             return false;
         }
 
-        document.getElementById('items').value = JSON.stringify(items);
+        document.getElementById('items').value = JSON.stringify({
+            items: items,
+            recurso_apoyo_media_id: selectedMediaParams.get('selected_media_id') || '',
+            recurso_apoyo_titulo: selectedMediaParams.get('selected_media_title') || '',
+            recurso_apoyo_url: selectedMediaParams.get('selected_media_url') || '',
+            recurso_apoyo_tipo: selectedMediaParams.get('selected_media_type') || ''
+        });
         return true;
     }
 

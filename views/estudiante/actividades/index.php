@@ -1,17 +1,43 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+
+function previewActivityTypeLabel($tipo) {
+    $labels = [
+        'opcion_multiple' => 'Opcion multiple',
+        'verdadero_falso' => 'Verdadero/Falso',
+        'completar_oracion' => 'Completar oracion',
+        'emparejamiento' => 'Emparejamiento',
+        'ordenar_palabras' => 'Ordenar palabras',
+        'pronunciacion' => 'Pronunciacion',
+        'escritura' => 'Escritura',
+        'escucha' => 'Escucha',
+        'arrastrar_soltar' => 'Arrastrar y soltar',
+        'respuesta_corta' => 'Respuesta corta'
+    ];
+
+    return $labels[$tipo] ?? ucfirst(str_replace('_', ' ', (string) $tipo));
+}
+
+$isPreviewUser = Auth::getUserRole() === 'profesor' || Auth::getUserRole() === 'admin';
+$backUrl = $isPreviewUser ? url('/profesor/lecciones/' . $actividad->leccion_id . '/actividades') : url('/estudiante');
+$backLabel = $isPreviewUser ? 'Volver a actividades' : 'Volver al panel';
+?>
 
 
 
 <div class="container activity-player-page">
     <div class="activity-container activity-player">
         <section class="page-hero mb-4">
-            <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Actividad interactiva</span>
+            <span class="eyebrow"><i class="bi bi-lightning-charge"></i> <?php echo $isPreviewUser ? 'Vista previa interactiva' : 'Actividad interactiva'; ?></span>
             <h1 class="page-title"><?php echo htmlspecialchars($actividad->titulo); ?></h1>
             <p class="page-subtitle"><?php echo htmlspecialchars($actividad->descripcion ?: 'Resuelve la actividad y recibe retroalimentacion inmediata.'); ?></p>
+            <?php if ($isPreviewUser): ?>
+                <p class="text-muted mb-0">Esta vista ayuda a comprobar interaccion, feedback y orden de preguntas antes de que la vea el alumno.</p>
+            <?php endif; ?>
             <div class="metric-grid">
                 <div class="metric-card">
                     <div class="metric-label">Tipo</div>
-                    <div class="metric-value text-capitalize"><?php echo htmlspecialchars(str_replace('_', ' ', $actividad->tipo_actividad)); ?></div>
+                    <div class="metric-value"><?php echo htmlspecialchars(previewActivityTypeLabel($actividad->tipo_actividad)); ?></div>
                     <div class="metric-note">Formato configurado para esta practica.</div>
                 </div>
                 <div class="metric-card">
@@ -38,7 +64,7 @@
             <div class="responsive-actions activity-player-actions">
                 <button id="submit-activity" class="btn btn-primary btn-lg submit-button" onclick="submitActivity()">Enviar respuesta</button>
                 <button id="next-activity" class="btn btn-success btn-lg submit-button" style="display: none;" onclick="nextActivity()">Siguiente actividad</button>
-                <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary btn-lg">Volver al panel</a>
+                <a href="<?php echo $backUrl; ?>" class="btn btn-outline-secondary btn-lg"><?php echo $backLabel; ?></a>
             </div>
         </div>
     </div>
@@ -71,6 +97,7 @@
     let selectedOptionsByQuestion = {};
     let pronunciationRecognition = null;
     let pronunciationActiveTarget = null;
+    let selectedPreviewDragItemId = null;
     
     // Función para barajar un array
     function shuffleArray(array) {
@@ -110,7 +137,7 @@
                 loadListening(contentDiv);
                 break;
             default:
-                contentDiv.innerHTML = '<p>Tipo de actividad no soportado.</p>';
+                contentDiv.innerHTML = '<div class="alert alert-warning">Tipo de actividad no soportado en esta vista previa.</div>';
         }
     }
     
@@ -126,7 +153,7 @@
             selectedOptionsByQuestion = {};
 
             if (!questions.length) {
-                container.innerHTML = '<p>Esta actividad aún no tiene preguntas configuradas.</p>';
+                container.innerHTML = '<div class="alert alert-warning">Esta actividad aun no tiene preguntas configuradas.</div>';
                 const submitBtn = document.getElementById('submit-activity');
                 if (submitBtn) submitBtn.style.display = 'none';
                 return;
@@ -160,7 +187,7 @@
             const pregunta = contenido.pregunta || contenido.pregunta_global || 'Selecciona la respuesta correcta:';
             
             if (!currentOptions.length) {
-                container.innerHTML = '<p>Esta actividad aún no tiene opciones configuradas.</p>';
+                container.innerHTML = '<div class="alert alert-warning">Esta actividad aun no tiene opciones configuradas.</div>';
                 const submitBtn = document.getElementById('submit-activity');
                 if (submitBtn) submitBtn.style.display = 'none';
                 return;
@@ -206,20 +233,21 @@
             targets = contenido.targets || [];
         }
         
-        let html = `<div class="drag-drop-container">
+        let html = `<div class="alert alert-light border mb-3"><strong>Modo tactil:</strong> toca un elemento y luego toca la columna destino para moverlo.</div>
+        <div class="drag-drop-container">
             <div class="drag-zone">
-                <h4>Arrastra aquí:</h4>`;
+                <h4>Arrastra aqui:</h4>`;
         
         items.forEach((item, index) => {
-            html += `<div class="draggable-item" draggable="true" data-id="${item.id}">${item.texto}</div>`;
+            html += `<div class="draggable-item" draggable="true" data-id="${item.id}" onclick="selectPreviewDragItem('${item.id}')">${item.texto}</div>`;
         });
         
         html += `</div>
             <div class="drop-zone">
-                <h4>Suelta aquí:</h4>`;
+                <h4>Suelta aqui:</h4>`;
         
         targets.forEach((target, index) => {
-            html += `<div class="drop-target" data-target="${target.id}">${target.texto}</div>`;
+            html += `<div class="drop-target" data-target="${target.id}" onclick="placePreviewDragItem('${target.id}')">${target.texto}</div>`;
         });
         
         html += `</div>
@@ -276,7 +304,7 @@
                     <button type="button" class="btn btn-primary btn-lg" onclick="speakPreviewText(decodeURIComponent('${encodedText}'))">
                         <i class="bi bi-volume-up-fill"></i> Reproducir audio
                     </button>
-                    <p class="text-muted mt-2 mb-0"><small>Usa sintesis de voz del navegador para la prueba rapida.</small></p>
+                    <p class="text-muted mt-2 mb-0"><small>Usa sintesis de voz del navegador para una comprobacion rapida.</small></p>
                 </div>
             `;
         } else {
@@ -404,13 +432,27 @@
 
     function loadSortable(container) {
         const items = shuffleArray(sortableCorrectOrder);
-        let html = '<ul id="sortable-list" class="sortable-list">';
+        let html = '<div class="alert alert-light border mb-3"><strong>Modo tactil:</strong> arrastra o usa subir y bajar para ajustar el orden.</div><ul id="sortable-list" class="sortable-list">';
         items.forEach(text => {
-            html += `<li class="sortable-item" draggable="true">${text}</li>`;
+            html += `<li class="sortable-item" draggable="true"><span class="sortable-item-label">${text}</span><span class="word-order-controls"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftPreviewSortable(this, 'up')"><i class="bi bi-arrow-up"></i></button><button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftPreviewSortable(this, 'down')"><i class="bi bi-arrow-down"></i></button></span></li>`;
         });
         html += '</ul>';
         container.innerHTML = html;
         addSortableEvents();
+    }
+
+    function shiftPreviewSortable(button, direction) {
+        const item = button.closest('.sortable-item');
+        const list = document.getElementById('sortable-list');
+        if (!item || !list) return;
+
+        if (direction === 'up' && item.previousElementSibling) {
+            list.insertBefore(item, item.previousElementSibling);
+        }
+
+        if (direction === 'down' && item.nextElementSibling) {
+            list.insertBefore(item.nextElementSibling, item);
+        }
     }
     
     let selectedOption = null;
@@ -443,6 +485,38 @@
     }
     
     // Funciones de arrastrar y soltar
+    function clearPreviewDragSelection() {
+        document.querySelectorAll('.draggable-item.is-selected-touch').forEach(item => {
+            item.classList.remove('is-selected-touch');
+        });
+        selectedPreviewDragItemId = null;
+    }
+
+    function selectPreviewDragItem(itemId) {
+        const draggedItem = document.querySelector(`.draggable-item[data-id="${itemId}"]`);
+        if (!draggedItem) return;
+
+        if (selectedPreviewDragItemId === itemId) {
+            clearPreviewDragSelection();
+            return;
+        }
+
+        clearPreviewDragSelection();
+        selectedPreviewDragItemId = itemId;
+        draggedItem.classList.add('is-selected-touch');
+    }
+
+    function placePreviewDragItem(targetId) {
+        if (!selectedPreviewDragItemId) return;
+
+        const target = document.querySelector(`.drop-target[data-target="${targetId}"]`);
+        const draggedItem = document.querySelector(`.draggable-item[data-id="${selectedPreviewDragItemId}"]`);
+        if (!target || !draggedItem) return;
+
+        target.appendChild(draggedItem);
+        clearPreviewDragSelection();
+    }
+
     function addDragAndDropEvents() {
         const draggables = document.querySelectorAll('.draggable-item');
         const dropZones = document.querySelectorAll('.drop-target');
@@ -477,6 +551,7 @@
                 
                 if (draggedItem) {
                     zone.appendChild(draggedItem);
+                    clearPreviewDragSelection();
                 }
             });
         });
@@ -518,6 +593,7 @@
     function submitActivity() {
         let respuesta = '';
         let esCorrecta = false;
+        let feedbackSummary = [];
         
         switch (actividadData.tipo_actividad) {
             case 'opcion_multiple':
@@ -536,6 +612,11 @@
                                 respuesta: opcion.texto,
                                 es_correcta: esRespCorrecta
                             });
+                            feedbackSummary.push({
+                                pregunta: q.texto || ('Pregunta ' + (qIndex + 1)),
+                                estado: esRespCorrecta ? 'correcta' : 'incorrecta',
+                                nota: esRespCorrecta ? 'Elegiste la opcion correcta.' : 'Revisa la opcion correcta marcada en verde.'
+                            });
                             if (esRespCorrecta) {
                                 correctas++;
                             }
@@ -544,6 +625,11 @@
                                 pregunta: q.texto || ('Pregunta ' + (qIndex + 1)),
                                 respuesta: null,
                                 es_correcta: false
+                            });
+                            feedbackSummary.push({
+                                pregunta: q.texto || ('Pregunta ' + (qIndex + 1)),
+                                estado: 'pendiente',
+                                nota: 'No respondiste esta pregunta.'
                             });
                         }
                     });
@@ -554,6 +640,11 @@
                     if (selectedOption !== null) {
                         respuesta = currentOptions[selectedOption].texto;
                         esCorrecta = currentOptions[selectedOption].es_correcta;
+                        feedbackSummary.push({
+                            pregunta: contenido.pregunta || contenido.pregunta_global || 'Pregunta',
+                            estado: esCorrecta ? 'correcta' : 'incorrecta',
+                            nota: esCorrecta ? 'Elegiste la opcion correcta.' : 'Revisa la opcion correcta marcada en verde.'
+                        });
                     }
                 }
                 break;
@@ -605,7 +696,7 @@
                         if (isCorrect) {
                             input.classList.add('is-valid');
                             input.classList.remove('is-invalid');
-                            feedback.textContent = '¡Correcto!';
+                            feedback.textContent = 'Correcto.';
                             feedback.className = 'feedback-msg text-success';
                             feedback.style.display = 'block';
                         } else {
@@ -613,7 +704,7 @@
                             input.classList.remove('is-valid');
                             // Opcional: mostrar respuestas correctas
                             // feedback.textContent = 'Incorrecto. Respuestas aceptadas: ' + p.respuestas_correctas.join(', ');
-                            feedback.textContent = 'Incorrecto.'; 
+                            feedback.textContent = 'Incorrecto. Revisa la consigna y vuelve a probar.'; 
                             feedback.className = 'feedback-msg text-danger';
                             feedback.style.display = 'block';
                             allCorrect = false;
@@ -647,11 +738,16 @@
                 const list = document.getElementById('sortable-list');
                 if (list) {
                     const currentOrder = Array.from(list.querySelectorAll('.sortable-item'))
-                        .map(li => li.textContent.trim());
+                        .map(li => (li.querySelector('.sortable-item-label')?.textContent || li.textContent).trim());
                     const correctOrder = sortableCorrectOrder;
                     esCorrecta = currentOrder.length === correctOrder.length &&
                         currentOrder.every((text, idx) => text === correctOrder[idx]);
                     respuesta = currentOrder.join(' | ');
+                    feedbackSummary.push({
+                        pregunta: 'Orden final',
+                        estado: esCorrecta ? 'correcta' : 'incorrecta',
+                        nota: esCorrecta ? 'El orden coincide con la solucion esperada.' : 'Ajusta la secuencia hasta que la frase suene natural.'
+                    });
                 }
                 break;
             case 'escucha':
@@ -714,7 +810,7 @@
         
         if (esCorrecta) {
             feedbackDiv.className = 'feedback correct';
-            feedbackDiv.innerHTML = '<h4><i class="bi bi-check-circle-fill"></i> ¡Actividad Completada!</h4><p>¡Correcto! Bien hecho.</p>';
+            feedbackDiv.innerHTML = '<h4><i class="bi bi-check-circle-fill"></i> Actividad completada</h4><p>La interaccion funciono correctamente.</p>';
             
             if (actividadData.tipo_actividad === 'opcion_multiple') {
                 if (questionMode === 'multi') {
@@ -736,7 +832,7 @@
             }
         } else {
             feedbackDiv.className = 'feedback incorrect';
-            feedbackDiv.textContent = 'Incorrecto. Intenta de nuevo.';
+            feedbackDiv.innerHTML = '<h4><i class="bi bi-exclamation-circle-fill"></i> Respuesta incompleta o incorrecta</h4><p>Revisa las pistas visuales y vuelve a intentarlo.</p>';
             
             if (actividadData.tipo_actividad === 'opcion_multiple') {
                 if (questionMode === 'multi') {
@@ -765,12 +861,22 @@
         }
         
         // Deshabilitar el botón de enviar y mostrar el de siguiente
+        if (feedbackSummary.length > 0) {
+            const summaryHtml = feedbackSummary.map(item => {
+                const badgeClass = item.estado === 'correcta'
+                    ? 'text-success'
+                    : (item.estado === 'pendiente' ? 'text-warning' : 'text-danger');
+                return `<div class="mt-2"><strong>${escapeHtml(item.pregunta)}:</strong> <span class="${badgeClass}">${escapeHtml(item.nota)}</span></div>`;
+            }).join('');
+            feedbackDiv.innerHTML += `<div class="mt-3 border-top pt-3">${summaryHtml}</div>`;
+        }
+
         document.getElementById('submit-activity').disabled = true;
         const nextBtn = document.getElementById('next-activity');
         
         if (siguienteActividad && siguienteActividad.id) {
-            nextBtn.textContent = 'Siguiente Actividad';
-            nextBtn.innerHTML = 'Siguiente Actividad <i class="bi bi-arrow-right"></i>';
+            nextBtn.textContent = 'Siguiente actividad';
+            nextBtn.innerHTML = 'Siguiente actividad <i class="bi bi-arrow-right"></i>';
         } else {
             nextBtn.textContent = 'Finalizar Lección';
             nextBtn.innerHTML = '<i class="bi bi-check-lg"></i> Finalizar Lección';

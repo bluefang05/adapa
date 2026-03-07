@@ -44,10 +44,17 @@ foreach ($courses as $course) {
         </div>
     </section>
 
+    <?php require __DIR__ . '/../partials/flash.php'; ?>
+
     <section>
         <div class="section-title">
             <h2>Cursos de la instancia</h2>
-            <span class="soft-badge"><i class="bi bi-grid"></i> Vista administrativa</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="soft-badge"><i class="bi bi-grid"></i> Vista administrativa</span>
+                <a href="<?php echo url('/admin/cursos/create'); ?>" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i> Crear curso
+                </a>
+            </div>
         </div>
 
         <div class="data-table-shell">
@@ -83,7 +90,7 @@ foreach ($courses as $course) {
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($course->titulo); ?></div>
                                                 <div class="small text-muted">
-                                                    <?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?> · <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($course)); ?>
+                                                    <?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?> &middot; <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($course)); ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,9 +110,20 @@ foreach ($courses as $course) {
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($course->fecha_creacion)); ?></td>
                                     <td>
-                                        <a href="<?php echo url('/estudiante/curso/' . $course->id); ?>" class="btn btn-sm btn-outline-primary" title="Ver curso">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a href="<?php echo url('/estudiante/cursos/' . $course->id . '/lecciones'); ?>" class="btn btn-sm btn-outline-primary" title="Ver curso" aria-label="Ver curso <?php echo htmlspecialchars($course->titulo); ?>">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="<?php echo url('/admin/cursos/edit/' . $course->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso" aria-label="Editar curso <?php echo htmlspecialchars($course->titulo); ?>">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="POST" action="<?php echo url('/admin/cursos/delete/' . $course->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este curso? Esta accion no se puede deshacer.');">
+                                                <?php echo csrf_input(); ?>
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar curso" aria-label="Eliminar curso <?php echo htmlspecialchars($course->titulo); ?>">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

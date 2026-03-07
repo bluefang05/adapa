@@ -1,0 +1,22 @@
+ADAPA HOSTING DEPLOY - ACCESO INTERNO ENM
+Date: 2026-03-06
+
+Objetivo
+- Sacar autologin demo del login publico.
+- Moverlo a ruta interna: /enm
+
+Archivos a subir
+- index.php
+- controllers/shared/EnmController.php
+- views/shared/enm/index.php
+- views/partials/footer.php
+- views/auth/login.php
+
+Resultado
+- Ya no aparecen botones demo en login.
+- Existe pagina interna con auto inicio: /enm
+- Footer muestra enlace discreto: "Acceso interno"
+
+Nota
+- Esto mejora exposicion, pero sigue siendo un endpoint interno por URL.
+- Si quieres, siguiente paso: proteger /enm con clave adicional.

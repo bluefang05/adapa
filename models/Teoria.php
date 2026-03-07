@@ -42,6 +42,42 @@ class Teoria {
         return $this->adjuntarBloquesATeorias($this->db->resultSet());
     }
 
+    public function moverTeoria($id, $direction) {
+        $teoria = $this->obtenerTeoriaPorId($id);
+        if (!$teoria) {
+            return false;
+        }
+
+        $operator = $direction === 'up' ? '<' : '>';
+        $orderBy = $direction === 'up' ? 'DESC' : 'ASC';
+
+        $this->db->query("
+            SELECT id, orden
+            FROM teoria
+            WHERE leccion_id = :leccion_id
+              AND orden {$operator} :orden
+            ORDER BY orden {$orderBy}, id {$orderBy}
+            LIMIT 1
+        ");
+        $this->db->bind(':leccion_id', $teoria->leccion_id);
+        $this->db->bind(':orden', $teoria->orden);
+        $vecina = $this->db->single();
+
+        if (!$vecina) {
+            return false;
+        }
+
+        $this->db->query("UPDATE teoria SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $vecina->orden);
+        $this->db->bind(':id', $teoria->id);
+        $this->db->execute();
+
+        $this->db->query("UPDATE teoria SET orden = :orden WHERE id = :id");
+        $this->db->bind(':orden', $teoria->orden);
+        $this->db->bind(':id', $vecina->id);
+        return $this->db->execute();
+    }
+
     public function actualizarTeoria($id, $datos) {
         $this->db->query("UPDATE teoria SET titulo = :titulo, contenido = :contenido, tipo_contenido = :tipo_contenido, orden = :orden, duracion_minutos = :duracion_minutos WHERE id = :id");
         
@@ -72,6 +108,47 @@ class Teoria {
         $this->db->bind(':leccion_id', $leccion_id);
         $resultado = $this->db->single();
         return $resultado ? $resultado->total : 0;
+    }
+
+    public function obtenerSiguienteOrdenPorLeccion($leccionId) {
+        $this->db->query("SELECT MAX(orden) as max_orden FROM teoria WHERE leccion_id = :leccion_id");
+        $this->db->bind(':leccion_id', $leccionId);
+        $resultado = $this->db->single();
+        return $resultado && $resultado->max_orden ? ((int) $resultado->max_orden + 1) : 1;
+    }
+
+    public function duplicarTeoria($id, $targetLeccionId = null, $appendCopyLabel = true) {
+        $teoria = $this->obtenerTeoriaPorId($id);
+        if (!$teoria) {
+            return null;
+        }
+
+        $leccionId = $targetLeccionId ?: $teoria->leccion_id;
+        $titulo = trim((string) $teoria->titulo);
+        if ($appendCopyLabel) {
+            $titulo .= ' (copia)';
+        }
+
+        $bloques = array_map(function ($bloque) {
+            return [
+                'tipo_bloque' => $bloque->tipo_bloque ?? 'explicacion',
+                'titulo' => $bloque->titulo ?? '',
+                'contenido' => $bloque->contenido ?? '',
+                'idioma_bloque' => $bloque->idioma_bloque ?? '',
+                'tts_habilitado' => !empty($bloque->tts_habilitado) ? 1 : 0,
+                'media_id' => $bloque->media_id ?? null,
+            ];
+        }, $teoria->bloques ?? []);
+
+        return $this->crearTeoria([
+            'leccion_id' => $leccionId,
+            'titulo' => $titulo,
+            'contenido' => $teoria->contenido,
+            'tipo_contenido' => $teoria->tipo_contenido,
+            'orden' => $this->obtenerSiguienteOrdenPorLeccion($leccionId),
+            'duracion_minutos' => $teoria->duracion_minutos,
+            'bloques' => $bloques,
+        ]);
     }
 
     public function marcarComoLeida($estudiante_id, $teoria_id) {
@@ -113,7 +190,7 @@ class Teoria {
         }
 
         $this->db->query("
-            SELECT cb.*, mr.titulo AS media_titulo, mr.tipo_media, mr.ruta_archivo, mr.alt_text
+            SELECT cb.*, mr.titulo AS media_titulo, mr.tipo_media, mr.ruta_archivo, mr.alt_text, mr.metadata
             FROM contenido_bloques cb
             LEFT JOIN media_recursos mr ON mr.id = cb.media_id
             WHERE cb.teoria_id = :teoria_id
