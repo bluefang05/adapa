@@ -51,6 +51,31 @@ function getCourseReadinessSummary($curso) {
 
     return ['label' => 'Operativo', 'progress' => 100];
 }
+
+function getCourseEditorialState($curso) {
+    $totalLessons = (int) ($curso->total_lecciones ?? 0);
+    $totalActivities = (int) ($curso->total_actividades ?? 0);
+    $isPublic = (int) ($curso->es_publico ?? 0) === 1;
+    $estado = $curso->estado ?? 'preparacion';
+
+    if ($totalLessons === 0) {
+        return ['label' => 'En configuracion', 'tone' => 'warning', 'hint' => 'Todavia no tiene recorrido real.'];
+    }
+
+    if ($totalActivities === 0) {
+        return ['label' => 'En construccion', 'tone' => 'info', 'hint' => 'La estructura existe, pero aun falta practica.'];
+    }
+
+    if ($isPublic && $estado === 'activo') {
+        return ['label' => 'Publicado', 'tone' => 'success', 'hint' => 'Visible y con base suficiente para operar.'];
+    }
+
+    if ($isPublic) {
+        return ['label' => 'Visible con ajustes', 'tone' => 'accent', 'hint' => 'Ya se muestra, pero conviene revisarlo antes de empujarlo mas.'];
+    }
+
+    return ['label' => 'Listo para revisar', 'tone' => 'accent', 'hint' => 'Tiene base real. Solo falta validacion final.'];
+}
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -135,6 +160,7 @@ function getCourseReadinessSummary($curso) {
                                 $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
                                 $idiomaBase = Curso::obtenerIdiomaBase($curso);
                                 $readiness = getCourseReadinessSummary($curso);
+                                $editorialState = getCourseEditorialState($curso);
                                 ?>
                                 <tr>
                                     <td>
@@ -148,7 +174,11 @@ function getCourseReadinessSummary($curso) {
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
                                                 <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars(getCourseProductionHint($curso)); ?></div>
-                                                <div class="small mt-1"><span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> · <?php echo (int) $readiness['progress']; ?>%</span></div>
+                                                <div class="small mt-1 d-flex gap-2 flex-wrap">
+                                                    <span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> · <?php echo (int) $readiness['progress']; ?>%</span>
+                                                    <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span>
+                                                </div>
+                                                <div class="small text-muted mt-1"><?php echo htmlspecialchars($editorialState['hint']); ?></div>
                                             </div>
                                         </div>
                                     </td>
@@ -163,7 +193,10 @@ function getCourseReadinessSummary($curso) {
                                         </span>
                                     </td>
                                     <td><?php echo ucfirst($curso->modalidad); ?></td>
-                                    <td><span class="badge bg-<?php echo getEstadoColor($curso->estado); ?>"><?php echo ucfirst($curso->estado); ?></span></td>
+                                    <td>
+                                        <div><span class="badge bg-<?php echo getEstadoColor($curso->estado); ?>"><?php echo ucfirst($curso->estado); ?></span></div>
+                                        <div class="small mt-1"><span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span></div>
+                                    </td>
                                     <td><?php echo (int) ($curso->total_lecciones ?? 0); ?></td>
                                     <td><?php echo (int) ($curso->total_actividades ?? 0); ?></td>
                                     <td><?php echo (int) ($curso->total_estudiantes ?? 0); ?></td>
@@ -207,5 +240,15 @@ function getCourseReadinessSummary($curso) {
         </div>
     </section>
 </div>
+
+<?php
+$issueReportTitle = 'Reportar un problema del panel docente';
+$issueReportAction = url('/reportar-fallo');
+$issueReportContextType = 'general';
+$issueReportContextId = 'profesor_cursos';
+$issueReportReturnTo = $_SERVER['REQUEST_URI'] ?? url('/profesor/cursos');
+$issueReportDescriptionPlaceholder = 'Describe el problema del panel, modulo o flujo que estas intentando usar.';
+require __DIR__ . '/../../partials/issue_report_panel.php';
+?>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

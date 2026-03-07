@@ -8,7 +8,7 @@ class IssueReportController extends Controller {
     private $db;
 
     public function __construct() {
-        $this->requireRole('estudiante');
+        $this->requireRole(['estudiante', 'profesor', 'admin']);
         $this->db = new Database();
     }
 
@@ -87,10 +87,17 @@ class IssueReportController extends Controller {
 
     private function safeReturnTo($value) {
         $value = (string) $value;
-        if ($value === '' || strpos($value, '/estudiante') !== 0) {
+        if ($value === '') {
             return '/estudiante';
         }
-        return $value;
+
+        foreach (['/estudiante', '/profesor', '/admin'] as $allowedPrefix) {
+            if (strpos($value, $allowedPrefix) === 0) {
+                return $value;
+            }
+        }
+
+        return Auth::isProfesor() ? '/profesor/cursos' : (Auth::isAdmin() ? '/admin' : '/estudiante');
     }
 
     private function isMissingIssueReportTable(Exception $e) {

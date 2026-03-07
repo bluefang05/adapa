@@ -98,6 +98,7 @@ $activitySummary = [
             <?php foreach ($actividades as $actividad): ?>
                 <?php
                 $activityReady = !empty(trim((string) ($actividad->descripcion ?? ''))) && (int) ($actividad->puntos_maximos ?? 0) > 0;
+                $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                 ?>
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
@@ -116,7 +117,16 @@ $activitySummary = [
                                 <span><i class="bi bi-clock"></i> <?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
                                 <span><i class="bi bi-award"></i> <?php echo (int) $actividad->puntos_maximos; ?> puntos</span>
                                 <span><i class="bi bi-check2-circle"></i> <?php echo $activityReady ? 'Lista para probar' : 'Revisar ficha'; ?></span>
+                                <?php if ($supportResource): ?>
+                                    <span><i class="bi bi-paperclip"></i> Con apoyo</span>
+                                <?php endif; ?>
                             </div>
+
+                            <?php if ($supportResource): ?>
+                                <div class="small text-muted mt-2">
+                                    Recurso vinculado: <?php echo htmlspecialchars($supportResource['title'] ?? 'Recurso de apoyo'); ?>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="responsive-actions mt-4">
                                 <form method="POST" action="<?php echo url('/profesor/actividad/move-up/' . $actividad->id); ?>">
@@ -157,5 +167,17 @@ $activitySummary = [
         </div>
     <?php endif; ?>
 </div>
+
+<?php
+$issueReportTitle = 'Reportar un problema en el modulo de actividades';
+$issueReportAction = url('/reportar-fallo');
+$issueReportContextType = 'actividad';
+$issueReportContextId = 'profesor_actividades_' . (int) $leccion->id;
+$issueReportReturnTo = $_SERVER['REQUEST_URI'] ?? url('/profesor/lecciones/' . $leccion->id . '/actividades');
+$issueReportCourseId = (int) $leccion->curso_id;
+$issueReportLessonId = (int) $leccion->id;
+$issueReportDescriptionPlaceholder = 'Describe el fallo del configurador, preview o guardado de actividades.';
+require __DIR__ . '/../../partials/issue_report_panel.php';
+?>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

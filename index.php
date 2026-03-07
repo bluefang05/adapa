@@ -97,6 +97,7 @@ $router->add('GET', '/estudiante/actividades/{id}', 'estudiante/EstudianteContro
 $router->add('POST', '/estudiante/actividades/{id}/responder', 'estudiante/EstudianteController', 'responderActividad');
 $router->add('POST', '/estudiante/teoria/{id}/leer', 'estudiante/EstudianteController', 'marcarTeoria');
 $router->add('POST', '/estudiante/reportar-fallo', 'estudiante/IssueReportController', 'store');
+$router->add('POST', '/reportar-fallo', 'estudiante/IssueReportController', 'store');
 // $router->add('GET', '/estudiante/curso/{id}', 'estudiante/EstudianteController', 'curso'); // Removed as redundant
 // Placeholder: estudiante progreso y calificaciones
 $router->add('GET', '/estudiante/progreso', 'estudiante/ProgresoController', 'index');
@@ -110,12 +111,27 @@ $router->add('POST', '/admin/usuarios/create', 'admin/AdminController', 'createU
 $router->add('GET', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
 $router->add('POST', '/admin/usuarios/edit/{id}', 'admin/AdminController', 'editUsuario');
 $router->add('POST', '/admin/usuarios/delete/{id}', 'admin/AdminController', 'deleteUsuario');
+$router->add('POST', '/admin/usuarios/toggle-activo/{id}', 'admin/AdminController', 'toggleUsuarioActivo');
+$router->add('POST', '/admin/usuarios/verify-email/{id}', 'admin/AdminController', 'verifyUsuarioEmail');
+$router->add('POST', '/admin/usuarios/bulk-action', 'admin/AdminController', 'bulkUsuarioAction');
+$router->add('GET', '/admin/profesores', 'admin/AdminController', 'profesores');
 $router->add('GET', '/admin/cursos', 'admin/AdminController', 'cursos');
 $router->add('GET', '/admin/cursos/create', 'admin/AdminController', 'createCurso');
 $router->add('POST', '/admin/cursos/create', 'admin/AdminController', 'createCurso');
 $router->add('GET', '/admin/cursos/edit/{id}', 'admin/AdminController', 'editCurso');
+$router->add('GET', '/admin/cursos/estructura/{id}', 'admin/AdminController', 'cursoEstructura');
 $router->add('POST', '/admin/cursos/edit/{id}', 'admin/AdminController', 'editCurso');
 $router->add('POST', '/admin/cursos/delete/{id}', 'admin/AdminController', 'deleteCurso');
+$router->add('POST', '/admin/cursos/duplicate/{id}', 'admin/AdminController', 'duplicateCurso');
+$router->add('POST', '/admin/cursos/toggle-publico/{id}', 'admin/AdminController', 'toggleCursoPublico');
+$router->add('POST', '/admin/cursos/toggle-inscripcion/{id}', 'admin/AdminController', 'toggleCursoInscripcion');
+$router->add('POST', '/admin/cursos/cycle-estado/{id}', 'admin/AdminController', 'cycleCursoEstado');
+$router->add('POST', '/admin/cursos/bulk-action', 'admin/AdminController', 'bulkCursoAction');
+$router->add('GET', '/admin/tickets', 'admin/AdminController', 'tickets');
+$router->add('POST', '/admin/tickets/status/{id}', 'admin/AdminController', 'updateTicketStatus');
+$router->add('POST', '/admin/tickets/bulk-status', 'admin/AdminController', 'bulkTicketStatus');
+$router->add('POST', '/admin/tickets/note/{id}', 'admin/AdminController', 'addTicketNote');
+$router->add('GET', '/admin/actividad', 'admin/AdminController', 'actividad');
 
 // Register routes (placeholders)
 $router->add('GET', '/register', 'shared/RegisterController', 'showRegisterForm');

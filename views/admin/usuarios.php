@@ -2,6 +2,8 @@
 <?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
 
 <?php
+$userQuery = $_SERVER['QUERY_STRING'] ?? '';
+$currentUsersUrl = '/admin/usuarios' . ($userQuery !== '' ? '?' . $userQuery : '');
 $admins = 0;
 $profesores = 0;
 $estudiantes = 0;
@@ -110,11 +112,41 @@ foreach ($users as $user) {
             </div>
         </div>
 
+        <section class="filter-shell mb-4">
+            <div class="panel-body">
+                <div class="section-title">
+                    <h2>Accion masiva</h2>
+                </div>
+                <form method="POST" action="<?php echo url('/admin/usuarios/bulk-action'); ?>" id="user-bulk-form" class="row g-3 align-items-end">
+                    <?php echo csrf_input(); ?>
+                    <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
+                    <div class="col-md-4">
+                        <label class="form-label" for="bulk-user-action">Accion</label>
+                        <select id="bulk-user-action" name="action" class="form-select">
+                            <option value="activate">Activar acceso</option>
+                            <option value="deactivate">Desactivar acceso</option>
+                            <option value="verify_email">Marcar correo verificado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="user-select-all">
+                            <label class="form-check-label" for="user-select-all">Seleccionar usuarios visibles</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-lightning"></i> Aplicar a seleccion</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
         <div class="data-table-shell">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>ID</th>
                             <th>Usuario</th>
                             <th>Correo</th>
@@ -127,11 +159,14 @@ foreach ($users as $user) {
                     <tbody>
                         <?php if (empty($users)): ?>
                             <tr>
-                                <td colspan="7" class="empty-state">No hay usuarios que coincidan con el filtro actual.</td>
+                                <td colspan="8" class="empty-state">No hay usuarios que coincidan con el filtro actual.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($users as $user): ?>
                                 <tr>
+                                    <td>
+                                        <input class="form-check-input user-select-item" type="checkbox" name="user_ids[]" value="<?php echo (int) $user->id; ?>" form="user-bulk-form" aria-label="Seleccionar usuario <?php echo (int) $user->id; ?>">
+                                    </td>
                                     <td>#<?php echo (int) $user->id; ?></td>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
@@ -139,6 +174,14 @@ foreach ($users as $user) {
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars(trim($user->nombre . ' ' . $user->apellido)); ?></div>
                                                 <div class="small text-muted">Cuenta de la instancia actual</div>
+                                                <div class="small mt-1 d-flex gap-2 flex-wrap">
+                                                    <span class="soft-badge <?php echo !empty($user->activo) ? 'success' : 'warning'; ?>">
+                                                        <?php echo !empty($user->activo) ? 'Activa' : 'Inactiva'; ?>
+                                                    </span>
+                                                    <span class="soft-badge <?php echo !empty($user->email_verificado) ? 'info' : ''; ?>">
+                                                        <?php echo !empty($user->email_verificado) ? 'Correo verificado' : 'Correo pendiente'; ?>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -168,6 +211,22 @@ foreach ($users as $user) {
                                             <a href="<?php echo url('/admin/usuarios/edit/' . $user->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar usuario">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+                                            <form method="POST" action="<?php echo url('/admin/usuarios/toggle-activo/' . $user->id); ?>" class="d-inline">
+                                                <?php echo csrf_input(); ?>
+                                                <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo !empty($user->activo) ? 'Desactivar acceso' : 'Activar acceso'; ?>">
+                                                    <i class="bi <?php echo !empty($user->activo) ? 'bi-person-dash' : 'bi-person-check'; ?>"></i>
+                                                </button>
+                                            </form>
+                                            <?php if (empty($user->email_verificado)): ?>
+                                                <form method="POST" action="<?php echo url('/admin/usuarios/verify-email/' . $user->id); ?>" class="d-inline">
+                                                    <?php echo csrf_input(); ?>
+                                                    <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Marcar correo como verificado">
+                                                        <i class="bi bi-patch-check"></i>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                             <?php if ($user->id != $_SESSION['user_id']): ?>
                                                 <form method="POST" action="<?php echo url('/admin/usuarios/delete/' . $user->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este usuario?');">
                                                     <?php echo csrf_input(); ?>
@@ -209,3 +268,17 @@ foreach ($users as $user) {
 </div>
 
 <?php require_once __DIR__ . '/../partials/footer.php'; ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var selectAll = document.getElementById('user-select-all');
+    if (!selectAll) {
+        return;
+    }
+
+    selectAll.addEventListener('change', function () {
+        document.querySelectorAll('.user-select-item').forEach(function (checkbox) {
+            checkbox.checked = selectAll.checked;
+        });
+    });
+});
+</script>

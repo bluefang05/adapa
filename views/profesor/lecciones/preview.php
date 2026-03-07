@@ -55,6 +55,45 @@ function professorLessonActivityTypeLabel($tipo) {
     return $labels[$tipo] ?? ucfirst(str_replace('_', ' ', (string) $tipo));
 }
 
+function renderProfessorSupportResourcePreview($resource) {
+    if (!$resource || empty($resource['url'])) {
+        return '';
+    }
+
+    $title = htmlspecialchars($resource['title'] ?? 'Recurso de apoyo', ENT_QUOTES, 'UTF-8');
+    $url = htmlspecialchars($resource['url'], ENT_QUOTES, 'UTF-8');
+    $kind = $resource['kind'] ?? 'link';
+    $kindLabels = [
+        'video' => 'Video de apoyo',
+        'audio' => 'Audio de apoyo',
+        'image' => 'Imagen de apoyo',
+        'pdf' => 'Documento de apoyo',
+        'link' => 'Enlace de apoyo',
+    ];
+    $kindLabel = htmlspecialchars($kindLabels[$kind] ?? 'Recurso de apoyo', ENT_QUOTES, 'UTF-8');
+
+    $html = '<div class="support-resource-panel mt-3">';
+    $html .= '<div class="support-resource-header">';
+    $html .= '<div><div class="support-resource-eyebrow">' . $kindLabel . '</div><div class="support-resource-title">' . $title . '</div></div>';
+    $html .= '<a href="' . $url . '" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer">Abrir recurso</a>';
+    $html .= '</div>';
+
+    if ($kind === 'video' && !empty($resource['embed_url'])) {
+        $frameClass = htmlspecialchars($resource['frame_class'] ?? 'media-embed-frame', ENT_QUOTES, 'UTF-8');
+        $embedUrl = htmlspecialchars($resource['embed_url'], ENT_QUOTES, 'UTF-8');
+        $html .= '<div class="' . $frameClass . '"><iframe src="' . $embedUrl . '" title="' . $title . '" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+    } elseif ($kind === 'audio') {
+        $html .= '<audio controls preload="none" class="media-preview-player"><source src="' . $url . '"></audio>';
+    } elseif ($kind === 'image') {
+        $html .= '<img src="' . $url . '" alt="' . $title . '" class="media-preview-thumb lesson-media-thumb">';
+    } else {
+        $html .= '<div class="support-resource-fallback">Este apoyo se abrira en una pestana aparte para el alumno.</div>';
+    }
+
+    $html .= '</div>';
+    return $html;
+}
+
 function renderProfessorActivityPreviewSummary($actividad) {
     $contenido = json_decode((string) ($actividad->contenido ?? ''), true);
     if (!is_array($contenido)) {
@@ -62,10 +101,8 @@ function renderProfessorActivityPreviewSummary($actividad) {
     }
 
     $tipo = (string) ($actividad->tipo_actividad ?? '');
-    $supportResource = '';
-    if (!empty($contenido['recurso_apoyo_titulo'])) {
-        $supportResource = '<div class="small text-muted mt-2">Recurso de apoyo: ' . htmlspecialchars((string) $contenido['recurso_apoyo_titulo']) . '</div>';
-    }
+    $supportResource = app_activity_support_resource($contenido);
+    $supportResourceHtml = renderProfessorSupportResourcePreview($supportResource);
 
     if ($tipo === 'opcion_multiple' || $tipo === 'verdadero_falso') {
         $preguntas = $contenido['preguntas'] ?? [];
@@ -86,14 +123,14 @@ function renderProfessorActivityPreviewSummary($actividad) {
                     }
                     $html .= '</ul>';
                 }
-                $html .= $supportResource;
                 $html .= '</div>';
             }
-            $html .= '</div>';
+            $html .= '</div>' . $supportResourceHtml;
             return $html;
         }
+
         if ($tipo === 'verdadero_falso' && !empty($contenido['afirmacion'])) {
-            return '<div class="activity-preview-card mt-3"><div class="fw-semibold">' . htmlspecialchars((string) $contenido['afirmacion']) . '</div><div class="small text-muted mt-1">Respuesta correcta: ' . htmlspecialchars((string) ($contenido['respuesta_correcta'] ?? '')) . '</div>' . $supportResource . '</div>';
+            return '<div class="activity-preview-card mt-3"><div class="fw-semibold">' . htmlspecialchars((string) $contenido['afirmacion']) . '</div><div class="small text-muted mt-1">Respuesta correcta: ' . htmlspecialchars((string) ($contenido['respuesta_correcta'] ?? '')) . '</div></div>' . $supportResourceHtml;
         }
     }
 
@@ -108,8 +145,7 @@ function renderProfessorActivityPreviewSummary($actividad) {
             $html .= '<div class="small mt-2">Transcripcion disponible.</div>';
         }
         $html .= '<div class="small mt-2">Preguntas de comprension: ' . count((array) $preguntas) . '</div>';
-        $html .= $supportResource;
-        $html .= '</div>';
+        $html .= '</div>' . $supportResourceHtml;
         return $html;
     }
 
@@ -118,13 +154,22 @@ function renderProfessorActivityPreviewSummary($actividad) {
         $targets = $contenido['targets'] ?? [];
         $html = '<div class="activity-preview-card mt-3"><div class="fw-semibold">Vista de estructura</div>';
         if (!empty($items)) {
+            $firstItem = $items[0] ?? '';
+            $sampleItem = is_array($firstItem) ? ($firstItem['texto'] ?? $firstItem['content'] ?? $firstItem['left'] ?? '') : (string) $firstItem;
             $html .= '<div class="small text-muted mt-1">Items configurados: ' . count((array) $items) . '</div>';
+            if ($sampleItem !== '') {
+                $html .= '<div class="small mt-2">Ejemplo: ' . htmlspecialchars($sampleItem) . '</div>';
+            }
         }
         if (!empty($targets)) {
+            $firstTarget = $targets[0] ?? '';
+            $sampleTarget = is_array($firstTarget) ? ($firstTarget['texto'] ?? $firstTarget['content'] ?? $firstTarget['right'] ?? '') : (string) $firstTarget;
             $html .= '<div class="small text-muted mt-1">Destinos o categorias: ' . count((array) $targets) . '</div>';
+            if ($sampleTarget !== '') {
+                $html .= '<div class="small mt-2">Destino: ' . htmlspecialchars($sampleTarget) . '</div>';
+            }
         }
-        $html .= $supportResource;
-        $html .= '</div>';
+        $html .= '</div>' . $supportResourceHtml;
         return $html;
     }
 
@@ -140,8 +185,7 @@ function renderProfessorActivityPreviewSummary($actividad) {
         if (!empty($contenido['respuestas_correctas'])) {
             $html .= '<div class="small text-muted mt-1">Respuestas esperadas: ' . count((array) $contenido['respuestas_correctas']) . '</div>';
         }
-        $html .= $supportResource;
-        $html .= '</div>';
+        $html .= '</div>' . $supportResourceHtml;
         return $html;
     }
 
@@ -153,8 +197,7 @@ function renderProfessorActivityPreviewSummary($actividad) {
         if (!empty($contenido['entregables'])) {
             $html .= '<div class="small text-muted mt-2">Entregables: ' . htmlspecialchars((string) $contenido['entregables']) . '</div>';
         }
-        $html .= $supportResource;
-        $html .= '</div>';
+        $html .= '</div>' . $supportResourceHtml;
         return $html;
     }
 
@@ -170,13 +213,12 @@ function renderProfessorActivityPreviewSummary($actividad) {
         if (!empty($contenido['codigo_inicial'])) {
             $html .= '<div class="small text-muted mt-2">Incluye codigo inicial.</div>';
         }
-        $html .= $supportResource;
-        $html .= '</div>';
+        $html .= '</div>' . $supportResourceHtml;
         return $html;
     }
 
-    if ($supportResource !== '') {
-        return '<div class="activity-preview-card mt-3"><div class="fw-semibold">Recurso de apoyo vinculado</div>' . $supportResource . '</div>';
+    if ($supportResourceHtml !== '') {
+        return '<div class="activity-preview-card mt-3"><div class="fw-semibold">Recurso de apoyo vinculado</div></div>' . $supportResourceHtml;
     }
 
     return '<div class="small text-muted mt-2">Sin resumen especifico para este tipo todavia.</div>';

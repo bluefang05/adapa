@@ -64,6 +64,26 @@ function getLeccionReadinessData($leccion) {
         'action_url' => url('/profesor/lecciones/' . $leccion->id . '/teoria'),
     ];
 }
+
+function getLeccionEditorialState($leccion) {
+    $totalTeorias = (int) ($leccion->total_teorias ?? 0);
+    $totalActividades = (int) ($leccion->total_actividades ?? 0);
+    $estado = $leccion->estado ?? 'borrador';
+
+    if ($totalTeorias === 0) {
+        return ['label' => 'Sin contexto', 'tone' => 'warning'];
+    }
+
+    if ($totalActividades === 0) {
+        return ['label' => 'Sin practica', 'tone' => 'info'];
+    }
+
+    if ($estado === 'publicada') {
+        return ['label' => 'Publicada', 'tone' => 'success'];
+    }
+
+    return ['label' => 'Lista para revisar', 'tone' => 'accent'];
+}
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -136,7 +156,10 @@ function getLeccionReadinessData($leccion) {
 
             <div class="row g-4">
                 <?php foreach ($lecciones as $leccion): ?>
-                    <?php $readiness = getLeccionReadinessData($leccion); ?>
+                    <?php
+                    $readiness = getLeccionReadinessData($leccion);
+                    $editorialState = getLeccionEditorialState($leccion);
+                    ?>
                     <div class="col-xl-6">
                         <article class="surface-card">
                             <div class="card-body">
@@ -144,9 +167,12 @@ function getLeccionReadinessData($leccion) {
                                     <div>
                                         <div class="small text-muted mb-1">Leccion <?php echo (int) $leccion->orden; ?></div>
                                         <h3 class="h4 mb-1"><?php echo htmlspecialchars($leccion->titulo); ?></h3>
-                                        <?php if ($leccion->es_obligatoria): ?>
-                                            <span class="soft-badge">Obligatoria</span>
-                                        <?php endif; ?>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <?php if ($leccion->es_obligatoria): ?>
+                                                <span class="soft-badge">Obligatoria</span>
+                                            <?php endif; ?>
+                                            <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span>
+                                        </div>
                                     </div>
                                     <span class="badge bg-<?php echo getEstadoColor($leccion->estado); ?>"><?php echo htmlspecialchars(getEstadoTexto($leccion->estado)); ?></span>
                                 </div>
@@ -221,5 +247,16 @@ function getLeccionReadinessData($leccion) {
         </section>
     <?php endif; ?>
 </div>
+
+<?php
+$issueReportTitle = 'Reportar un problema en la construccion de esta ruta';
+$issueReportAction = url('/reportar-fallo');
+$issueReportContextType = 'leccion';
+$issueReportContextId = 'profesor_lecciones_' . (int) $curso->id;
+$issueReportReturnTo = $_SERVER['REQUEST_URI'] ?? url('/profesor/cursos/' . $curso->id . '/lecciones');
+$issueReportCourseId = (int) $curso->id;
+$issueReportDescriptionPlaceholder = 'Describe el fallo del editor, del orden, de la vista o del flujo de lecciones.';
+require __DIR__ . '/../../partials/issue_report_panel.php';
+?>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

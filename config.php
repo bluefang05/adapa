@@ -236,6 +236,49 @@ function app_media_embed_frame_class($url, $metadata = null) {
     return implode(' ', array_unique($classes));
 }
 
+function app_media_resource_kind($url, $type = null) {
+    $resolvedType = strtolower(trim((string) $type));
+    if ($resolvedType !== '') {
+        if (strpos($resolvedType, 'image') !== false) {
+            return 'image';
+        }
+        if (strpos($resolvedType, 'audio') !== false) {
+            return 'audio';
+        }
+        if (strpos($resolvedType, 'video') !== false) {
+            return 'video';
+        }
+        if (in_array($resolvedType, ['image', 'audio', 'video', 'pdf'], true)) {
+            return $resolvedType;
+        }
+    }
+
+    $resolvedUrl = strtolower((string) $url);
+    if ($resolvedUrl === '') {
+        return 'link';
+    }
+
+    if (app_extract_youtube_video_id($resolvedUrl)) {
+        return 'video';
+    }
+
+    $path = parse_url($resolvedUrl, PHP_URL_PATH) ?: $resolvedUrl;
+    if (preg_match('/\.(png|jpe?g|gif|webp|avif)$/i', $path)) {
+        return 'image';
+    }
+    if (preg_match('/\.(mp3|wav|ogg|m4a)$/i', $path)) {
+        return 'audio';
+    }
+    if (preg_match('/\.(mp4|webm|mov|m4v)$/i', $path)) {
+        return 'video';
+    }
+    if (preg_match('/\.pdf$/i', $path)) {
+        return 'pdf';
+    }
+
+    return 'link';
+}
+
 function app_media_metadata($metadata) {
     if (is_array($metadata)) {
         return $metadata;
@@ -247,6 +290,39 @@ function app_media_metadata($metadata) {
 
     $decoded = json_decode($metadata, true);
     return is_array($decoded) ? $decoded : [];
+}
+
+function app_activity_support_resource($content) {
+    if (is_string($content)) {
+        $decoded = json_decode($content, true);
+        $content = is_array($decoded) ? $decoded : [];
+    } elseif (is_object($content)) {
+        $content = (array) $content;
+    }
+
+    if (!is_array($content)) {
+        return null;
+    }
+
+    $url = trim((string) ($content['recurso_apoyo_url'] ?? ''));
+    if ($url === '') {
+        return null;
+    }
+
+    $title = trim((string) ($content['recurso_apoyo_titulo'] ?? 'Recurso de apoyo'));
+    $type = trim((string) ($content['recurso_apoyo_tipo'] ?? ''));
+    $kind = app_media_resource_kind($url, $type);
+    $embedUrl = $kind === 'video' ? app_youtube_embed_url($url) : null;
+
+    return [
+        'media_id' => $content['recurso_apoyo_media_id'] ?? null,
+        'title' => $title,
+        'url' => $url,
+        'type' => $type,
+        'kind' => $kind,
+        'embed_url' => $embedUrl,
+        'frame_class' => $embedUrl ? app_media_embed_frame_class($url) : null,
+    ];
 }
 
 function app_useful_resource_category_labels() {

@@ -17,6 +17,60 @@ function studentActivityTypeLabel($tipo) {
 
     return $labels[$tipo] ?? ucfirst(str_replace('_', ' ', (string) $tipo));
 }
+
+function renderStudentSupportResource($resource) {
+    if (empty($resource['url'])) {
+        return;
+    }
+
+    $title = htmlspecialchars($resource['title'] ?? 'Recurso de apoyo');
+    $url = htmlspecialchars($resource['url']);
+    $kind = $resource['kind'] ?? 'link';
+    $kindLabels = [
+        'video' => 'Video de apoyo',
+        'audio' => 'Audio de apoyo',
+        'image' => 'Imagen de apoyo',
+        'pdf' => 'Documento de apoyo',
+        'link' => 'Enlace de apoyo',
+    ];
+    $kindLabel = $kindLabels[$kind] ?? 'Recurso de apoyo';
+    ?>
+    <div class="support-resource-panel mb-4">
+        <div class="support-resource-header">
+            <div>
+                <div class="support-resource-eyebrow"><?php echo htmlspecialchars($kindLabel); ?></div>
+                <h3 class="support-resource-title"><?php echo $title; ?></h3>
+            </div>
+            <a href="<?php echo $url; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
+                Abrir recurso
+            </a>
+        </div>
+        <?php if ($kind === 'video' && !empty($resource['embed_url'])): ?>
+            <div class="<?php echo htmlspecialchars($resource['frame_class'] ?? 'media-embed-frame'); ?>">
+                <iframe
+                    src="<?php echo htmlspecialchars($resource['embed_url']); ?>"
+                    title="<?php echo $title; ?>"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        <?php elseif ($kind === 'audio'): ?>
+            <audio controls class="w-100 media-preview-player">
+                <source src="<?php echo $url; ?>">
+                Tu navegador no soporta audio embebido.
+            </audio>
+        <?php elseif ($kind === 'image'): ?>
+            <img src="<?php echo $url; ?>" alt="<?php echo $title; ?>" class="img-fluid rounded-4 border activity-question-image">
+        <?php else: ?>
+            <div class="support-resource-fallback">
+                Usa este recurso como referencia antes de responder la actividad.
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php
+}
 ?>
 
 <div class="container">
@@ -90,6 +144,7 @@ function studentActivityTypeLabel($tipo) {
                             : (isset($curso->idioma) ? strtolower($curso->idioma) : 'ingles');
                         $ttsLanguageMap = app_tts_language_map();
                         $langCode = $ttsLanguageMap[$idiomaCurso] ?? 'en-US';
+                        $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                     ?>
 
                     <?php if (!empty($actividad->instrucciones) || !empty($actividad->descripcion)): ?>
@@ -99,6 +154,10 @@ function studentActivityTypeLabel($tipo) {
                                 <?php echo htmlspecialchars($actividad->instrucciones ?: $actividad->descripcion); ?>
                             </div>
                         </div>
+                    <?php endif; ?>
+
+                    <?php if ($supportResource): ?>
+                        <?php renderStudentSupportResource($supportResource); ?>
                     <?php endif; ?>
                     
                     <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
@@ -1343,45 +1402,18 @@ function studentActivityTypeLabel($tipo) {
                 </div>
             </div>
 
-            <div class="panel mt-4 issue-report-panel">
-                <div class="panel-body">
-                    <details class="issue-report-details">
-                        <summary class="issue-report-summary">
-                            <i class="bi bi-bug"></i> Reportar un fallo en esta actividad
-                        </summary>
-                        <form action="<?php echo url('/estudiante/reportar-fallo'); ?>" method="POST" class="mt-3">
-                            <?php echo csrf_input(); ?>
-                            <input type="hidden" name="context_type" value="actividad">
-                            <input type="hidden" name="curso_id" value="<?php echo (int) $leccion->curso_id; ?>">
-                            <input type="hidden" name="leccion_id" value="<?php echo (int) $leccion->id; ?>">
-                            <input type="hidden" name="actividad_id" value="<?php echo (int) $actividad->id; ?>">
-                            <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? url('/estudiante'), ENT_QUOTES, 'UTF-8'); ?>">
-
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label" for="issue_type_actividad">Tipo de fallo</label>
-                                    <select id="issue_type_actividad" name="issue_type" class="form-select" required>
-                                        <option value="error_visual">Error visual</option>
-                                        <option value="contenido_incorrecto">Contenido incorrecto</option>
-                                        <option value="boton_no_funciona">Boton no funciona</option>
-                                        <option value="audio_video">Audio/Video</option>
-                                        <option value="otro">Otro</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-8">
-                                    <label class="form-label" for="issue_desc_actividad">Describe el problema</label>
-                                    <textarea id="issue_desc_actividad" name="description" class="form-control" rows="3" minlength="12" maxlength="2000" required placeholder="Que paso, en que pregunta y como lo reproduces."></textarea>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <button type="submit" class="btn btn-outline-secondary">
-                                    <i class="bi bi-send"></i> Enviar reporte
-                                </button>
-                            </div>
-                        </form>
-                    </details>
-                </div>
-            </div>
+            <?php
+            $issueReportTitle = 'Reportar un fallo en esta actividad';
+            $issueReportAction = url('/reportar-fallo');
+            $issueReportContextType = 'actividad';
+            $issueReportContextId = 'actividad_' . (int) $actividad->id;
+            $issueReportReturnTo = $_SERVER['REQUEST_URI'] ?? url('/estudiante');
+            $issueReportCourseId = (int) $leccion->curso_id;
+            $issueReportLessonId = (int) $leccion->id;
+            $issueReportActivityId = (int) $actividad->id;
+            $issueReportDescriptionPlaceholder = 'Que paso, en que pregunta y como lo reproduces.';
+            require __DIR__ . '/../partials/issue_report_panel.php';
+            ?>
         </div>
     </div>
 </div>

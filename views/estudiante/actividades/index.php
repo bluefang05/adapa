@@ -18,9 +18,60 @@ function previewActivityTypeLabel($tipo) {
     return $labels[$tipo] ?? ucfirst(str_replace('_', ' ', (string) $tipo));
 }
 
+function renderPreviewSupportResource($resource) {
+    if (empty($resource['url'])) {
+        return;
+    }
+
+    $title = htmlspecialchars($resource['title'] ?? 'Recurso de apoyo');
+    $url = htmlspecialchars($resource['url']);
+    $kind = $resource['kind'] ?? 'link';
+    $kindLabels = [
+        'video' => 'Video de apoyo',
+        'audio' => 'Audio de apoyo',
+        'image' => 'Imagen de apoyo',
+        'pdf' => 'Documento de apoyo',
+        'link' => 'Enlace de apoyo',
+    ];
+    $kindLabel = $kindLabels[$kind] ?? 'Recurso de apoyo';
+    ?>
+    <section class="support-resource-panel mb-4">
+        <div class="support-resource-header">
+            <div>
+                <div class="support-resource-eyebrow"><?php echo htmlspecialchars($kindLabel); ?></div>
+                <h3 class="support-resource-title"><?php echo $title; ?></h3>
+            </div>
+            <a href="<?php echo $url; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">Abrir recurso</a>
+        </div>
+        <?php if ($kind === 'video' && !empty($resource['embed_url'])): ?>
+            <div class="<?php echo htmlspecialchars($resource['frame_class'] ?? 'media-embed-frame'); ?>">
+                <iframe
+                    src="<?php echo htmlspecialchars($resource['embed_url']); ?>"
+                    title="<?php echo $title; ?>"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        <?php elseif ($kind === 'audio'): ?>
+            <audio controls class="w-100 media-preview-player">
+                <source src="<?php echo $url; ?>">
+                Tu navegador no soporta audio embebido.
+            </audio>
+        <?php elseif ($kind === 'image'): ?>
+            <img src="<?php echo $url; ?>" alt="<?php echo $title; ?>" class="img-fluid rounded-4 border activity-question-image">
+        <?php else: ?>
+            <div class="support-resource-fallback">Este recurso se mostrara al alumno antes de responder.</div>
+        <?php endif; ?>
+    </section>
+    <?php
+}
+
 $isPreviewUser = Auth::getUserRole() === 'profesor' || Auth::getUserRole() === 'admin';
 $backUrl = $isPreviewUser ? url('/profesor/lecciones/' . $actividad->leccion_id . '/actividades') : url('/estudiante');
 $backLabel = $isPreviewUser ? 'Volver a actividades' : 'Volver al panel';
+$supportResource = app_activity_support_resource($actividad->contenido ?? null);
 ?>
 
 
@@ -54,6 +105,9 @@ $backLabel = $isPreviewUser ? 'Volver a actividades' : 'Volver al panel';
         </section>
 
         <div class="activity-card activity-player-shell">
+            <?php if ($supportResource): ?>
+                <?php renderPreviewSupportResource($supportResource); ?>
+            <?php endif; ?>
             
             <div id="activity-content" class="activity-player-content">
                 <!-- El contenido de la actividad se cargará aquí dinámicamente -->

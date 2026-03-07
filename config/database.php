@@ -29,7 +29,7 @@ if (!in_array($dbTarget, ['auto', 'local', 'remote'], true)) {
     $dbTarget = 'auto';
 }
 
-if (file_exists($hostingConfigFile) && (!$isLocal || $dbTarget === 'remote')) {
+if (file_exists($hostingConfigFile) && ($dbTarget === 'remote' || ($dbTarget === 'auto' && !$isLocal))) {
     $hostingConfig = require $hostingConfigFile;
     if (is_array($hostingConfig)) {
         $dbHost = $dbHost !== false ? $dbHost : ($hostingConfig['host'] ?? false);
@@ -48,7 +48,7 @@ if ($dbHost !== false && $dbUser !== false && $dbName !== false) {
     define('DB_NAME', $dbName);
     define('DB_PORT', (int) ($dbPort !== false ? $dbPort : 3306));
     define('DB_CHARSET', $dbCharset !== false ? $dbCharset : 'utf8mb4');
-} elseif ($isLocal) {
+} elseif ($isLocal || $dbTarget === 'local') {
     define('DB_HOST', '127.0.0.1');
     define('DB_USER', 'root');
     define('DB_PASS', '');

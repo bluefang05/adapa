@@ -7,6 +7,12 @@
         <p class="page-subtitle">
             Revisa idioma objetivo, idioma base del estudiante, modalidad y acceso desde la misma estructura visual del formulario de creacion.
         </p>
+        <div class="d-flex gap-2 flex-wrap mt-3">
+            <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</span>
+            <span class="soft-badge <?php echo !empty($curso->es_publico) ? 'badge-accent' : ''; ?>">
+                <i class="bi bi-broadcast"></i> <?php echo !empty($curso->es_publico) ? 'Visible para alumnos' : 'Aun no visible'; ?>
+            </span>
+        </div>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a mis cursos

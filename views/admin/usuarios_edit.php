@@ -90,6 +90,22 @@
                             <div class="form-text text-muted">Solo para demos, showcase o cuentas internas del producto.</div>
                         </div>
 
+                        <div class="col-md-6">
+                            <div class="form-check mt-md-4">
+                                <input class="form-check-input" type="checkbox" id="activo" name="activo" value="1" <?php echo !empty($user->activo) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="activo">Cuenta activa</label>
+                            </div>
+                            <div class="form-text text-muted">Desactiva el acceso sin borrar la cuenta.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mt-md-4">
+                                <input class="form-check-input" type="checkbox" id="email_verificado" name="email_verificado" value="1" <?php echo !empty($user->email_verificado) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="email_verificado">Correo verificado</label>
+                            </div>
+                            <div class="form-text text-muted">Permite corregir cuentas internas o migradas.</div>
+                        </div>
+
                         <div class="col-12 d-flex gap-2 flex-wrap pt-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar cambios

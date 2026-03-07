@@ -53,6 +53,18 @@
                             </select>
                         </div>
 
+                        <div class="col-12">
+                            <label for="creado_por" class="form-label">Responsable del curso *</label>
+                            <select class="form-select" id="creado_por" name="creado_por" required>
+                                <?php foreach (($teachers ?? []) as $teacher): ?>
+                                    <option value="<?php echo (int) $teacher->id; ?>" <?php echo (int) ($course->creado_por ?? 0) === (int) $teacher->id ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> · <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Puedes reasignar el curso a otro profesor o dejarlo bajo administracion.</div>
+                        </div>
+
                         <div class="col-md-4">
                             <label for="nivel_cefr" class="form-label">Nivel principal *</label>
                             <select class="form-select" id="nivel_cefr" name="nivel_cefr" required>

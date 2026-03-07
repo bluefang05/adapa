@@ -162,8 +162,23 @@ $appCssVersion = file_exists($appCssPath) ? (string) filemtime($appCssPath) : '1
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin/profesores'); ?>">
+                                <i class="bi bi-person-workspace"></i> Profesores
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="<?php echo url('/admin/cursos'); ?>">
                                 <i class="bi bi-book-fill"></i> Cursos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin/tickets'); ?>">
+                                <i class="bi bi-life-preserver"></i> Tickets
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo url('/admin/actividad'); ?>">
+                                <i class="bi bi-activity"></i> Actividad
                             </a>
                         </li>
                     <?php endif; ?>

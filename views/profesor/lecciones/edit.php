@@ -7,6 +7,12 @@
         <p class="page-subtitle">
             Ajusta titulo, estado y duracion desde una version mas clara y responsive del formulario.
         </p>
+        <div class="d-flex gap-2 flex-wrap mt-3">
+            <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</span>
+            <span class="soft-badge <?php echo ($leccion->estado ?? '') === 'publicada' ? 'success' : 'badge-accent'; ?>">
+                <i class="bi bi-eye"></i> <?php echo ($leccion->estado ?? '') === 'publicada' ? 'Publicada' : 'Aun en trabajo'; ?>
+            </span>
+        </div>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a lecciones
