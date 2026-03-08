@@ -80,23 +80,34 @@ class RegisterController extends Controller {
             $instanciaId = $instancia ? $instancia->id : 1;
 
             $db->query(
-                'INSERT INTO usuarios (nombre, apellido, idioma_base, email, password_hash, es_estudiante, es_profesor, es_admin_institucion, billing_plan, is_official, vista_default, idioma_interfaz, instancia_id, activo, creado_en)
-                 VALUES (:nombre, :apellido, :idioma_base, :email, :password, :es_estudiante, :es_profesor, :es_admin_institucion, :billing_plan, :is_official, :vista_default, :idioma_interfaz, :instancia_id, :activo, NOW())'
+                'INSERT INTO usuarios (
+                    instancia_id, email, password_hash, nombre, apellido,
+                    idioma_base, idioma_interfaz,
+                    es_estudiante, es_profesor, es_admin_institucion,
+                    billing_plan, is_official, vista_default, activo, email_verificado, creado_por, creado_en
+                ) VALUES (
+                    :instancia_id, :email, :password_hash, :nombre, :apellido,
+                    :idioma_base, :idioma_interfaz,
+                    :es_estudiante, :es_profesor, :es_admin_institucion,
+                    :billing_plan, :is_official, :vista_default, :activo, :email_verificado, :creado_por, NOW()
+                )'
             );
+            $db->bind(':instancia_id', $instanciaId);
+            $db->bind(':email', $email);
+            $db->bind(':password_hash', $hash);
             $db->bind(':nombre', $nombre);
             $db->bind(':apellido', $apellido);
             $db->bind(':idioma_base', $idiomaBase);
-            $db->bind(':email', $email);
-            $db->bind(':password', $hash);
+            $db->bind(':idioma_interfaz', $idiomaInterfaz);
             $db->bind(':es_estudiante', $accountType === 'estudiante' ? 1 : 0);
             $db->bind(':es_profesor', $accountType === 'profesor' ? 1 : 0);
             $db->bind(':es_admin_institucion', 0);
-            $db->bind(':billing_plan', ProfesorPlan::PLAN_FREE);
+            $db->bind(':billing_plan', ProfesorPlan::normalizarPlan(ProfesorPlan::PLAN_FREE));
             $db->bind(':is_official', 0);
             $db->bind(':vista_default', $accountType === 'profesor' ? 'creador' : 'estudiante');
-            $db->bind(':idioma_interfaz', $idiomaInterfaz);
-            $db->bind(':instancia_id', $instanciaId);
             $db->bind(':activo', 1);
+            $db->bind(':email_verificado', 0);
+            $db->bind(':creado_por', null);
 
             if (!$db->execute()) {
                 throw new Exception('No se pudo crear el usuario.');
@@ -107,8 +118,8 @@ class RegisterController extends Controller {
                 : 'Registro exitoso. Ahora puedes iniciar sesion.'
             );
             $this->redirect('/login');
-        } catch (Exception $e) {
-            error_log('Error en registro: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            error_log('Error en registro [' . $email . '|' . $accountType . ']: ' . $e->getMessage());
             $this->flash('register_error', 'No se pudo completar el registro en este momento. Intenta de nuevo.');
             $this->redirect('/register');
         }

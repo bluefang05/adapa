@@ -92,9 +92,9 @@ require_once __DIR__ . '/../partials/header.php';
                             <label for="password" class="form-label">Contrasena *</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="password" class="form-control" id="password" name="password" required placeholder="********" minlength="6" autocomplete="new-password">
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="********" minlength="8" autocomplete="new-password">
                             </div>
-                            <div class="form-text">La contrasena debe tener al menos 6 caracteres.</div>
+                            <div class="form-text">La contrasena debe tener al menos 8 caracteres y combinar letras con numeros.</div>
                         </div>
 
                         <div class="col-md-6">
