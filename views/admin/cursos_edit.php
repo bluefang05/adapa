@@ -3,7 +3,7 @@
 <div class="container">
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de curso</span>
-        <h1 class="page-title">Actualiza configuracion y acceso del curso.</h1>
+        <h1 class="page-title">Actualiza configuracion, acceso y workflow del curso.</h1>
         <p class="page-subtitle">Gestion operativa completa del curso dentro de la instancia.</p>
         <div class="hero-actions">
             <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">
@@ -58,7 +58,7 @@
                             <select class="form-select" id="creado_por" name="creado_por" required>
                                 <?php foreach (($teachers ?? []) as $teacher): ?>
                                     <option value="<?php echo (int) $teacher->id; ?>" <?php echo (int) ($course->creado_por ?? 0) === (int) $teacher->id ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> · <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
+                                        <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> &middot; <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -108,21 +108,27 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label for="estado" class="form-label">Estado *</label>
-                            <select class="form-select" id="estado" name="estado" required>
-                                <?php foreach (['preparacion', 'activo', 'pausado', 'finalizado', 'archivado'] as $estado): ?>
-                                    <option value="<?php echo $estado; ?>" <?php echo (($course->estado ?? 'activo') === $estado) ? 'selected' : ''; ?>>
-                                        <?php echo ucfirst($estado); ?>
+                            <label for="estado_editorial" class="form-label">Workflow editorial *</label>
+                            <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                <?php $currentWorkflow = app_course_editorial_state_value($course); ?>
+                                <?php foreach (app_course_editorial_states() as $stateValue => $stateMeta): ?>
+                                    <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo $currentWorkflow === $stateValue ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($stateMeta['label']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <div class="form-text">El estado operativo se ajusta automaticamente para mantener coherencia con la publicacion.</div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-check mt-md-4">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico" value="1" <?php echo !empty($course->es_publico) ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="es_publico">Publico</label>
+                                <label class="form-check-label" for="es_publico">Marcar para catalogo</label>
                             </div>
+                            <div class="form-text">Si no esta en Publicado o todavia no hay lecciones publicadas, el sistema lo mantendra fuera del catalogo.</div>
+                            <?php $adminCatalogStatus = app_course_catalog_status($course); ?>
+                            <div class="small text-muted mt-2" id="adminCourseCatalogOutcomeCopy"><?php echo htmlspecialchars($adminCatalogStatus['hint']); ?></div>
+                            <div class="mt-2"><span class="soft-badge <?php echo htmlspecialchars($adminCatalogStatus['tone']); ?>" id="adminCourseCatalogOutcomeBadge"><?php echo htmlspecialchars($adminCatalogStatus['short_label']); ?></span></div>
                         </div>
 
                         <div class="col-md-4">
@@ -179,6 +185,12 @@
     const nivelPrincipal = document.getElementById('nivel_cefr');
     const nivelDesde = document.getElementById('nivel_cefr_desde');
     const nivelHasta = document.getElementById('nivel_cefr_hasta');
+    const visibilityCheckbox = document.getElementById('es_publico');
+    const workflowSelect = document.getElementById('estado_editorial');
+    const enrollmentCheckbox = document.getElementById('inscripcion_abierta');
+    const catalogOutcomeBadge = document.getElementById('adminCourseCatalogOutcomeBadge');
+    const catalogOutcomeCopy = document.getElementById('adminCourseCatalogOutcomeCopy');
+    const publishedLessons = <?php echo (int) app_course_published_lessons_count($course); ?>;
     const cefrOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
     function toggleCodigo() {
@@ -211,12 +223,42 @@
         }
     }
 
+    function syncCatalogOutcome() {
+        let label = 'Oculto';
+        let tone = '';
+        let hint = enrollmentCheckbox.checked
+            ? 'Tiene inscripcion abierta, pero sigue fuera del catalogo.'
+            : 'No se muestra en catalogo y no esta listo para abrirse.';
+
+        if (visibilityCheckbox.checked && workflowSelect.value === 'publicado' && publishedLessons > 0) {
+            label = 'Visible';
+            tone = 'badge-accent';
+            hint = 'Visible en catalogo y disponible para estudiantes.';
+        } else if (visibilityCheckbox.checked && workflowSelect.value === 'publicado') {
+            label = 'En espera';
+            tone = 'warning';
+            hint = 'Ya esta marcado para catalogo, pero aun necesita al menos una leccion publicada.';
+        } else if (visibilityCheckbox.checked) {
+            label = 'En espera';
+            tone = 'info';
+            hint = 'Sigue fuera del catalogo hasta que el workflow editorial llegue a Publicado.';
+        }
+
+        catalogOutcomeBadge.className = 'soft-badge' + (tone ? ' ' + tone : '');
+        catalogOutcomeBadge.textContent = label;
+        catalogOutcomeCopy.textContent = hint;
+    }
+
     requiereCodigo.addEventListener('change', toggleCodigo);
     generarCodigoBtn.addEventListener('click', generarCodigo);
     nivelDesde.addEventListener('change', validarRango);
     nivelHasta.addEventListener('change', validarRango);
+    visibilityCheckbox.addEventListener('change', syncCatalogOutcome);
+    workflowSelect.addEventListener('change', syncCatalogOutcome);
+    enrollmentCheckbox.addEventListener('change', syncCatalogOutcome);
 
     toggleCodigo();
+    syncCatalogOutcome();
 })();
 </script>
 

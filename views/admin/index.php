@@ -74,9 +74,9 @@ function adminDashboardTicketTone($status) {
                 <div class="metric-note">Cuentas bloqueadas o desactivadas.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Cursos publicos</div>
+                <div class="metric-label">Visibles en catalogo</div>
                 <div class="metric-value"><?php echo (int) $publicCourses; ?></div>
-                <div class="metric-note">Oferta visible para exploracion o acceso abierto.</div>
+                <div class="metric-note">Oferta actualmente visible para estudiantes.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Tickets abiertos</div>
@@ -158,6 +158,8 @@ function adminDashboardTicketTone($status) {
                         <div class="stack-list">
                             <?php foreach ($recentCourses as $course): ?>
                                 <?php $editorialState = app_course_editorial_snapshot($course); ?>
+                                <?php $catalogStatus = app_course_catalog_status($course); ?>
+                                <?php $publishedLessons = (int) ($course->published_lessons ?? 0); ?>
                                 <article class="stack-item">
                                     <div>
                                         <p class="stack-item-title"><?php echo htmlspecialchars($course->titulo); ?></p>
@@ -168,16 +170,21 @@ function adminDashboardTicketTone($status) {
                                             <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone'] ?? 'info'); ?>">
                                                 <?php echo htmlspecialchars($editorialState['label'] ?? 'En progreso'); ?>
                                             </span>
+                                            <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
+                                                <?php echo htmlspecialchars($catalogStatus['label']); ?>
+                                            </span>
                                             <span class="soft-badge <?php echo htmlspecialchars($course->admin_focus_tone ?? 'info'); ?>">
                                                 <?php echo htmlspecialchars($course->admin_focus_label ?? 'Controlado'); ?>
                                             </span>
                                             <span class="soft-badge"><?php echo (int) ($course->total_lecciones ?? 0); ?> lecciones</span>
+                                            <span class="soft-badge"><?php echo $publishedLessons; ?> publicadas</span>
                                             <span class="soft-badge"><?php echo (int) ($course->total_actividades ?? 0); ?> actividades</span>
                                             <?php if ((int) ($course->open_tickets ?? 0) > 0): ?>
                                                 <span class="soft-badge warning"><?php echo (int) ($course->open_tickets ?? 0); ?> tickets abiertos</span>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="small text-muted mt-2"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
+                                        <div class="small text-muted mt-2"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
+                                        <div class="small text-muted"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
                                     </div>
                                     <div class="d-flex gap-2 flex-wrap">
                                         <a href="<?php echo url('/admin/cursos/edit/' . $course->id); ?>" class="btn btn-outline-secondary btn-sm" aria-label="Editar curso <?php echo htmlspecialchars($course->titulo); ?>">
@@ -185,9 +192,6 @@ function adminDashboardTicketTone($status) {
                                         </a>
                                         <a href="<?php echo url('/admin/cursos/estructura/' . $course->id); ?>" class="btn btn-outline-secondary btn-sm" aria-label="Estructura de <?php echo htmlspecialchars($course->titulo); ?>">
                                             <i class="bi bi-diagram-3"></i> Estructura
-                                        </a>
-                                        <a href="<?php echo url('/estudiante/cursos/' . $course->id . '/lecciones'); ?>" class="btn btn-outline-secondary btn-sm" aria-label="Vista alumno de <?php echo htmlspecialchars($course->titulo); ?>">
-                                            <i class="bi bi-eye"></i> Vista
                                         </a>
                                         <?php if ((int) ($course->open_tickets ?? 0) > 0): ?>
                                             <a href="<?php echo url('/admin/tickets?course_id=' . (int) $course->id); ?>" class="btn btn-outline-secondary btn-sm" aria-label="Tickets del curso <?php echo htmlspecialchars($course->titulo); ?>">
@@ -280,7 +284,7 @@ function adminDashboardTicketTone($status) {
                                             <p class="stack-item-title"><?php echo htmlspecialchars($ticket->issue_type); ?></p>
                                             <div class="stack-item-subtitle">
                                                 <?php echo htmlspecialchars(trim(($ticket->nombre ?? '') . ' ' . ($ticket->apellido ?? ''))); ?>
-                                                · <?php echo htmlspecialchars(adminDashboardTicketRole($ticket)); ?>
+                                                &middot; <?php echo htmlspecialchars(adminDashboardTicketRole($ticket)); ?>
                                             </div>
                                         </div>
                                         <div class="d-flex gap-2 flex-wrap">
@@ -325,7 +329,7 @@ function adminDashboardTicketTone($status) {
                 <div class="panel-body">
                     <div class="section-title">
                         <h2>Focos del catalogo</h2>
-                        <a href="<?php echo url('/admin/cursos?editorial=visible_con_ajustes'); ?>" class="btn btn-outline-primary btn-sm">Abrir catalogo</a>
+                        <a href="<?php echo url('/admin/cursos?editorial=visible_con_ajustes'); ?>" class="btn btn-outline-primary btn-sm">Ver catalogo</a>
                     </div>
 
                     <?php if (empty($catalogHotspots)): ?>
@@ -334,6 +338,8 @@ function adminDashboardTicketTone($status) {
                         <div class="stack-list">
                             <?php foreach ($catalogHotspots as $course): ?>
                                 <?php $editorialState = app_course_editorial_snapshot($course); ?>
+                                <?php $publishedLessons = (int) ($course->published_lessons ?? 0); ?>
+                                <?php $catalogStatus = app_course_catalog_status($course); ?>
                                 <article class="stack-item">
                                     <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                         <div>
@@ -354,12 +360,13 @@ function adminDashboardTicketTone($status) {
                                     <div class="course-meta mt-2">
                                         <span><i class="bi bi-journal-richtext"></i> <?php echo (int) ($course->total_lecciones ?? 0); ?> lecciones</span>
                                         <span><i class="bi bi-lightning"></i> <?php echo (int) ($course->total_actividades ?? 0); ?> actividades</span>
-                                        <span><i class="bi bi-broadcast"></i> <?php echo !empty($course->es_publico) ? 'Visible' : 'Interno'; ?></span>
+                                        <span><i class="bi bi-broadcast"></i> <?php echo htmlspecialchars($catalogStatus['label']); ?></span>
                                         <?php if ((int) ($course->open_tickets ?? 0) > 0): ?>
                                             <span><i class="bi bi-life-preserver"></i> <?php echo (int) ($course->open_tickets ?? 0); ?> tickets</span>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="small text-muted mt-2"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
+                                    <div class="small text-muted mt-2"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
+                                    <div class="small text-muted"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
                                     <div class="mt-2 d-flex gap-2 flex-wrap">
                                         <a href="<?php echo url('/admin/cursos/edit/' . $course->id); ?>" class="btn btn-outline-secondary btn-sm">
                                             <i class="bi bi-pencil"></i> Editar
@@ -424,7 +431,7 @@ function adminDashboardTicketTone($status) {
                 <div class="panel-body">
                     <div class="section-title">
                         <h2>Salud del catalogo</h2>
-                        <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-primary btn-sm">Abrir catalogo</a>
+                        <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-primary btn-sm">Ver catalogo</a>
                     </div>
                     <div class="builder-stage-grid">
                         <article class="builder-stage-card">

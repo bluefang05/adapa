@@ -151,6 +151,7 @@ function renderStudentSupportResource($resource) {
                         $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                     ?>
 
+                    <?php ob_start(); ?>
                     <?php if (!empty($actividad->instrucciones) || !empty($actividad->descripcion)): ?>
                         <div class="alert alert-light border mb-4">
                             <div class="fw-semibold mb-2">Como abordar esta actividad</div>
@@ -307,7 +308,7 @@ function renderStudentSupportResource($resource) {
                             </div>
                         </div>
                     <?php endif; ?>
-                    
+                    <?php $postActivityContext = ob_get_clean(); ?>
                     <form action="<?php echo url('/estudiante/actividades/' . $actividad->id . '/responder'); ?>" method="post">
                         <?php echo csrf_input(); ?>
                         <?php if (($actividad->tipo_actividad === 'opcion_multiple' || $actividad->tipo_actividad === 'verdadero_falso') && !empty($configActividad)): ?>
@@ -1475,6 +1476,10 @@ function renderStudentSupportResource($resource) {
                             </div>
                         <?php endif; ?>
                     </form>
+
+                    <?php if (!empty($postActivityContext)): ?>
+                        <?php echo $postActivityContext; ?>
+                    <?php endif; ?>
 
                     <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
                         

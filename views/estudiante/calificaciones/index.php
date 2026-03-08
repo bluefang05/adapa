@@ -15,6 +15,12 @@
                 <i class="bi bi-graph-up-arrow"></i> Ver progreso
             </a>
         </div>
+        <?php if (!empty($calificacionesScopeHint)): ?>
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-info-circle"></i>
+                <?php echo htmlspecialchars($calificacionesScopeHint); ?>
+            </div>
+        <?php endif; ?>
         <div class="metric-grid">
             <div class="metric-card">
                 <div class="metric-label">Respuestas</div>

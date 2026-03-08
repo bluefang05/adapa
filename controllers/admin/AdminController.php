@@ -49,7 +49,19 @@ class AdminController extends Controller {
         $this->db->bind(':instancia_id', $instanciaId);
         $inactiveUsers = $this->db->single()->total;
 
-        $this->db->query("SELECT COUNT(*) as total FROM cursos WHERE instancia_id = :instancia_id AND es_publico = 1");
+        $this->db->query("
+            SELECT COUNT(*) as total
+            FROM cursos
+            WHERE instancia_id = :instancia_id
+              AND es_publico = 1
+              AND COALESCE(NULLIF(estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = cursos.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
+        ");
         $this->db->bind(':instancia_id', $instanciaId);
         $publicCourses = $this->db->single()->total;
 
@@ -72,6 +84,12 @@ class AdminController extends Controller {
                     FROM lecciones l
                     WHERE l.curso_id = c.id
                 ) AS total_lecciones,
+                (
+                    SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                ) AS published_lessons,
                 (
                     SELECT COUNT(*)
                     FROM actividades a
@@ -253,6 +271,13 @@ class AdminController extends Controller {
                     FROM cursos c
                     WHERE c.creado_por = u.id
                       AND c.es_publico = 1
+                      AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+                      AND EXISTS (
+                            SELECT 1
+                            FROM lecciones l
+                            WHERE l.curso_id = c.id
+                              AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                        )
                 ) AS cursos_publicos,
                 (
                     SELECT COUNT(DISTINCT i.estudiante_id)
@@ -370,6 +395,12 @@ class AdminController extends Controller {
                 ) AS total_lecciones,
                 (
                     SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                ) AS published_lessons,
+                (
+                    SELECT COUNT(*)
                     FROM actividades a
                     INNER JOIN lecciones l ON l.id = a.leccion_id
                     WHERE l.curso_id = c.id
@@ -386,9 +417,29 @@ class AdminController extends Controller {
             $params[':teacher_id'] = $teacherFilter;
         }
         if ($visibilityFilter === 'publico') {
-            $sql .= " AND c.es_publico = 1";
+            $sql .= "
+                AND c.es_publico = 1
+                AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+                AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l_visible
+                    WHERE l_visible.curso_id = c.id
+                      AND COALESCE(NULLIF(l_visible.estado_editorial, ''), 'borrador') = 'publicado'
+                )
+            ";
         } elseif ($visibilityFilter === 'privado') {
-            $sql .= " AND c.es_publico = 0";
+            $sql .= "
+                AND (
+                    c.es_publico = 0
+                    OR COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') <> 'publicado'
+                    OR NOT EXISTS (
+                        SELECT 1
+                        FROM lecciones l_hidden
+                        WHERE l_hidden.curso_id = c.id
+                          AND COALESCE(NULLIF(l_hidden.estado_editorial, ''), 'borrador') = 'publicado'
+                    )
+                )
+            ";
         }
         if ($estadoFilter !== '') {
             $sql .= " AND c.estado = :estado";
@@ -405,9 +456,16 @@ class AdminController extends Controller {
 
         if ($editorialFilter !== '') {
             $courses = array_values(array_filter($courses, static function ($course) use ($editorialFilter) {
-                $editorialState = app_course_editorial_snapshot($course);
-                $label = strtolower(str_replace(' ', '_', $editorialState['label'] ?? ''));
-                return $label === $editorialFilter;
+                $editorialSnapshot = app_course_editorial_snapshot($course);
+
+                switch ($editorialFilter) {
+                    case 'listo_para_revisar':
+                        return ($editorialSnapshot['label'] ?? '') === 'Listo para revisar';
+                    case 'visible_con_ajustes':
+                        return ($editorialSnapshot['label'] ?? '') === 'Visible con ajustes';
+                    default:
+                        return app_course_editorial_state_value($course) === $editorialFilter;
+                }
             }));
         }
 
@@ -463,7 +521,7 @@ class AdminController extends Controller {
             $structureSummary['total_theories'] += (int) $leccion->total_teorias;
             $structureSummary['total_activities'] += (int) $leccion->total_actividades;
 
-            if (($leccion->estado ?? '') === 'publicada') {
+            if (app_lesson_editorial_state_value($leccion) === 'publicado') {
                 $structureSummary['published_lessons']++;
             }
 
@@ -1221,49 +1279,47 @@ class AdminController extends Controller {
                 $codigoAcceso = (new Curso())->generarCodigoAcceso();
             }
 
-            $this->db->query("
-                INSERT INTO cursos (
-                    instancia_id, plantilla_pensum_id, creado_por, titulo, descripcion,
-                    idioma, idioma_objetivo, idioma_base, idioma_ensenanza,
-                    nivel_cefr_desde, nivel_cefr_hasta, nivel_cefr, modalidad,
-                    es_publico, requiere_codigo, codigo_acceso, tipo_codigo,
-                    inscripcion_abierta, max_estudiantes, estado
-                ) VALUES (
-                    :instancia_id, NULL, :creado_por, :titulo, :descripcion,
-                    :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza,
-                    :nivel_cefr_desde, :nivel_cefr_hasta, :nivel_cefr, :modalidad,
-                    :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo,
-                    :inscripcion_abierta, :max_estudiantes, :estado
-                )
-            ");
-            $this->db->bind(':instancia_id', $instanciaId);
-            $this->db->bind(':creado_por', $creadoPor);
-            $this->db->bind(':titulo', $titulo);
-            $this->db->bind(':descripcion', $descripcion !== '' ? $descripcion : null);
-            $this->db->bind(':idioma', $_POST['idioma_objetivo'] ?? 'ingles');
-            $this->db->bind(':idioma_objetivo', $_POST['idioma_objetivo'] ?? 'ingles');
-            $this->db->bind(':idioma_base', $_POST['idioma_base'] ?? 'espanol');
-            $this->db->bind(':idioma_ensenanza', $_POST['idioma_base'] ?? 'espanol');
-            $this->db->bind(':nivel_cefr_desde', $nivelDesde);
-            $this->db->bind(':nivel_cefr_hasta', $nivelHasta);
-            $this->db->bind(':nivel_cefr', $nivelPrincipal);
-            $this->db->bind(':modalidad', $_POST['modalidad'] ?? 'perpetuo');
-            $this->db->bind(':es_publico', isset($_POST['es_publico']) ? 1 : 0);
-            $this->db->bind(':requiere_codigo', $requiereCodigo);
-            $this->db->bind(':codigo_acceso', $requiereCodigo ? $codigoAcceso : null);
-            $this->db->bind(':tipo_codigo', $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null);
-            $this->db->bind(':inscripcion_abierta', isset($_POST['inscripcion_abierta']) ? 1 : 0);
-            $this->db->bind(':max_estudiantes', max(0, (int) ($_POST['max_estudiantes'] ?? 0)));
-            $this->db->bind(':estado', $_POST['estado'] ?? 'activo');
+            $datos = [
+                'instancia_id' => $instanciaId,
+                'creado_por' => $creadoPor,
+                'titulo' => $titulo,
+                'descripcion' => $descripcion !== '' ? $descripcion : null,
+                'idioma' => $_POST['idioma_objetivo'] ?? 'ingles',
+                'idioma_objetivo' => $_POST['idioma_objetivo'] ?? 'ingles',
+                'idioma_base' => $_POST['idioma_base'] ?? 'espanol',
+                'idioma_ensenanza' => $_POST['idioma_base'] ?? 'espanol',
+                'nivel_cefr' => $nivelPrincipal,
+                'nivel_cefr_desde' => $nivelDesde,
+                'nivel_cefr_hasta' => $nivelHasta,
+                'modalidad' => $_POST['modalidad'] ?? 'perpetuo',
+                'es_publico' => isset($_POST['es_publico']) ? 1 : 0,
+                'requiere_codigo' => $requiereCodigo,
+                'codigo_acceso' => $requiereCodigo ? $codigoAcceso : null,
+                'tipo_codigo' => $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null,
+                'inscripcion_abierta' => isset($_POST['inscripcion_abierta']) ? 1 : 0,
+                'max_estudiantes' => max(0, (int) ($_POST['max_estudiantes'] ?? 0)),
+                'estado_editorial' => $_POST['estado_editorial'] ?? 'borrador',
+                'estado' => 'preparacion',
+            ];
+            [$datos, $workflowNotice] = $this->aplicarWorkflowEditorialCursoAdmin($datos);
 
-            if ($this->db->execute()) {
-                $this->flash('success', 'Curso creado correctamente.');
+            if ($this->cursoModel->crearCurso($datos)) {
+                $mensaje = 'Curso creado correctamente.';
+                if ($workflowNotice !== null) {
+                    $mensaje .= ' ' . $workflowNotice;
+                }
+                $courseId = (int) $this->db->lastInsertId();
+                $this->flash('success', $mensaje);
                 $this->registrarActividadAdmin(
                     'course_created',
                     'curso',
-                    (int) $this->db->lastInsertId(),
+                    $courseId,
                     'Creo un curso nuevo.',
-                    ['titulo' => $titulo, 'responsable' => $creadoPor]
+                    [
+                        'titulo' => $titulo,
+                        'responsable' => $creadoPor,
+                        'estado_editorial' => $datos['estado_editorial'] ?? 'borrador',
+                    ]
                 );
                 $this->redirect('/admin/cursos');
             }
@@ -1309,58 +1365,45 @@ class AdminController extends Controller {
                 $codigoAcceso = (new Curso())->generarCodigoAcceso();
             }
 
-            $this->db->query("
-                UPDATE cursos
-                SET
-                    titulo = :titulo,
-                    descripcion = :descripcion,
-                    idioma = :idioma,
-                    idioma_objetivo = :idioma_objetivo,
-                    idioma_base = :idioma_base,
-                    idioma_ensenanza = :idioma_ensenanza,
-                    nivel_cefr_desde = :nivel_cefr_desde,
-                    nivel_cefr_hasta = :nivel_cefr_hasta,
-                    nivel_cefr = :nivel_cefr,
-                    modalidad = :modalidad,
-                    es_publico = :es_publico,
-                    requiere_codigo = :requiere_codigo,
-                    codigo_acceso = :codigo_acceso,
-                    tipo_codigo = :tipo_codigo,
-                    inscripcion_abierta = :inscripcion_abierta,
-                    max_estudiantes = :max_estudiantes,
-                    creado_por = :creado_por,
-                    estado = :estado
-                WHERE id = :id AND instancia_id = :instancia_id
-            ");
-            $this->db->bind(':titulo', $titulo);
-            $this->db->bind(':descripcion', $descripcion !== '' ? $descripcion : null);
-            $this->db->bind(':idioma', $_POST['idioma_objetivo'] ?? 'ingles');
-            $this->db->bind(':idioma_objetivo', $_POST['idioma_objetivo'] ?? 'ingles');
-            $this->db->bind(':idioma_base', $_POST['idioma_base'] ?? 'espanol');
-            $this->db->bind(':idioma_ensenanza', $_POST['idioma_base'] ?? 'espanol');
-            $this->db->bind(':nivel_cefr_desde', $nivelDesde);
-            $this->db->bind(':nivel_cefr_hasta', $nivelHasta);
-            $this->db->bind(':nivel_cefr', $nivelPrincipal);
-            $this->db->bind(':modalidad', $_POST['modalidad'] ?? 'perpetuo');
-            $this->db->bind(':es_publico', isset($_POST['es_publico']) ? 1 : 0);
-            $this->db->bind(':requiere_codigo', $requiereCodigo);
-            $this->db->bind(':codigo_acceso', $requiereCodigo ? $codigoAcceso : null);
-            $this->db->bind(':tipo_codigo', $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null);
-            $this->db->bind(':inscripcion_abierta', isset($_POST['inscripcion_abierta']) ? 1 : 0);
-            $this->db->bind(':max_estudiantes', max(0, (int) ($_POST['max_estudiantes'] ?? 0)));
-            $this->db->bind(':creado_por', $creadoPor);
-            $this->db->bind(':estado', $_POST['estado'] ?? 'activo');
-            $this->db->bind(':id', (int) $id);
-            $this->db->bind(':instancia_id', $instanciaId);
+            $datos = [
+                'titulo' => $titulo,
+                'descripcion' => $descripcion !== '' ? $descripcion : null,
+                'idioma' => $_POST['idioma_objetivo'] ?? 'ingles',
+                'idioma_objetivo' => $_POST['idioma_objetivo'] ?? 'ingles',
+                'idioma_base' => $_POST['idioma_base'] ?? 'espanol',
+                'idioma_ensenanza' => $_POST['idioma_base'] ?? 'espanol',
+                'nivel_cefr' => $nivelPrincipal,
+                'nivel_cefr_desde' => $nivelDesde,
+                'nivel_cefr_hasta' => $nivelHasta,
+                'modalidad' => $_POST['modalidad'] ?? 'perpetuo',
+                'es_publico' => isset($_POST['es_publico']) ? 1 : 0,
+                'requiere_codigo' => $requiereCodigo,
+                'codigo_acceso' => $requiereCodigo ? $codigoAcceso : null,
+                'tipo_codigo' => $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null,
+                'inscripcion_abierta' => isset($_POST['inscripcion_abierta']) ? 1 : 0,
+                'max_estudiantes' => max(0, (int) ($_POST['max_estudiantes'] ?? 0)),
+                'creado_por' => $creadoPor,
+                'estado_editorial' => $_POST['estado_editorial'] ?? ($course->estado_editorial ?? 'borrador'),
+                'estado' => $course->estado ?? 'preparacion',
+            ];
+            [$datos, $workflowNotice] = $this->aplicarWorkflowEditorialCursoAdmin($datos);
 
-            if ($this->db->execute()) {
-                $this->flash('success', 'Curso actualizado correctamente.');
+            if ($this->cursoModel->actualizarCurso((int) $id, $datos)) {
+                $mensaje = 'Curso actualizado correctamente.';
+                if ($workflowNotice !== null) {
+                    $mensaje .= ' ' . $workflowNotice;
+                }
+                $this->flash('success', $mensaje);
                 $this->registrarActividadAdmin(
                     'course_updated',
                     'curso',
                     (int) $id,
                     'Actualizo un curso.',
-                    ['titulo' => $titulo, 'responsable' => $creadoPor]
+                    [
+                        'titulo' => $titulo,
+                        'responsable' => $creadoPor,
+                        'estado_editorial' => $datos['estado_editorial'] ?? 'borrador',
+                    ]
                 );
                 $this->redirect('/admin/cursos');
             }
@@ -1435,6 +1478,7 @@ class AdminController extends Controller {
                 'duracion_minutos' => $leccion->duracion_minutos,
                 'es_obligatoria' => $leccion->es_obligatoria,
                 'estado' => 'borrador',
+                'estado_editorial' => 'borrador',
             ]);
             $this->leccionModel->reasignarCurso($nuevaLeccionId, $nuevoCursoId);
 
@@ -1470,18 +1514,37 @@ class AdminController extends Controller {
             $this->redirect($returnTo);
         }
 
-        $this->db->query("UPDATE cursos SET es_publico = CASE WHEN es_publico = 1 THEN 0 ELSE 1 END WHERE id = :id AND instancia_id = :instancia_id");
+        $targetVisibility = !empty($course->es_publico) ? 0 : 1;
+        $workflowUpdate = $targetVisibility === 1
+            ? $this->resolverWorkflowEditorialCursoAdmin('publicado', 1)
+            : [
+                'estado_editorial' => app_course_editorial_state_value($course),
+                'estado' => (string) ($course->estado ?? 'preparacion'),
+                'es_publico' => 0,
+                'notice' => null,
+            ];
+
+        $this->db->query("UPDATE cursos SET es_publico = :es_publico, estado = :estado, estado_editorial = :estado_editorial WHERE id = :id AND instancia_id = :instancia_id");
+        $this->db->bind(':es_publico', $workflowUpdate['es_publico']);
+        $this->db->bind(':estado', $workflowUpdate['estado']);
+        $this->db->bind(':estado_editorial', $workflowUpdate['estado_editorial']);
         $this->db->bind(':id', (int) $id);
         $this->db->bind(':instancia_id', $instanciaId);
 
         if ($this->db->execute()) {
-            $this->flash('success', 'Visibilidad del curso actualizada.');
+            $mensaje = $targetVisibility === 1
+                ? 'Visibilidad del curso actualizada. El workflow editorial queda en Publicado y el catalogo lo mostrara cuando exista al menos una leccion publicada.'
+                : 'Visibilidad del curso actualizada.';
+            $this->flash('success', $mensaje);
             $this->registrarActividadAdmin(
                 'course_visibility_toggled',
                 'curso',
                 (int) $id,
                 'Cambio la visibilidad de un curso.',
-                []
+                [
+                    'es_publico' => $workflowUpdate['es_publico'],
+                    'estado_editorial' => $workflowUpdate['estado_editorial'],
+                ]
             );
         } else {
             $this->flash('error', 'No se pudo actualizar la visibilidad del curso.');
@@ -1534,24 +1597,32 @@ class AdminController extends Controller {
             $this->redirect($returnTo);
         }
 
-        $states = ['preparacion', 'activo', 'pausado', 'finalizado', 'archivado'];
-        $current = array_search((string) ($course->estado ?? 'preparacion'), $states, true);
+        $states = ['borrador', 'en_revision', 'publicable', 'publicado', 'archivado'];
+        $current = array_search(app_course_editorial_state_value($course), $states, true);
         $nextIndex = $current === false ? 0 : (($current + 1) % count($states));
         $nextState = $states[$nextIndex];
+        $workflowUpdate = $this->resolverWorkflowEditorialCursoAdmin($nextState, !empty($course->es_publico) ? 1 : 0);
 
-        $this->db->query("UPDATE cursos SET estado = :estado WHERE id = :id AND instancia_id = :instancia_id");
-        $this->db->bind(':estado', $nextState);
+        $this->db->query("UPDATE cursos SET estado = :estado, estado_editorial = :estado_editorial, es_publico = :es_publico WHERE id = :id AND instancia_id = :instancia_id");
+        $this->db->bind(':estado', $workflowUpdate['estado']);
+        $this->db->bind(':estado_editorial', $workflowUpdate['estado_editorial']);
+        $this->db->bind(':es_publico', $workflowUpdate['es_publico']);
         $this->db->bind(':id', (int) $id);
         $this->db->bind(':instancia_id', $instanciaId);
 
         if ($this->db->execute()) {
-            $this->flash('success', 'Estado del curso actualizado a ' . $nextState . '.');
+            $meta = app_course_editorial_states()[$workflowUpdate['estado_editorial']] ?? ['label' => ucfirst($workflowUpdate['estado_editorial'])];
+            $mensaje = 'Workflow editorial del curso actualizado a ' . ($meta['label'] ?? ucfirst($workflowUpdate['estado_editorial'])) . '.';
+            if (!empty($workflowUpdate['notice'])) {
+                $mensaje .= ' ' . $workflowUpdate['notice'];
+            }
+            $this->flash('success', $mensaje);
             $this->registrarActividadAdmin(
                 'course_state_changed',
                 'curso',
                 (int) $id,
-                'Cambio el estado operativo de un curso.',
-                ['estado' => $nextState]
+                'Cambio el workflow editorial de un curso.',
+                $workflowUpdate
             );
         } else {
             $this->flash('error', 'No se pudo cambiar el estado del curso.');
@@ -1580,7 +1651,7 @@ class AdminController extends Controller {
 
         switch ($action) {
             case 'make_public':
-                $sql = "UPDATE cursos SET es_publico = 1 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+                $sql = "UPDATE cursos SET es_publico = 1, estado = 'activo', estado_editorial = 'publicado' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
             case 'make_private':
                 $sql = "UPDATE cursos SET es_publico = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
@@ -1591,17 +1662,20 @@ class AdminController extends Controller {
             case 'close_enrollment':
                 $sql = "UPDATE cursos SET inscripcion_abierta = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
-            case 'set_preparacion':
-                $sql = "UPDATE cursos SET estado = 'preparacion' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+            case 'set_borrador':
+                $sql = "UPDATE cursos SET estado = 'preparacion', estado_editorial = 'borrador', es_publico = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
-            case 'set_activo':
-                $sql = "UPDATE cursos SET estado = 'activo' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+            case 'set_en_revision':
+                $sql = "UPDATE cursos SET estado = 'preparacion', estado_editorial = 'en_revision', es_publico = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
-            case 'set_pausado':
-                $sql = "UPDATE cursos SET estado = 'pausado' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+            case 'set_publicable':
+                $sql = "UPDATE cursos SET estado = 'preparacion', estado_editorial = 'publicable', es_publico = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+                break;
+            case 'set_publicado':
+                $sql = "UPDATE cursos SET estado = 'activo', estado_editorial = 'publicado' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
             case 'set_archivado':
-                $sql = "UPDATE cursos SET estado = 'archivado' WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
+                $sql = "UPDATE cursos SET estado = 'archivado', estado_editorial = 'archivado', es_publico = 0 WHERE instancia_id = :instancia_id AND id IN (" . implode(', ', array_keys($placeholders)) . ")";
                 break;
             default:
                 $this->flash('error', 'Accion masiva de cursos no valida.');
@@ -1618,6 +1692,10 @@ class AdminController extends Controller {
 
         if ($this->db->execute()) {
             $affected = $this->db->rowCount();
+            $message = 'Accion masiva aplicada sobre ' . $affected . ' cursos.';
+            if (in_array($action, ['make_public', 'set_publicado'], true)) {
+                $message .= ' Los cursos solo apareceran en el catalogo cuando tengan al menos una leccion publicada.';
+            }
             $this->registrarActividadAdmin(
                 'course_bulk_action',
                 'curso',
@@ -1625,7 +1703,7 @@ class AdminController extends Controller {
                 'Aplico una accion masiva sobre cursos.',
                 ['action' => $action, 'course_ids' => $courseIds, 'affected' => $affected]
             );
-            $this->flash('success', 'Accion masiva aplicada sobre ' . $affected . ' cursos.');
+            $this->flash('success', $message);
         } else {
             $this->flash('error', 'No se pudo aplicar la accion masiva a cursos.');
         }
@@ -1674,6 +1752,58 @@ class AdminController extends Controller {
         }
 
         return [$nivelPrincipal, $nivelDesde, $nivelHasta];
+    }
+
+    private function resolverWorkflowEditorialCursoAdmin($estadoEditorial, $requestedPublic = 0) {
+        $estadoEditorial = app_normalize_editorial_state($estadoEditorial, 'course');
+        $requestedPublic = !empty($requestedPublic) ? 1 : 0;
+        $notice = null;
+
+        if ($estadoEditorial === 'archivado') {
+            if ($requestedPublic === 1) {
+                $notice = 'Un curso archivado no puede quedar visible.';
+            }
+
+            return [
+                'estado_editorial' => 'archivado',
+                'estado' => 'archivado',
+                'es_publico' => 0,
+                'notice' => $notice,
+            ];
+        }
+
+        if ($estadoEditorial === 'publicado') {
+            return [
+                'estado_editorial' => 'publicado',
+                'estado' => 'activo',
+                'es_publico' => $requestedPublic,
+                'notice' => null,
+            ];
+        }
+
+        if ($requestedPublic === 1) {
+            $notice = 'La visibilidad en catalogo solo se mantiene cuando el curso esta en Publicado y ya tiene al menos una leccion publicada.';
+        }
+
+        return [
+            'estado_editorial' => $estadoEditorial,
+            'estado' => 'preparacion',
+            'es_publico' => 0,
+            'notice' => $notice,
+        ];
+    }
+
+    private function aplicarWorkflowEditorialCursoAdmin(array $datos) {
+        $workflow = $this->resolverWorkflowEditorialCursoAdmin(
+            $datos['estado_editorial'] ?? 'borrador',
+            $datos['es_publico'] ?? 0
+        );
+
+        $datos['estado_editorial'] = $workflow['estado_editorial'];
+        $datos['estado'] = $workflow['estado'];
+        $datos['es_publico'] = $workflow['es_publico'];
+
+        return [$datos, $workflow['notice']];
     }
 
     private function obtenerResponsablesCurso($instanciaId) {

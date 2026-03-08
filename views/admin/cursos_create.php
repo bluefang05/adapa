@@ -4,7 +4,7 @@
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle-fill"></i> Nuevo curso</span>
         <h1 class="page-title">Crea cursos de forma centralizada desde administracion.</h1>
-        <p class="page-subtitle">Define idioma, nivel, acceso y estado operativo del curso.</p>
+        <p class="page-subtitle">Define idioma, nivel, acceso y workflow editorial del curso.</p>
         <div class="hero-actions">
             <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a cursos
@@ -58,7 +58,7 @@
                             <select class="form-select" id="creado_por" name="creado_por" required>
                                 <?php foreach (($teachers ?? []) as $teacher): ?>
                                     <option value="<?php echo (int) $teacher->id; ?>" <?php echo (int) $teacher->id === (int) ($selectedTeacherId ?? Auth::getUserId()) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> · <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
+                                        <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> &middot; <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -106,21 +106,25 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label for="estado" class="form-label">Estado *</label>
-                            <select class="form-select" id="estado" name="estado" required>
-                                <option value="preparacion">Preparacion</option>
-                                <option value="activo" selected>Activo</option>
-                                <option value="pausado">Pausado</option>
-                                <option value="finalizado">Finalizado</option>
-                                <option value="archivado">Archivado</option>
+                            <label for="estado_editorial" class="form-label">Workflow editorial *</label>
+                            <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                <?php foreach (app_course_editorial_states() as $stateValue => $stateMeta): ?>
+                                    <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo $stateValue === 'borrador' ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($stateMeta['label']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
+                            <div class="form-text">Define si el curso sigue interno, en revision, listo para abrirse o ya publicado.</div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-check mt-md-4">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico" value="1">
-                                <label class="form-check-label" for="es_publico">Publico</label>
+                                <label class="form-check-label" for="es_publico">Marcar para catalogo</label>
                             </div>
+                            <div class="form-text">La visibilidad real solo se activa cuando el workflow quede en Publicado y exista al menos una leccion publicada.</div>
+                            <div class="small text-muted mt-2" id="adminCourseCatalogOutcomeCopy">Resultado actual: oculto del catalogo hasta que lo marques para publicacion.</div>
+                            <div class="mt-2"><span class="soft-badge" id="adminCourseCatalogOutcomeBadge">Oculto</span></div>
                         </div>
 
                         <div class="col-md-4">
@@ -177,6 +181,10 @@
     const nivelPrincipal = document.getElementById('nivel_cefr');
     const nivelDesde = document.getElementById('nivel_cefr_desde');
     const nivelHasta = document.getElementById('nivel_cefr_hasta');
+    const visibilityCheckbox = document.getElementById('es_publico');
+    const workflowSelect = document.getElementById('estado_editorial');
+    const catalogOutcomeBadge = document.getElementById('adminCourseCatalogOutcomeBadge');
+    const catalogOutcomeCopy = document.getElementById('adminCourseCatalogOutcomeCopy');
     const cefrOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
     function toggleCodigo() {
@@ -209,12 +217,35 @@
         }
     }
 
+    function syncCatalogOutcome() {
+        let label = 'Oculto';
+        let tone = '';
+        let hint = 'Resultado actual: oculto del catalogo hasta que lo marques para publicacion.';
+
+        if (visibilityCheckbox.checked && workflowSelect.value === 'publicado') {
+            label = 'En espera';
+            tone = 'warning';
+            hint = 'Resultado actual: publicado y marcado para catalogo, pero seguira fuera de la vista del estudiante hasta que exista una leccion publicada.';
+        } else if (visibilityCheckbox.checked) {
+            label = 'En espera';
+            tone = 'info';
+            hint = 'Resultado actual: marcado para catalogo, pero el workflow todavia no permite visibilidad real.';
+        }
+
+        catalogOutcomeBadge.className = 'soft-badge' + (tone ? ' ' + tone : '');
+        catalogOutcomeBadge.textContent = label;
+        catalogOutcomeCopy.textContent = hint;
+    }
+
     requiereCodigo.addEventListener('change', toggleCodigo);
     generarCodigoBtn.addEventListener('click', generarCodigo);
     nivelDesde.addEventListener('change', validarRango);
     nivelHasta.addEventListener('change', validarRango);
+    visibilityCheckbox.addEventListener('change', syncCatalogOutcome);
+    workflowSelect.addEventListener('change', syncCatalogOutcome);
 
     toggleCodigo();
+    syncCatalogOutcome();
 })();
 </script>
 

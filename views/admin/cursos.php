@@ -13,8 +13,9 @@ $currentCoursesUrl = '/admin/cursos' . ($courseQuery !== '' ? '?' . $courseQuery
 
 foreach ($courses as $course) {
     $editorialState = app_course_editorial_snapshot($course);
-
-    if (!empty($course->es_publico)) {
+    $publishedLessons = (int) ($course->published_lessons ?? 0);
+    $catalogStatus = app_course_catalog_status($course);
+    if (($catalogStatus['short_label'] ?? '') === 'Visible') {
         $publicCourses++;
     }
 
@@ -35,7 +36,7 @@ foreach ($courses as $course) {
 <div class="container">
     <section class="page-hero mb-4">
         <span class="eyebrow"><i class="bi bi-book-fill"></i> Oferta academica</span>
-        <h1 class="page-title">Lee el catalogo completo sin entrar a cada curso por separado.</h1>
+        <h1 class="page-title">Revisa el catalogo completo sin entrar a cada curso por separado.</h1>
         <p class="page-subtitle">
             Revisa responsable, visibilidad y alcance formativo para entender rapidamente el estado del catalogo institucional.
         </p>
@@ -46,9 +47,9 @@ foreach ($courses as $course) {
                 <div class="metric-note">Cursos visibles dentro de la instancia.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Publicos</div>
+                <div class="metric-label">Visibles en catalogo</div>
                 <div class="metric-value"><?php echo $publicCourses; ?></div>
-                <div class="metric-note">Cursos abiertos a exploracion directa.</div>
+                <div class="metric-note">Cursos actualmente visibles para estudiantes.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Rutas completas</div>
@@ -61,7 +62,7 @@ foreach ($courses as $course) {
                 <div class="metric-note">Cursos con base suficiente, pero aun no empujados del todo.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Publicos con ajustes</div>
+                <div class="metric-label">Visibles con ajustes</div>
                 <div class="metric-value"><?php echo $publicCoursesWithGaps; ?></div>
                 <div class="metric-note">Oferta visible que todavia conviene revisar editorialmente.</div>
             </div>
@@ -97,7 +98,7 @@ foreach ($courses as $course) {
                         <option value="0">Todos</option>
                         <?php foreach (($teachers ?? []) as $teacher): ?>
                             <option value="<?php echo (int) $teacher->id; ?>" <?php echo ((int) ($teacherFilter ?? 0) === (int) $teacher->id) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> · <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
+                                <?php echo htmlspecialchars(trim($teacher->nombre . ' ' . $teacher->apellido)); ?> &middot; <?php echo !empty($teacher->es_admin_institucion) ? 'Admin' : 'Profesor'; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -106,12 +107,12 @@ foreach ($courses as $course) {
                     <label class="form-label" for="publico">Visibilidad</label>
                     <select id="publico" name="publico" class="form-select">
                         <option value="">Todas</option>
-                        <option value="publico" <?php echo ($visibilityFilter ?? '') === 'publico' ? 'selected' : ''; ?>>Publicos</option>
-                        <option value="privado" <?php echo ($visibilityFilter ?? '') === 'privado' ? 'selected' : ''; ?>>Privados</option>
+                        <option value="publico" <?php echo ($visibilityFilter ?? '') === 'publico' ? 'selected' : ''; ?>>Visibles en catalogo</option>
+                        <option value="privado" <?php echo ($visibilityFilter ?? '') === 'privado' ? 'selected' : ''; ?>>Ocultos o en espera</option>
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-3">
-                    <label class="form-label" for="estado">Estado</label>
+                    <label class="form-label" for="estado">Operativo</label>
                     <select id="estado" name="estado" class="form-select">
                         <option value="">Todos</option>
                         <?php foreach (['preparacion', 'activo', 'pausado', 'finalizado', 'archivado'] as $estado): ?>
@@ -122,14 +123,20 @@ foreach ($courses as $course) {
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-3">
-                    <label class="form-label" for="editorial">Editorial</label>
+                    <label class="form-label" for="editorial">Workflow</label>
                     <select id="editorial" name="editorial" class="form-select">
                         <option value="">Todos</option>
-                        <option value="en_configuracion" <?php echo ($editorialFilter ?? '') === 'en_configuracion' ? 'selected' : ''; ?>>En configuracion</option>
-                        <option value="en_construccion" <?php echo ($editorialFilter ?? '') === 'en_construccion' ? 'selected' : ''; ?>>En construccion</option>
-                        <option value="listo_para_revisar" <?php echo ($editorialFilter ?? '') === 'listo_para_revisar' ? 'selected' : ''; ?>>Listo para revisar</option>
-                        <option value="visible_con_ajustes" <?php echo ($editorialFilter ?? '') === 'visible_con_ajustes' ? 'selected' : ''; ?>>Visible con ajustes</option>
-                        <option value="publicado" <?php echo ($editorialFilter ?? '') === 'publicado' ? 'selected' : ''; ?>>Publicado</option>
+                        <?php foreach (app_course_editorial_states() as $stateValue => $stateMeta): ?>
+                            <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo ($editorialFilter ?? '') === $stateValue ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($stateMeta['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <option value="listo_para_revisar" <?php echo ($editorialFilter ?? '') === 'listo_para_revisar' ? 'selected' : ''; ?>>
+                            Listo para revisar
+                        </option>
+                        <option value="visible_con_ajustes" <?php echo ($editorialFilter ?? '') === 'visible_con_ajustes' ? 'selected' : ''; ?>>
+                            Visible con ajustes
+                        </option>
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-3 d-flex gap-2">
@@ -169,13 +176,14 @@ foreach ($courses as $course) {
                     <div class="col-lg-5">
                         <label class="form-label" for="bulk-course-action">Accion</label>
                         <select id="bulk-course-action" name="action" class="form-select">
-                            <option value="make_public">Publicar</option>
-                            <option value="make_private">Ocultar</option>
+                            <option value="make_public">Marcar publicado y preparar catalogo</option>
+                            <option value="make_private">Ocultar del catalogo</option>
                             <option value="open_enrollment">Abrir inscripcion</option>
                             <option value="close_enrollment">Cerrar inscripcion</option>
-                            <option value="set_preparacion">Marcar preparacion</option>
-                            <option value="set_activo">Marcar activo</option>
-                            <option value="set_pausado">Marcar pausado</option>
+                            <option value="set_borrador">Marcar borrador</option>
+                            <option value="set_en_revision">Marcar en revision</option>
+                            <option value="set_publicable">Marcar publicable</option>
+                            <option value="set_publicado">Marcar publicado (queda visible con lecciones publicadas)</option>
                             <option value="set_archivado">Archivar</option>
                         </select>
                     </div>
@@ -215,6 +223,8 @@ foreach ($courses as $course) {
                         <?php else: ?>
                             <?php foreach ($courses as $course): ?>
                                 <?php $editorialState = app_course_editorial_snapshot($course); ?>
+                                <?php $publishedLessons = (int) ($course->published_lessons ?? 0); ?>
+                                <?php $catalogStatus = app_course_catalog_status($course); ?>
                                 <tr>
                                     <td>
                                         <input class="form-check-input course-select-item" type="checkbox" name="course_ids[]" value="<?php echo (int) $course->id; ?>" form="course-bulk-form" aria-label="Seleccionar curso <?php echo (int) $course->id; ?>">
@@ -236,7 +246,6 @@ foreach ($courses as $course) {
                                                     <span class="soft-badge <?php echo !empty($course->inscripcion_abierta) ? 'info' : ''; ?>">
                                                         <?php echo !empty($course->inscripcion_abierta) ? 'Inscripcion abierta' : 'Inscripcion cerrada'; ?>
                                                     </span>
-                                                    <span class="soft-badge"><?php echo htmlspecialchars(ucfirst($course->estado ?? 'activo')); ?></span>
                                                     <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone'] ?? 'info'); ?>">
                                                         <?php echo htmlspecialchars($editorialState['label'] ?? 'En progreso'); ?>
                                                     </span>
@@ -248,6 +257,8 @@ foreach ($courses as $course) {
                                                     <?php endif; ?>
                                                 </div>
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
+                                                <div class="small text-muted"><?php echo $publishedLessons; ?> leccion(es) publicadas.</div>
+                                                <div class="small text-muted">Workflow base: <?php echo htmlspecialchars(app_course_editorial_state_meta($course)['label'] ?? 'Borrador'); ?></div>
                                             </div>
                                         </div>
                                     </td>
@@ -260,16 +271,14 @@ foreach ($courses as $course) {
                                     </td>
                                     <td><?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?></td>
                                     <td>
-                                        <span class="soft-badge <?php echo !empty($course->es_publico) ? 'badge-accent' : ''; ?>">
-                                            <?php echo !empty($course->es_publico) ? 'Publico' : 'Privado'; ?>
+                                        <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
+                                            <?php echo htmlspecialchars($catalogStatus['label']); ?>
                                         </span>
+                                        <div class="small text-muted mt-1"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($course->fecha_creacion)); ?></td>
                                     <td>
                                         <div class="d-flex gap-2 flex-wrap">
-                                            <a href="<?php echo url('/estudiante/cursos/' . $course->id . '/lecciones'); ?>" class="btn btn-sm btn-outline-primary" title="Ver curso" aria-label="Ver curso <?php echo htmlspecialchars($course->titulo); ?>">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
                                             <a href="<?php echo url('/admin/cursos/estructura/' . $course->id); ?>" class="btn btn-sm btn-outline-primary" title="Ver estructura" aria-label="Ver estructura de <?php echo htmlspecialchars($course->titulo); ?>">
                                                 <i class="bi bi-diagram-3"></i>
                                             </a>
@@ -289,8 +298,8 @@ foreach ($courses as $course) {
                                             <form method="POST" action="<?php echo url('/admin/cursos/toggle-publico/' . $course->id); ?>" class="d-inline">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo !empty($course->es_publico) ? 'Ocultar curso' : 'Publicar curso'; ?>" aria-label="Cambiar visibilidad de <?php echo htmlspecialchars($course->titulo); ?>">
-                                                    <i class="bi <?php echo !empty($course->es_publico) ? 'bi-eye-slash' : 'bi-broadcast'; ?>"></i>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo ($catalogStatus['short_label'] ?? '') === 'Visible' ? 'Ocultar del catalogo' : 'Marcar para catalogo'; ?>" aria-label="Cambiar visibilidad de <?php echo htmlspecialchars($course->titulo); ?>">
+                                                    <i class="bi <?php echo ($catalogStatus['short_label'] ?? '') === 'Visible' ? 'bi-eye-slash' : 'bi-broadcast'; ?>"></i>
                                                 </button>
                                             </form>
                                             <form method="POST" action="<?php echo url('/admin/cursos/toggle-inscripcion/' . $course->id); ?>" class="d-inline">
@@ -303,7 +312,7 @@ foreach ($courses as $course) {
                                             <form method="POST" action="<?php echo url('/admin/cursos/cycle-estado/' . $course->id); ?>" class="d-inline">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Cambiar estado del curso" aria-label="Cambiar estado de <?php echo htmlspecialchars($course->titulo); ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Avanzar workflow editorial" aria-label="Avanzar workflow editorial de <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi bi-arrow-repeat"></i>
                                                 </button>
                                             </form>

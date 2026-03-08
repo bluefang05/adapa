@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../partials/header.php';
 $courseEditorialStates = app_course_editorial_states();
 ?>
@@ -240,9 +240,11 @@ $courseEditorialStates = app_course_editorial_states();
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico">
-                                <label class="form-check-label" for="es_publico">Curso publico y visible para estudiantes</label>
-                                <div class="form-text">Solo se mantiene visible cuando el estado editorial llega a <strong>Publicado</strong>.</div>
+                                <label class="form-check-label" for="es_publico">Marcar para catalogo</label>
+                                <div class="form-text">La visibilidad real para estudiantes solo llega cuando el workflow queda en <strong>Publicado</strong> y ya existe al menos una leccion publicada.</div>
                             </div>
+                            <div class="small text-muted mt-2" id="courseCatalogOutcomeCopy">Resultado actual: oculto del catalogo hasta que lo marques para publicacion.</div>
+                            <div class="mt-2"><span class="soft-badge" id="courseCatalogOutcomeBadge">Oculto</span></div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="requiere_codigo" name="requiere_codigo">
@@ -251,7 +253,7 @@ $courseEditorialStates = app_course_editorial_states();
 
                             <div class="alert alert-warning mt-3 mb-0" id="courseVisibilityWorkflowHint" hidden>
                                 <i class="bi bi-exclamation-triangle"></i>
-                                Aunque actives visibilidad, el curso seguira privado mientras no quede en estado <strong>Publicado</strong>.
+                                Aunque lo marques para catalogo, seguira fuera de la vista del estudiante mientras no quede en estado <strong>Publicado</strong> y no tenga una leccion publicada.
                             </div>
 
                             <div id="codigo_acceso_div" class="mt-3" style="display: none;">
@@ -309,12 +311,12 @@ document.getElementById('formCrearCurso').addEventListener('submit', function(ev
         }
 
         if (courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado') {
-            const shouldContinue = window.confirm('El curso quedara preparado, pero seguira privado hasta que el workflow editorial pase a Publicado. ¿Quieres continuar?');
+            const shouldContinue = window.confirm('El curso quedara preparado, pero seguira fuera del catalogo hasta que el workflow editorial pase a Publicado y exista una leccion publicada. ¿Quieres continuar?');
             if (!shouldContinue) {
                 return false;
             }
         } else if (courseVisibilityCheckbox.checked && courseEditorialSelect.value === 'publicado') {
-            const shouldContinue = window.confirm('El curso se creara como publicado. Asegurate de completar estructura y practica cuanto antes. ¿Quieres continuar?');
+            const shouldContinue = window.confirm('El curso se creara como publicado. Solo aparecera en catalogo cuando tenga al menos una leccion publicada. ¿Quieres continuar?');
             if (!shouldContinue) {
                 return false;
             }
@@ -385,6 +387,8 @@ const courseEditorialSelect = document.getElementById('estado_editorial');
 const courseVisibilityHint = document.getElementById('courseVisibilityWorkflowHint');
 const courseEditorialTitle = document.getElementById('courseEditorialTitle');
 const courseEditorialDescription = document.getElementById('courseEditorialDescription');
+const courseCatalogOutcomeBadge = document.getElementById('courseCatalogOutcomeBadge');
+const courseCatalogOutcomeCopy = document.getElementById('courseCatalogOutcomeCopy');
 const courseEditorialStates = <?php echo json_encode($courseEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 
 const courseTemplates = {
@@ -503,6 +507,29 @@ function syncCourseEditorialGuidance() {
     courseEditorialTitle.textContent = current.label || 'Borrador';
     courseEditorialDescription.textContent = current.description || '';
     courseVisibilityHint.hidden = !(courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado');
+
+    let label = 'Oculto';
+    let tone = '';
+    let hint = 'Resultado actual: oculto del catalogo hasta que lo marques para publicacion.';
+
+    if (courseVisibilityCheckbox.checked && courseEditorialSelect.value === 'publicado') {
+        label = 'En espera';
+        tone = 'warning';
+        hint = 'Resultado actual: publicado y marcado para catalogo, pero seguira fuera de la vista del estudiante hasta que exista una leccion publicada.';
+    } else if (courseVisibilityCheckbox.checked) {
+        label = 'En espera';
+        tone = 'info';
+        hint = 'Resultado actual: marcado para catalogo, pero el workflow todavia no permite visibilidad real.';
+    }
+
+    if (courseCatalogOutcomeBadge) {
+        courseCatalogOutcomeBadge.className = 'soft-badge' + (tone ? ' ' + tone : '');
+        courseCatalogOutcomeBadge.textContent = label;
+    }
+
+    if (courseCatalogOutcomeCopy) {
+        courseCatalogOutcomeCopy.textContent = hint;
+    }
 }
 
 courseEditorialSelect.addEventListener('change', syncCourseEditorialGuidance);
@@ -511,3 +538,4 @@ syncCourseEditorialGuidance();
 </script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>
+

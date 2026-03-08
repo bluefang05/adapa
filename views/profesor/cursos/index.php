@@ -1,23 +1,4 @@
-<?php
-function getEstadoColor($estado) {
-    switch ($estado) {
-        case 'preparacion':
-            return 'warning';
-        case 'activo':
-            return 'success';
-        case 'pausado':
-            return 'info';
-        case 'finalizado':
-            return 'secondary';
-        case 'archivado':
-            return 'dark';
-        default:
-            return 'secondary';
-    }
-}
-
-require_once __DIR__ . '/../../../models/Curso.php';
-?>
+<?php require_once __DIR__ . '/../../../models/Curso.php'; ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
@@ -82,7 +63,7 @@ require_once __DIR__ . '/../../../models/Curso.php';
                             <th>Idioma</th>
                             <th>Nivel</th>
                             <th>Modalidad</th>
-                            <th>Estado</th>
+                            <th>Workflow</th>
                             <th>Lecciones</th>
                             <th>Actividades</th>
                             <th>Inscritos</th>
@@ -102,6 +83,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                 $idiomaBase = Curso::obtenerIdiomaBase($curso);
                                 $readiness = app_course_readiness_summary($curso);
                                 $editorialState = app_course_editorial_snapshot($curso);
+                                $catalogStatus = app_course_catalog_status($curso);
+                                $publishedLessons = (int) ($curso->published_lessons ?? 0);
                                 ?>
                                 <tr>
                                     <td>
@@ -117,9 +100,13 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars(app_course_production_hint($curso)); ?></div>
                                                 <div class="small mt-1 d-flex gap-2 flex-wrap">
                                                     <span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> - <?php echo (int) $readiness['progress']; ?>%</span>
-                                                    <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span>
+                                                    <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
+                                                        <?php echo htmlspecialchars($catalogStatus['label']); ?>
+                                                    </span>
                                                 </div>
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars($editorialState['hint']); ?></div>
+                                                <div class="small text-muted"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
+                                                <div class="small text-muted"><?php echo $publishedLessons; ?> leccion(es) publicadas.</div>
                                             </div>
                                         </div>
                                     </td>
@@ -135,8 +122,9 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                     </td>
                                     <td><?php echo ucfirst($curso->modalidad); ?></td>
                                     <td>
-                                        <div><span class="badge bg-<?php echo getEstadoColor($curso->estado); ?>"><?php echo ucfirst($curso->estado); ?></span></div>
-                                        <div class="small mt-1"><span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span></div>
+                                        <div><span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span></div>
+                                        <div class="small text-muted mt-1"><?php echo htmlspecialchars($editorialState['hint']); ?></div>
+                                        <div class="small text-muted mt-1">Tecnico: <?php echo htmlspecialchars($curso->estado ?? 'preparacion'); ?></div>
                                     </td>
                                     <td><?php echo (int) ($curso->total_lecciones ?? 0); ?></td>
                                     <td><?php echo (int) ($curso->total_actividades ?? 0); ?></td>

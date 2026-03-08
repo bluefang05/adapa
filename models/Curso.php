@@ -61,6 +61,10 @@ class Curso {
                 mr.ruta_archivo AS portada_url,
                 mr.alt_text AS portada_alt,
                 COUNT(DISTINCT l.id) AS total_lecciones,
+                COUNT(DISTINCT CASE
+                    WHEN COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado' THEN l.id
+                    ELSE NULL
+                END) AS published_lessons,
                 COUNT(DISTINCT a.id) AS total_actividades,
                 COUNT(DISTINCT i.estudiante_id) AS total_estudiantes
             FROM cursos c
@@ -96,7 +100,7 @@ class Curso {
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
         $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_base, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, max_estudiantes, fecha_inicio, fecha_fin, estado, estado_editorial) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :max_estudiantes, :fecha_inicio, :fecha_fin, :estado, :estado_editorial)");
+        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_base, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, inscripcion_abierta, max_estudiantes, fecha_inicio, fecha_fin, estado, estado_editorial) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :inscripcion_abierta, :max_estudiantes, :fecha_inicio, :fecha_fin, :estado, :estado_editorial)");
         
         $this->db->bind(':instancia_id', $datos['instancia_id']);
         $this->db->bind(':creado_por', $datos['creado_por']);
@@ -115,6 +119,7 @@ class Curso {
         $this->db->bind(':requiere_codigo', $datos['requiere_codigo']);
         $this->db->bind(':codigo_acceso', $codigoAcceso);
         $this->db->bind(':tipo_codigo', $tipoCodigo);
+        $this->db->bind(':inscripcion_abierta', $datos['inscripcion_abierta'] ?? 0);
         $this->db->bind(':max_estudiantes', $datos['max_estudiantes']);
         $this->db->bind(':fecha_inicio', $fechaInicio);
         $this->db->bind(':fecha_fin', $fechaFin);
@@ -169,7 +174,7 @@ class Curso {
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
         $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_base = :idioma_base, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, max_estudiantes = :max_estudiantes, estado = :estado, estado_editorial = :estado_editorial WHERE id = :id");
+        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_base = :idioma_base, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, inscripcion_abierta = :inscripcion_abierta, max_estudiantes = :max_estudiantes, estado = :estado, estado_editorial = :estado_editorial WHERE id = :id");
         
         $this->db->bind(':id', $id);
         $this->db->bind(':titulo', $datos['titulo']);
@@ -187,6 +192,7 @@ class Curso {
         $this->db->bind(':requiere_codigo', $datos['requiere_codigo']);
         $this->db->bind(':codigo_acceso', $codigoAcceso);
         $this->db->bind(':tipo_codigo', $tipoCodigo);
+        $this->db->bind(':inscripcion_abierta', $datos['inscripcion_abierta'] ?? 0);
         $this->db->bind(':max_estudiantes', $datos['max_estudiantes']);
         $this->db->bind(':estado', $datos['estado'] ?? 'preparacion');
         $this->db->bind(':estado_editorial', $datos['estado_editorial'] ?? 'borrador');
@@ -204,12 +210,32 @@ class Curso {
         return substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 8);
     }
 
+    public function cursoTieneLeccionesPublicadas($cursoId) {
+        $this->db->query("
+            SELECT COUNT(*) AS total
+            FROM lecciones
+            WHERE curso_id = :curso_id
+              AND COALESCE(NULLIF(estado_editorial, ''), 'borrador') = 'publicado'
+        ");
+        $this->db->bind(':curso_id', $cursoId);
+        $resultado = $this->db->single();
+
+        return (int) ($resultado->total ?? 0) > 0;
+    }
+
     public function obtenerCursosPublicos() {
         $this->db->query("
             SELECT c.*, mr.ruta_archivo AS portada_url, mr.alt_text AS portada_alt
             FROM cursos c
             LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
             WHERE c.es_publico = 1
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
             ORDER BY c.fecha_creacion DESC
         ");
         return $this->db->resultSet();
@@ -221,7 +247,13 @@ class Curso {
             FROM cursos c
             LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
             WHERE c.es_publico = 1
-              AND c.estado = 'activo'
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
               AND c.inscripcion_abierta = 1
               AND (c.requiere_codigo = 0 OR c.requiere_codigo IS NULL)
         ";
@@ -281,7 +313,13 @@ class Curso {
             SELECT c.*
             FROM cursos c
             WHERE c.instancia_id = :instancia_id
-              AND c.estado = 'activo'
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
               AND c.inscripcion_abierta = 1
               AND c.requiere_codigo = 1
               AND c.codigo_acceso = :codigo
@@ -302,7 +340,13 @@ class Curso {
             WHERE ca.instancia_id = :instancia_id
               AND ca.codigo = :codigo
               AND ca.activo = 1
-              AND c.estado = 'activo'
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
               AND c.inscripcion_abierta = 1
               AND (
                     ca.tipo = 'unico_curso'
@@ -342,18 +386,21 @@ class Curso {
                     SELECT COUNT(*)
                     FROM lecciones l
                     WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
                 ) AS total_lecciones,
                 (
                     SELECT COUNT(*)
                     FROM teoria t
                     INNER JOIN lecciones l ON l.id = t.leccion_id
                     WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
                 ) AS total_teorias,
                 (
                     SELECT COUNT(*)
                     FROM actividades a
                     INNER JOIN lecciones l ON l.id = a.leccion_id
                     WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
                 ) AS total_actividades,
                 (
                     SELECT COUNT(DISTINCT pt.teoria_id)
@@ -361,6 +408,7 @@ class Curso {
                     INNER JOIN teoria t ON t.id = pt.teoria_id
                     INNER JOIN lecciones l ON l.id = t.leccion_id
                     WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
                       AND pt.estudiante_id = i.estudiante_id
                       AND pt.leido = 1
                 ) AS teorias_leidas,
@@ -370,12 +418,20 @@ class Curso {
                     INNER JOIN actividades a ON a.id = r.actividad_id
                     INNER JOIN lecciones l ON l.id = a.leccion_id
                     WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
                       AND r.estudiante_id = i.estudiante_id
                 ) AS actividades_respondidas
             FROM inscripciones i
             JOIN cursos c ON c.id = i.curso_id
             LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
             WHERE i.estudiante_id = :estudiante_id
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND EXISTS (
+                    SELECT 1
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                      AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
+                )
             ORDER BY c.fecha_creacion DESC
         ");
         $this->db->bind(':estudiante_id', $estudiante_id);

@@ -69,7 +69,7 @@ function adminTeacherLoadTone($teacher) {
             <div class="metric-card">
                 <div class="metric-label">Cursos</div>
                 <div class="metric-value"><?php echo $managedCourses; ?></div>
-                <div class="metric-note"><?php echo $publicCourses; ?> de ellos ya publicos.</div>
+                <div class="metric-note"><?php echo $publicCourses; ?> de ellos ya visibles en catalogo.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Alumnos</div>
@@ -84,7 +84,7 @@ function adminTeacherLoadTone($teacher) {
             <div class="metric-card">
                 <div class="metric-label">Con huecos visibles</div>
                 <div class="metric-value"><?php echo (int) ($teacherSummary['with_visible_gaps'] ?? 0); ?></div>
-                <div class="metric-note">Profesores con cursos publicos que conviene corregir.</div>
+                <div class="metric-note">Profesores con cursos visibles que conviene corregir.</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Listos para revisar</div>
@@ -174,7 +174,7 @@ function adminTeacherLoadTone($teacher) {
                                 <div class="course-meta mb-3">
                                     <span><i class="bi bi-credit-card-2-front"></i> <?php echo htmlspecialchars(ProfesorPlan::obtenerEtiquetaPlan($teacher->billing_plan ?? null)); ?></span>
                                     <span><i class="bi bi-book"></i> <?php echo (int) ($teacher->total_cursos ?? 0); ?> cursos</span>
-                                    <span><i class="bi bi-broadcast"></i> <?php echo (int) ($teacher->cursos_publicos ?? 0); ?> publicos</span>
+                                    <span><i class="bi bi-broadcast"></i> <?php echo (int) ($teacher->cursos_publicos ?? 0); ?> visibles</span>
                                     <span><i class="bi bi-people"></i> <?php echo (int) ($teacher->total_estudiantes ?? 0); ?> alumnos</span>
                                     <span><i class="bi bi-lightning"></i> <?php echo (int) ($teacher->total_actividades ?? 0); ?> actividades</span>
                                 </div>
@@ -184,7 +184,7 @@ function adminTeacherLoadTone($teacher) {
                                         <div class="fw-semibold mb-2">Operacion</div>
                                         <ul class="quality-checklist-list mb-0">
                                             <li><?php echo (int) ($teacher->total_cursos ?? 0); ?> cursos propios</li>
-                                            <li><?php echo (int) ($teacher->cursos_publicos ?? 0); ?> visibles al alumno</li>
+                                            <li><?php echo (int) ($teacher->cursos_publicos ?? 0); ?> visibles en catalogo</li>
                                             <li><?php echo (int) ($teacher->total_estudiantes ?? 0); ?> inscripciones activas</li>
                                         </ul>
                                     </div>

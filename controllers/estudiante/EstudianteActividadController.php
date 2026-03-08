@@ -28,9 +28,9 @@ class EstudianteActividadController extends Controller
             $this->redirect('/estudiante');
         }
 
-        $leccion = $this->leccionModel->obtenerLeccionPorId($actividad->leccion_id);
+        $leccion = $this->leccionModel->obtenerLeccionPublicadaPorId($actividad->leccion_id);
         if (!$leccion) {
-            $this->flash('error', 'La leccion asociada ya no existe');
+            $this->flash('error', 'La leccion asociada ya no esta disponible para estudiantes');
             $this->redirect('/estudiante');
         }
 
@@ -64,9 +64,9 @@ class EstudianteActividadController extends Controller
             $this->json(['success' => false, 'error' => 'Actividad no encontrada'], 404);
         }
 
-        $leccion = $this->leccionModel->obtenerLeccionPorId($actividad->leccion_id);
+        $leccion = $this->leccionModel->obtenerLeccionPublicadaPorId($actividad->leccion_id);
         if (!$leccion) {
-            $this->json(['success' => false, 'error' => 'Leccion no encontrada'], 404);
+            $this->json(['success' => false, 'error' => 'Leccion no disponible'], 404);
         }
 
         $estudiante_id = Auth::getUserId();

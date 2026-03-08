@@ -756,6 +756,71 @@ function app_course_editorial_state_meta($curso) {
     return $meta;
 }
 
+function app_course_published_lessons_count($curso) {
+    if (isset($curso->published_lessons)) {
+        return max(0, (int) $curso->published_lessons);
+    }
+
+    if (app_course_editorial_state_value($curso) === 'publicado') {
+        return max(0, (int) ($curso->total_lecciones ?? 0));
+    }
+
+    return 0;
+}
+
+function app_course_is_catalog_visible($curso) {
+    return !empty($curso->es_publico)
+        && app_course_editorial_state_value($curso) === 'publicado'
+        && app_course_published_lessons_count($curso) > 0;
+}
+
+function app_course_is_catalog_staged($curso) {
+    return !empty($curso->es_publico) && !app_course_is_catalog_visible($curso);
+}
+
+function app_course_catalog_status($curso) {
+    $publishedLessons = app_course_published_lessons_count($curso);
+    $workflowState = app_course_editorial_state_value($curso);
+    $isVisible = app_course_is_catalog_visible($curso);
+    $isPublicFlag = !empty($curso->es_publico);
+
+    if ($isVisible) {
+        return [
+            'label' => 'Visible en catalogo',
+            'short_label' => 'Visible',
+            'tone' => 'badge-accent',
+            'hint' => 'Visible en catalogo y disponible para estudiantes.',
+        ];
+    }
+
+    if ($isPublicFlag && $workflowState !== 'publicado') {
+        return [
+            'label' => 'Marcado para publicar',
+            'short_label' => 'En espera',
+            'tone' => 'info',
+            'hint' => 'Sigue fuera del catalogo hasta que el workflow editorial llegue a Publicado.',
+        ];
+    }
+
+    if ($isPublicFlag && $publishedLessons === 0) {
+        return [
+            'label' => 'Pendiente de lecciones visibles',
+            'short_label' => 'En espera',
+            'tone' => 'warning',
+            'hint' => 'Ya esta marcado para catalogo, pero aun necesita al menos una leccion publicada.',
+        ];
+    }
+
+    return [
+        'label' => 'Oculto del catalogo',
+        'short_label' => 'Oculto',
+        'tone' => '',
+        'hint' => !empty($curso->inscripcion_abierta)
+            ? 'Tiene inscripcion abierta, pero sigue fuera del catalogo.'
+            : 'No se muestra en catalogo y no esta listo para abrirse.',
+    ];
+}
+
 function app_lesson_editorial_state_meta($leccion) {
     $state = app_lesson_editorial_state_value($leccion);
     $meta = app_lesson_editorial_states()[$state];
@@ -768,6 +833,8 @@ function app_course_editorial_snapshot($curso) {
     $courseId = (int) ($curso->id ?? 0);
     $totalLessons = (int) ($curso->total_lecciones ?? 0);
     $totalActivities = (int) ($curso->total_actividades ?? 0);
+    $publishedLessons = app_course_published_lessons_count($curso);
+    $isCatalogVisible = app_course_is_catalog_visible($curso);
     $isPublic = (int) ($curso->es_publico ?? 0) === 1;
     $estado = trim((string) ($curso->estado ?? 'preparacion'));
 
@@ -810,7 +877,7 @@ function app_course_editorial_snapshot($curso) {
         ];
     }
 
-    if ($isPublic && $estado === 'activo') {
+    if ($isCatalogVisible && $estado === 'activo') {
         return [
             'label' => 'Publicado',
             'tone' => 'success',
@@ -827,7 +894,9 @@ function app_course_editorial_snapshot($curso) {
         return [
             'label' => 'Visible con ajustes',
             'tone' => 'accent',
-            'hint' => 'Ya se muestra, pero aun conviene revisar calidad antes de empujarlo mas.',
+            'hint' => $publishedLessons > 0
+                ? 'Ya se muestra, pero aun conviene revisar calidad antes de empujarlo mas.'
+                : 'Aun no tiene lecciones publicadas, asi que el catalogo no lo mostrara aunque quede marcado para visibilidad.',
             'progress' => 88,
             'action_label' => 'Revisar curso',
             'action_url' => $courseId > 0 ? url('/profesor/cursos/edit/' . $courseId) : url('/profesor/cursos'),

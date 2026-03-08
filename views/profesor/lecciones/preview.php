@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
 require_once __DIR__ . '/../../../models/Teoria.php';
 require_once __DIR__ . '/../../../models/Actividad.php';
 
+$lessonEditorialState = $lessonEditorialState ?? app_lesson_editorial_snapshot($leccion);
+
 function renderProfessorLessonBlockMedia($bloque) {
     if (empty($bloque->ruta_archivo) || empty($bloque->tipo_media)) {
         return '';
@@ -318,9 +320,9 @@ if (empty($previewQuickFixes)) {
                 <div class="metric-note">Practicas visibles para el alumno.</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Estado</div>
-                <div class="metric-value"><?php echo htmlspecialchars(ucfirst($leccion->estado)); ?></div>
-                <div class="metric-note">Control actual de publicacion.</div>
+                <div class="metric-label">Estado editorial</div>
+                <div class="metric-value"><?php echo htmlspecialchars($lessonEditorialState['label'] ?? 'En progreso'); ?></div>
+                <div class="metric-note"><?php echo htmlspecialchars($lessonEditorialState['hint'] ?? 'Workflow actual de la leccion.'); ?></div>
             </div>
         </div>
     </section>

@@ -65,7 +65,14 @@ class EstudianteController extends Controller {
         $estudiante_id = Auth::getUserId();
         $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
 
-        if (!$curso || !$curso->es_publico || (int) $curso->requiere_codigo === 1 || $curso->estado !== 'activo' || (int) $curso->inscripcion_abierta !== 1) {
+        if (
+            !$curso
+            || !$curso->es_publico
+            || app_course_editorial_state_value($curso) !== 'publicado'
+            || !$this->cursoModel->cursoTieneLeccionesPublicadas((int) $curso_id)
+            || (int) $curso->requiere_codigo === 1
+            || (int) $curso->inscripcion_abierta !== 1
+        ) {
             $this->flash('error', 'Este curso no admite inscripcion directa. Usa el codigo de acceso del profesor.');
             $this->redirect('/estudiante');
         }
@@ -105,6 +112,11 @@ class EstudianteController extends Controller {
             $this->redirect('/estudiante');
         }
 
+        if (!$this->cursoModel->cursoTieneLeccionesPublicadas((int) $curso->id)) {
+            $this->flash('error', 'Ese curso todavia no tiene lecciones visibles para estudiantes.');
+            $this->redirect('/estudiante');
+        }
+
         [$puedeInscribir, $mensajePlan] = $this->planModel->puedeAgregarEstudiante($curso->id);
         if (!$puedeInscribir) {
             $this->flash('error', $mensajePlan);
@@ -137,7 +149,12 @@ class EstudianteController extends Controller {
             $this->redirect('/estudiante');
         }
 
-        $lecciones = $this->leccionModel->obtenerLeccionesPorCurso($curso_id);
+        $lecciones = $this->leccionModel->obtenerLeccionesPublicadasPorCurso($curso_id);
+
+        if (empty($lecciones)) {
+            $this->flash('mensaje', 'Este curso todavia no tiene lecciones visibles. Vuelve mas tarde.');
+            $this->redirect('/estudiante');
+        }
         
         foreach ($lecciones as $leccion) {
             $siguienteItem = $this->_determinarSiguienteItem($leccion->id, $estudiante_id);
@@ -160,7 +177,12 @@ class EstudianteController extends Controller {
             $this->redirect('/estudiante');
         }
 
-        $lecciones = $this->leccionModel->obtenerLeccionesPorCurso($curso_id);
+        $lecciones = $this->leccionModel->obtenerLeccionesPublicadasPorCurso($curso_id);
+
+        if (empty($lecciones)) {
+            $this->flash('mensaje', 'Este curso todavia no tiene lecciones visibles para continuar.');
+            $this->redirect('/estudiante');
+        }
         
         // Agregar estado de completitud a cada lección
         foreach ($lecciones as $leccion) {
@@ -195,7 +217,7 @@ class EstudianteController extends Controller {
 
     public function contenidoLeccion($leccion_id) {
         $estudiante_id = Auth::getUserId();
-        $leccion = $this->leccionModel->obtenerLeccionPorId($leccion_id);
+        $leccion = $this->leccionModel->obtenerLeccionPublicadaPorId($leccion_id);
 
         if (!$leccion) {
             $this->redirect('/estudiante');
@@ -255,7 +277,7 @@ class EstudianteController extends Controller {
         if (!$siguienteItem) {
             // Buscar la siguiente lección en el curso
             $siguienteLeccion = null;
-            $leccionesCurso = $this->leccionModel->obtenerLeccionesPorCurso($leccion->curso_id);
+            $leccionesCurso = $this->leccionModel->obtenerLeccionesPublicadasPorCurso($leccion->curso_id);
             $encontradaActual = false;
             
             foreach ($leccionesCurso as $l) {
@@ -335,7 +357,11 @@ class EstudianteController extends Controller {
             $this->redirect('/estudiante');
         }
 
-        $leccion = $this->leccionModel->obtenerLeccionPorId($actividad->leccion_id);
+        $leccion = $this->leccionModel->obtenerLeccionPublicadaPorId($actividad->leccion_id);
+        if (!$leccion) {
+            $this->flash('error', 'La leccion de esta actividad ya no esta disponible para estudiantes.');
+            $this->redirect('/estudiante');
+        }
         
         // Obtener información del curso para el idioma
         $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
@@ -647,7 +673,11 @@ class EstudianteController extends Controller {
 
         // Obtener la lección
         $leccionModel = new Leccion();
-        $leccion = $leccionModel->obtenerLeccionPorId($actividad->leccion_id);
+        $leccion = $leccionModel->obtenerLeccionPublicadaPorId($actividad->leccion_id);
+        if (!$leccion) {
+            $this->flash('error', 'La leccion de esta actividad ya no esta disponible para estudiantes.');
+            $this->redirect('/estudiante');
+        }
 
         // Verificar si el estudiante está inscrito
         if (!$this->inscripcionModel->verificarInscripcion($leccion->curso_id, $estudiante_id)) {
@@ -719,11 +749,21 @@ class EstudianteController extends Controller {
         $estudiante_id = Auth::getUserId();
         
         $teoriaModel = new Teoria();
-        $teoriaModel->marcarComoLeida($estudiante_id, $teoria_id);
         $teoria = $teoriaModel->obtenerTeoriaPorId($teoria_id);
-        if ($teoria) {
-            $this->leccionModel->sincronizarProgresoEstudiante($teoria->leccion_id, $estudiante_id);
+
+        if (!$teoria) {
+            $this->flash('error', 'La teoria indicada no existe o ya no esta disponible.');
+            $this->redirect('/estudiante');
         }
+
+        $leccion = $this->leccionModel->obtenerLeccionPublicadaPorId($teoria->leccion_id);
+        if (!$leccion || !$this->inscripcionModel->verificarInscripcion($leccion->curso_id, $estudiante_id)) {
+            $this->flash('error', 'No puedes marcar teoria en una leccion que ya no esta disponible para tu cuenta.');
+            $this->redirect('/estudiante');
+        }
+
+        $teoriaModel->marcarComoLeida($estudiante_id, $teoria_id);
+        $this->leccionModel->sincronizarProgresoEstudiante($teoria->leccion_id, $estudiante_id);
         
         // Redireccionar de vuelta a la página anterior
         if (isset($_SERVER['HTTP_REFERER'])) {
@@ -740,7 +780,10 @@ class EstudianteController extends Controller {
 
     private function _determinarSiguienteItem($leccion_id, $estudiante_id) {
         $leccionModel = new Leccion();
-        $leccion = $leccionModel->obtenerLeccionPorId($leccion_id);
+        $leccion = $leccionModel->obtenerLeccionPublicadaPorId($leccion_id);
+        if (!$leccion) {
+            return null;
+        }
         
         $teoriaModel = new Teoria();
         $teorias = $teoriaModel->obtenerTeoriasConProgreso($leccion_id, $estudiante_id);
@@ -780,7 +823,7 @@ class EstudianteController extends Controller {
 
         // 3. Si todo está completado, sugerir siguiente lección (si existe)
         $siguienteLeccion = null;
-        $leccionesCurso = $leccionModel->obtenerLeccionesPorCurso($leccion->curso_id);
+        $leccionesCurso = $leccionModel->obtenerLeccionesPublicadasPorCurso($leccion->curso_id);
         $encontradaActual = false;
         
         foreach ($leccionesCurso as $l) {
@@ -925,7 +968,7 @@ class EstudianteController extends Controller {
     }
 
     private function _buildCourseNextStep($curso_id, $estudiante_id) {
-        $lecciones = $this->leccionModel->obtenerLeccionesPorCurso($curso_id);
+        $lecciones = $this->leccionModel->obtenerLeccionesPublicadasPorCurso($curso_id);
 
         foreach ($lecciones as $leccion) {
             $resumen = $this->leccionModel->obtenerResumenProgreso($leccion->id, $estudiante_id);

@@ -1,7 +1,10 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../partials/header.php';
 $courseEditorialStates = app_course_editorial_states();
 $courseEditorialMeta = app_course_editorial_state_meta($curso);
+$publishedLessons = (int) ($coursePublishSummary['published_lessons'] ?? 0);
+$curso->published_lessons = $publishedLessons;
+$catalogStatus = app_course_catalog_status($curso);
 ?>
 
 <div class="container">
@@ -13,8 +16,9 @@ $courseEditorialMeta = app_course_editorial_state_meta($curso);
         </p>
         <div class="d-flex gap-2 flex-wrap mt-3">
             <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</span>
-            <span class="soft-badge <?php echo !empty($curso->es_publico) ? 'badge-accent' : ''; ?>">
-                <i class="bi bi-broadcast"></i> <?php echo !empty($curso->es_publico) ? 'Visible para alumnos' : 'Aun no visible'; ?>
+            <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
+                <i class="bi bi-broadcast"></i>
+                <?php echo htmlspecialchars($catalogStatus['label']); ?>
             </span>
         </div>
         <div class="hero-actions">
@@ -61,9 +65,11 @@ $courseEditorialMeta = app_course_editorial_state_meta($curso);
                                 <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%"></span></div>
                                 <div class="course-meta mt-3">
                                     <span><i class="bi bi-journal-richtext"></i> <?php echo (int) ($coursePublishSummary['lessons'] ?? 0); ?> lecciones</span>
+                                    <span><i class="bi bi-broadcast"></i> <?php echo $publishedLessons; ?> publicadas</span>
                                     <span><i class="bi bi-book"></i> <?php echo (int) ($coursePublishSummary['theories'] ?? 0); ?> teorias</span>
                                     <span><i class="bi bi-lightning"></i> <?php echo (int) ($coursePublishSummary['activities'] ?? 0); ?> actividades</span>
                                 </div>
+                                <div class="small text-muted mt-2"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
                             </div>
 
                             <div class="publish-checklist-grid">
@@ -80,7 +86,7 @@ $courseEditorialMeta = app_course_editorial_state_meta($curso);
 
                             <div id="courseVisibilityHint" class="alert alert-warning mt-3 mb-0" <?php echo !empty($curso->es_publico) && (int) ($coursePublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
                                 <i class="bi bi-exclamation-triangle"></i>
-                                El curso esta marcado como publico, pero aun le faltan piezas para verse redondo.
+                                El curso esta marcado para catalogo, pero todavia no quedara bien expuesto hasta cerrar los huecos editoriales principales.
                             </div>
                         </section>
 
@@ -255,9 +261,11 @@ $courseEditorialMeta = app_course_editorial_state_meta($curso);
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico" <?php echo $curso->es_publico ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="es_publico">Curso publico y visible para estudiantes</label>
-                                <div class="form-text">Solo se mantiene visible cuando el workflow editorial queda en <strong>Publicado</strong>.</div>
+                                <label class="form-check-label" for="es_publico">Marcar para catalogo</label>
+                                <div class="form-text">La visibilidad real para estudiantes solo se sostiene cuando el workflow queda en <strong>Publicado</strong> y existe al menos una leccion publicada.</div>
                             </div>
+                            <div class="small text-muted mt-2" id="courseCatalogOutcomeCopy"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
+                            <div class="mt-2"><span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>" id="courseCatalogOutcomeBadge"><?php echo htmlspecialchars($catalogStatus['short_label']); ?></span></div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="requiere_codigo" name="requiere_codigo" <?php echo $curso->requiere_codigo ? 'checked' : ''; ?>>
@@ -266,7 +274,7 @@ $courseEditorialMeta = app_course_editorial_state_meta($curso);
 
                             <div class="alert alert-warning mt-3 mb-0" id="courseEditorialWorkflowHint" hidden>
                                 <i class="bi bi-exclamation-triangle"></i>
-                                Mientras el curso no quede en <strong>Publicado</strong>, la visibilidad publica no se sostendra aunque marques la casilla.
+                                Mientras el curso no quede en <strong>Publicado</strong> o no tenga una leccion publicada, seguira fuera de la vista del estudiante aunque marques la casilla.
                             </div>
 
                             <div id="codigo_acceso_div" class="mt-3" style="display: <?php echo $curso->requiere_codigo ? 'block' : 'none'; ?>;">
@@ -312,8 +320,11 @@ const courseEditorialSelect = document.getElementById('estado_editorial');
 const courseEditorialWorkflowHint = document.getElementById('courseEditorialWorkflowHint');
 const courseEditorialTitle = document.getElementById('courseEditorialTitle');
 const courseEditorialDescription = document.getElementById('courseEditorialDescription');
+const courseCatalogOutcomeBadge = document.getElementById('courseCatalogOutcomeBadge');
+const courseCatalogOutcomeCopy = document.getElementById('courseCatalogOutcomeCopy');
 const courseEditorialStates = <?php echo json_encode($courseEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 const coursePublishPercentage = <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>;
+const coursePublishedLessons = <?php echo $publishedLessons; ?>;
 
 function syncCourseVisibilityHint() {
     if (!courseVisibilityCheckbox || !courseVisibilityHint) {
@@ -322,6 +333,33 @@ function syncCourseVisibilityHint() {
 
     courseVisibilityHint.hidden = !(courseVisibilityCheckbox.checked && coursePublishPercentage < 100);
     courseEditorialWorkflowHint.hidden = !(courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado');
+
+    let label = 'Oculto';
+    let tone = '';
+    let hint = 'No se muestra en catalogo y no esta listo para abrirse.';
+
+    if (courseVisibilityCheckbox.checked && courseEditorialSelect.value === 'publicado' && coursePublishedLessons > 0) {
+        label = 'Visible';
+        tone = 'badge-accent';
+        hint = 'Visible en catalogo y disponible para estudiantes.';
+    } else if (courseVisibilityCheckbox.checked && courseEditorialSelect.value === 'publicado') {
+        label = 'En espera';
+        tone = 'warning';
+        hint = 'Ya esta marcado para catalogo, pero aun necesita al menos una leccion publicada.';
+    } else if (courseVisibilityCheckbox.checked) {
+        label = 'En espera';
+        tone = 'info';
+        hint = 'Sigue fuera del catalogo hasta que el workflow editorial llegue a Publicado.';
+    }
+
+    if (courseCatalogOutcomeBadge) {
+        courseCatalogOutcomeBadge.className = 'soft-badge' + (tone ? ' ' + tone : '');
+        courseCatalogOutcomeBadge.textContent = label;
+    }
+
+    if (courseCatalogOutcomeCopy) {
+        courseCatalogOutcomeCopy.textContent = hint;
+    }
 }
 
 if (courseVisibilityCheckbox) {
@@ -404,7 +442,7 @@ actualizarPreviewPortada();
 if (courseEditForm) {
     courseEditForm.addEventListener('submit', function (event) {
         if (courseVisibilityCheckbox && courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado') {
-            const shouldContinue = window.confirm('El curso seguira privado mientras no quede en Publicado. ¿Quieres guardarlo asi de todos modos?');
+            const shouldContinue = window.confirm('El curso seguira fuera del catalogo mientras no quede en Publicado y no tenga una leccion publicada. ¿Quieres guardarlo asi de todos modos?');
             if (!shouldContinue) {
                 event.preventDefault();
             }
@@ -412,7 +450,7 @@ if (courseEditForm) {
         }
 
         if (courseVisibilityCheckbox && courseVisibilityCheckbox.checked && coursePublishPercentage < 100) {
-            const shouldContinue = window.confirm('Este curso sigue marcado como publico, pero todavia tiene huecos editoriales. ¿Quieres guardarlo visible de todos modos?');
+            const shouldContinue = window.confirm('Este curso sigue marcado para catalogo, pero todavia necesita al menos una leccion publicada y menos huecos editoriales. ¿Quieres guardarlo asi de todos modos?');
             if (!shouldContinue) {
                 event.preventDefault();
             }
@@ -422,3 +460,4 @@ if (courseEditForm) {
 </script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>
+

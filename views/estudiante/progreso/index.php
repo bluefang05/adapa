@@ -18,6 +18,12 @@ require_once __DIR__ . '/../../../models/Curso.php';
                 <i class="bi bi-award"></i> Ver calificaciones
             </a>
         </div>
+        <?php if (!empty($progressScopeHint)): ?>
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-info-circle"></i>
+                <?php echo htmlspecialchars($progressScopeHint); ?>
+            </div>
+        <?php endif; ?>
         <div class="metric-grid">
             <div class="metric-card">
                 <div class="metric-label">Cursos medidos</div>

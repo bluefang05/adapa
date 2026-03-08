@@ -1,23 +1,3 @@
-<?php
-function getEstadoColor($estado) {
-    switch ($estado) {
-        case 'borrador': return 'warning';
-        case 'publicada': return 'success';
-        case 'archivada': return 'secondary';
-        default: return 'secondary';
-    }
-}
-
-function getEstadoTexto($estado) {
-    switch ($estado) {
-        case 'borrador': return 'Borrador';
-        case 'publicada': return 'Publicada';
-        case 'archivada': return 'Archivada';
-        default: return $estado;
-    }
-}
-?>
-
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
@@ -105,8 +85,8 @@ function getEstadoTexto($estado) {
                                             <?php endif; ?>
                                             <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span>
                                         </div>
+                                        <div class="small text-muted mt-2">Tecnico: <?php echo htmlspecialchars($leccion->estado ?? 'borrador'); ?></div>
                                     </div>
-                                    <span class="badge bg-<?php echo getEstadoColor($leccion->estado); ?>"><?php echo htmlspecialchars(getEstadoTexto($leccion->estado)); ?></span>
                                 </div>
 
                                 <p class="text-muted mb-3"><?php echo nl2br(htmlspecialchars($leccion->descripcion)); ?></p>

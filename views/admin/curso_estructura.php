@@ -20,6 +20,8 @@ $courseTicketSummary = $courseTicketSummary ?? (object) [
     'context_leccion' => 0,
     'context_actividad' => 0,
 ];
+$course->published_lessons = (int) ($structureSummary['published_lessons'] ?? 0);
+$catalogStatus = app_course_catalog_status($course);
 $lessonsWithSupport = 0;
 $hotLessons = 0;
 foreach ($lecciones as $leccionMeta) {
@@ -90,8 +92,8 @@ foreach ($lecciones as $leccionMeta) {
             </div>
             <div class="metric-card">
                 <div class="metric-label">Visibilidad</div>
-                <div class="metric-value"><?php echo !empty($course->es_publico) ? 'Publico' : 'Privado'; ?></div>
-                <div class="metric-note"><?php echo !empty($course->inscripcion_abierta) ? 'Inscripcion abierta' : 'Inscripcion cerrada'; ?></div>
+                <div class="metric-value"><?php echo htmlspecialchars($catalogStatus['short_label']); ?></div>
+                <div class="metric-note"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Tickets abiertos</div>
@@ -201,7 +203,6 @@ foreach ($lecciones as $leccionMeta) {
                                         <div class="small text-muted"><?php echo htmlspecialchars($leccion->descripcion ?: 'Sin descripcion.'); ?></div>
                                     </div>
                                     <div class="d-flex gap-2 flex-wrap">
-                                        <span class="soft-badge"><?php echo htmlspecialchars($leccion->estado ?? 'borrador'); ?></span>
                                         <span class="soft-badge badge-<?php echo htmlspecialchars($lessonEditorialState['tone'] ?? 'info'); ?>">
                                             <?php echo htmlspecialchars($lessonEditorialState['label'] ?? 'En progreso'); ?>
                                         </span>
@@ -209,6 +210,7 @@ foreach ($lecciones as $leccionMeta) {
                                             <?php echo htmlspecialchars($leccion->support_meta->label ?? 'Sin tickets'); ?>
                                         </span>
                                     </div>
+                                    <div class="small text-muted mt-2">Tecnico: <?php echo htmlspecialchars($leccion->estado ?? 'borrador'); ?></div>
                                 </div>
 
                                 <section class="production-hint-card tone-<?php echo htmlspecialchars($lessonEditorialState['tone'] ?? 'info'); ?> mb-3">

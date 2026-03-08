@@ -17,6 +17,7 @@ class ProgresoController extends Controller {
 
         $this->view('estudiante/progreso/index', [
             'resumenCursos' => $resumenCursos,
+            'progressScopeHint' => 'Solo se muestran cursos que siguen publicados y disponibles para estudiantes.',
         ]);
     }
 }

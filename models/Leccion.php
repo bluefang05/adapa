@@ -15,8 +15,32 @@ class Leccion {
         return $this->db->resultSet();
     }
 
+    public function obtenerLeccionesPublicadasPorCurso($curso_id) {
+        $this->db->query("
+            SELECT *
+            FROM lecciones
+            WHERE curso_id = :curso_id
+              AND COALESCE(NULLIF(estado_editorial, ''), 'borrador') = 'publicado'
+            ORDER BY orden ASC, id ASC
+        ");
+        $this->db->bind(':curso_id', $curso_id);
+        return $this->db->resultSet();
+    }
+
     public function obtenerLeccionPorId($id) {
         $this->db->query("SELECT * FROM lecciones WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
+    public function obtenerLeccionPublicadaPorId($id) {
+        $this->db->query("
+            SELECT *
+            FROM lecciones
+            WHERE id = :id
+              AND COALESCE(NULLIF(estado_editorial, ''), 'borrador') = 'publicado'
+            LIMIT 1
+        ");
         $this->db->bind(':id', $id);
         return $this->db->single();
     }

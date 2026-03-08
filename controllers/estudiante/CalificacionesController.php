@@ -26,6 +26,8 @@ class CalificacionesController extends Controller {
             JOIN lecciones l ON l.id = a.leccion_id
             JOIN cursos c ON c.id = l.curso_id
             WHERE r.estudiante_id = :estudiante_id
+              AND COALESCE(NULLIF(c.estado_editorial, ''), 'borrador') = 'publicado'
+              AND COALESCE(NULLIF(l.estado_editorial, ''), 'borrador') = 'publicado'
             ORDER BY r.fecha_respuesta DESC
         ");
         $db->bind(':estudiante_id', Auth::getUserId());
@@ -33,6 +35,7 @@ class CalificacionesController extends Controller {
 
         $this->view('estudiante/calificaciones/index', [
             'calificaciones' => $calificaciones,
+            'calificacionesScopeHint' => 'Solo se muestran respuestas de cursos y lecciones que siguen publicadas para estudiantes.',
         ]);
     }
 }
