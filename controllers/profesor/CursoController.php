@@ -81,10 +81,12 @@ class CursoController extends Controller {
             'tipo_codigo' => $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null,
             'max_estudiantes' => (int) ($_POST['max_estudiantes'] ?? 0),
             'fecha_inicio' => !empty($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : null,
-            'fecha_fin' => !empty($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null
+            'fecha_fin' => !empty($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null,
+            'estado_editorial' => $_POST['estado_editorial'] ?? 'borrador',
         ];
 
         [$datos, $ajustesPlan] = $this->planModel->normalizarDatosCursoParaPlan(Auth::getUserId(), $datos);
+        $datos = $this->aplicarWorkflowEditorialCurso($datos);
         if (!empty($datos['requiere_codigo']) && empty($datos['codigo_acceso'])) {
             $datos['codigo_acceso'] = $this->cursoModel->generarCodigoAcceso();
         }
@@ -133,10 +135,12 @@ class CursoController extends Controller {
                 'requiere_codigo' => $requiereCodigo,
                 'codigo_acceso' => $requiereCodigo ? $codigoAcceso : null,
                 'tipo_codigo' => $requiereCodigo ? ($_POST['tipo_codigo'] ?? 'unico_curso') : null,
-                'max_estudiantes' => (int) ($_POST['max_estudiantes'] ?? 0)
+                'max_estudiantes' => (int) ($_POST['max_estudiantes'] ?? 0),
+                'estado_editorial' => $_POST['estado_editorial'] ?? ($curso->estado_editorial ?? 'borrador'),
             ];
 
             [$datos, $ajustesPlan] = $this->planModel->normalizarDatosCursoParaPlan(Auth::getUserId(), $datos);
+            $datos = $this->aplicarWorkflowEditorialCurso($datos);
             if (!empty($datos['requiere_codigo']) && empty($datos['codigo_acceso'])) {
                 $datos['codigo_acceso'] = $this->cursoModel->generarCodigoAcceso();
             }
@@ -265,10 +269,12 @@ class CursoController extends Controller {
             $lessonActivities = $this->actividadModel->obtenerActividadesPorLeccion($leccion->id);
             $theoryCount += count($lessonTheories);
             $activityCount += count($lessonActivities);
-            if (($leccion->estado ?? '') === 'publicada') {
+            if (app_lesson_editorial_state_value($leccion) === 'publicado') {
                 $publishedLessonCount++;
             }
         }
+
+        $editorialMeta = app_course_editorial_state_meta($curso);
 
         $checklist = [
             [
@@ -297,9 +303,14 @@ class CursoController extends Controller {
                 'hint' => $activityCount > 0 ? "El curso ya suma {$activityCount} actividad(es)." : 'Falta convertir el contenido en practica.',
             ],
             [
-                'label' => 'Lecciones visibles',
+                'label' => 'Workflow editorial',
+                'ok' => in_array(app_course_editorial_state_value($curso), ['publicable', 'publicado'], true),
+                'hint' => $editorialMeta['description'],
+            ],
+            [
+                'label' => 'Lecciones publicables',
                 'ok' => $publishedLessonCount > 0,
-                'hint' => $publishedLessonCount > 0 ? "{$publishedLessonCount} leccion(es) ya estan publicadas." : 'Ninguna leccion esta marcada como publicada todavia.',
+                'hint' => $publishedLessonCount > 0 ? "{$publishedLessonCount} leccion(es) ya estan marcadas como publicadas." : 'Ninguna leccion esta marcada como publicada todavia.',
             ],
         ];
 
@@ -314,7 +325,9 @@ class CursoController extends Controller {
             'published_lessons' => $publishedLessonCount,
         ];
 
-        if ($summary['percentage'] >= 100) {
+        if (app_course_editorial_state_value($curso) === 'archivado') {
+            $hint = 'Curso archivado: se conserva como referencia y ya no forma parte del flujo activo.';
+        } elseif ($summary['percentage'] >= 100) {
             $hint = 'Listo para abrirlo con confianza: ya tiene estructura, teoria, practica y visibilidad basica.';
         } elseif ($lessonCount === 0) {
             $hint = 'Todavia esta en fase de configuracion: crea la primera leccion antes de pensar en hacerlo visible.';
@@ -325,5 +338,25 @@ class CursoController extends Controller {
         }
 
         return [$checklist, $summary, $hint];
+    }
+
+    private function aplicarWorkflowEditorialCurso(array $datos) {
+        $estadoEditorial = app_normalize_editorial_state($datos['estado_editorial'] ?? 'borrador', 'course');
+        $datos['estado_editorial'] = $estadoEditorial;
+
+        if ($estadoEditorial === 'archivado') {
+            $datos['estado'] = 'archivado';
+            $datos['es_publico'] = 0;
+            return $datos;
+        }
+
+        if ($estadoEditorial === 'publicado') {
+            $datos['estado'] = 'activo';
+            return $datos;
+        }
+
+        $datos['estado'] = 'preparacion';
+        $datos['es_publico'] = 0;
+        return $datos;
     }
 }

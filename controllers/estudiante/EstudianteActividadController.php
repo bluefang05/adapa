@@ -84,7 +84,17 @@ class EstudianteActividadController extends Controller
 
         if ($resultado) {
             $this->leccionModel->sincronizarProgresoEstudiante($actividad->leccion_id, $estudiante_id);
-            $this->json(['success' => true, 'es_correcta' => $es_correcta]);
+            $resumenLeccion = $this->leccionModel->obtenerResumenProgreso($actividad->leccion_id, $estudiante_id);
+            $message = $es_correcta
+                ? 'Respuesta guardada. Vas bien en esta practica.'
+                : 'Respuesta guardada. Revisa el feedback y vuelve a intentarlo si hace falta.';
+
+            $this->json([
+                'success' => true,
+                'es_correcta' => $es_correcta,
+                'message' => $message,
+                'lesson_progress' => (int) ($resumenLeccion->porcentaje ?? 0),
+            ]);
         } else {
             $this->json(['success' => false, 'error' => 'Error al guardar respuesta'], 500);
         }

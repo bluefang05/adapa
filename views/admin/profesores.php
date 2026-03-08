@@ -81,6 +81,16 @@ function adminTeacherLoadTone($teacher) {
                 <div class="metric-value"><?php echo $openTickets; ?></div>
                 <div class="metric-note">Casos reportados por ellos o en sus cursos.</div>
             </div>
+            <div class="metric-card">
+                <div class="metric-label">Con huecos visibles</div>
+                <div class="metric-value"><?php echo (int) ($teacherSummary['with_visible_gaps'] ?? 0); ?></div>
+                <div class="metric-note">Profesores con cursos publicos que conviene corregir.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Listos para revisar</div>
+                <div class="metric-value"><?php echo (int) ($teacherSummary['ready_for_review'] ?? 0); ?></div>
+                <div class="metric-note">Docentes que ya tienen base suficiente para revision editorial.</div>
+            </div>
         </div>
     </section>
 
@@ -187,6 +197,19 @@ function adminTeacherLoadTone($teacher) {
                                         </ul>
                                     </div>
                                 </div>
+
+                                <section class="production-hint-card tone-<?php echo htmlspecialchars($teacher->admin_focus_tone ?? 'info'); ?> mb-3">
+                                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
+                                        <div class="production-hint-title"><?php echo htmlspecialchars($teacher->admin_focus_label ?? 'Control operativo'); ?></div>
+                                        <?php if ((int) ($teacher->ready_courses ?? 0) > 0): ?>
+                                            <span class="soft-badge info"><?php echo (int) ($teacher->ready_courses ?? 0); ?> listos para revisar</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="small text-muted"><?php echo htmlspecialchars($teacher->admin_focus_hint ?? ''); ?></div>
+                                    <?php if (!empty($teacher->hotspot_course_title)): ?>
+                                        <div class="small text-muted mt-2"><strong>Curso foco:</strong> <?php echo htmlspecialchars($teacher->hotspot_course_title); ?></div>
+                                    <?php endif; ?>
+                                </section>
 
                                 <div class="responsive-actions">
                                     <a href="<?php echo url('/admin/usuarios/edit/' . (int) $teacher->id); ?>" class="btn btn-sm btn-outline-secondary">

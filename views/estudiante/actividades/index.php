@@ -34,12 +34,14 @@ function renderPreviewSupportResource($resource) {
         'link' => 'Enlace de apoyo',
     ];
     $kindLabel = $kindLabels[$kind] ?? 'Recurso de apoyo';
+    $sourceLabel = app_url_host_label($resource['url'] ?? '');
     ?>
     <section class="support-resource-panel mb-4">
         <div class="support-resource-header">
             <div>
                 <div class="support-resource-eyebrow"><?php echo htmlspecialchars($kindLabel); ?></div>
                 <h3 class="support-resource-title"><?php echo $title; ?></h3>
+                <div class="small text-muted mt-1">Fuente: <?php echo htmlspecialchars($sourceLabel); ?></div>
             </div>
             <a href="<?php echo $url; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">Abrir recurso</a>
         </div>
@@ -853,6 +855,15 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
         .then(response => response.json())
         .then(result => {
             console.log('Guardado:', result);
+            if (result && result.message) {
+                const feedbackDiv = document.getElementById('feedback');
+                if (feedbackDiv) {
+                    const serverNote = document.createElement('div');
+                    serverNote.className = 'mt-3 border-top pt-3';
+                    serverNote.innerHTML = '<strong>Guardado:</strong> ' + escapeHtml(result.message + (typeof result.lesson_progress === 'number' ? ' Progreso de la leccion: ' + result.lesson_progress + '%.' : ''));
+                    feedbackDiv.appendChild(serverNote);
+                }
+            }
         })
         .catch(error => {
             console.error('Error al guardar:', error);
@@ -927,21 +938,18 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 
         document.getElementById('submit-activity').disabled = true;
         const nextBtn = document.getElementById('next-activity');
-        
+
         if (siguienteActividad && siguienteActividad.id) {
             nextBtn.textContent = 'Siguiente actividad';
             nextBtn.innerHTML = 'Siguiente actividad <i class="bi bi-arrow-right"></i>';
         } else {
-            nextBtn.textContent = 'Finalizar Lección';
-            nextBtn.innerHTML = '<i class="bi bi-check-lg"></i> Finalizar Lección';
+            nextBtn.textContent = 'Finalizar leccion';
+            nextBtn.innerHTML = '<i class="bi bi-check-lg"></i> Finalizar leccion';
         }
         nextBtn.style.display = 'inline-block';
-        
-        // Guardar respuesta (aquí iría la lógica para guardar en la base de datos)
-        console.log('Respuesta:', respuesta, 'Es correcta:', esCorrecta);
     }
-    
-    // Función para ir a la siguiente actividad
+
+    // Funcion para ir a la siguiente actividad
     function nextActivity() {
         if (siguienteActividad && siguienteActividad.id) {
             if (userRole === 'profesor' || userRole === 'admin') {

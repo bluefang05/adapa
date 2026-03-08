@@ -1,4 +1,8 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+$lessonEditorialStates = app_lesson_editorial_states();
+$lessonEditorialMeta = app_lesson_editorial_state_meta($leccion);
+?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -9,13 +13,16 @@
         </p>
         <div class="d-flex gap-2 flex-wrap mt-3">
             <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</span>
-            <span class="soft-badge <?php echo ($leccion->estado ?? '') === 'publicada' ? 'success' : 'badge-accent'; ?>">
-                <i class="bi bi-eye"></i> <?php echo ($leccion->estado ?? '') === 'publicada' ? 'Publicada' : 'Aun en trabajo'; ?>
+            <span class="soft-badge badge-<?php echo htmlspecialchars($lessonEditorialMeta['tone']); ?>">
+                <i class="bi bi-eye"></i> <?php echo htmlspecialchars($lessonEditorialMeta['label']); ?>
             </span>
         </div>
         <div class="hero-actions">
             <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a lecciones
+            </a>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/builder'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-diagram-3"></i> Constructor
             </a>
         </div>
     </section>
@@ -64,7 +71,7 @@
                                 <?php endforeach; ?>
                             </div>
 
-                            <div id="lessonPublishHint" class="alert alert-warning mt-3 mb-0" <?php echo ($leccion->estado ?? '') === 'publicada' && (int) ($lessonPublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
+                            <div id="lessonPublishHint" class="alert alert-warning mt-3 mb-0" <?php echo app_lesson_editorial_state_value($leccion) === 'publicado' && (int) ($lessonPublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
                                 <i class="bi bi-exclamation-triangle"></i>
                                 La leccion esta publicada, pero todavia tiene huecos que el alumno puede notar.
                             </div>
@@ -115,13 +122,15 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="estado" class="form-label">Estado *</label>
-                                    <select class="form-select" id="estado" name="estado" required>
-                                        <option value="borrador" <?php echo $leccion->estado == 'borrador' ? 'selected' : ''; ?>>Borrador</option>
-                                        <option value="publicada" <?php echo $leccion->estado == 'publicada' ? 'selected' : ''; ?>>Publicada</option>
-                                        <option value="archivada" <?php echo $leccion->estado == 'archivada' ? 'selected' : ''; ?>>Archivada</option>
+                                    <label for="estado_editorial" class="form-label">Estado editorial *</label>
+                                    <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                        <?php foreach ($lessonEditorialStates as $stateValue => $stateMeta): ?>
+                                            <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo app_lesson_editorial_state_value($leccion) === $stateValue ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($stateMeta['label']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
-                                    <div class="form-text">Las lecciones en borrador no se muestran al estudiante.</div>
+                                    <div class="form-text" id="lessonEditorialEditDescription"><?php echo htmlspecialchars($lessonEditorialMeta['description']); ?></div>
                                 </div>
                             </div>
                         </section>
@@ -142,8 +151,10 @@
 </div>
 
 <script>
-const lessonStateSelect = document.getElementById('estado');
+const lessonStateSelect = document.getElementById('estado_editorial');
 const lessonPublishHint = document.getElementById('lessonPublishHint');
+const lessonEditorialEditDescription = document.getElementById('lessonEditorialEditDescription');
+const lessonEditorialStates = <?php echo json_encode($lessonEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 const lessonPublishPercentage = <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>;
 const lessonEditForm = document.getElementById('formEditarLeccion');
 
@@ -152,18 +163,22 @@ function syncLessonPublishHint() {
         return;
     }
 
-    lessonPublishHint.hidden = !(lessonStateSelect.value === 'publicada' && lessonPublishPercentage < 100);
+    lessonPublishHint.hidden = !(lessonStateSelect.value === 'publicado' && lessonPublishPercentage < 100);
 }
 
 if (lessonStateSelect) {
-    lessonStateSelect.addEventListener('change', syncLessonPublishHint);
+    lessonStateSelect.addEventListener('change', function () {
+        const current = lessonEditorialStates[lessonStateSelect.value] || lessonEditorialStates.borrador;
+        lessonEditorialEditDescription.textContent = current.description || '';
+        syncLessonPublishHint();
+    });
     syncLessonPublishHint();
 }
 
 if (lessonEditForm) {
     lessonEditForm.addEventListener('submit', function (event) {
-        if (lessonStateSelect && lessonStateSelect.value === 'publicada' && lessonPublishPercentage < 100) {
-            const shouldContinue = window.confirm('Esta leccion se publicara aunque todavia tenga huecos editoriales. ¿Quieres continuar de todos modos?');
+        if (lessonStateSelect && lessonStateSelect.value === 'publicado' && lessonPublishPercentage < 100) {
+            const shouldContinue = window.confirm('Esta leccion se publicara aunque todavia tenga huecos editoriales. Quieres continuar de todos modos?');
             if (!shouldContinue) {
                 event.preventDefault();
             }

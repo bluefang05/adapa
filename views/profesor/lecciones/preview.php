@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../partials/header.php';
 require_once __DIR__ . '/../../../models/Curso.php';
+require_once __DIR__ . '/../../../models/Teoria.php';
+require_once __DIR__ . '/../../../models/Actividad.php';
 
 function renderProfessorLessonBlockMedia($bloque) {
     if (empty($bloque->ruta_archivo) || empty($bloque->tipo_media)) {
@@ -223,6 +225,61 @@ function renderProfessorActivityPreviewSummary($actividad) {
 
     return '<div class="small text-muted mt-2">Sin resumen especifico para este tipo todavia.</div>';
 }
+
+$previewReturnTo = $_SERVER['REQUEST_URI'] ?? url('/profesor/lecciones/' . $leccion->id . '/preview');
+$previewQuickFixes = [];
+
+if (empty($teorias)) {
+    $previewQuickFixes[] = [
+        'label' => 'Crear teoria',
+        'copy' => 'La leccion necesita contexto antes de que la practica tenga sentido.',
+        'url' => url('/profesor/lecciones/' . $leccion->id . '/teoria/create?return_to=' . rawurlencode($previewReturnTo)),
+    ];
+}
+
+if (!empty($teorias)) {
+    foreach ($teorias as $teoriaItem) {
+        $summary = Teoria::resumenDocente($teoriaItem);
+        if (empty($summary['ready_for_practice'])) {
+            $previewQuickFixes[] = [
+                'label' => 'Pulir teoria',
+                'copy' => $summary['message'],
+                'url' => url('/profesor/teoria/edit/' . $teoriaItem->id . '?return_to=' . rawurlencode($previewReturnTo)),
+            ];
+            break;
+        }
+    }
+}
+
+if (empty($actividades)) {
+    $previewQuickFixes[] = [
+        'label' => 'Crear actividad',
+        'copy' => 'Todavia no existe practica que convierta la teoria en algo medible.',
+        'url' => url('/profesor/lecciones/' . $leccion->id . '/actividades/create?return_to=' . rawurlencode($previewReturnTo)),
+    ];
+}
+
+if (!empty($actividades)) {
+    foreach ($actividades as $actividadItem) {
+        $summary = Actividad::resumenDocente($actividadItem);
+        if (empty($summary['config_ready'])) {
+            $previewQuickFixes[] = [
+                'label' => 'Configurar actividad',
+                'copy' => $summary['message'],
+                'url' => url('/profesor/actividad/' . $actividadItem->id . '/configurar?return_to=' . rawurlencode($previewReturnTo)),
+            ];
+            break;
+        }
+    }
+}
+
+if (empty($previewQuickFixes)) {
+    $previewQuickFixes[] = [
+        'label' => 'Abrir constructor',
+        'copy' => 'La base esta lista. Conviene revisar orden final y publicacion.',
+        'url' => url('/profesor/lecciones/' . $leccion->id . '/builder'),
+    ];
+}
 ?>
 
 <div class="container">
@@ -286,6 +343,29 @@ function renderProfessorActivityPreviewSummary($actividad) {
                             </div>
                         </article>
                     </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel mb-4">
+        <div class="panel-body">
+            <div class="section-title mb-3">
+                <h2>Correccion rapida</h2>
+                <span class="soft-badge"><i class="bi bi-tools"></i> Sin perder contexto</span>
+            </div>
+            <div class="publish-checklist-grid">
+                <?php foreach ($previewQuickFixes as $quickFix): ?>
+                    <article class="publish-check-card">
+                        <div class="publish-check-head">
+                            <div class="publish-check-title"><?php echo htmlspecialchars($quickFix['label']); ?></div>
+                            <span class="soft-badge">Ahora</span>
+                        </div>
+                        <div class="publish-check-copy"><?php echo htmlspecialchars($quickFix['copy']); ?></div>
+                        <div class="mt-3">
+                            <a href="<?php echo $quickFix['url']; ?>" class="btn btn-sm btn-outline-primary">Abrir</a>
+                        </div>
+                    </article>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -363,6 +443,7 @@ function renderProfessorActivityPreviewSummary($actividad) {
         <?php else: ?>
             <ul class="list-group lesson-stack">
                 <?php foreach ($actividades as $actividad): ?>
+                    <?php $activitySummary = Actividad::resumenDocente($actividad); ?>
                     <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
                         <div>
                             <div class="fw-semibold"><?php echo htmlspecialchars($actividad->titulo); ?></div>
@@ -374,14 +455,17 @@ function renderProfessorActivityPreviewSummary($actividad) {
                                 <?php if (!empty($actividad->tiempo_limite_minutos)): ?>
                                     <span><?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
                                 <?php endif; ?>
+                                <span><?php echo htmlspecialchars($activitySummary['label']); ?></span>
                             </div>
                             <?php if (!empty($actividad->descripcion)): ?>
                                 <div class="small text-muted mt-2"><?php echo htmlspecialchars($actividad->descripcion); ?></div>
                             <?php endif; ?>
+                            <div class="small text-muted mt-2"><?php echo htmlspecialchars($activitySummary['message']); ?></div>
                             <?php echo renderProfessorActivityPreviewSummary($actividad); ?>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id); ?>" class="btn btn-outline-primary btn-sm">Editar</a>
+                            <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/configurar?return_to=' . rawurlencode($previewReturnTo)); ?>" class="btn btn-outline-secondary btn-sm">Configurar</a>
+                            <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id . '?return_to=' . rawurlencode($previewReturnTo)); ?>" class="btn btn-outline-primary btn-sm">Editar</a>
                             <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/preview'); ?>" class="btn btn-outline-secondary btn-sm">Vista actividad</a>
                         </div>
                     </li>

@@ -1,4 +1,5 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php require_once __DIR__ . '/../../../models/Actividad.php'; ?>
 
 <?php
 $tieneActividades = !empty($actividades);
@@ -6,6 +7,24 @@ $activitySummary = [
     'total_puntos' => array_reduce($actividades, fn($carry, $item) => $carry + (int) ($item->puntos_maximos ?? 0), 0),
     'total_tiempo' => array_reduce($actividades, fn($carry, $item) => $carry + (int) ($item->tiempo_limite_minutos ?? 0), 0),
 ];
+$currentReturnTo = $_SERVER['REQUEST_URI'] ?? url('/profesor/lecciones/' . $leccion->id . '/actividades');
+$activitySummaries = [];
+$actividadPendiente = null;
+$supportCount = 0;
+
+foreach ($actividades as $actividad) {
+    $summary = Actividad::resumenDocente($actividad);
+    $activitySummaries[$actividad->id] = $summary;
+    if (!empty($summary['has_support_resource'])) {
+        $supportCount++;
+    }
+    if ($actividadPendiente === null && empty($summary['config_ready'])) {
+        $actividadPendiente = [
+            'actividad' => $actividad,
+            'summary' => $summary,
+        ];
+    }
+}
 ?>
 
 <div class="container">
@@ -27,8 +46,11 @@ $activitySummary = [
             <a href="<?php echo url('/profesor/cursos/' . $leccion->curso_id . '/lecciones'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a lecciones
             </a>
+            <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/builder'); ?>" class="btn btn-outline-primary">
+                <i class="bi bi-diagram-3"></i> Constructor
+            </a>
             <?php if (!empty($puedeCrearActividad)): ?>
-                <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary">
+                <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nueva actividad
                 </a>
             <?php else: ?>
@@ -59,6 +81,11 @@ $activitySummary = [
                 <div class="metric-value"><?php echo $activitySummary['total_tiempo']; ?></div>
                 <div class="metric-note">Minutos estimados si el alumno completa toda la practica.</div>
             </div>
+            <div class="metric-card">
+                <div class="metric-label">Con apoyo</div>
+                <div class="metric-value"><?php echo $supportCount; ?></div>
+                <div class="metric-note">Actividades con recurso vinculado.</div>
+            </div>
         </div>
     </section>
 
@@ -85,11 +112,26 @@ $activitySummary = [
             <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                     <div class="metric-label">Siguiente paso recomendado</div>
-                    <div class="fw-semibold mt-1">Prueba una actividad como alumno y detecta friccion antes de publicarla.</div>
-                    <div class="small text-muted mt-1">La vista de estudiante sirve para revisar copy, tiempos y claridad de respuesta.</div>
+                    <div class="fw-semibold mt-1">
+                        <?php if ($actividadPendiente): ?>
+                            La actividad "<?php echo htmlspecialchars($actividadPendiente['actividad']->titulo); ?>" necesita una configuracion interna mas clara.
+                        <?php else: ?>
+                            Prueba una actividad como alumno y detecta friccion antes de publicarla.
+                        <?php endif; ?>
+                    </div>
+                    <div class="small text-muted mt-1">
+                        <?php if ($actividadPendiente): ?>
+                            <?php echo htmlspecialchars($actividadPendiente['summary']['message']); ?>
+                        <?php else: ?>
+                            La vista de estudiante sirve para revisar copy, tiempos y claridad de respuesta.
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
-                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create'); ?>" class="btn btn-primary">Nueva actividad</a>
+                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-primary">Nueva actividad</a>
+                    <?php if ($actividadPendiente): ?>
+                        <a href="<?php echo url('/profesor/actividad/' . $actividadPendiente['actividad']->id . '/configurar?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-outline-primary">Configurar actividad detectada</a>
+                    <?php endif; ?>
                     <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-primary">Volver a teoria</a>
                 </div>
             </div>
@@ -97,8 +139,8 @@ $activitySummary = [
         <div class="row g-4">
             <?php foreach ($actividades as $actividad): ?>
                 <?php
-                $activityReady = !empty(trim((string) ($actividad->descripcion ?? ''))) && (int) ($actividad->puntos_maximos ?? 0) > 0;
-                $supportResource = app_activity_support_resource($actividad->contenido ?? null);
+                $summary = $activitySummaries[$actividad->id] ?? Actividad::resumenDocente($actividad);
+                $supportResource = $summary['support_resource'] ?? null;
                 ?>
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
@@ -116,11 +158,18 @@ $activitySummary = [
                             <div class="course-meta">
                                 <span><i class="bi bi-clock"></i> <?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
                                 <span><i class="bi bi-award"></i> <?php echo (int) $actividad->puntos_maximos; ?> puntos</span>
-                                <span><i class="bi bi-check2-circle"></i> <?php echo $activityReady ? 'Lista para probar' : 'Revisar ficha'; ?></span>
+                                <span><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($summary['label']); ?></span>
+                                <?php if (!empty($summary['question_count'])): ?>
+                                    <span><i class="bi bi-list-check"></i> <?php echo (int) $summary['question_count']; ?> prompts</span>
+                                <?php elseif (!empty($summary['item_count'])): ?>
+                                    <span><i class="bi bi-ui-checks"></i> <?php echo (int) $summary['item_count']; ?> items</span>
+                                <?php endif; ?>
                                 <?php if ($supportResource): ?>
                                     <span><i class="bi bi-paperclip"></i> Con apoyo</span>
                                 <?php endif; ?>
                             </div>
+
+                            <div class="small text-muted mt-2"><?php echo htmlspecialchars($summary['message']); ?></div>
 
                             <?php if ($supportResource): ?>
                                 <div class="small text-muted mt-2">
@@ -131,23 +180,34 @@ $activitySummary = [
                             <div class="responsive-actions mt-4">
                                 <form method="POST" action="<?php echo url('/profesor/actividad/move-up/' . $actividad->id); ?>">
                                     <?php echo csrf_input(); ?>
+                                    <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentReturnTo); ?>">
                                     <button type="submit" class="btn btn-outline-secondary" title="Subir actividad">
                                         <i class="bi bi-arrow-up"></i>
                                     </button>
                                 </form>
                                 <form method="POST" action="<?php echo url('/profesor/actividad/move-down/' . $actividad->id); ?>">
                                     <?php echo csrf_input(); ?>
+                                    <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentReturnTo); ?>">
                                     <button type="submit" class="btn btn-outline-secondary" title="Bajar actividad">
                                         <i class="bi bi-arrow-down"></i>
                                     </button>
                                 </form>
-                                <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id); ?>" class="btn btn-outline-primary">
+                                <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/configurar?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-outline-secondary">
+                                    <i class="bi bi-sliders"></i> Configurar
+                                </a>
+                                <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id . '?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-outline-primary">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
-                                <form method="POST" action="<?php echo url('/profesor/actividad/duplicate/' . $actividad->id); ?>">
+                                <form method="POST" action="<?php echo url('/profesor/actividad/duplicate/' . $actividad->id) . '?return_to=' . rawurlencode($currentReturnTo); ?>">
                                     <?php echo csrf_input(); ?>
                                     <button type="submit" class="btn btn-outline-secondary">
                                         <i class="bi bi-copy"></i> Duplicar
+                                    </button>
+                                </form>
+                                <form method="POST" action="<?php echo url('/profesor/actividad/duplicate/' . $actividad->id) . '?continue_to=edit&return_to=' . rawurlencode($currentReturnTo); ?>">
+                                    <?php echo csrf_input(); ?>
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-copy"></i> Duplicar y ajustar
                                     </button>
                                 </form>
                                 <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/preview'); ?>" class="btn btn-outline-secondary">
@@ -155,6 +215,7 @@ $activitySummary = [
                                 </a>
                                 <form method="POST" action="<?php echo url('/profesor/actividad/delete/' . $actividad->id); ?>" onsubmit="return confirm('Esta seguro de eliminar esta actividad?');">
                                     <?php echo csrf_input(); ?>
+                                    <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentReturnTo); ?>">
                                     <button type="submit" class="btn btn-danger">
                                         <i class="bi bi-trash"></i> Eliminar
                                     </button>

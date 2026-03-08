@@ -46,11 +46,15 @@ class EstudianteController extends Controller {
             return !in_array($curso->id, $cursosInscritosIds);
         });
 
-        $resourceLanguage = null;
-        if (!empty($cursosInscritos)) {
-            $resourceLanguage = Curso::obtenerIdiomaObjetivo($cursosInscritos[0]);
-        }
+        $dashboardFocus = $this->_buildDashboardFocus($cursosInscritos, $estudiante_id);
+        $resourceLanguage = $dashboardFocus && !empty($dashboardFocus['course'])
+            ? Curso::obtenerIdiomaObjetivo($dashboardFocus['course'])
+            : null;
         $recommendedResources = app_useful_resources_for_language($resourceLanguage, 4);
+        $courseActionMap = [];
+        foreach ($cursosInscritos as $curso) {
+            $courseActionMap[$curso->id] = $this->_buildCourseNextStep($curso->id, $estudiante_id);
+        }
 
         require_once __DIR__ . '/../../views/estudiante/index.php';
     }
@@ -166,6 +170,12 @@ class EstudianteController extends Controller {
             $leccion->porcentaje_completado = $resumen->porcentaje;
             $leccion->total_items = $resumen->total_items;
             $leccion->completados = $resumen->completados;
+            $stateMeta = $this->_buildLessonStateMeta($leccion, $resumen, $estudiante_id);
+            $leccion->state_label = $stateMeta['label'];
+            $leccion->state_tone = $stateMeta['tone'];
+            $leccion->summary_hint = $stateMeta['summary_hint'];
+            $leccion->cta_label = $stateMeta['cta_label'];
+            $leccion->is_recommended = !empty($stateMeta['is_recommended']);
         }
 
         $curso = $this->cursoModel->obtenerCursoPorId($curso_id);
@@ -178,6 +188,7 @@ class EstudianteController extends Controller {
         }
 
         $courseResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 4);
+        $courseJourney = $this->_buildCourseNextStep($curso_id, $estudiante_id);
 
         require_once __DIR__ . '/../../views/estudiante/lecciones.php';
     }
@@ -278,6 +289,27 @@ class EstudianteController extends Controller {
         $resumenProgreso = $this->leccionModel->obtenerResumenProgreso($leccion_id, $estudiante_id);
         $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
         $courseResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 4);
+        $lessonJourney = $this->_buildLessonJourney($leccion, $teorias, $actividades, $resumenProgreso, $siguienteItem);
+
+        foreach ($teorias as $teoria) {
+            $teoria->is_next = $siguienteItem && $siguienteItem['tipo'] === 'teoria' && (int) $siguienteItem['id'] === (int) $teoria->id;
+        }
+
+        foreach ($actividades as $actividad) {
+            $actividad->is_next = $siguienteItem && $siguienteItem['tipo'] === 'actividad' && (int) $siguienteItem['id'] === (int) $actividad->id;
+            if (!empty($actividad->completada)) {
+                $actividad->student_status_label = 'Completada';
+                $actividad->student_status_copy = isset($actividad->calificacion)
+                    ? 'Ya la resolviste. Resultado registrado: ' . $actividad->calificacion . ' pts.'
+                    : 'Ya la resolviste. Puedes entrar para revisar o practicar otra vez.';
+            } elseif ($actividad->is_next) {
+                $actividad->student_status_label = 'Sigue aqui';
+                $actividad->student_status_copy = 'Esta es la practica que mejor mantiene tu ritmo ahora mismo.';
+            } else {
+                $actividad->student_status_label = 'Pendiente';
+                $actividad->student_status_copy = 'Aun no la respondes. Puedes dejarla para despues si primero quieres cerrar otra teoria.';
+            }
+        }
 
         require_once __DIR__ . '/../../views/estudiante/contenido_leccion.php';
     }
@@ -565,6 +597,13 @@ class EstudianteController extends Controller {
         }
 
         // Pasar la configuración a la vista
+        $resumenLeccion = $this->leccionModel->obtenerResumenProgreso($leccion->id, $estudiante_id);
+        $nextActionUrl = $this->_buildStudentNextActionUrl($siguienteItem, $leccion->id);
+        $activityOutcome = $this->_buildActivityOutcome($actividad, $respuestaExistente, $siguienteItem, $resumenLeccion);
+        $activitySummaryCta = $this->_buildStudentNextActionLabel($siguienteItem, $respuestaExistente, $leccion->id);
+        $activityGuidance = $this->_buildActivityGuidance($actividad, $respuestaExistente, $siguienteItem, $resumenLeccion);
+        $activityLanguageResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 3);
+
         $data = [
             'actividad' => $actividad,
             'leccion' => $leccion,
@@ -572,7 +611,13 @@ class EstudianteController extends Controller {
             'configActividad' => $configActividad,
             'respuestaExistente' => $respuestaExistente,
             'respuestasUsuario' => $respuestasUsuario,
-            'siguienteItem' => $siguienteItem
+            'siguienteItem' => $siguienteItem,
+            'resumenLeccion' => $resumenLeccion,
+            'activityOutcome' => $activityOutcome,
+            'nextActionUrl' => $nextActionUrl,
+            'activitySummaryCta' => $activitySummaryCta,
+            'activityGuidance' => $activityGuidance,
+            'activityLanguageResources' => $activityLanguageResources
         ];
 
         // Extraer variables para la vista
@@ -649,6 +694,18 @@ class EstudianteController extends Controller {
             $_SESSION['mensaje'] = 'Respuesta enviada exitosamente.' . ($puntuacion !== null ? " Puntuación: {$puntuacion}" : '');
         } else {
             $_SESSION['error'] = 'Error al guardar la respuesta.';
+        }
+
+        if ($resultado) {
+            $resumenLeccion = $this->leccionModel->obtenerResumenProgreso($leccion->id, $estudiante_id);
+            $siguienteItem = $this->_determinarSiguienteItem($leccion->id, $estudiante_id);
+            $message = $this->_buildResponseSuccessMessage($actividad, $puntuacion, $resumenLeccion, $siguienteItem);
+
+            unset($_SESSION['mensaje']);
+            $this->flash('success', $message);
+        } else {
+            unset($_SESSION['error']);
+            $this->flash('error', 'Error al guardar la respuesta.');
         }
 
         // Redirigir de vuelta a la actividad para ver resultados
@@ -752,6 +809,333 @@ class EstudianteController extends Controller {
                 'mensaje' => 'Volver al inicio del curso'
             ];
         }
+    }
+
+    private function _buildStudentNextActionUrl($siguienteItem, $leccion_id) {
+        if (!$siguienteItem || empty($siguienteItem['tipo'])) {
+            return url('/estudiante/lecciones/' . $leccion_id . '/contenido');
+        }
+
+        if ($siguienteItem['tipo'] === 'actividad') {
+            return url('/estudiante/actividades/' . $siguienteItem['id']);
+        }
+
+        if ($siguienteItem['tipo'] === 'leccion') {
+            return url('/estudiante/lecciones/' . $siguienteItem['id'] . '/contenido');
+        }
+
+        if ($siguienteItem['tipo'] === 'teoria') {
+            return url('/estudiante/lecciones/' . $leccion_id . '/contenido#teoria-' . $siguienteItem['id']);
+        }
+
+        return url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones');
+    }
+
+    private function _buildActivityOutcome($actividad, $respuestaExistente, $siguienteItem, $resumenLeccion) {
+        if (!$respuestaExistente) {
+            return [
+                'label' => 'Lista para resolver',
+                'tone' => 'info',
+                'headline' => 'Completa esta practica para consolidar la leccion.',
+                'summary' => 'Cuando envies tu respuesta, aqui veras un cierre mas claro con tu avance y el siguiente paso recomendado.',
+                'next_hint' => 'Empieza por responder con calma y luego revisa tu resultado.',
+                'score' => null,
+                'max_score' => (float) ($actividad->puntos_maximos ?? 0),
+                'lesson_progress' => (int) ($resumenLeccion->porcentaje ?? 0),
+            ];
+        }
+
+        $puntuacion = $respuestaExistente->puntuacion;
+        $maxPuntos = (float) ($actividad->puntos_maximos ?? 0);
+
+        if ($puntuacion === null && in_array($actividad->tipo_actividad, ['escritura', 'escucha'], true)) {
+            $label = 'En revision';
+            $tone = 'info';
+            $headline = 'Tu respuesta ya esta guardada y quedo pendiente de revision.';
+            $summary = 'Mientras llega la calificacion, puedes seguir con la leccion sin perder continuidad.';
+        } elseif ($maxPuntos > 0 && (float) $puntuacion >= $maxPuntos) {
+            $label = 'Bien resuelta';
+            $tone = 'success';
+            $headline = 'Actividad completada con el puntaje maximo.';
+            $summary = 'Buen cierre. Mantienes el ritmo de esta leccion con una respuesta solida.';
+        } elseif ((float) $puntuacion > 0) {
+            $label = 'Resuelta con margen';
+            $tone = 'accent';
+            $headline = 'La actividad ya cuenta, pero aun hay espacio para mejorar.';
+            $summary = 'Te conviene comparar tus errores con la solucion correcta y luego seguir.';
+        } else {
+            $label = 'Conviene repasar';
+            $tone = 'warning';
+            $headline = 'La respuesta quedo registrada, pero esta actividad todavia no esta dominada.';
+            $summary = 'No hace falta atascarse: repasa la pista correcta y vuelve a intentarla cuando quieras.';
+        }
+
+        $nextHint = 'Vuelve a la leccion para seguir con el flujo normal.';
+        if ($siguienteItem && !empty($siguienteItem['tipo'])) {
+            if ($siguienteItem['tipo'] === 'teoria') {
+                $nextHint = 'Siguiente paso: termina la teoria pendiente antes de la proxima practica.';
+            } elseif ($siguienteItem['tipo'] === 'actividad') {
+                $nextHint = 'Siguiente paso: pasa a la proxima actividad de esta leccion.';
+            } elseif ($siguienteItem['tipo'] === 'leccion') {
+                $nextHint = 'Siguiente paso: esta leccion ya esta cerrada; puedes abrir la siguiente.';
+            } elseif ($siguienteItem['tipo'] === 'curso_completado') {
+                $nextHint = 'Has cerrado esta leccion y ya puedes volver al curso completo.';
+            }
+        }
+
+        return [
+            'label' => $label,
+            'tone' => $tone,
+            'headline' => $headline,
+            'summary' => $summary,
+            'next_hint' => $nextHint,
+            'score' => $puntuacion,
+            'max_score' => $maxPuntos > 0 ? $maxPuntos : null,
+            'lesson_progress' => (int) ($resumenLeccion->porcentaje ?? 0),
+        ];
+    }
+
+    private function _buildDashboardFocus($cursosInscritos, $estudiante_id) {
+        if (empty($cursosInscritos)) {
+            return null;
+        }
+
+        $focusCourse = null;
+        foreach ($cursosInscritos as $curso) {
+            if (($curso->estado_progreso ?? '') === 'en_progreso') {
+                $focusCourse = $curso;
+                break;
+            }
+        }
+
+        if ($focusCourse === null) {
+            $focusCourse = $cursosInscritos[0];
+        }
+
+        $nextStep = $this->_buildCourseNextStep($focusCourse->id, $estudiante_id);
+
+        return [
+            'course' => $focusCourse,
+            'next_step' => $nextStep,
+            'headline' => $nextStep['headline'] ?? ('Retoma ' . $focusCourse->titulo),
+            'summary' => $nextStep['summary'] ?? 'Entra directo a lo siguiente que te conviene completar.',
+            'cta_label' => $nextStep['cta_label'] ?? 'Continuar ahora',
+            'url' => $nextStep['url'] ?? url('/estudiante/cursos/' . $focusCourse->id . '/continuar'),
+        ];
+    }
+
+    private function _buildCourseNextStep($curso_id, $estudiante_id) {
+        $lecciones = $this->leccionModel->obtenerLeccionesPorCurso($curso_id);
+
+        foreach ($lecciones as $leccion) {
+            $resumen = $this->leccionModel->obtenerResumenProgreso($leccion->id, $estudiante_id);
+            if (!empty($resumen->completada)) {
+                continue;
+            }
+
+            $siguienteItem = $this->_determinarSiguienteItem($leccion->id, $estudiante_id);
+            $url = $this->_buildStudentNextActionUrl($siguienteItem, $leccion->id);
+
+            if ($siguienteItem && ($siguienteItem['tipo'] ?? '') === 'teoria') {
+                return [
+                    'label' => 'Continua con teoria',
+                    'tone' => 'info',
+                    'headline' => 'Sigue en ' . $leccion->titulo,
+                    'summary' => 'Empieza por "' . $siguienteItem['titulo'] . '" para entrar a la practica con contexto.',
+                    'cta_label' => 'Ir a teoria',
+                    'url' => $url,
+                    'lesson_id' => $leccion->id,
+                    'lesson_title' => $leccion->titulo,
+                    'type' => 'teoria',
+                ];
+            }
+
+            if ($siguienteItem && ($siguienteItem['tipo'] ?? '') === 'actividad') {
+                return [
+                    'label' => 'Continua con practica',
+                    'tone' => 'accent',
+                    'headline' => 'Tu siguiente practica esta en ' . $leccion->titulo,
+                    'summary' => 'Ya puedes entrar a "' . $siguienteItem['titulo'] . '" para mantener el ritmo.',
+                    'cta_label' => 'Resolver actividad',
+                    'url' => $url,
+                    'lesson_id' => $leccion->id,
+                    'lesson_title' => $leccion->titulo,
+                    'type' => 'actividad',
+                ];
+            }
+
+            return [
+                'label' => 'Retoma el curso',
+                'tone' => 'info',
+                'headline' => 'Vuelve a ' . $leccion->titulo,
+                'summary' => 'Abre la leccion para ver todo lo pendiente y seguir sin perder el hilo.',
+                'cta_label' => 'Abrir leccion',
+                'url' => url('/estudiante/lecciones/' . $leccion->id . '/contenido'),
+                'lesson_id' => $leccion->id,
+                'lesson_title' => $leccion->titulo,
+                'type' => 'leccion',
+            ];
+        }
+
+        return [
+            'label' => 'Curso al dia',
+            'tone' => 'success',
+            'headline' => 'Has completado todo lo disponible en este curso.',
+            'summary' => 'Puedes repasar cualquier leccion o explorar el recorrido completo otra vez.',
+            'cta_label' => 'Ver lecciones',
+            'url' => url('/estudiante/cursos/' . $curso_id . '/lecciones'),
+            'type' => 'curso_completado',
+        ];
+    }
+
+    private function _buildLessonStateMeta($leccion, $resumen, $estudiante_id) {
+        $nextStep = $this->_determinarSiguienteItem($leccion->id, $estudiante_id);
+
+        if (($resumen->estado ?? '') === 'completada') {
+            return [
+                'label' => 'Completada',
+                'tone' => 'success',
+                'summary_hint' => 'Ya cerraste esta leccion. Puedes repasarla o saltar al siguiente bloque.',
+                'cta_label' => 'Repasar leccion',
+                'is_recommended' => false,
+            ];
+        }
+
+        if ($nextStep && ($nextStep['tipo'] ?? '') === 'teoria') {
+            return [
+                'label' => 'Empieza por teoria',
+                'tone' => 'info',
+                'summary_hint' => 'Tu siguiente paso mas claro es "' . $nextStep['titulo'] . '".',
+                'cta_label' => 'Leer teoria',
+                'is_recommended' => true,
+            ];
+        }
+
+        if ($nextStep && ($nextStep['tipo'] ?? '') === 'actividad') {
+            return [
+                'label' => 'Lista para practicar',
+                'tone' => 'accent',
+                'summary_hint' => 'Ya puedes entrar a "' . $nextStep['titulo'] . '".',
+                'cta_label' => 'Resolver actividad',
+                'is_recommended' => true,
+            ];
+        }
+
+        return [
+            'label' => ($resumen->estado ?? '') === 'en_progreso' ? 'En progreso' : 'Pendiente',
+            'tone' => ($resumen->estado ?? '') === 'en_progreso' ? 'accent' : 'warning',
+            'summary_hint' => 'Abre la leccion para ver teoria, practica y siguiente paso recomendado.',
+            'cta_label' => 'Abrir leccion',
+            'is_recommended' => false,
+        ];
+    }
+
+    private function _buildLessonJourney($leccion, $teorias, $actividades, $resumenProgreso, $siguienteItem) {
+        $remainingTheory = max(0, (int) ($resumenProgreso->total_teorias ?? 0) - (int) ($resumenProgreso->teorias_completadas ?? 0));
+        $remainingActivities = max(0, (int) ($resumenProgreso->total_actividades ?? 0) - (int) ($resumenProgreso->actividades_completadas ?? 0));
+
+        $stateLabel = 'Pendiente';
+        $stateTone = 'warning';
+        if (($resumenProgreso->estado ?? '') === 'completada') {
+            $stateLabel = 'Completada';
+            $stateTone = 'success';
+        } elseif (($resumenProgreso->estado ?? '') === 'en_progreso') {
+            $stateLabel = 'En progreso';
+            $stateTone = 'accent';
+        }
+
+        $nextCopy = 'Sigue con la teoria para entrar mejor a la practica.';
+        if ($siguienteItem && !empty($siguienteItem['titulo'])) {
+            $nextCopy = $siguienteItem['mensaje'] . ': ' . $siguienteItem['titulo'];
+        } elseif (($resumenProgreso->estado ?? '') === 'completada') {
+            $nextCopy = 'Leccion cerrada. Puedes repasar o abrir la siguiente.';
+        }
+
+        return [
+            'state_label' => $stateLabel,
+            'state_tone' => $stateTone,
+            'remaining_theory' => $remainingTheory,
+            'remaining_activities' => $remainingActivities,
+            'completed_items_copy' => (int) ($resumenProgreso->teorias_completadas ?? 0) . ' piezas de teoria y ' . (int) ($resumenProgreso->actividades_completadas ?? 0) . ' actividades.',
+            'remaining_items_copy' => $remainingTheory . ' teorias y ' . $remainingActivities . ' actividades para cerrar esta leccion.',
+            'next_copy' => $nextCopy,
+            'practice_ready' => $remainingTheory === 0 && !empty($actividades),
+        ];
+    }
+
+    private function _buildStudentNextActionLabel($siguienteItem, $respuestaExistente, $leccion_id) {
+        if (!$respuestaExistente) {
+            return 'Volver a la leccion';
+        }
+
+        if (!$siguienteItem || empty($siguienteItem['tipo'])) {
+            return 'Volver a la leccion';
+        }
+
+        if ($siguienteItem['tipo'] === 'teoria') {
+            return 'Ir a teoria';
+        }
+
+        if ($siguienteItem['tipo'] === 'actividad') {
+            return 'Ir a la siguiente actividad';
+        }
+
+        if ($siguienteItem['tipo'] === 'leccion') {
+            return 'Abrir siguiente leccion';
+        }
+
+        if ($siguienteItem['tipo'] === 'curso_completado') {
+            return 'Volver al curso';
+        }
+
+        return 'Volver a la leccion';
+    }
+
+    private function _buildActivityGuidance($actividad, $respuestaExistente, $siguienteItem, $resumenLeccion) {
+        $guidance = [
+            [
+                'title' => 'Antes de responder',
+                'copy' => !empty($actividad->instrucciones)
+                    ? $actividad->instrucciones
+                    : 'Lee con calma la consigna y usa el recurso de apoyo solo si te destraba una duda puntual.',
+            ],
+            [
+                'title' => 'Como saber si vas bien',
+                'copy' => !empty($respuestaExistente)
+                    ? 'Tu respuesta ya esta registrada. Usa el feedback de abajo para detectar que conviene repetir o reforzar.'
+                    : 'Busca una respuesta clara, no solo rapida. Si la actividad mezcla varias preguntas, intenta cerrarlas en orden.',
+            ],
+            [
+                'title' => 'Despues de enviar',
+                'copy' => !empty($resumenLeccion->completada)
+                    ? 'Si completas esta practica, la leccion puede quedar cerrada y podras pasar al siguiente bloque.'
+                    : (($siguienteItem && ($siguienteItem['tipo'] ?? '') === 'actividad')
+                        ? 'Cuando termines, lo mas probable es que pases directo a la siguiente actividad de la leccion.'
+                        : 'Cuando termines, la pantalla te dira con claridad si te conviene volver a teoria, seguir o repasar.'),
+            ],
+        ];
+
+        return $guidance;
+    }
+
+    private function _buildResponseSuccessMessage($actividad, $puntuacion, $resumenLeccion, $siguienteItem) {
+        $message = 'Respuesta guardada.';
+
+        if ($puntuacion !== null) {
+            $message .= ' Resultado: ' . rtrim(rtrim(number_format((float) $puntuacion, 2, '.', ''), '0'), '.') . ' puntos.';
+        } elseif (in_array($actividad->tipo_actividad, ['escritura', 'escucha'], true)) {
+            $message .= ' Quedo pendiente de revision.';
+        }
+
+        if (!empty($resumenLeccion->completada)) {
+            return $message . ' Leccion completada.';
+        }
+
+        if ($siguienteItem && !empty($siguienteItem['titulo'])) {
+            return $message . ' Siguiente paso: ' . $siguienteItem['titulo'] . '.';
+        }
+
+        return $message . ' Vuelve a la leccion para seguir con el recorrido.';
     }
 
     private function _findContentById($array, $id) {

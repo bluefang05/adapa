@@ -22,7 +22,7 @@ class Leccion {
     }
 
     public function crearLeccion($datos) {
-        $this->db->query("INSERT INTO lecciones (curso_id, titulo, descripcion, orden, duracion_minutos, es_obligatoria, estado) VALUES (:curso_id, :titulo, :descripcion, :orden, :duracion_minutos, :es_obligatoria, :estado)");
+        $this->db->query("INSERT INTO lecciones (curso_id, titulo, descripcion, orden, duracion_minutos, es_obligatoria, estado, estado_editorial) VALUES (:curso_id, :titulo, :descripcion, :orden, :duracion_minutos, :es_obligatoria, :estado, :estado_editorial)");
 
         $this->db->bind(':curso_id', $datos['curso_id']);
         $this->db->bind(':titulo', $datos['titulo']);
@@ -31,6 +31,7 @@ class Leccion {
         $this->db->bind(':duracion_minutos', $datos['duracion_minutos']);
         $this->db->bind(':es_obligatoria', $datos['es_obligatoria']);
         $this->db->bind(':estado', $datos['estado']);
+        $this->db->bind(':estado_editorial', $datos['estado_editorial'] ?? 'borrador');
 
         return $this->db->execute();
     }
@@ -40,7 +41,7 @@ class Leccion {
     }
 
     public function actualizarLeccion($id, $datos) {
-        $this->db->query("UPDATE lecciones SET titulo = :titulo, descripcion = :descripcion, orden = :orden, duracion_minutos = :duracion_minutos, es_obligatoria = :es_obligatoria, estado = :estado WHERE id = :id");
+        $this->db->query("UPDATE lecciones SET titulo = :titulo, descripcion = :descripcion, orden = :orden, duracion_minutos = :duracion_minutos, es_obligatoria = :es_obligatoria, estado = :estado, estado_editorial = :estado_editorial WHERE id = :id");
 
         $this->db->bind(':id', $id);
         $this->db->bind(':titulo', $datos['titulo']);
@@ -49,6 +50,7 @@ class Leccion {
         $this->db->bind(':duracion_minutos', $datos['duracion_minutos']);
         $this->db->bind(':es_obligatoria', $datos['es_obligatoria']);
         $this->db->bind(':estado', $datos['estado']);
+        $this->db->bind(':estado_editorial', $datos['estado_editorial'] ?? 'borrador');
 
         return $this->db->execute();
     }
@@ -87,6 +89,7 @@ class Leccion {
             'duracion_minutos' => $leccion->duracion_minutos,
             'es_obligatoria' => $leccion->es_obligatoria,
             'estado' => 'borrador',
+            'estado_editorial' => 'borrador',
         ];
 
         if (!$this->crearLeccion($datos)) {

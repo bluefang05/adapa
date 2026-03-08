@@ -178,6 +178,22 @@ class ActividadController extends Controller
         }
     }
 
+    private function requestedReturnTo()
+    {
+        $returnTo = trim((string) ($_POST['return_to'] ?? $_GET['return_to'] ?? ''));
+        if ($returnTo === '' || $returnTo[0] !== '/' || str_contains($returnTo, '://') || str_contains($returnTo, "\n")) {
+            return null;
+        }
+
+        return $returnTo;
+    }
+
+    private function redirectToRequestedReturnOr($defaultPath)
+    {
+        $returnTo = $this->requestedReturnTo();
+        $this->redirect($returnTo ?: $defaultPath);
+    }
+
     public function configurar($id)
     {
         [$actividad] = $this->obtenerActividadAutorizada($id);
@@ -194,7 +210,13 @@ class ActividadController extends Controller
             'contenido' => $actividad->contenido
         ];
 
-        $this->redirect('/profesor/actividades/config/' . $actividad->tipo_actividad . '/' . $actividad->leccion_id);
+        $target = '/profesor/actividades/config/' . $actividad->tipo_actividad . '/' . $actividad->leccion_id;
+        $returnTo = $this->requestedReturnTo();
+        if ($returnTo) {
+            $target .= '?return_to=' . rawurlencode($returnTo);
+        }
+
+        $this->redirect($target);
     }
 
     public function preview($id)
@@ -257,7 +279,7 @@ class ActividadController extends Controller
 
             if ($this->actividadModel->crearActividad($datos)) {
                 $this->flash('success', 'Actividad creada exitosamente');
-                $this->redirect('/profesor/lecciones/' . $leccion_id . '/actividades');
+                $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $leccion_id . '/actividades');
             }
 
             $error = 'Error al crear la actividad';
@@ -292,7 +314,7 @@ class ActividadController extends Controller
 
             if ($this->actividadModel->actualizarActividad($id, $datos)) {
                 $this->flash('success', 'Actividad actualizada exitosamente');
-                $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+                $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
             }
 
             $error = 'Error al actualizar la actividad';
@@ -319,7 +341,7 @@ class ActividadController extends Controller
             $this->flash('error', 'Error al eliminar la actividad');
         }
 
-        $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
     }
 
     public function duplicate($id)
@@ -332,11 +354,19 @@ class ActividadController extends Controller
         $nuevoId = $this->actividadModel->duplicarActividad($id);
         if ($nuevoId) {
             $this->flash('success', 'Actividad duplicada correctamente.');
+            if (($_POST['continue_to'] ?? $_GET['continue_to'] ?? '') === 'edit') {
+                $returnTo = $this->requestedReturnTo();
+                $target = '/profesor/actividad/edit/' . $nuevoId;
+                if ($returnTo) {
+                    $target .= '?return_to=' . rawurlencode($returnTo);
+                }
+                $this->redirect($target);
+            }
         } else {
             $this->flash('error', 'No se pudo duplicar la actividad.');
         }
 
-        $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
     }
 
     public function moveUp($id)
@@ -356,7 +386,7 @@ class ActividadController extends Controller
 
         [$actividad] = $this->obtenerActividadAutorizada($id);
         $this->actividadModel->moverActividad($id, $direction);
-        $this->redirect('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
     }
 
     public function config($tipo, $leccion_id)
@@ -389,7 +419,7 @@ class ActividadController extends Controller
                 if ($this->actividadModel->actualizarActividad($temp['actividad_id'], $datosBase)) {
                     unset($_SESSION['actividad_temp']);
                     $this->flash('success', 'Actividad actualizada exitosamente');
-                    $this->redirect('/profesor/lecciones/' . $leccion_id . '/actividades');
+                    $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $leccion_id . '/actividades');
                 }
 
                 $error = 'Error al actualizar la actividad';
@@ -399,7 +429,7 @@ class ActividadController extends Controller
                 if ($this->actividadModel->crearActividad($datosCrear)) {
                     unset($_SESSION['actividad_temp']);
                     $this->flash('success', 'Actividad creada exitosamente');
-                    $this->redirect('/profesor/lecciones/' . $leccion_id . '/actividades');
+                    $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $leccion_id . '/actividades');
                 }
 
                 $error = 'Error al crear la actividad';

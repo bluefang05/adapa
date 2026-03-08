@@ -124,6 +124,9 @@ $currentTicketsUrl = '/admin/tickets' . ($ticketQuery !== '' ? '?' . $ticketQuer
                 <?php if (!empty($ownerId)): ?>
                     <input type="hidden" name="owner_id" value="<?php echo (int) $ownerId; ?>">
                 <?php endif; ?>
+                <?php if (!empty($courseId)): ?>
+                    <input type="hidden" name="course_id" value="<?php echo (int) $courseId; ?>">
+                <?php endif; ?>
                 <div class="col-md-2 d-flex gap-2">
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filtrar</button>
                     <a href="<?php echo url('/admin/tickets'); ?>" class="btn btn-outline-secondary">Limpiar</a>
@@ -132,7 +135,7 @@ $currentTicketsUrl = '/admin/tickets' . ($ticketQuery !== '' ? '?' . $ticketQuer
         </div>
     </section>
 
-    <?php if (!empty($selectedReporter) || !empty($selectedOwner)): ?>
+    <?php if (!empty($selectedReporter) || !empty($selectedOwner) || !empty($selectedCourse)): ?>
         <section class="panel mb-4">
             <div class="panel-body d-flex flex-wrap gap-3 align-items-center justify-content-between">
                 <div class="d-flex flex-column gap-2">
@@ -148,12 +151,88 @@ $currentTicketsUrl = '/admin/tickets' . ($ticketQuery !== '' ? '?' . $ticketQuer
                             Ligados a cursos de <?php echo htmlspecialchars(trim($selectedOwner->nombre . ' ' . $selectedOwner->apellido)); ?>
                         </span>
                     <?php endif; ?>
+                    <?php if (!empty($selectedCourse)): ?>
+                        <span class="soft-badge badge-accent">
+                            <i class="bi bi-journal-bookmark"></i>
+                            Solo tickets del curso <?php echo htmlspecialchars($selectedCourse->titulo); ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
-                <a href="<?php echo url('/admin/tickets'); ?>" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-x-circle"></i> Quitar enfoque
-                </a>
+                <div class="d-flex gap-2 flex-wrap">
+                    <?php if (!empty($selectedCourse)): ?>
+                        <a href="<?php echo url('/admin/cursos/estructura/' . (int) $selectedCourse->id); ?>" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-diagram-3"></i> Ver estructura
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?php echo url('/admin/tickets'); ?>" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-x-circle"></i> Quitar enfoque
+                    </a>
+                </div>
             </div>
         </section>
+    <?php endif; ?>
+
+    <?php if (!empty($ticketFocusSummary['by_course']) || !empty($ticketFocusSummary['by_issue'])): ?>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <section class="panel h-100">
+                    <div class="panel-body">
+                        <div class="section-title">
+                            <h2>Cursos con mas ruido</h2>
+                            <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-primary btn-sm">Ver catalogo</a>
+                        </div>
+                        <?php if (empty($ticketFocusSummary['by_course'])): ?>
+                            <div class="empty-state">El filtro actual no concentra tickets en un curso concreto.</div>
+                        <?php else: ?>
+                            <div class="stack-list">
+                                <?php foreach ($ticketFocusSummary['by_course'] as $courseLabel => $ticketCount): ?>
+                                    <article class="stack-item">
+                                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                            <div>
+                                                <div class="stack-item-title"><?php echo htmlspecialchars($courseLabel); ?></div>
+                                                <div class="stack-item-subtitle">Curso que concentra incidencias dentro del filtro actual.</div>
+                                            </div>
+                                            <span class="soft-badge warning"><?php echo (int) $ticketCount; ?> tickets</span>
+                                        </div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            </div>
+            <div class="col-lg-6">
+                <section class="panel h-100">
+                    <div class="panel-body">
+                        <div class="section-title">
+                            <h2>Tipos que mas se repiten</h2>
+                            <span class="soft-badge"><i class="bi bi-bar-chart"></i> Lectura del filtro</span>
+                        </div>
+                        <?php if (empty($ticketFocusSummary['by_issue'])): ?>
+                            <div class="empty-state">No hay tipologias suficientes para destacar.</div>
+                        <?php else: ?>
+                            <div class="stack-list">
+                                <?php foreach ($ticketFocusSummary['by_issue'] as $issueLabel => $ticketCount): ?>
+                                    <article class="stack-item">
+                                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                            <div>
+                                                <div class="stack-item-title"><?php echo htmlspecialchars($issueLabel); ?></div>
+                                                <div class="stack-item-subtitle">Casos del mismo tipo dentro del filtro actual.</div>
+                                            </div>
+                                            <span class="soft-badge info"><?php echo (int) $ticketCount; ?> casos</span>
+                                        </div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="course-meta mt-3">
+                                <span><i class="bi bi-person-workspace"></i> <?php echo (int) ($ticketFocusSummary['by_role']['profesor'] ?? 0); ?> de profesor</span>
+                                <span><i class="bi bi-mortarboard"></i> <?php echo (int) ($ticketFocusSummary['by_role']['estudiante'] ?? 0); ?> de estudiante</span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            </div>
+        </div>
     <?php endif; ?>
 
     <section>
@@ -245,6 +324,11 @@ $currentTicketsUrl = '/admin/tickets' . ($ticketQuery !== '' ? '?' . $ticketQuer
                                     </div>
                                 <?php endif; ?>
 
+                                <section class="production-hint-card tone-<?php echo htmlspecialchars($ticket->priority_tone ?? 'info'); ?> mb-3">
+                                    <div class="production-hint-title">Siguiente accion recomendada</div>
+                                    <div class="small text-muted"><?php echo htmlspecialchars($ticket->recommended_action ?? ''); ?></div>
+                                </section>
+
                                 <div class="activity-preview-card mb-3">
                                     <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
                                         <div class="fw-semibold">Notas internas</div>
@@ -290,6 +374,11 @@ $currentTicketsUrl = '/admin/tickets' . ($ticketQuery !== '' ? '?' . $ticketQuer
                                     <?php if (!empty($ticket->es_profesor)): ?>
                                         <a href="<?php echo url('/admin/profesores?search=' . urlencode(trim(($ticket->nombre ?? '') . ' ' . ($ticket->apellido ?? '')))); ?>" class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-person-workspace"></i> Ver profesor
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($ticket->curso_id)): ?>
+                                        <a href="<?php echo url('/admin/cursos/estructura/' . (int) $ticket->curso_id); ?>" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-diagram-3"></i> Estructura del curso
                                         </a>
                                     <?php endif; ?>
                                     <?php if (!empty($ticket->reference_url)): ?>

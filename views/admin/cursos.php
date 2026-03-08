@@ -6,16 +6,28 @@ require_once __DIR__ . '/../../models/Curso.php';
 <?php
 $publicCourses = 0;
 $fullRoutes = 0;
+$readyToReviewCourses = 0;
+$publicCoursesWithGaps = 0;
 $courseQuery = $_SERVER['QUERY_STRING'] ?? '';
 $currentCoursesUrl = '/admin/cursos' . ($courseQuery !== '' ? '?' . $courseQuery : '');
 
 foreach ($courses as $course) {
+    $editorialState = app_course_editorial_snapshot($course);
+
     if (!empty($course->es_publico)) {
         $publicCourses++;
     }
 
     if (Curso::esRutaCompleta($course)) {
         $fullRoutes++;
+    }
+
+    if (($editorialState['label'] ?? '') === 'Listo para revisar') {
+        $readyToReviewCourses++;
+    }
+
+    if (($editorialState['label'] ?? '') === 'Visible con ajustes') {
+        $publicCoursesWithGaps++;
     }
 }
 ?>
@@ -43,6 +55,31 @@ foreach ($courses as $course) {
                 <div class="metric-value"><?php echo $fullRoutes; ?></div>
                 <div class="metric-note">Cursos que cubren mas de un tramo CEFR.</div>
             </div>
+            <div class="metric-card">
+                <div class="metric-label">Listos para revisar</div>
+                <div class="metric-value"><?php echo $readyToReviewCourses; ?></div>
+                <div class="metric-note">Cursos con base suficiente, pero aun no empujados del todo.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Publicos con ajustes</div>
+                <div class="metric-value"><?php echo $publicCoursesWithGaps; ?></div>
+                <div class="metric-note">Oferta visible que todavia conviene revisar editorialmente.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Sin lecciones</div>
+                <div class="metric-value"><?php echo (int) ($catalogSummary['without_lessons'] ?? 0); ?></div>
+                <div class="metric-note">Cursos que aun no tienen recorrido base.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Sin practica</div>
+                <div class="metric-value"><?php echo (int) ($catalogSummary['without_practice'] ?? 0); ?></div>
+                <div class="metric-note">Cursos que ya necesitan convertir teoria en actividad.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Con tickets abiertos</div>
+                <div class="metric-value"><?php echo (int) ($catalogSummary['with_open_tickets'] ?? 0); ?></div>
+                <div class="metric-note">Cursos donde soporte ya esta dando senales.</div>
+            </div>
         </div>
     </section>
 
@@ -54,7 +91,7 @@ foreach ($courses as $course) {
                 <h2>Filtros</h2>
             </div>
             <form method="GET" action="<?php echo url('/admin/cursos'); ?>" class="row g-3 align-items-end">
-                <div class="col-lg-5">
+                <div class="col-lg-4">
                     <label class="form-label" for="teacher">Responsable</label>
                     <select id="teacher" name="teacher" class="form-select">
                         <option value="0">Todos</option>
@@ -65,7 +102,7 @@ foreach ($courses as $course) {
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-lg-2 col-md-3">
                     <label class="form-label" for="publico">Visibilidad</label>
                     <select id="publico" name="publico" class="form-select">
                         <option value="">Todas</option>
@@ -73,7 +110,7 @@ foreach ($courses as $course) {
                         <option value="privado" <?php echo ($visibilityFilter ?? '') === 'privado' ? 'selected' : ''; ?>>Privados</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-3">
                     <label class="form-label" for="estado">Estado</label>
                     <select id="estado" name="estado" class="form-select">
                         <option value="">Todos</option>
@@ -84,7 +121,18 @@ foreach ($courses as $course) {
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-lg-2 col-md-3">
+                    <label class="form-label" for="editorial">Editorial</label>
+                    <select id="editorial" name="editorial" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="en_configuracion" <?php echo ($editorialFilter ?? '') === 'en_configuracion' ? 'selected' : ''; ?>>En configuracion</option>
+                        <option value="en_construccion" <?php echo ($editorialFilter ?? '') === 'en_construccion' ? 'selected' : ''; ?>>En construccion</option>
+                        <option value="listo_para_revisar" <?php echo ($editorialFilter ?? '') === 'listo_para_revisar' ? 'selected' : ''; ?>>Listo para revisar</option>
+                        <option value="visible_con_ajustes" <?php echo ($editorialFilter ?? '') === 'visible_con_ajustes' ? 'selected' : ''; ?>>Visible con ajustes</option>
+                        <option value="publicado" <?php echo ($editorialFilter ?? '') === 'publicado' ? 'selected' : ''; ?>>Publicado</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filtrar</button>
                     <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">Limpiar</a>
                 </div>
@@ -166,6 +214,7 @@ foreach ($courses as $course) {
                             </tr>
                         <?php else: ?>
                             <?php foreach ($courses as $course): ?>
+                                <?php $editorialState = app_course_editorial_snapshot($course); ?>
                                 <tr>
                                     <td>
                                         <input class="form-check-input course-select-item" type="checkbox" name="course_ids[]" value="<?php echo (int) $course->id; ?>" form="course-bulk-form" aria-label="Seleccionar curso <?php echo (int) $course->id; ?>">
@@ -188,7 +237,17 @@ foreach ($courses as $course) {
                                                         <?php echo !empty($course->inscripcion_abierta) ? 'Inscripcion abierta' : 'Inscripcion cerrada'; ?>
                                                     </span>
                                                     <span class="soft-badge"><?php echo htmlspecialchars(ucfirst($course->estado ?? 'activo')); ?></span>
+                                                    <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone'] ?? 'info'); ?>">
+                                                        <?php echo htmlspecialchars($editorialState['label'] ?? 'En progreso'); ?>
+                                                    </span>
+                                                    <span class="soft-badge <?php echo htmlspecialchars($course->admin_focus_tone ?? 'info'); ?>">
+                                                        <?php echo htmlspecialchars($course->admin_focus_label ?? 'Controlado'); ?>
+                                                    </span>
+                                                    <?php if ((int) ($course->open_tickets ?? 0) > 0): ?>
+                                                        <span class="soft-badge warning"><?php echo (int) ($course->open_tickets ?? 0); ?> tickets abiertos</span>
+                                                    <?php endif; ?>
                                                 </div>
+                                                <div class="small text-muted mt-1"><?php echo htmlspecialchars($course->admin_focus_hint ?? ($editorialState['hint'] ?? '')); ?></div>
                                             </div>
                                         </div>
                                     </td>
@@ -213,6 +272,9 @@ foreach ($courses as $course) {
                                             </a>
                                             <a href="<?php echo url('/admin/cursos/estructura/' . $course->id); ?>" class="btn btn-sm btn-outline-primary" title="Ver estructura" aria-label="Ver estructura de <?php echo htmlspecialchars($course->titulo); ?>">
                                                 <i class="bi bi-diagram-3"></i>
+                                            </a>
+                                            <a href="<?php echo url('/admin/tickets?course_id=' . $course->id); ?>" class="btn btn-sm btn-outline-primary" title="Ver tickets del curso" aria-label="Ver tickets del curso <?php echo htmlspecialchars($course->titulo); ?>">
+                                                <i class="bi bi-life-preserver"></i>
                                             </a>
                                             <a href="<?php echo url('/admin/cursos/edit/' . $course->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso" aria-label="Editar curso <?php echo htmlspecialchars($course->titulo); ?>">
                                                 <i class="bi bi-pencil"></i>
@@ -252,6 +314,11 @@ foreach ($courses as $course) {
                                                 </button>
                                             </form>
                                         </div>
+                                        <?php if ((int) ($course->ticket_total ?? 0) > 0): ?>
+                                            <div class="small text-muted mt-2">
+                                                <?php echo (int) ($course->new_tickets ?? 0); ?> nuevos, <?php echo (int) ($course->lesson_tickets ?? 0); ?> de leccion, <?php echo (int) ($course->activity_tickets ?? 0); ?> de actividad.
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

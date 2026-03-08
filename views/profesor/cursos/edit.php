@@ -1,4 +1,8 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+$courseEditorialStates = app_course_editorial_states();
+$courseEditorialMeta = app_course_editorial_state_meta($curso);
+?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -225,18 +229,44 @@
 
                         <section class="form-section">
                             <div class="section-title">
-                                <h2 class="form-section-title">Acceso e inscripcion</h2>
-                                <span class="soft-badge"><i class="bi bi-shield-lock"></i> Acceso</span>
+                                <h2 class="form-section-title">Workflow editorial y acceso</h2>
+                                <span class="soft-badge"><i class="bi bi-shield-lock"></i> Publicacion</span>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-7">
+                                    <label for="estado_editorial" class="form-label">Estado editorial *</label>
+                                    <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                        <?php foreach ($courseEditorialStates as $stateValue => $stateMeta): ?>
+                                            <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo app_course_editorial_state_value($curso) === $stateValue ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($stateMeta['label']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">Mantiene separado lo que esta listo editorialmente de lo que ya esta visible para alumnos.</div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="production-hint-card tone-info h-100" id="courseEditorialCard">
+                                        <div class="production-hint-title" id="courseEditorialTitle"><?php echo htmlspecialchars($courseEditorialMeta['label']); ?></div>
+                                        <div class="text-muted" id="courseEditorialDescription"><?php echo htmlspecialchars($courseEditorialMeta['description']); ?></div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico" <?php echo $curso->es_publico ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="es_publico">Curso publico y visible para estudiantes</label>
+                                <div class="form-text">Solo se mantiene visible cuando el workflow editorial queda en <strong>Publicado</strong>.</div>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="requiere_codigo" name="requiere_codigo" <?php echo $curso->requiere_codigo ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="requiere_codigo">Requiere codigo de acceso</label>
+                            </div>
+
+                            <div class="alert alert-warning mt-3 mb-0" id="courseEditorialWorkflowHint" hidden>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Mientras el curso no quede en <strong>Publicado</strong>, la visibilidad publica no se sostendra aunque marques la casilla.
                             </div>
 
                             <div id="codigo_acceso_div" class="mt-3" style="display: <?php echo $curso->requiere_codigo ? 'block' : 'none'; ?>;">
@@ -278,6 +308,11 @@ document.getElementById('requiere_codigo').addEventListener('change', function()
 
 const courseVisibilityCheckbox = document.getElementById('es_publico');
 const courseVisibilityHint = document.getElementById('courseVisibilityHint');
+const courseEditorialSelect = document.getElementById('estado_editorial');
+const courseEditorialWorkflowHint = document.getElementById('courseEditorialWorkflowHint');
+const courseEditorialTitle = document.getElementById('courseEditorialTitle');
+const courseEditorialDescription = document.getElementById('courseEditorialDescription');
+const courseEditorialStates = <?php echo json_encode($courseEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 const coursePublishPercentage = <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>;
 
 function syncCourseVisibilityHint() {
@@ -286,11 +321,21 @@ function syncCourseVisibilityHint() {
     }
 
     courseVisibilityHint.hidden = !(courseVisibilityCheckbox.checked && coursePublishPercentage < 100);
+    courseEditorialWorkflowHint.hidden = !(courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado');
 }
 
 if (courseVisibilityCheckbox) {
     courseVisibilityCheckbox.addEventListener('change', syncCourseVisibilityHint);
     syncCourseVisibilityHint();
+}
+
+if (courseEditorialSelect) {
+    courseEditorialSelect.addEventListener('change', function () {
+        const current = courseEditorialStates[courseEditorialSelect.value] || courseEditorialStates.borrador;
+        courseEditorialTitle.textContent = current.label || 'Borrador';
+        courseEditorialDescription.textContent = current.description || '';
+        syncCourseVisibilityHint();
+    });
 }
 
 document.getElementById('generar_codigo').addEventListener('click', function() {
@@ -358,6 +403,14 @@ actualizarPreviewPortada();
 
 if (courseEditForm) {
     courseEditForm.addEventListener('submit', function (event) {
+        if (courseVisibilityCheckbox && courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado') {
+            const shouldContinue = window.confirm('El curso seguira privado mientras no quede en Publicado. ¿Quieres guardarlo asi de todos modos?');
+            if (!shouldContinue) {
+                event.preventDefault();
+            }
+            return;
+        }
+
         if (courseVisibilityCheckbox && courseVisibilityCheckbox.checked && coursePublishPercentage < 100) {
             const shouldContinue = window.confirm('Este curso sigue marcado como publico, pero todavia tiene huecos editoriales. ¿Quieres guardarlo visible de todos modos?');
             if (!shouldContinue) {

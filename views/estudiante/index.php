@@ -1,23 +1,17 @@
 <?php
 require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../models/Curso.php';
+$resourceCategoryLabels = app_useful_resource_category_labels();
 ?>
 
 <div class="container">
     <?php require __DIR__ . '/../partials/flash.php'; ?>
     <?php
-    $cursoContinuar = null;
-    if (!empty($cursosInscritos)) {
-        foreach ($cursosInscritos as $cursoItem) {
-            if (($cursoItem->estado_progreso ?? '') === 'en_progreso') {
-                $cursoContinuar = $cursoItem;
-                break;
-            }
-        }
-        if ($cursoContinuar === null) {
-            $cursoContinuar = $cursosInscritos[0];
-        }
-    }
+    $cursoContinuar = $dashboardFocus['course'] ?? null;
+    $dashboardFocusUrl = $dashboardFocus['url'] ?? ($cursoContinuar ? url('/estudiante/cursos/' . $cursoContinuar->id . '/continuar') : null);
+    $dashboardFocusSummary = $dashboardFocus['summary'] ?? 'Entra directo a lo siguiente que debes completar.';
+    $dashboardFocusHeadline = $dashboardFocus['headline'] ?? ($cursoContinuar ? $cursoContinuar->titulo : 'Sin cursos activos');
+    $dashboardFocusCta = $dashboardFocus['cta_label'] ?? 'Continuar ahora';
     ?>
 
     <section class="page-hero mb-4">
@@ -28,8 +22,8 @@ require_once __DIR__ . '/../../models/Curso.php';
         </p>
         <div class="hero-actions">
             <?php if ($cursoContinuar): ?>
-                <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/continuar'); ?>" class="btn btn-primary">
-                    <i class="bi bi-play-fill"></i> Continuar ahora
+                <a href="<?php echo htmlspecialchars($dashboardFocusUrl); ?>" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> <?php echo htmlspecialchars($dashboardFocusCta); ?>
                 </a>
             <?php endif; ?>
             <a href="<?php echo url('/estudiante/progreso'); ?>" class="btn btn-outline-secondary"><i class="bi bi-graph-up-arrow"></i> Progreso</a>
@@ -64,11 +58,12 @@ require_once __DIR__ . '/../../models/Curso.php';
             <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                     <div class="metric-label">Siguiente accion recomendada</div>
-                    <div class="fw-semibold mt-1"><?php echo htmlspecialchars($cursoContinuar->titulo); ?></div>
-                    <div class="small text-muted mt-1"><?php echo (int) ($cursoContinuar->porcentaje ?? 0); ?>% completado</div>
+                    <div class="fw-semibold mt-1"><?php echo htmlspecialchars($dashboardFocusHeadline); ?></div>
+                    <div class="small text-muted mt-1"><?php echo htmlspecialchars($dashboardFocusSummary); ?></div>
+                    <div class="small text-muted mt-1"><?php echo (int) ($cursoContinuar->porcentaje ?? 0); ?>% completado en <?php echo htmlspecialchars($cursoContinuar->titulo); ?></div>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/continuar'); ?>" class="btn btn-primary">Continuar</a>
+                    <a href="<?php echo htmlspecialchars($dashboardFocusUrl); ?>" class="btn btn-primary"><?php echo htmlspecialchars($dashboardFocusCta); ?></a>
                     <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/lecciones'); ?>" class="btn btn-outline-primary">Ver lecciones</a>
                 </div>
             </div>
@@ -110,19 +105,42 @@ require_once __DIR__ . '/../../models/Curso.php';
                     Ver todos
                 </a>
             </div>
+            <p class="section-copy">Atajos curados para cuando necesitas confirmar pronunciacion, significado o uso sin salirte demasiado de tu ritmo.</p>
             <div class="row g-4">
                 <?php foreach ($recommendedResources as $resource): ?>
                     <div class="col-lg-3 col-md-6">
+                        <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
                         <article class="surface-card useful-resource-card h-100">
                             <div class="card-body d-flex flex-column gap-3">
-                                <div>
-                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
-                                    <h3 class="h5 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
+                                <div class="useful-resource-head">
+                                    <div>
+                                        <div class="resource-kicker">
+                                            <i class="bi <?php echo htmlspecialchars(app_useful_resource_category_icon($resource['category'] ?? 'apoyo')); ?>"></i>
+                                            <?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?>
+                                        </div>
+                                        <h3 class="h5 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
+                                    </div>
+                                    <span class="soft-badge"><?php echo htmlspecialchars($resourceCategoryLabels[$resource['category'] ?? 'apoyo'] ?? 'Apoyo'); ?></span>
                                 </div>
                                 <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
+                                <?php if (!empty($resource['best_for'])): ?>
+                                    <div class="resource-best-for">
+                                        <strong>Mejor para:</strong>
+                                        <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="resource-source-meta">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                    Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
+                                </div>
+                                <div class="resource-language-list">
+                                    <?php foreach (array_slice($resource['languages'] ?? [], 0, 2) as $languageKey): ?>
+                                        <span class="resource-language-pill"><?php echo htmlspecialchars(app_language_label($languageKey, ucfirst($languageKey))); ?></span>
+                                    <?php endforeach; ?>
+                                </div>
                                 <div class="mt-auto">
                                     <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
-                                        <i class="bi bi-box-arrow-up-right"></i> Abrir
+                                        <i class="bi bi-box-arrow-up-right"></i> <?php echo htmlspecialchars($resource['cta_label'] ?? 'Abrir'); ?>
                                     </a>
                                 </div>
                             </div>
@@ -143,6 +161,7 @@ require_once __DIR__ . '/../../models/Curso.php';
                     <?php
                     $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
                     $idiomaBase = Curso::obtenerIdiomaBase($curso);
+                    $courseAction = $courseActionMap[$curso->id] ?? null;
                     ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="course-card">
@@ -173,13 +192,21 @@ require_once __DIR__ . '/../../models/Curso.php';
                                     <span><i class="bi bi-journal-text"></i> <?php echo (int) ($curso->total_lecciones ?? 0); ?> lecciones</span>
                                     <span><i class="bi bi-check2-circle"></i> <?php echo (int) ($curso->completados ?? 0); ?>/<?php echo (int) ($curso->total_items ?? 0); ?> items</span>
                                 </div>
+                                <?php if ($courseAction): ?>
+                                    <div class="small text-muted mt-3">
+                                        <strong><?php echo htmlspecialchars($courseAction['label'] ?? 'Siguiente paso'); ?>:</strong>
+                                        <?php echo htmlspecialchars($courseAction['summary'] ?? 'Abre el curso para seguir.'); ?>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="course-progress">
                                     <div class="progress" style="height: 10px;">
                                         <div class="progress-bar" role="progressbar" style="width: <?php echo (int) ($curso->porcentaje ?? 0); ?>%" aria-valuenow="<?php echo (int) ($curso->porcentaje ?? 0); ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 flex-wrap">
-                                    <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/continuar'); ?>" class="btn btn-success">Continuar</a>
+                                    <a href="<?php echo htmlspecialchars($courseAction['url'] ?? url('/estudiante/cursos/' . $curso->id . '/continuar')); ?>" class="btn btn-success">
+                                        <?php echo htmlspecialchars($courseAction['cta_label'] ?? 'Continuar'); ?>
+                                    </a>
                                     <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-outline-primary">Explorar</a>
                                 </div>
                             </div>

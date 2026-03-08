@@ -96,7 +96,7 @@ class Curso {
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
         $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_base, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, max_estudiantes, fecha_inicio, fecha_fin) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :max_estudiantes, :fecha_inicio, :fecha_fin)");
+        $this->db->query("INSERT INTO cursos (instancia_id, creado_por, titulo, descripcion, idioma, idioma_objetivo, idioma_base, idioma_ensenanza, portada_media_id, nivel_cefr, nivel_cefr_desde, nivel_cefr_hasta, modalidad, es_publico, requiere_codigo, codigo_acceso, tipo_codigo, max_estudiantes, fecha_inicio, fecha_fin, estado, estado_editorial) VALUES (:instancia_id, :creado_por, :titulo, :descripcion, :idioma, :idioma_objetivo, :idioma_base, :idioma_ensenanza, :portada_media_id, :nivel_cefr, :nivel_cefr_desde, :nivel_cefr_hasta, :modalidad, :es_publico, :requiere_codigo, :codigo_acceso, :tipo_codigo, :max_estudiantes, :fecha_inicio, :fecha_fin, :estado, :estado_editorial)");
         
         $this->db->bind(':instancia_id', $datos['instancia_id']);
         $this->db->bind(':creado_por', $datos['creado_por']);
@@ -118,6 +118,8 @@ class Curso {
         $this->db->bind(':max_estudiantes', $datos['max_estudiantes']);
         $this->db->bind(':fecha_inicio', $fechaInicio);
         $this->db->bind(':fecha_fin', $fechaFin);
+        $this->db->bind(':estado', $datos['estado'] ?? 'preparacion');
+        $this->db->bind(':estado_editorial', $datos['estado_editorial'] ?? 'borrador');
 
         return $this->db->execute();
     }
@@ -149,6 +151,8 @@ class Curso {
             'max_estudiantes' => $curso->max_estudiantes ?? 0,
             'fecha_inicio' => $curso->fecha_inicio ?? null,
             'fecha_fin' => $curso->fecha_fin ?? null,
+            'estado' => 'preparacion',
+            'estado_editorial' => 'borrador',
         ];
 
         if (!$this->crearCurso($datos)) {
@@ -165,7 +169,7 @@ class Curso {
         $idiomaObjetivo = $datos['idioma_objetivo'] ?? $datos['idioma'];
         $idiomaBase = $datos['idioma_base'] ?? $datos['idioma_ensenanza'] ?? 'espanol';
 
-        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_base = :idioma_base, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, max_estudiantes = :max_estudiantes WHERE id = :id");
+        $this->db->query("UPDATE cursos SET titulo = :titulo, descripcion = :descripcion, idioma = :idioma, idioma_objetivo = :idioma_objetivo, idioma_base = :idioma_base, idioma_ensenanza = :idioma_ensenanza, portada_media_id = :portada_media_id, nivel_cefr = :nivel_cefr, nivel_cefr_desde = :nivel_cefr_desde, nivel_cefr_hasta = :nivel_cefr_hasta, modalidad = :modalidad, es_publico = :es_publico, requiere_codigo = :requiere_codigo, codigo_acceso = :codigo_acceso, tipo_codigo = :tipo_codigo, max_estudiantes = :max_estudiantes, estado = :estado, estado_editorial = :estado_editorial WHERE id = :id");
         
         $this->db->bind(':id', $id);
         $this->db->bind(':titulo', $datos['titulo']);
@@ -184,6 +188,8 @@ class Curso {
         $this->db->bind(':codigo_acceso', $codigoAcceso);
         $this->db->bind(':tipo_codigo', $tipoCodigo);
         $this->db->bind(':max_estudiantes', $datos['max_estudiantes']);
+        $this->db->bind(':estado', $datos['estado'] ?? 'preparacion');
+        $this->db->bind(':estado_editorial', $datos['estado_editorial'] ?? 'borrador');
 
         return $this->db->execute();
     }

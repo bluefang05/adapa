@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../models/Curso.php';
 require_once __DIR__ . '/../../models/ProfesorPlan.php';
 require_once __DIR__ . '/../../models/Teoria.php';
 require_once __DIR__ . '/../../models/Actividad.php';
+require_once __DIR__ . '/../../models/MediaRecurso.php';
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 
@@ -14,6 +15,7 @@ class LeccionController extends Controller {
     private $planModel;
     private $teoriaModel;
     private $actividadModel;
+    private $mediaModel;
 
     public function __construct() {
         $this->requireRole('profesor');
@@ -22,6 +24,7 @@ class LeccionController extends Controller {
         $this->planModel = new ProfesorPlan();
         $this->teoriaModel = new Teoria();
         $this->actividadModel = new Actividad();
+        $this->mediaModel = new MediaRecurso();
     }
 
     public function index($curso_id) {
@@ -76,17 +79,54 @@ class LeccionController extends Controller {
             'orden' => $_POST['orden'],
             'duracion_minutos' => $_POST['duracion_minutos'],
             'es_obligatoria' => isset($_POST['es_obligatoria']) ? 1 : 0,
-            'estado' => $_POST['estado']
+            'estado_editorial' => $_POST['estado_editorial'] ?? 'borrador',
         ];
+        $datos = $this->aplicarWorkflowEditorialLeccion($datos);
 
         if ($this->leccionModel->crearLeccion($datos)) {
-            $this->redirect('/profesor/cursos/' . $curso_id . '/lecciones');
+            $lessonId = (int) $this->leccionModel->obtenerUltimaLeccionCreada();
+            $this->flash('success', 'Leccion creada. Ahora completa teoria, practica y recursos desde el constructor.');
+            $this->redirect('/profesor/lecciones/' . $lessonId . '/builder');
         }
 
         $error = 'Error al crear la leccion';
         $siguiente_orden = $this->leccionModel->obtenerSiguienteOrden($curso_id);
         $planUso = $this->planModel->obtenerResumenUsoProfesor(Auth::getUserId());
         require_once __DIR__ . '/../../views/profesor/lecciones/create.php';
+    }
+
+    public function builder($id) {
+        $leccion = $this->leccionModel->obtenerLeccionPorId($id);
+        if (!$leccion) {
+            $this->redirect('/profesor/cursos');
+        }
+
+        $curso = $this->cursoModel->obtenerCursoPorId($leccion->curso_id);
+        if (!$curso || $curso->creado_por != Auth::getUserId()) {
+            $this->redirect('/profesor/cursos');
+        }
+
+        $lecciones = $this->leccionModel->obtenerLeccionesConContenido($curso->id);
+        foreach ($lecciones as $lessonItem) {
+            if ((int) $lessonItem->id === (int) $leccion->id) {
+                $leccion = $lessonItem;
+                break;
+            }
+        }
+
+        $teorias = $this->teoriaModel->obtenerTeoriasPorLeccion($id);
+        $actividades = $this->actividadModel->obtenerActividadesPorLeccion($id);
+        $recursos = array_slice(
+            $this->mediaModel->obtenerRecursosPorProfesor(Auth::getUserId(), Auth::getInstanciaId()),
+            0,
+            6
+        );
+
+        [$lessonPublishChecklist, $lessonPublishSummary, $lessonPublishHint] = $this->buildLessonPublishData($leccion);
+        $lessonSnapshot = app_lesson_editorial_snapshot($leccion);
+        $quickActions = $this->buildLessonBuilderQuickActions($leccion, $lessonSnapshot);
+
+        require_once __DIR__ . '/../../views/profesor/lecciones/builder.php';
     }
 
     public function edit($id) {
@@ -108,8 +148,9 @@ class LeccionController extends Controller {
                 'orden' => $_POST['orden'],
                 'duracion_minutos' => $_POST['duracion_minutos'],
                 'es_obligatoria' => isset($_POST['es_obligatoria']) ? 1 : 0,
-                'estado' => $_POST['estado']
+                'estado_editorial' => $_POST['estado_editorial'] ?? ($leccion->estado_editorial ?? 'borrador'),
             ];
+            $datos = $this->aplicarWorkflowEditorialLeccion($datos);
 
             if ($this->leccionModel->actualizarLeccion($id, $datos)) {
                 $this->redirect('/profesor/cursos/' . $leccion->curso_id . '/lecciones');
@@ -157,8 +198,8 @@ class LeccionController extends Controller {
             ],
             [
                 'label' => 'Estado publicable',
-                'ok' => ($leccion->estado ?? '') === 'publicada',
-                'hint' => ($leccion->estado ?? '') === 'publicada' ? 'La leccion ya esta marcada como visible.' : 'Sigue en borrador o archivada.',
+                'ok' => app_lesson_editorial_state_value($leccion) === 'publicado',
+                'hint' => app_lesson_editorial_state_meta($leccion)['description'],
             ],
         ];
 
@@ -274,8 +315,8 @@ class LeccionController extends Controller {
             ],
             [
                 'label' => 'Estado visible',
-                'ok' => ($leccion->estado ?? '') === 'publicada',
-                'hint' => ($leccion->estado ?? '') === 'publicada' ? 'La leccion ya esta marcada como publicada.' : 'Sigue en borrador o archivada.',
+                'ok' => app_lesson_editorial_state_value($leccion) === 'publicado',
+                'hint' => app_lesson_editorial_state_meta($leccion)['description'],
             ],
         ];
 
@@ -288,7 +329,9 @@ class LeccionController extends Controller {
             'activities' => count($actividades),
         ];
 
-        if ($summary['percentage'] >= 100) {
+        if (app_lesson_editorial_state_value($leccion) === 'archivado') {
+            $hint = 'Leccion archivada: se conserva fuera del flujo activo.';
+        } elseif ($summary['percentage'] >= 100) {
             $hint = 'Leccion lista para alumnos: ya tiene contexto, practica y estado correcto.';
         } elseif (count($teorias) === 0) {
             $hint = 'Empieza por una teoria corta y clara antes de publicar.';
@@ -299,5 +342,60 @@ class LeccionController extends Controller {
         }
 
         return [$checklist, $summary, $hint];
+    }
+
+    private function aplicarWorkflowEditorialLeccion(array $datos) {
+        $estadoEditorial = app_normalize_editorial_state($datos['estado_editorial'] ?? 'borrador', 'lesson');
+        $datos['estado_editorial'] = $estadoEditorial;
+
+        if ($estadoEditorial === 'publicado') {
+            $datos['estado'] = 'publicada';
+            return $datos;
+        }
+
+        if ($estadoEditorial === 'archivado') {
+            $datos['estado'] = 'archivada';
+            return $datos;
+        }
+
+        $datos['estado'] = 'borrador';
+        return $datos;
+    }
+
+    private function buildLessonBuilderQuickActions($leccion, $lessonSnapshot) {
+        $actions = [
+            [
+                'label' => 'Editar ficha',
+                'copy' => 'Titulo, descripcion, duracion y estado de la leccion.',
+                'icon' => 'bi bi-pencil-square',
+                'url' => url('/profesor/lecciones/edit/' . $leccion->id),
+            ],
+            [
+                'label' => 'Gestionar teoria',
+                'copy' => 'Construye explicacion, dialogos, bloques y media base.',
+                'icon' => 'bi bi-book',
+                'url' => url('/profesor/lecciones/' . $leccion->id . '/teoria'),
+            ],
+            [
+                'label' => 'Gestionar practica',
+                'copy' => 'Convierte la teoria en ejercicios medibles y listos para alumno.',
+                'icon' => 'bi bi-lightning-charge',
+                'url' => url('/profesor/lecciones/' . $leccion->id . '/actividades'),
+            ],
+            [
+                'label' => 'Vista completa',
+                'copy' => 'Revisa la leccion como una experiencia unificada antes de publicar.',
+                'icon' => 'bi bi-eye',
+                'url' => url('/profesor/lecciones/' . $leccion->id . '/preview'),
+            ],
+        ];
+
+        $priorityUrl = $lessonSnapshot['action_url'] ?? null;
+        foreach ($actions as &$action) {
+            $action['is_priority'] = $priorityUrl && $action['url'] === $priorityUrl;
+        }
+        unset($action);
+
+        return $actions;
     }
 }

@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+$courseEditorialStates = app_course_editorial_states();
+?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -211,18 +214,44 @@
 
                         <section class="form-section">
                             <div class="section-title">
-                                <h2 class="form-section-title">Acceso e inscripcion</h2>
-                                <span class="soft-badge"><i class="bi bi-shield-lock"></i> Acceso</span>
+                                <h2 class="form-section-title">Workflow editorial y acceso</h2>
+                                <span class="soft-badge"><i class="bi bi-shield-lock"></i> Publicacion</span>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-lg-7">
+                                    <label for="estado_editorial" class="form-label">Estado editorial *</label>
+                                    <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                        <?php foreach ($courseEditorialStates as $stateValue => $stateMeta): ?>
+                                            <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo $stateValue === 'borrador' ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($stateMeta['label']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <div class="form-text">Define si el curso sigue interno, esta en revision o ya debe operar como experiencia real.</div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="production-hint-card tone-info h-100" id="courseEditorialCard">
+                                        <div class="production-hint-title" id="courseEditorialTitle">Borrador</div>
+                                        <div class="text-muted" id="courseEditorialDescription">Todavia se esta armando. Mantiene el curso fuera de vista publica.</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="es_publico" name="es_publico">
                                 <label class="form-check-label" for="es_publico">Curso publico y visible para estudiantes</label>
+                                <div class="form-text">Solo se mantiene visible cuando el estado editorial llega a <strong>Publicado</strong>.</div>
                             </div>
 
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="requiere_codigo" name="requiere_codigo">
                                 <label class="form-check-label" for="requiere_codigo">Requiere codigo de acceso para inscribirse</label>
+                            </div>
+
+                            <div class="alert alert-warning mt-3 mb-0" id="courseVisibilityWorkflowHint" hidden>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Aunque actives visibilidad, el curso seguira privado mientras no quede en estado <strong>Publicado</strong>.
                             </div>
 
                             <div id="codigo_acceso_div" class="mt-3" style="display: none;">
@@ -279,8 +308,13 @@ document.getElementById('formCrearCurso').addEventListener('submit', function(ev
             return false;
         }
 
-        if (document.getElementById('es_publico').checked) {
-            const shouldContinue = window.confirm('El curso se creara como publico desde el inicio. Si todavia no tiene estructura interna, se vera prematuro. ¿Quieres continuar?');
+        if (courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado') {
+            const shouldContinue = window.confirm('El curso quedara preparado, pero seguira privado hasta que el workflow editorial pase a Publicado. ¿Quieres continuar?');
+            if (!shouldContinue) {
+                return false;
+            }
+        } else if (courseVisibilityCheckbox.checked && courseEditorialSelect.value === 'publicado') {
+            const shouldContinue = window.confirm('El curso se creara como publicado. Asegurate de completar estructura y practica cuanto antes. ¿Quieres continuar?');
             if (!shouldContinue) {
                 return false;
             }
@@ -346,6 +380,12 @@ const tituloInput = document.getElementById('titulo');
 const descripcionInput = document.getElementById('descripcion');
 const idiomaObjetivoSelect = document.getElementById('idioma_objetivo');
 const idiomaBaseSelect = document.getElementById('idioma_base');
+const courseVisibilityCheckbox = document.getElementById('es_publico');
+const courseEditorialSelect = document.getElementById('estado_editorial');
+const courseVisibilityHint = document.getElementById('courseVisibilityWorkflowHint');
+const courseEditorialTitle = document.getElementById('courseEditorialTitle');
+const courseEditorialDescription = document.getElementById('courseEditorialDescription');
+const courseEditorialStates = <?php echo json_encode($courseEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 
 const courseTemplates = {
     conversacion: {
@@ -457,6 +497,17 @@ document.querySelectorAll('[data-course-template]').forEach(function (button) {
         aplicarPlantillaCurso(button.getAttribute('data-course-template'));
     });
 });
+
+function syncCourseEditorialGuidance() {
+    const current = courseEditorialStates[courseEditorialSelect.value] || courseEditorialStates.borrador;
+    courseEditorialTitle.textContent = current.label || 'Borrador';
+    courseEditorialDescription.textContent = current.description || '';
+    courseVisibilityHint.hidden = !(courseVisibilityCheckbox.checked && courseEditorialSelect.value !== 'publicado');
+}
+
+courseEditorialSelect.addEventListener('change', syncCourseEditorialGuidance);
+courseVisibilityCheckbox.addEventListener('change', syncCourseEditorialGuidance);
+syncCourseEditorialGuidance();
 </script>
 
 <?php require_once __DIR__ . '/../../partials/footer.php'; ?>

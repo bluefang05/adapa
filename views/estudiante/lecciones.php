@@ -1,6 +1,7 @@
 <?php 
 require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../models/Curso.php';
+$resourceCategoryLabels = app_useful_resource_category_labels();
 ?>
 
 <div class="container">
@@ -42,6 +43,23 @@ require_once __DIR__ . '/../../models/Curso.php';
         <?php endif; ?>
     </section>
 
+    <?php if (!empty($courseJourney)): ?>
+        <section class="panel mb-4">
+            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="metric-label">Siguiente paso recomendado</div>
+                    <div class="fw-semibold mt-1"><?php echo htmlspecialchars($courseJourney['headline'] ?? 'Sigue con el curso'); ?></div>
+                    <div class="small text-muted mt-1"><?php echo htmlspecialchars($courseJourney['summary'] ?? 'Abre la siguiente leccion para continuar.'); ?></div>
+                </div>
+                <div>
+                    <a href="<?php echo htmlspecialchars($courseJourney['url'] ?? url('/estudiante/cursos/' . $curso->id . '/continuar')); ?>" class="btn btn-primary">
+                        <?php echo htmlspecialchars($courseJourney['cta_label'] ?? 'Continuar'); ?>
+                    </a>
+                </div>
+            </div>
+        </section>
+    <?php endif; ?>
+
     <?php if (!empty($courseResources)): ?>
         <section class="panel mb-4">
             <div class="panel-body">
@@ -51,16 +69,36 @@ require_once __DIR__ . '/../../models/Curso.php';
                         Ver caja completa
                     </a>
                 </div>
+                <p class="section-copy mb-3">Usalos como apoyo puntual cuando una palabra, una conjugacion o una pronunciacion te frene. La idea es resolver la duda y volver al recorrido.</p>
                 <div class="row g-3">
                     <?php foreach ($courseResources as $resource): ?>
                         <div class="col-lg-3 col-md-6">
+                            <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
                             <article class="surface-card useful-resource-card h-100">
                                 <div class="card-body d-flex flex-column gap-2">
-                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
+                                    <div class="useful-resource-head">
+                                        <div class="resource-kicker">
+                                            <i class="bi <?php echo htmlspecialchars(app_useful_resource_category_icon($resource['category'] ?? 'apoyo')); ?>"></i>
+                                            <?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?>
+                                        </div>
+                                        <span class="soft-badge"><?php echo htmlspecialchars($resourceCategoryLabels[$resource['category'] ?? 'apoyo'] ?? 'Apoyo'); ?></span>
+                                    </div>
                                     <h3 class="h6 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
                                     <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
+                                    <?php if (!empty($resource['best_for'])): ?>
+                                        <div class="resource-best-for">
+                                            <strong>Mejor para:</strong>
+                                            <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="resource-source-meta">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
+                                    </div>
                                     <div class="mt-auto">
-                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">Abrir</a>
+                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">
+                                            <?php echo htmlspecialchars($resource['cta_label'] ?? 'Abrir'); ?>
+                                        </a>
                                     </div>
                                 </div>
                             </article>
@@ -104,20 +142,26 @@ require_once __DIR__ . '/../../models/Curso.php';
                                     <?php if (isset($leccion->completados, $leccion->total_items) && (int) $leccion->total_items > 0): ?>
                                         <span><?php echo (int) $leccion->completados; ?>/<?php echo (int) $leccion->total_items; ?> items</span>
                                     <?php endif; ?>
-                                    <?php if (!empty($leccion->estado)): ?>
-                                        <span class="soft-badge">
-                                            <?php echo $leccion->estado === 'completada' ? 'Completada' : ($leccion->estado === 'en_progreso' ? 'En progreso' : 'Pendiente'); ?>
+                                    <?php if (!empty($leccion->state_label)): ?>
+                                        <span class="soft-badge badge-<?php echo htmlspecialchars($leccion->state_tone ?? 'info'); ?>">
+                                            <?php echo htmlspecialchars($leccion->state_label); ?>
                                         </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($leccion->is_recommended)): ?>
+                                        <span class="soft-badge"><i class="bi bi-stars"></i> Recomendado</span>
                                     <?php endif; ?>
                                 </div>
 
                                 <?php if (!empty($leccion->descripcion)): ?>
                                     <p class="text-muted mt-3 mb-0"><?php echo htmlspecialchars($leccion->descripcion); ?></p>
                                 <?php endif; ?>
+                                <?php if (!empty($leccion->summary_hint)): ?>
+                                    <div class="small text-muted mt-3"><?php echo htmlspecialchars($leccion->summary_hint); ?></div>
+                                <?php endif; ?>
 
                                 <div class="responsive-actions mt-4">
                                     <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn btn-primary">
-                                        <?php echo !empty($leccion->completados) ? 'Continuar leccion' : 'Abrir leccion'; ?>
+                                        <?php echo htmlspecialchars($leccion->cta_label ?? (!empty($leccion->completados) ? 'Continuar leccion' : 'Abrir leccion')); ?>
                                     </a>
                                 </div>
                             </div>

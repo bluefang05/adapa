@@ -16,74 +16,6 @@ function getEstadoTexto($estado) {
         default: return $estado;
     }
 }
-
-function getLeccionReadinessData($leccion) {
-    $totalTeorias = (int) ($leccion->total_teorias ?? 0);
-    $totalActividades = (int) ($leccion->total_actividades ?? 0);
-    $estado = $leccion->estado ?? 'borrador';
-
-    if ($totalTeorias === 0) {
-        return [
-            'label' => 'Falta base teorica',
-            'tone' => 'warning',
-            'progress' => 20,
-            'message' => 'Primero crea la teoria principal de la leccion para darle contexto al alumno.',
-            'action_label' => 'Crear teoria',
-            'action_url' => url('/profesor/lecciones/' . $leccion->id . '/teoria/create'),
-        ];
-    }
-
-    if ($totalActividades === 0) {
-        return [
-            'label' => 'Lista para practica',
-            'tone' => 'info',
-            'progress' => 60,
-            'message' => 'La leccion ya explica. Ahora convierte eso en practica medible.',
-            'action_label' => 'Crear actividad',
-            'action_url' => url('/profesor/lecciones/' . $leccion->id . '/actividades/create'),
-        ];
-    }
-
-    if ($estado !== 'publicada') {
-        return [
-            'label' => 'Revisar y publicar',
-            'tone' => 'accent',
-            'progress' => 85,
-            'message' => 'Ya tiene teoria y practica. Te conviene revisar orden, copy y estado final.',
-            'action_label' => 'Revisar leccion',
-            'action_url' => url('/profesor/lecciones/edit/' . $leccion->id),
-        ];
-    }
-
-    return [
-        'label' => 'Operativa',
-        'tone' => 'success',
-        'progress' => 100,
-        'message' => 'La leccion ya esta visible y con piezas minimas para usarse.',
-        'action_label' => 'Ver teoria',
-        'action_url' => url('/profesor/lecciones/' . $leccion->id . '/teoria'),
-    ];
-}
-
-function getLeccionEditorialState($leccion) {
-    $totalTeorias = (int) ($leccion->total_teorias ?? 0);
-    $totalActividades = (int) ($leccion->total_actividades ?? 0);
-    $estado = $leccion->estado ?? 'borrador';
-
-    if ($totalTeorias === 0) {
-        return ['label' => 'Sin contexto', 'tone' => 'warning'];
-    }
-
-    if ($totalActividades === 0) {
-        return ['label' => 'Sin practica', 'tone' => 'info'];
-    }
-
-    if ($estado === 'publicada') {
-        return ['label' => 'Publicada', 'tone' => 'success'];
-    }
-
-    return ['label' => 'Lista para revisar', 'tone' => 'accent'];
-}
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -157,8 +89,8 @@ function getLeccionEditorialState($leccion) {
             <div class="row g-4">
                 <?php foreach ($lecciones as $leccion): ?>
                     <?php
-                    $readiness = getLeccionReadinessData($leccion);
-                    $editorialState = getLeccionEditorialState($leccion);
+                    $readiness = app_lesson_readiness_summary($leccion);
+                    $editorialState = app_lesson_editorial_snapshot($leccion);
                     ?>
                     <div class="col-xl-6">
                         <article class="surface-card">
@@ -214,6 +146,9 @@ function getLeccionEditorialState($leccion) {
                                             <i class="bi bi-arrow-down"></i>
                                         </button>
                                     </form>
+                                    <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/builder'); ?>" class="btn btn-primary">
+                                        <i class="bi bi-diagram-3"></i> Constructor
+                                    </a>
                                     <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-primary">
                                         <i class="bi bi-book"></i> Gestionar teoria
                                     </a>

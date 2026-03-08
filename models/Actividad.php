@@ -241,4 +241,158 @@ class Actividad {
         $this->db->bind(':actividad_id', $actividad_id);
         return $this->db->single();
     }
+
+    private static function contenidoComoArray($actividad) {
+        $contenido = $actividad->contenido ?? [];
+        if (is_array($contenido)) {
+            return $contenido;
+        }
+
+        if (is_string($contenido) && trim($contenido) !== '') {
+            $decoded = json_decode($contenido, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return [];
+    }
+
+    private static function recursoApoyo($contenido) {
+        if (!is_array($contenido)) {
+            return null;
+        }
+
+        $title = trim((string) ($contenido['recurso_apoyo_titulo'] ?? ''));
+        $url = trim((string) ($contenido['recurso_apoyo_url'] ?? ''));
+        if ($title === '' && $url === '') {
+            return null;
+        }
+
+        return [
+            'title' => $title !== '' ? $title : 'Recurso de apoyo',
+            'url' => $url,
+            'type' => trim((string) ($contenido['recurso_apoyo_tipo'] ?? '')),
+            'media_id' => (int) ($contenido['recurso_apoyo_media_id'] ?? 0),
+        ];
+    }
+
+    public static function resumenDocente($actividad) {
+        $contenido = self::contenidoComoArray($actividad);
+        $tipo = (string) ($actividad->tipo_actividad ?? '');
+        $questionCount = 0;
+        $itemCount = 0;
+        $configReady = false;
+
+        switch ($tipo) {
+            case 'opcion_multiple':
+            case 'verdadero_falso':
+            case 'escucha':
+                $questionCount = count((array) ($contenido['preguntas'] ?? []));
+                if ($questionCount === 0 && !empty($contenido['afirmacion'])) {
+                    $questionCount = 1;
+                }
+                $configReady = $questionCount > 0;
+                break;
+
+            case 'ordenar_palabras':
+                $itemCount = count((array) ($contenido['items'] ?? []));
+                $configReady = $itemCount >= 2;
+                break;
+
+            case 'arrastrar_soltar':
+                $itemCount = count((array) ($contenido['items'] ?? []));
+                $configReady = $itemCount >= 2 && count((array) ($contenido['targets'] ?? [])) >= 1;
+                break;
+
+            case 'emparejamiento':
+                $itemCount = count((array) ($contenido['items'] ?? []));
+                $configReady = $itemCount >= 2;
+                break;
+
+            case 'respuesta_corta':
+            case 'respuesta_larga':
+                $configReady = !empty($contenido['pregunta']) || !empty($contenido['respuestas_correctas']);
+                $questionCount = $configReady ? 1 : 0;
+                break;
+
+            case 'completar_oracion':
+                $configReady = !empty($contenido['texto_completo']) || !empty($contenido['respuestas_correctas']);
+                $questionCount = $configReady ? 1 : 0;
+                break;
+
+            case 'proyecto':
+            case 'codigo':
+                $configReady = !empty($contenido['instrucciones']) || !empty($contenido['codigo_inicial']);
+                $questionCount = $configReady ? 1 : 0;
+                break;
+
+            default:
+                $configReady = !empty($contenido);
+                break;
+        }
+
+        $supportResource = self::recursoApoyo($contenido);
+        $score = 0;
+
+        if (trim((string) ($actividad->titulo ?? '')) !== '') {
+            $score += 10;
+        }
+        if (trim((string) ($actividad->descripcion ?? '')) !== '') {
+            $score += 10;
+        }
+        if ((int) ($actividad->puntos_maximos ?? 0) > 0) {
+            $score += 10;
+        }
+        if ((int) ($actividad->tiempo_limite_minutos ?? 0) > 0) {
+            $score += 5;
+        }
+        if ($configReady) {
+            $score += 40;
+        }
+        if ($questionCount > 0 || $itemCount > 0) {
+            $score += 15;
+        }
+        if ($supportResource) {
+            $score += 10;
+        }
+        $score = min(100, $score);
+
+        $tone = 'warning';
+        $label = 'Necesita configuracion';
+        $message = 'Todavia le falta estructura interna antes de probarla como alumno.';
+        $actionLabel = 'Configurar';
+
+        if (!$configReady) {
+            $message = 'Define preguntas, items o consigna real antes de darla por lista.';
+        } elseif ($score >= 85) {
+            $tone = 'success';
+            $label = 'Lista para probar';
+            $message = 'Tiene base suficiente para revisarla como alumno y afinar detalles.';
+            $actionLabel = 'Probar';
+        } elseif (!$supportResource && in_array($tipo, ['escucha', 'arrastrar_soltar', 'emparejamiento', 'respuesta_corta', 'respuesta_larga', 'codigo', 'proyecto'], true)) {
+            $tone = 'info';
+            $label = 'Base lista';
+            $message = 'La actividad funciona, pero un recurso de apoyo puede volverla mas clara o memorable.';
+            $actionLabel = 'Vincular apoyo';
+        } else {
+            $tone = 'accent';
+            $label = 'Lista para pulir';
+            $message = 'La configuracion ya existe. Conviene probar copy, tiempo y claridad de la consigna.';
+            $actionLabel = 'Pulir';
+        }
+
+        return [
+            'score' => $score,
+            'tone' => $tone,
+            'label' => $label,
+            'message' => $message,
+            'action_label' => $actionLabel,
+            'config_ready' => $configReady,
+            'question_count' => $questionCount,
+            'item_count' => $itemCount,
+            'support_resource' => $supportResource,
+            'has_support_resource' => $supportResource !== null,
+        ];
+    }
 }

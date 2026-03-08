@@ -170,6 +170,36 @@ function app_is_absolute_url($value) {
     return is_string($value) && preg_match('#^https?://#i', $value) === 1;
 }
 
+function app_url_host_label($url) {
+    if (!app_is_absolute_url($url)) {
+        return 'ADAPA';
+    }
+
+    $host = strtolower((string) (parse_url($url, PHP_URL_HOST) ?? ''));
+    $host = preg_replace('/^www\./', '', $host);
+
+    $labels = [
+        'youglish.com' => 'YouGlish',
+        'forvo.com' => 'Forvo',
+        'wordreference.com' => 'WordReference',
+        'dictionary.cambridge.org' => 'Cambridge Dictionary',
+        'larousse.fr' => 'Larousse',
+        'conjugator.reverso.net' => 'Reverso Conjugator',
+        'pons.com' => 'PONS',
+        'learngerman.dw.com' => 'DW Learn German',
+        'jisho.org' => 'Jisho',
+        'nhk.or.jp' => 'NHK',
+    ];
+
+    foreach ($labels as $domain => $label) {
+        if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+            return $label;
+        }
+    }
+
+    return $host !== '' ? $host : 'Fuente externa';
+}
+
 function app_media_public_url($value) {
     $value = (string) $value;
     if ($value === '') {
@@ -325,6 +355,87 @@ function app_activity_support_resource($content) {
     ];
 }
 
+function app_media_external_video_policy() {
+    return [
+        'provider' => 'YouTube',
+        'summary' => 'Para video externo, la politica oficial del producto es trabajar solo con enlaces normales de YouTube. La app resuelve el embed automaticamente y mantiene una experiencia mas estable.',
+        'workflow' => [
+            'Pega la URL normal de YouTube en la biblioteca.',
+            'La app genera el embed y lo deja listo para reutilizar.',
+            'Inserta ese recurso en teoria o apoyo de actividad sin pegar iframes.',
+        ],
+        'accepted_formats' => [
+            'https://www.youtube.com/watch?v=...',
+            'https://www.youtube.com/shorts/...',
+            'https://youtu.be/...',
+            'https://www.youtube.com/embed/...',
+        ],
+        'rejected_examples' => [
+            'Instagram Reels',
+            'TikTok',
+            'iframes pegados manualmente',
+        ],
+    ];
+}
+
+function app_media_source_profile($url, $metadata = null) {
+    $resolvedUrl = trim((string) $url);
+    $resolvedMetadata = app_media_metadata($metadata);
+
+    if ($resolvedUrl !== '' && app_extract_youtube_video_id($resolvedUrl)) {
+        return [
+            'label' => 'YouTube',
+            'detail' => 'Embed oficial',
+            'icon' => 'bi-youtube',
+            'tone' => 'badge-accent',
+        ];
+    }
+
+    if ($resolvedUrl !== '' && app_is_absolute_url($resolvedUrl)) {
+        return [
+            'label' => 'Enlace externo',
+            'detail' => 'Se abre fuera de la app',
+            'icon' => 'bi-link-45deg',
+            'tone' => 'info',
+        ];
+    }
+
+    if (!empty($resolvedMetadata['storage']) && $resolvedMetadata['storage'] === 'external') {
+        return [
+            'label' => 'Externo',
+            'detail' => 'Recurso remoto',
+            'icon' => 'bi-cloud-arrow-down',
+            'tone' => 'info',
+        ];
+    }
+
+    return [
+        'label' => 'Archivo propio',
+        'detail' => 'Subido a la biblioteca',
+        'icon' => 'bi-cloud-arrow-up',
+        'tone' => 'success',
+    ];
+}
+
+function app_media_source_key($url, $metadata = null) {
+    $resolvedUrl = trim((string) $url);
+    $resolvedMetadata = app_media_metadata($metadata);
+
+    if ($resolvedUrl !== '' && app_extract_youtube_video_id($resolvedUrl)) {
+        return 'youtube';
+    }
+
+    if ($resolvedUrl !== '' && app_is_absolute_url($resolvedUrl)) {
+        return 'external';
+    }
+
+    if (!empty($resolvedMetadata['storage']) && $resolvedMetadata['storage'] === 'external') {
+        return 'external';
+    }
+
+    return 'uploaded';
+}
+
 function app_useful_resource_category_labels() {
     return [
         'pronunciacion' => 'Pronunciacion',
@@ -334,6 +445,19 @@ function app_useful_resource_category_labels() {
         'escucha' => 'Escucha',
         'apoyo' => 'Apoyo',
     ];
+}
+
+function app_useful_resource_category_icon($category) {
+    $icons = [
+        'pronunciacion' => 'bi-mic',
+        'diccionario' => 'bi-book',
+        'gramatica' => 'bi-diagram-3',
+        'conjugacion' => 'bi-arrow-repeat',
+        'escucha' => 'bi-headphones',
+        'apoyo' => 'bi-compass',
+    ];
+
+    return $icons[$category] ?? 'bi-stars';
 }
 
 function app_useful_resources_catalog() {
@@ -346,6 +470,9 @@ function app_useful_resources_catalog() {
             'category' => 'pronunciacion',
             'languages' => ['ingles', 'frances', 'aleman', 'italiano', 'japones'],
             'badge' => 'Contexto real',
+            'best_for' => 'Oir una palabra dentro de frases naturales antes de repetirla.',
+            'cta_label' => 'Abrir YouGlish',
+            'priority' => 10,
         ],
         [
             'id' => 'forvo',
@@ -355,6 +482,9 @@ function app_useful_resources_catalog() {
             'category' => 'pronunciacion',
             'languages' => ['ingles', 'frances', 'aleman', 'italiano', 'japones', 'espanol'],
             'badge' => 'Nativos',
+            'best_for' => 'Confirmar la pronunciacion aislada de una palabra concreta.',
+            'cta_label' => 'Abrir Forvo',
+            'priority' => 30,
         ],
         [
             'id' => 'wordreference',
@@ -364,6 +494,9 @@ function app_useful_resources_catalog() {
             'category' => 'diccionario',
             'languages' => ['ingles', 'frances', 'italiano', 'espanol'],
             'badge' => 'Ejemplos',
+            'best_for' => 'Aclarar matices de uso y salir de una duda puntual sin perder tiempo.',
+            'cta_label' => 'Abrir WordReference',
+            'priority' => 20,
         ],
         [
             'id' => 'cambridge',
@@ -373,6 +506,9 @@ function app_useful_resources_catalog() {
             'category' => 'diccionario',
             'languages' => ['ingles'],
             'badge' => 'Ingles',
+            'best_for' => 'Fijar definicion, audio y ejemplo natural en ingles.',
+            'cta_label' => 'Abrir Cambridge',
+            'priority' => 35,
         ],
         [
             'id' => 'larousse-fr',
@@ -382,6 +518,9 @@ function app_useful_resources_catalog() {
             'category' => 'diccionario',
             'languages' => ['frances'],
             'badge' => 'Frances',
+            'best_for' => 'Refinar significado y registro cuando una palabra cambia segun contexto.',
+            'cta_label' => 'Abrir Larousse',
+            'priority' => 35,
         ],
         [
             'id' => 'reverso-conjugator-fr',
@@ -391,6 +530,9 @@ function app_useful_resources_catalog() {
             'category' => 'conjugacion',
             'languages' => ['frances'],
             'badge' => 'Conjugacion',
+            'best_for' => 'Comprobar rapidamente un verbo antes de escribir o hablar.',
+            'cta_label' => 'Abrir conjugador',
+            'priority' => 45,
         ],
         [
             'id' => 'pons',
@@ -400,6 +542,9 @@ function app_useful_resources_catalog() {
             'category' => 'diccionario',
             'languages' => ['aleman', 'ingles', 'frances', 'italiano'],
             'badge' => 'Aleman',
+            'best_for' => 'Comparar vocabulario rapido en aleman y otras rutas europeas.',
+            'cta_label' => 'Abrir PONS',
+            'priority' => 40,
         ],
         [
             'id' => 'dw-german',
@@ -409,6 +554,9 @@ function app_useful_resources_catalog() {
             'category' => 'escucha',
             'languages' => ['aleman'],
             'badge' => 'Escucha',
+            'best_for' => 'Refuerzo guiado cuando necesitas escuchar y repetir con mas contexto.',
+            'cta_label' => 'Abrir DW',
+            'priority' => 55,
         ],
         [
             'id' => 'jisho',
@@ -418,6 +566,9 @@ function app_useful_resources_catalog() {
             'category' => 'diccionario',
             'languages' => ['japones'],
             'badge' => 'Japones',
+            'best_for' => 'Buscar kanji, lectura y ejemplo sin romper el ritmo de estudio.',
+            'cta_label' => 'Abrir Jisho',
+            'priority' => 40,
         ],
         [
             'id' => 'nhk-japanese',
@@ -427,6 +578,9 @@ function app_useful_resources_catalog() {
             'category' => 'apoyo',
             'languages' => ['japones'],
             'badge' => 'Guia',
+            'best_for' => 'Refuerzo corto con audio cuando quieres una explicacion mas guiada.',
+            'cta_label' => 'Abrir NHK',
+            'priority' => 60,
         ],
     ];
 }
@@ -442,6 +596,13 @@ function app_useful_resources_for_language($languageKey = null, $limit = null) {
     }));
 
     usort($catalog, function ($a, $b) {
+        $priorityA = (int) ($a['priority'] ?? 999);
+        $priorityB = (int) ($b['priority'] ?? 999);
+
+        if ($priorityA !== $priorityB) {
+            return $priorityA <=> $priorityB;
+        }
+
         return strcmp($a['title'], $b['title']);
     });
 
@@ -463,4 +624,321 @@ function app_group_useful_resources_by_category($resources) {
     }
 
     return $groups;
+}
+
+function app_course_editorial_states() {
+    return [
+        'borrador' => [
+            'label' => 'Borrador',
+            'tone' => 'warning',
+            'description' => 'Todavia se esta armando. Mantiene el curso fuera de vista publica.',
+        ],
+        'en_revision' => [
+            'label' => 'En revision',
+            'tone' => 'info',
+            'description' => 'La base ya existe, pero aun necesita una pasada editorial antes de quedar listo.',
+        ],
+        'publicable' => [
+            'label' => 'Publicable',
+            'tone' => 'accent',
+            'description' => 'El contenido ya esta listo para abrirse cuando decidas darle visibilidad.',
+        ],
+        'publicado' => [
+            'label' => 'Publicado',
+            'tone' => 'success',
+            'description' => 'Curso listo para operar. Si ademas esta visible, el alumno ya lo puede explorar.',
+        ],
+        'archivado' => [
+            'label' => 'Archivado',
+            'tone' => 'secondary',
+            'description' => 'Se conserva como referencia, pero queda fuera del flujo activo.',
+        ],
+    ];
+}
+
+function app_lesson_editorial_states() {
+    return [
+        'borrador' => [
+            'label' => 'Borrador',
+            'tone' => 'warning',
+            'description' => 'La leccion sigue interna y todavia no deberia considerarse lista.',
+        ],
+        'en_revision' => [
+            'label' => 'En revision',
+            'tone' => 'info',
+            'description' => 'La estructura ya existe, pero aun conviene revisar teoria, practica y copy.',
+        ],
+        'publicable' => [
+            'label' => 'Publicable',
+            'tone' => 'accent',
+            'description' => 'Tiene base suficiente y solo falta decidir el momento de abrirla.',
+        ],
+        'publicado' => [
+            'label' => 'Publicado',
+            'tone' => 'success',
+            'description' => 'Leccion lista para operar como parte visible del curso.',
+        ],
+        'archivado' => [
+            'label' => 'Archivado',
+            'tone' => 'secondary',
+            'description' => 'Se conserva, pero ya no forma parte del flujo normal.',
+        ],
+    ];
+}
+
+function app_normalize_editorial_state($value, $type = 'course') {
+    $catalog = $type === 'lesson' ? app_lesson_editorial_states() : app_course_editorial_states();
+    $value = strtolower(trim((string) $value));
+
+    if (isset($catalog[$value])) {
+        return $value;
+    }
+
+    return 'borrador';
+}
+
+function app_course_editorial_state_value($curso) {
+    $explicit = strtolower(trim((string) ($curso->estado_editorial ?? '')));
+    if (isset(app_course_editorial_states()[$explicit])) {
+        return $explicit;
+    }
+
+    $legacyState = trim((string) ($curso->estado ?? 'preparacion'));
+    $isPublic = (int) ($curso->es_publico ?? 0) === 1;
+
+    if ($legacyState === 'archivado') {
+        return 'archivado';
+    }
+
+    if ($legacyState === 'activo' && $isPublic) {
+        return 'publicado';
+    }
+
+    if ($legacyState === 'activo') {
+        return 'publicable';
+    }
+
+    if (in_array($legacyState, ['pausado', 'finalizado'], true)) {
+        return 'en_revision';
+    }
+
+    return 'borrador';
+}
+
+function app_lesson_editorial_state_value($leccion) {
+    $explicit = strtolower(trim((string) ($leccion->estado_editorial ?? '')));
+    if (isset(app_lesson_editorial_states()[$explicit])) {
+        return $explicit;
+    }
+
+    $legacyState = trim((string) ($leccion->estado ?? 'borrador'));
+
+    if ($legacyState === 'archivada') {
+        return 'archivado';
+    }
+
+    if ($legacyState === 'publicada') {
+        return 'publicado';
+    }
+
+    return 'borrador';
+}
+
+function app_course_editorial_state_meta($curso) {
+    $state = app_course_editorial_state_value($curso);
+    $meta = app_course_editorial_states()[$state];
+    $meta['state'] = $state;
+
+    if ($state === 'publicado' && (int) ($curso->es_publico ?? 0) !== 1) {
+        $meta['description'] = 'Curso editorialmente listo, pero todavia privado o dependiente de acceso restringido.';
+    }
+
+    return $meta;
+}
+
+function app_lesson_editorial_state_meta($leccion) {
+    $state = app_lesson_editorial_state_value($leccion);
+    $meta = app_lesson_editorial_states()[$state];
+    $meta['state'] = $state;
+    return $meta;
+}
+
+function app_course_editorial_snapshot($curso) {
+    $workflow = app_course_editorial_state_meta($curso);
+    $courseId = (int) ($curso->id ?? 0);
+    $totalLessons = (int) ($curso->total_lecciones ?? 0);
+    $totalActivities = (int) ($curso->total_actividades ?? 0);
+    $isPublic = (int) ($curso->es_publico ?? 0) === 1;
+    $estado = trim((string) ($curso->estado ?? 'preparacion'));
+
+    if ($workflow['state'] === 'archivado') {
+        return [
+            'label' => 'Archivado',
+            'tone' => 'secondary',
+            'hint' => $workflow['description'],
+            'progress' => 100,
+            'action_label' => 'Revisar curso',
+            'action_url' => $courseId > 0 ? url('/profesor/cursos/edit/' . $courseId) : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($totalLessons === 0) {
+        return [
+            'label' => 'En configuracion',
+            'tone' => 'warning',
+            'hint' => 'Crea la primera leccion para que este curso tenga recorrido real.',
+            'progress' => 15,
+            'action_label' => 'Crear primera leccion',
+            'action_url' => $courseId > 0 ? url('/profesor/cursos/' . $courseId . '/lecciones/create') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($totalActivities === 0) {
+        return [
+            'label' => 'En construccion',
+            'tone' => 'info',
+            'hint' => 'La estructura ya existe. Ahora falta convertirla en practica.',
+            'progress' => 55,
+            'action_label' => 'Entrar al constructor',
+            'action_url' => $courseId > 0 ? url('/profesor/cursos/' . $courseId . '/lecciones') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($isPublic && $estado === 'activo') {
+        return [
+            'label' => 'Publicado',
+            'tone' => 'success',
+            'hint' => 'Visible y con base suficiente para operar con alumnos.',
+            'progress' => 100,
+            'action_label' => 'Ver lecciones',
+            'action_url' => $courseId > 0 ? url('/profesor/cursos/' . $courseId . '/lecciones') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($isPublic) {
+        return [
+            'label' => 'Visible con ajustes',
+            'tone' => 'accent',
+            'hint' => 'Ya se muestra, pero aun conviene revisar calidad antes de empujarlo mas.',
+            'progress' => 88,
+            'action_label' => 'Revisar curso',
+            'action_url' => $courseId > 0 ? url('/profesor/cursos/edit/' . $courseId) : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    return [
+        'label' => 'Listo para revisar',
+        'tone' => 'accent',
+        'hint' => 'Tiene base real. Solo falta validacion editorial final.',
+        'progress' => 82,
+        'action_label' => 'Revisar curso',
+        'action_url' => $courseId > 0 ? url('/profesor/cursos/edit/' . $courseId) : url('/profesor/cursos'),
+        'workflow_state' => $workflow['state'],
+        'workflow' => $workflow,
+    ];
+}
+
+function app_course_readiness_summary($curso) {
+    $snapshot = app_course_editorial_snapshot($curso);
+    return [
+        'label' => $snapshot['label'],
+        'progress' => $snapshot['progress'],
+    ];
+}
+
+function app_course_production_hint($curso) {
+    return app_course_editorial_snapshot($curso)['hint'];
+}
+
+function app_lesson_editorial_snapshot($leccion) {
+    $workflow = app_lesson_editorial_state_meta($leccion);
+    $lessonId = (int) ($leccion->id ?? 0);
+    $totalTheories = (int) ($leccion->total_teorias ?? 0);
+    $totalActivities = (int) ($leccion->total_actividades ?? 0);
+    $estado = trim((string) ($leccion->estado ?? 'borrador'));
+
+    if ($workflow['state'] === 'archivado') {
+        return [
+            'label' => 'Archivada',
+            'tone' => 'secondary',
+            'hint' => $workflow['description'],
+            'progress' => 100,
+            'action_label' => 'Editar ficha',
+            'action_url' => $lessonId > 0 ? url('/profesor/lecciones/edit/' . $lessonId) : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($totalTheories === 0) {
+        return [
+            'label' => 'Sin contexto',
+            'tone' => 'warning',
+            'hint' => 'Empieza por una teoria clara para darle piso a la leccion.',
+            'progress' => 20,
+            'action_label' => 'Crear teoria',
+            'action_url' => $lessonId > 0 ? url('/profesor/lecciones/' . $lessonId . '/teoria/create') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($totalActivities === 0) {
+        return [
+            'label' => 'Sin practica',
+            'tone' => 'info',
+            'hint' => 'La explicacion ya existe. Ahora conviertela en practica medible.',
+            'progress' => 60,
+            'action_label' => 'Crear actividad',
+            'action_url' => $lessonId > 0 ? url('/profesor/lecciones/' . $lessonId . '/actividades/create') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    if ($estado === 'publicada') {
+        return [
+            'label' => 'Publicada',
+            'tone' => 'success',
+            'hint' => 'La leccion ya esta visible y con piezas minimas completas.',
+            'progress' => 100,
+            'action_label' => 'Ver preview',
+            'action_url' => $lessonId > 0 ? url('/profesor/lecciones/' . $lessonId . '/preview') : url('/profesor/cursos'),
+            'workflow_state' => $workflow['state'],
+            'workflow' => $workflow,
+        ];
+    }
+
+    return [
+        'label' => 'Lista para revisar',
+        'tone' => 'accent',
+        'hint' => 'La base ya esta. Revisa orden, copy y estado final antes de publicarla.',
+        'progress' => 85,
+        'action_label' => 'Abrir constructor',
+        'action_url' => $lessonId > 0 ? url('/profesor/lecciones/' . $lessonId . '/builder') : url('/profesor/cursos'),
+        'workflow_state' => $workflow['state'],
+        'workflow' => $workflow,
+    ];
+}
+
+function app_lesson_readiness_summary($leccion) {
+    $snapshot = app_lesson_editorial_snapshot($leccion);
+    return [
+        'label' => $snapshot['label'],
+        'tone' => $snapshot['tone'],
+        'progress' => $snapshot['progress'],
+        'message' => $snapshot['hint'],
+        'action_label' => $snapshot['action_label'],
+        'action_url' => $snapshot['action_url'],
+    ];
 }

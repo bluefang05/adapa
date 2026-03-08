@@ -34,12 +34,14 @@ function renderStudentSupportResource($resource) {
         'link' => 'Enlace de apoyo',
     ];
     $kindLabel = $kindLabels[$kind] ?? 'Recurso de apoyo';
+    $sourceLabel = app_url_host_label($resource['url'] ?? '');
     ?>
     <div class="support-resource-panel mb-4">
         <div class="support-resource-header">
             <div>
                 <div class="support-resource-eyebrow"><?php echo htmlspecialchars($kindLabel); ?></div>
                 <h3 class="support-resource-title"><?php echo $title; ?></h3>
+                <div class="small text-muted mt-1">Fuente: <?php echo htmlspecialchars($sourceLabel); ?></div>
             </div>
             <a href="<?php echo $url; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
                 Abrir recurso
@@ -95,6 +97,8 @@ function renderStudentSupportResource($resource) {
             <?php
                 $isRetry = isset($_GET['retry']) && $_GET['retry'] == '1';
                 $showFeedback = isset($respuestaExistente) && $respuestaExistente && !$isRetry;
+                $activitySummaryCta = $activitySummaryCta ?? ($showFeedback ? 'Continuar' : 'Volver a la leccion');
+                $activityLanguageResources = $activityLanguageResources ?? app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 3);
             ?>
             <div class="page-hero mb-4">
                 <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Actividad activa</span>
@@ -159,7 +163,124 @@ function renderStudentSupportResource($resource) {
                     <?php if ($supportResource): ?>
                         <?php renderStudentSupportResource($supportResource); ?>
                     <?php endif; ?>
-                    
+
+                    <?php if (!empty($activityLanguageResources)): ?>
+                        <section class="surface-card mb-4">
+                            <div class="card-body">
+                                <div class="section-title mb-3">
+                                    <h2>Apoyos rapidos</h2>
+                                    <a href="<?php echo url('/estudiante/recursos?idioma=' . urlencode(Curso::obtenerIdiomaObjetivo($curso))); ?>" class="btn btn-outline-secondary btn-sm">
+                                        Ver mas
+                                    </a>
+                                </div>
+                                <div class="row g-3">
+                                    <?php foreach ($activityLanguageResources as $resource): ?>
+                                        <div class="col-lg-4">
+                                            <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
+                                            <article class="surface-card useful-resource-card h-100">
+                                                <div class="card-body d-flex flex-column gap-2">
+                                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
+                                                    <h3 class="h6 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
+                                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
+                                                    <?php if (!empty($resource['best_for'])): ?>
+                                                        <div class="resource-best-for">
+                                                            <strong>Mejor para:</strong>
+                                                            <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="resource-source-meta">
+                                                        <i class="bi bi-box-arrow-up-right"></i>
+                                                        Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
+                                                    </div>
+                                                    <div class="mt-auto">
+                                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">Abrir</a>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </section>
+                    <?php endif; ?>
+
+                    <?php if (!empty($activityGuidance)): ?>
+                        <section class="surface-card mb-4">
+                            <div class="card-body">
+                                <div class="section-title mb-3">
+                                    <h2>Como sacarle mas provecho</h2>
+                                </div>
+                                <div class="builder-stage-grid">
+                                    <?php foreach ($activityGuidance as $guide): ?>
+                                        <article class="builder-stage-card">
+                                            <div class="builder-stage-icon"><i class="bi bi-signpost"></i></div>
+                                            <div class="builder-stage-body">
+                                                <div class="builder-stage-title"><?php echo htmlspecialchars($guide['title'] ?? 'Guia'); ?></div>
+                                                <div class="builder-stage-copy"><?php echo htmlspecialchars($guide['copy'] ?? ''); ?></div>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </section>
+                    <?php endif; ?>
+
+                    <?php if (!empty($activityOutcome)): ?>
+                        <section class="surface-card mb-4">
+                            <div class="card-body">
+                                <div class="section-title mb-3">
+                                    <h2>Resumen de esta practica</h2>
+                                    <span class="soft-badge badge-<?php echo htmlspecialchars($activityOutcome['tone'] ?? 'info'); ?>">
+                                        <?php echo htmlspecialchars($activityOutcome['label'] ?? 'En progreso'); ?>
+                                    </span>
+                                </div>
+                                <div class="builder-stage-grid">
+                                    <article class="builder-stage-card is-priority">
+                                        <div class="builder-stage-icon"><i class="bi bi-clipboard-data"></i></div>
+                                        <div class="builder-stage-body">
+                                            <div class="builder-stage-title"><?php echo htmlspecialchars($activityOutcome['headline'] ?? 'Sigue con esta actividad'); ?></div>
+                                            <div class="builder-stage-copy"><?php echo htmlspecialchars($activityOutcome['summary'] ?? ''); ?></div>
+                                        </div>
+                                    </article>
+                                    <article class="builder-stage-card">
+                                        <div class="builder-stage-icon"><i class="bi bi-award"></i></div>
+                                        <div class="builder-stage-body">
+                                            <div class="builder-stage-title">Resultado</div>
+                                            <div class="builder-stage-copy">
+                                                <?php if (($activityOutcome['score'] ?? null) !== null): ?>
+                                                    <?php echo rtrim(rtrim(number_format((float) $activityOutcome['score'], 2, '.', ''), '0'), '.'); ?>
+                                                    <?php if (($activityOutcome['max_score'] ?? null) !== null): ?>
+                                                        / <?php echo rtrim(rtrim(number_format((float) $activityOutcome['max_score'], 2, '.', ''), '0'), '.'); ?>
+                                                    <?php endif; ?>
+                                                    puntos.
+                                                <?php elseif ($showFeedback): ?>
+                                                    Tu intento ya esta guardado.
+                                                <?php else: ?>
+                                                    Se calculara cuando envies la respuesta.
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </article>
+                                    <article class="builder-stage-card">
+                                        <div class="builder-stage-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                        <div class="builder-stage-body">
+                                            <div class="builder-stage-title">Avance en la leccion</div>
+                                            <div class="builder-stage-copy">
+                                                <?php echo (int) ($activityOutcome['lesson_progress'] ?? 0); ?>% completado en esta leccion.
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                                <div class="responsive-actions mt-3">
+                                    <a href="<?php echo htmlspecialchars($nextActionUrl ?? url('/estudiante/lecciones/' . $leccion->id . '/contenido')); ?>" class="btn btn-primary">
+                                        <i class="bi bi-arrow-right-circle"></i> <?php echo htmlspecialchars($activitySummaryCta); ?>
+                                    </a>
+                                    <div class="small text-muted align-self-center"><?php echo htmlspecialchars($activityOutcome['next_hint'] ?? ''); ?></div>
+                                </div>
+                            </div>
+                        </section>
+                    <?php endif; ?>
+                     
                     <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
                         <div class="alert alert-info mb-4 activity-feedback-alert" role="alert">
                             <div class="d-flex align-items-center">
@@ -178,19 +299,7 @@ function renderStudentSupportResource($resource) {
                                 </div>
                                 <?php if (isset($siguienteItem) && $siguienteItem): ?>
                                     <div class="ms-3">
-                                        <?php 
-                                            $nextUrl = '#';
-                                            if ($siguienteItem['tipo'] === 'actividad') {
-                                                $nextUrl = url('/estudiante/actividades/' . $siguienteItem['id']);
-                                            } elseif ($siguienteItem['tipo'] === 'leccion') {
-                                                $nextUrl = url('/estudiante/lecciones/' . $siguienteItem['id'] . '/contenido');
-                                            } elseif ($siguienteItem['tipo'] === 'teoria') {
-                                                $nextUrl = url('/estudiante/lecciones/' . $leccion->id . '/contenido#teoria-' . $siguienteItem['id']);
-                                            } else {
-                                                $nextUrl = url('/estudiante/cursos/' . $siguienteItem['id'] . '/lecciones');
-                                            }
-                                        ?>
-                                        <a href="<?php echo $nextUrl; ?>" class="btn btn-primary text-nowrap">
+                                        <a href="<?php echo htmlspecialchars($nextActionUrl ?? url('/estudiante/lecciones/' . $leccion->id . '/contenido')); ?>" class="btn btn-primary text-nowrap">
                                             <?php echo htmlspecialchars($siguienteItem['mensaje']); ?> <i class="bi bi-arrow-right"></i>
                                         </a>
                                     </div>

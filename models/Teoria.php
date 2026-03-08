@@ -264,4 +264,116 @@ class Teoria {
 
         return $normalizados;
     }
+
+    public static function resumenDocente($teoria) {
+        $bloques = is_array($teoria->bloques ?? null) ? $teoria->bloques : [];
+        $blockCount = count($bloques);
+        $mediaCount = 0;
+        $ttsCount = 0;
+        $hasExample = false;
+        $hasClosure = false;
+
+        foreach ($bloques as $bloque) {
+            $tipo = trim((string) ($bloque->tipo_bloque ?? ''));
+            $titulo = strtolower(trim((string) ($bloque->titulo ?? '')));
+
+            if (!empty($bloque->media_id) || !empty($bloque->ruta_archivo)) {
+                $mediaCount++;
+            }
+
+            if (!empty($bloque->tts_habilitado)) {
+                $ttsCount++;
+            }
+
+            if (in_array($tipo, ['ejemplo', 'dialogo', 'traduccion'], true) || str_contains($titulo, 'ejemplo')) {
+                $hasExample = true;
+            }
+
+            if (
+                in_array($tipo, ['pregunta', 'instruccion'], true)
+                || str_contains($titulo, 'chequeo')
+                || str_contains($titulo, 'error')
+                || str_contains($titulo, 'resumen')
+                || str_contains($titulo, 'tip')
+            ) {
+                $hasClosure = true;
+            }
+        }
+
+        $score = 0;
+        if (trim((string) ($teoria->titulo ?? '')) !== '') {
+            $score += 10;
+        }
+        if ((int) ($teoria->duracion_minutos ?? 0) > 0) {
+            $score += 5;
+        }
+        if ($blockCount >= 1) {
+            $score += 20;
+        }
+        if ($blockCount >= 3) {
+            $score += 25;
+        } elseif ($blockCount === 2) {
+            $score += 12;
+        }
+        if ($mediaCount > 0) {
+            $score += 15;
+        }
+        if ($ttsCount > 0) {
+            $score += 10;
+        }
+        if ($hasExample) {
+            $score += 10;
+        }
+        if ($hasClosure) {
+            $score += 5;
+        }
+        $score = min(100, $score);
+
+        $tone = 'warning';
+        $label = 'Base ligera';
+        $message = 'Completa esta pieza antes de apoyarte en ella para la practica.';
+        $actionLabel = 'Completar teoria';
+
+        if ($blockCount === 0) {
+            $label = 'Sin bloques';
+            $message = 'Convierte esta ficha en una pieza util con objetivo, ejemplo y cierre.';
+        } elseif ($blockCount < 2) {
+            $label = 'Muy ligera';
+            $message = 'Anade al menos un ejemplo o un bloque de apoyo antes de seguir.';
+        } elseif (!$hasExample) {
+            $tone = 'info';
+            $label = 'Falta ejemplo';
+            $message = 'La teoria ya tiene base, pero un ejemplo claro la vuelve mas util para el alumno.';
+            $actionLabel = 'Anadir ejemplo';
+        } elseif (!$hasClosure && $blockCount < 4) {
+            $tone = 'accent';
+            $label = 'Buena base';
+            $message = 'Ya sostiene la leccion, pero un cierre rapido o chequeo la dejara mas redonda.';
+            $actionLabel = 'Pulir teoria';
+        } elseif ($score >= 80) {
+            $tone = 'success';
+            $label = 'Lista para sostener practica';
+            $message = 'Tiene suficiente contexto para enlazarla con actividades o reutilizarla como base.';
+            $actionLabel = 'Pasar a practica';
+        } else {
+            $tone = 'accent';
+            $label = 'Lista para pulir';
+            $message = 'La pieza ya sirve, pero todavia puede ganar claridad o apoyo visual.';
+            $actionLabel = 'Pulir teoria';
+        }
+
+        return [
+            'block_count' => $blockCount,
+            'media_count' => $mediaCount,
+            'tts_count' => $ttsCount,
+            'has_example' => $hasExample,
+            'has_closure' => $hasClosure,
+            'score' => $score,
+            'tone' => $tone,
+            'label' => $label,
+            'message' => $message,
+            'action_label' => $actionLabel,
+            'ready_for_practice' => $score >= 70 && $blockCount >= 2,
+        ];
+    }
 }

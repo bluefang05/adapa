@@ -62,9 +62,34 @@ class AdminController extends Controller {
         $this->db->bind(':instancia_id', $instanciaId);
         $recentUsers = $this->db->resultSet();
 
-        $this->db->query("SELECT * FROM cursos WHERE instancia_id = :instancia_id ORDER BY fecha_creacion DESC LIMIT 5");
+        $this->db->query("
+            SELECT
+                c.*,
+                u.nombre AS profesor_nombre,
+                u.apellido AS profesor_apellido,
+                (
+                    SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                ) AS total_lecciones,
+                (
+                    SELECT COUNT(*)
+                    FROM actividades a
+                    INNER JOIN lecciones l ON l.id = a.leccion_id
+                    WHERE l.curso_id = c.id
+                ) AS total_actividades
+            FROM cursos c
+            LEFT JOIN usuarios u ON u.id = c.creado_por
+            WHERE c.instancia_id = :instancia_id
+            ORDER BY c.fecha_creacion DESC
+        ");
         $this->db->bind(':instancia_id', $instanciaId);
-        $recentCourses = $this->db->resultSet();
+        $catalogCourses = $this->enriquecerCursosAdmin($this->db->resultSet(), $instanciaId);
+        $recentCourses = array_slice($catalogCourses, 0, 5);
+        $catalogSummary = $this->resumirCatalogoAdmin($catalogCourses);
+        $catalogHotspots = array_slice(array_values(array_filter($catalogCourses, static function ($course) {
+            return !empty($course->needs_attention);
+        })), 0, 4);
 
         $this->db->query("
             SELECT
@@ -97,11 +122,12 @@ class AdminController extends Controller {
             LIMIT 4
         ");
         $this->db->bind(':instancia_id', $instanciaId);
-        $teacherHotspots = $this->db->resultSet();
+        $teacherHotspots = $this->enriquecerDocentesAdmin($this->db->resultSet(), $instanciaId);
 
         $this->db->query("
             SELECT
                 lir.id,
+                lir.curso_id,
                 lir.status,
                 lir.issue_type,
                 lir.context_type,
@@ -119,7 +145,8 @@ class AdminController extends Controller {
             LIMIT 5
         ");
         $this->db->bind(':instancia_id', $instanciaId);
-        $recentTickets = $this->db->resultSet();
+        $recentTickets = $this->enriquecerTicketsAdmin($this->db->resultSet());
+        $supportHotspots = $this->obtenerFocosSoporteAdmin($instanciaId);
 
         $recentAdminActivity = $this->obtenerActividadAdmin($instanciaId, 6);
 
@@ -133,8 +160,11 @@ class AdminController extends Controller {
             'openTickets' => $openTickets,
             'recentUsers' => $recentUsers,
             'recentCourses' => $recentCourses,
+            'catalogSummary' => $catalogSummary,
+            'catalogHotspots' => $catalogHotspots,
             'teacherHotspots' => $teacherHotspots,
             'recentTickets' => $recentTickets,
+            'supportHotspots' => $supportHotspots,
             'recentAdminActivity' => $recentAdminActivity,
         ]);
     }
@@ -307,11 +337,15 @@ class AdminController extends Controller {
             }));
         }
 
+        $teachers = $this->enriquecerDocentesAdmin($teachers, $instanciaId);
+        $teacherSummary = $this->resumirDocentesAdmin($teachers);
+
         $this->view('admin/profesores', [
             'teachers' => $teachers,
             'search' => $search,
             'status' => $status,
             'load' => $load,
+            'teacherSummary' => $teacherSummary,
         ]);
     }
 
@@ -320,9 +354,26 @@ class AdminController extends Controller {
         $teacherFilter = (int) ($_GET['teacher'] ?? 0);
         $visibilityFilter = trim((string) ($_GET['publico'] ?? ''));
         $estadoFilter = trim((string) ($_GET['estado'] ?? ''));
+        $editorialFilter = trim((string) ($_GET['editorial'] ?? ''));
 
         $sql = "
-            SELECT c.*, u.nombre as profesor_nombre, u.apellido as profesor_apellido, mr.ruta_archivo as portada_url, mr.alt_text as portada_alt
+            SELECT
+                c.*,
+                u.nombre as profesor_nombre,
+                u.apellido as profesor_apellido,
+                mr.ruta_archivo as portada_url,
+                mr.alt_text as portada_alt,
+                (
+                    SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                ) AS total_lecciones,
+                (
+                    SELECT COUNT(*)
+                    FROM actividades a
+                    INNER JOIN lecciones l ON l.id = a.leccion_id
+                    WHERE l.curso_id = c.id
+                ) AS total_actividades
             FROM cursos c
             LEFT JOIN usuarios u ON c.creado_por = u.id
             LEFT JOIN media_recursos mr ON mr.id = c.portada_media_id
@@ -352,12 +403,25 @@ class AdminController extends Controller {
         }
         $courses = $this->db->resultSet();
 
+        if ($editorialFilter !== '') {
+            $courses = array_values(array_filter($courses, static function ($course) use ($editorialFilter) {
+                $editorialState = app_course_editorial_snapshot($course);
+                $label = strtolower(str_replace(' ', '_', $editorialState['label'] ?? ''));
+                return $label === $editorialFilter;
+            }));
+        }
+
+        $courses = $this->enriquecerCursosAdmin($courses, $instanciaId);
+        $catalogSummary = $this->resumirCatalogoAdmin($courses);
+
         $this->view('admin/cursos', [
             'courses' => $courses,
             'teachers' => $this->obtenerResponsablesCurso($instanciaId),
             'teacherFilter' => $teacherFilter,
             'visibilityFilter' => $visibilityFilter,
             'estadoFilter' => $estadoFilter,
+            'editorialFilter' => $editorialFilter,
+            'catalogSummary' => $catalogSummary,
         ]);
     }
 
@@ -370,14 +434,73 @@ class AdminController extends Controller {
         }
 
         $lecciones = $this->leccionModel->obtenerLeccionesConContenido((int) $course->id);
+        $structureSummary = [
+            'total_theories' => 0,
+            'total_activities' => 0,
+            'published_lessons' => 0,
+            'ready_lessons' => 0,
+            'gap_lessons' => 0,
+            'next_focus' => null,
+        ];
+        $lessonSupportMap = $this->obtenerSoporteLeccionesAdmin((int) $course->id, $instanciaId);
         foreach ($lecciones as $leccion) {
             $leccion->teorias_detalle = $this->teoriaModel->obtenerTeoriasPorLeccion($leccion->id);
             $leccion->actividades_detalle = $this->actividadModel->obtenerActividadesPorLeccion($leccion->id);
+            $leccion->total_teorias = count($leccion->teorias_detalle ?? []);
+            $leccion->total_actividades = count($leccion->actividades_detalle ?? []);
+            $leccion->editorial_snapshot = app_lesson_editorial_snapshot($leccion);
+            $leccion->support_meta = $lessonSupportMap[(int) $leccion->id] ?? (object) [
+                'total' => 0,
+                'open_total' => 0,
+                'nuevos' => 0,
+                'actividad' => 0,
+                'leccion' => 0,
+                'label' => 'Sin tickets',
+                'tone' => 'success',
+                'hint' => 'No hay incidencias abiertas ligadas a esta leccion.',
+            ];
+
+            $structureSummary['total_theories'] += (int) $leccion->total_teorias;
+            $structureSummary['total_activities'] += (int) $leccion->total_actividades;
+
+            if (($leccion->estado ?? '') === 'publicada') {
+                $structureSummary['published_lessons']++;
+            }
+
+            if (($leccion->editorial_snapshot['label'] ?? '') === 'Lista para revisar') {
+                $structureSummary['ready_lessons']++;
+            }
+
+            if (in_array(($leccion->editorial_snapshot['label'] ?? ''), ['Sin contexto', 'Sin practica'], true)) {
+                $structureSummary['gap_lessons']++;
+                if ($structureSummary['next_focus'] === null) {
+                    $structureSummary['next_focus'] = $leccion;
+                }
+            }
         }
+
+        $this->db->query("
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN status <> 'resuelto' THEN 1 ELSE 0 END) AS open_total,
+                SUM(CASE WHEN status = 'nuevo' THEN 1 ELSE 0 END) AS nuevos,
+                SUM(CASE WHEN status = 'en_revision' THEN 1 ELSE 0 END) AS en_revision,
+                SUM(CASE WHEN context_type = 'leccion' THEN 1 ELSE 0 END) AS context_leccion,
+                SUM(CASE WHEN context_type = 'actividad' THEN 1 ELSE 0 END) AS context_actividad
+            FROM lesson_issue_reports
+            WHERE instancia_id = :instancia_id
+              AND curso_id = :course_id
+        ");
+        $this->db->bind(':instancia_id', $instanciaId);
+        $this->db->bind(':course_id', (int) $course->id);
+        $courseTicketSummary = $this->db->single();
 
         $this->view('admin/curso_estructura', [
             'course' => $course,
             'lecciones' => $lecciones,
+            'courseEditorialState' => app_course_editorial_snapshot($course),
+            'structureSummary' => $structureSummary,
+            'courseTicketSummary' => $courseTicketSummary,
         ]);
     }
 
@@ -389,6 +512,7 @@ class AdminController extends Controller {
         $priority = trim((string) ($_GET['priority'] ?? ''));
         $userId = (int) ($_GET['user_id'] ?? 0);
         $ownerId = (int) ($_GET['owner_id'] ?? 0);
+        $courseId = (int) ($_GET['course_id'] ?? 0);
 
         $sql = "
             SELECT
@@ -432,6 +556,10 @@ class AdminController extends Controller {
         if ($ownerId > 0) {
             $sql .= " AND c.creado_por = :owner_id";
             $params[':owner_id'] = $ownerId;
+        }
+        if ($courseId > 0) {
+            $sql .= " AND lir.curso_id = :course_id";
+            $params[':course_id'] = $courseId;
         }
 
         $sql .= " ORDER BY lir.created_at DESC";
@@ -525,6 +653,13 @@ class AdminController extends Controller {
             $selectedOwner = $this->db->single();
         }
 
+        $selectedCourse = null;
+        if ($courseId > 0) {
+            $selectedCourse = $this->obtenerCursoInstancia($courseId, $instanciaId);
+        }
+
+        $ticketFocusSummary = $this->resumirFocosTicketsAdmin($tickets);
+
         $this->view('admin/tickets', [
             'tickets' => $tickets,
             'status' => $status,
@@ -533,11 +668,14 @@ class AdminController extends Controller {
             'priority' => $priority,
             'userId' => $userId,
             'ownerId' => $ownerId,
+            'courseId' => $courseId,
             'selectedReporter' => $selectedReporter,
             'selectedOwner' => $selectedOwner,
+            'selectedCourse' => $selectedCourse,
             'ticketSummary' => $ticketSummary,
             'ticketPrioritySummary' => $ticketPrioritySummary,
             'notesByTicket' => $notesByTicket,
+            'ticketFocusSummary' => $ticketFocusSummary,
         ]);
     }
 
@@ -701,11 +839,13 @@ class AdminController extends Controller {
         $target = trim((string) ($_GET['target'] ?? ''));
 
         $activity = $this->obtenerActividadAdmin($instanciaId, 80, $action, $target);
+        $activitySummary = $this->resumirBitacoraAdmin($activity);
 
         $this->view('admin/actividad', [
             'activity' => $activity,
             'action' => $action,
             'target' => $target,
+            'activitySummary' => $activitySummary,
         ]);
     }
 
@@ -1624,9 +1764,457 @@ class AdminController extends Controller {
             $ticket->priority_key = $key;
             $ticket->priority_label = $label;
             $ticket->priority_tone = $tone;
+            $ticket->recommended_action = $this->recomendarAccionTicket($ticket);
         }
 
         return $tickets;
+    }
+
+    private function enriquecerCursosAdmin(array $courses, $instanciaId) {
+        if (empty($courses)) {
+            return [];
+        }
+
+        $courseIds = array_values(array_unique(array_map(static function ($course) {
+            return (int) ($course->id ?? 0);
+        }, $courses)));
+        $ticketMap = $this->obtenerMetricasTicketsCursoAdmin($courseIds, $instanciaId);
+
+        foreach ($courses as $course) {
+            $course->editorial_snapshot = app_course_editorial_snapshot($course);
+            $ticketMeta = $ticketMap[(int) $course->id] ?? (object) [
+                'total_tickets' => 0,
+                'open_tickets' => 0,
+                'new_tickets' => 0,
+                'activity_tickets' => 0,
+                'lesson_tickets' => 0,
+            ];
+
+            $course->ticket_total = (int) ($ticketMeta->total_tickets ?? 0);
+            $course->open_tickets = (int) ($ticketMeta->open_tickets ?? 0);
+            $course->new_tickets = (int) ($ticketMeta->new_tickets ?? 0);
+            $course->activity_tickets = (int) ($ticketMeta->activity_tickets ?? 0);
+            $course->lesson_tickets = (int) ($ticketMeta->lesson_tickets ?? 0);
+
+            $focusLabel = 'Controlado';
+            $focusTone = 'success';
+            $focusHint = 'No hay señales fuertes de riesgo en este curso.';
+            $needsAttention = false;
+
+            if ((int) ($course->total_lecciones ?? 0) === 0) {
+                $focusLabel = 'Sin estructura';
+                $focusTone = 'warning';
+                $focusHint = 'El curso todavia no tiene lecciones y no deberia quedarse visible asi.';
+                $needsAttention = true;
+            } elseif ((int) ($course->total_actividades ?? 0) === 0) {
+                $focusLabel = 'Sin practica';
+                $focusTone = 'warning';
+                $focusHint = 'La ruta existe, pero todavia no convierte teoria en practica real.';
+                $needsAttention = true;
+            } elseif (($course->editorial_snapshot['label'] ?? '') === 'Visible con ajustes') {
+                $focusLabel = 'Visible con huecos';
+                $focusTone = 'warning';
+                $focusHint = $course->editorial_snapshot['hint'] ?? 'Hay partes visibles que aun conviene revisar.';
+                $needsAttention = true;
+            } elseif ((int) ($course->open_tickets ?? 0) >= 3) {
+                $focusLabel = 'Soporte caliente';
+                $focusTone = 'warning';
+                $focusHint = 'Este curso ya acumula varias incidencias abiertas y conviene entrar a soporte.';
+                $needsAttention = true;
+            } elseif ((int) ($course->open_tickets ?? 0) > 0) {
+                $focusLabel = 'Con incidencias';
+                $focusTone = 'info';
+                $focusHint = 'Tiene tickets abiertos; conviene revisar soporte antes de publicar mas cambios.';
+                $needsAttention = true;
+            } elseif (($course->editorial_snapshot['label'] ?? '') === 'Listo para revisar') {
+                $focusLabel = 'Listo para empujar';
+                $focusTone = 'info';
+                $focusHint = 'La base esta montada y ya conviene una revision editorial final.';
+            }
+
+            $course->admin_focus_label = $focusLabel;
+            $course->admin_focus_tone = $focusTone;
+            $course->admin_focus_hint = $focusHint;
+            $course->needs_attention = $needsAttention;
+        }
+
+        return $courses;
+    }
+
+    private function resumirCatalogoAdmin(array $courses) {
+        $summary = [
+            'without_lessons' => 0,
+            'without_practice' => 0,
+            'with_open_tickets' => 0,
+            'visible_with_gaps' => 0,
+            'ready_to_review' => 0,
+        ];
+
+        foreach ($courses as $course) {
+            if ((int) ($course->total_lecciones ?? 0) === 0) {
+                $summary['without_lessons']++;
+            }
+            if ((int) ($course->total_lecciones ?? 0) > 0 && (int) ($course->total_actividades ?? 0) === 0) {
+                $summary['without_practice']++;
+            }
+            if ((int) ($course->open_tickets ?? 0) > 0) {
+                $summary['with_open_tickets']++;
+            }
+            if (($course->editorial_snapshot['label'] ?? '') === 'Visible con ajustes') {
+                $summary['visible_with_gaps']++;
+            }
+            if (($course->editorial_snapshot['label'] ?? '') === 'Listo para revisar') {
+                $summary['ready_to_review']++;
+            }
+        }
+
+        return $summary;
+    }
+
+    private function enriquecerDocentesAdmin(array $teachers, $instanciaId) {
+        if (empty($teachers)) {
+            return [];
+        }
+
+        $teacherIds = array_values(array_unique(array_map(static function ($teacher) {
+            return (int) ($teacher->id ?? 0);
+        }, $teachers)));
+        $teacherCourseSummary = $this->obtenerResumenCursosDocenteAdmin($teacherIds, $instanciaId);
+
+        foreach ($teachers as $teacher) {
+            $courseSummary = $teacherCourseSummary[(int) $teacher->id] ?? [
+                'ready_to_review' => 0,
+                'visible_with_gaps' => 0,
+                'without_structure' => 0,
+                'without_practice' => 0,
+                'hotspot_title' => null,
+            ];
+
+            $teacher->ready_courses = $courseSummary['ready_to_review'];
+            $teacher->public_courses_with_issues = $courseSummary['visible_with_gaps'];
+            $teacher->courses_without_structure = $courseSummary['without_structure'];
+            $teacher->courses_without_practice = $courseSummary['without_practice'];
+            $teacher->hotspot_course_title = $courseSummary['hotspot_title'];
+
+            $focusLabel = 'Control operativo';
+            $focusTone = 'success';
+            $focusHint = 'La carga de este docente se ve manejable desde admin.';
+
+            if ((int) ($teacher->total_cursos ?? 0) === 0) {
+                $focusLabel = 'Sin produccion';
+                $focusTone = 'warning';
+                $focusHint = 'Tiene acceso como profesor, pero todavia no empuja cursos propios.';
+            } elseif ((int) $teacher->public_courses_with_issues > 0) {
+                $focusLabel = 'Catalogo visible con huecos';
+                $focusTone = 'warning';
+                $focusHint = 'Tiene cursos ya visibles que aun conviene corregir antes de empujar mas trafico.';
+            } elseif (((int) ($teacher->tickets_cursos_abiertos ?? 0) + (int) ($teacher->tickets_docente_abiertos ?? 0) + (int) ($teacher->tickets_abiertos ?? 0)) > 0) {
+                $focusLabel = 'Soporte abierto';
+                $focusTone = 'info';
+                $focusHint = 'Tiene incidencias activas y conviene revisar primero ese frente.';
+            } elseif ((int) $teacher->ready_courses > 0) {
+                $focusLabel = 'Listo para revision';
+                $focusTone = 'info';
+                $focusHint = 'Ya tiene material suficiente para una pasada editorial o de publicacion.';
+            }
+
+            $teacher->admin_focus_label = $focusLabel;
+            $teacher->admin_focus_tone = $focusTone;
+            $teacher->admin_focus_hint = $focusHint;
+        }
+
+        return $teachers;
+    }
+
+    private function resumirDocentesAdmin(array $teachers) {
+        $summary = [
+            'with_visible_gaps' => 0,
+            'with_open_support' => 0,
+            'without_courses' => 0,
+            'ready_for_review' => 0,
+        ];
+
+        foreach ($teachers as $teacher) {
+            if ((int) ($teacher->public_courses_with_issues ?? 0) > 0) {
+                $summary['with_visible_gaps']++;
+            }
+            if (((int) ($teacher->tickets_docente_abiertos ?? 0) + (int) ($teacher->tickets_cursos_abiertos ?? 0) + (int) ($teacher->tickets_abiertos ?? 0)) > 0) {
+                $summary['with_open_support']++;
+            }
+            if ((int) ($teacher->total_cursos ?? 0) === 0) {
+                $summary['without_courses']++;
+            }
+            if ((int) ($teacher->ready_courses ?? 0) > 0) {
+                $summary['ready_for_review']++;
+            }
+        }
+
+        return $summary;
+    }
+
+    private function obtenerMetricasTicketsCursoAdmin(array $courseIds, $instanciaId) {
+        if (empty($courseIds)) {
+            return [];
+        }
+
+        $placeholders = $this->placeholdersDesdeIds('course_metric', $courseIds);
+        $this->db->query("
+            SELECT
+                curso_id,
+                COUNT(*) AS total_tickets,
+                SUM(CASE WHEN status <> 'resuelto' THEN 1 ELSE 0 END) AS open_tickets,
+                SUM(CASE WHEN status = 'nuevo' THEN 1 ELSE 0 END) AS new_tickets,
+                SUM(CASE WHEN context_type = 'actividad' THEN 1 ELSE 0 END) AS activity_tickets,
+                SUM(CASE WHEN context_type = 'leccion' THEN 1 ELSE 0 END) AS lesson_tickets
+            FROM lesson_issue_reports
+            WHERE instancia_id = :instancia_id
+              AND curso_id IN (" . implode(', ', array_keys($placeholders)) . ")
+            GROUP BY curso_id
+        ");
+        $this->db->bind(':instancia_id', (int) $instanciaId);
+        foreach ($placeholders as $placeholder => $courseId) {
+            $this->db->bind($placeholder, $courseId);
+        }
+
+        $rows = $this->db->resultSet();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row->curso_id] = $row;
+        }
+
+        return $map;
+    }
+
+    private function obtenerResumenCursosDocenteAdmin(array $teacherIds, $instanciaId) {
+        if (empty($teacherIds)) {
+            return [];
+        }
+
+        $placeholders = $this->placeholdersDesdeIds('teacher_course', $teacherIds);
+        $this->db->query("
+            SELECT
+                c.*,
+                (
+                    SELECT COUNT(*)
+                    FROM lecciones l
+                    WHERE l.curso_id = c.id
+                ) AS total_lecciones,
+                (
+                    SELECT COUNT(*)
+                    FROM actividades a
+                    INNER JOIN lecciones l ON l.id = a.leccion_id
+                    WHERE l.curso_id = c.id
+                ) AS total_actividades
+            FROM cursos c
+            WHERE c.instancia_id = :instancia_id
+              AND c.creado_por IN (" . implode(', ', array_keys($placeholders)) . ")
+        ");
+        $this->db->bind(':instancia_id', (int) $instanciaId);
+        foreach ($placeholders as $placeholder => $teacherId) {
+            $this->db->bind($placeholder, $teacherId);
+        }
+
+        $courses = $this->enriquecerCursosAdmin($this->db->resultSet(), $instanciaId);
+        $summary = [];
+        foreach ($teacherIds as $teacherId) {
+            $summary[(int) $teacherId] = [
+                'ready_to_review' => 0,
+                'visible_with_gaps' => 0,
+                'without_structure' => 0,
+                'without_practice' => 0,
+                'hotspot_title' => null,
+            ];
+        }
+
+        foreach ($courses as $course) {
+            $teacherId = (int) ($course->creado_por ?? 0);
+            if (!isset($summary[$teacherId])) {
+                continue;
+            }
+
+            if (($course->editorial_snapshot['label'] ?? '') === 'Listo para revisar') {
+                $summary[$teacherId]['ready_to_review']++;
+            }
+            if (($course->editorial_snapshot['label'] ?? '') === 'Visible con ajustes') {
+                $summary[$teacherId]['visible_with_gaps']++;
+            }
+            if ((int) ($course->total_lecciones ?? 0) === 0) {
+                $summary[$teacherId]['without_structure']++;
+            }
+            if ((int) ($course->total_lecciones ?? 0) > 0 && (int) ($course->total_actividades ?? 0) === 0) {
+                $summary[$teacherId]['without_practice']++;
+            }
+            if ($summary[$teacherId]['hotspot_title'] === null && !empty($course->needs_attention)) {
+                $summary[$teacherId]['hotspot_title'] = $course->titulo;
+            }
+        }
+
+        return $summary;
+    }
+
+    private function obtenerSoporteLeccionesAdmin($courseId, $instanciaId) {
+        $this->db->query("
+            SELECT
+                leccion_id,
+                COUNT(*) AS total,
+                SUM(CASE WHEN status <> 'resuelto' THEN 1 ELSE 0 END) AS open_total,
+                SUM(CASE WHEN status = 'nuevo' THEN 1 ELSE 0 END) AS nuevos,
+                SUM(CASE WHEN context_type = 'actividad' THEN 1 ELSE 0 END) AS actividad,
+                SUM(CASE WHEN context_type = 'leccion' THEN 1 ELSE 0 END) AS leccion
+            FROM lesson_issue_reports
+            WHERE instancia_id = :instancia_id
+              AND curso_id = :course_id
+              AND leccion_id IS NOT NULL
+            GROUP BY leccion_id
+        ");
+        $this->db->bind(':instancia_id', (int) $instanciaId);
+        $this->db->bind(':course_id', (int) $courseId);
+        $rows = $this->db->resultSet();
+
+        $map = [];
+        foreach ($rows as $row) {
+            $label = 'Sin tickets';
+            $tone = 'success';
+            $hint = 'No hay incidencias abiertas ligadas a esta leccion.';
+
+            if ((int) ($row->open_total ?? 0) >= 3) {
+                $label = 'Soporte caliente';
+                $tone = 'warning';
+                $hint = 'La leccion acumula varias incidencias abiertas y conviene revisarla primero.';
+            } elseif ((int) ($row->open_total ?? 0) > 0) {
+                $label = 'Con seguimiento';
+                $tone = 'info';
+                $hint = 'Hay tickets abiertos sobre esta leccion o sus actividades.';
+            }
+
+            $row->label = $label;
+            $row->tone = $tone;
+            $row->hint = $hint;
+            $map[(int) $row->leccion_id] = $row;
+        }
+
+        return $map;
+    }
+
+    private function obtenerFocosSoporteAdmin($instanciaId) {
+        $this->db->query("
+            SELECT
+                c.id,
+                c.titulo,
+                COUNT(*) AS open_total,
+                SUM(CASE WHEN lir.status = 'nuevo' THEN 1 ELSE 0 END) AS nuevos
+            FROM lesson_issue_reports lir
+            INNER JOIN cursos c ON c.id = lir.curso_id
+            WHERE lir.instancia_id = :instancia_id
+              AND lir.status <> 'resuelto'
+              AND lir.curso_id IS NOT NULL
+            GROUP BY c.id, c.titulo
+            ORDER BY open_total DESC, nuevos DESC, c.titulo ASC
+            LIMIT 4
+        ");
+        $this->db->bind(':instancia_id', (int) $instanciaId);
+        $rows = $this->db->resultSet();
+        foreach ($rows as $row) {
+            $row->focus_label = ((int) ($row->open_total ?? 0) >= 3) ? 'Curso caliente' : 'Con seguimiento';
+            $row->focus_tone = ((int) ($row->open_total ?? 0) >= 3) ? 'warning' : 'info';
+            $row->focus_hint = ((int) ($row->nuevos ?? 0) > 0)
+                ? 'Todavia hay tickets nuevos sin triage final.'
+                : 'El curso tiene incidencias abiertas que conviene revisar.';
+        }
+        return $rows;
+    }
+
+    private function resumirFocosTicketsAdmin(array $tickets) {
+        $summary = [
+            'by_issue' => [],
+            'by_course' => [],
+            'by_role' => [
+                'profesor' => 0,
+                'estudiante' => 0,
+                'otro' => 0,
+            ],
+        ];
+
+        foreach ($tickets as $ticket) {
+            $issueKey = (string) ($ticket->issue_type ?? 'otro');
+            $summary['by_issue'][$issueKey] = ($summary['by_issue'][$issueKey] ?? 0) + 1;
+
+            if (!empty($ticket->curso_titulo)) {
+                $courseKey = (string) $ticket->curso_titulo;
+                $summary['by_course'][$courseKey] = ($summary['by_course'][$courseKey] ?? 0) + 1;
+            }
+
+            if (!empty($ticket->es_profesor)) {
+                $summary['by_role']['profesor']++;
+            } elseif (!empty($ticket->es_estudiante)) {
+                $summary['by_role']['estudiante']++;
+            } else {
+                $summary['by_role']['otro']++;
+            }
+        }
+
+        arsort($summary['by_issue']);
+        arsort($summary['by_course']);
+        $summary['by_issue'] = array_slice($summary['by_issue'], 0, 4, true);
+        $summary['by_course'] = array_slice($summary['by_course'], 0, 4, true);
+
+        return $summary;
+    }
+
+    private function resumirBitacoraAdmin(array $activity) {
+        $summary = [
+            'targets' => [],
+            'actions' => [],
+            'total_tickets' => 0,
+            'total_usuarios' => 0,
+            'total_cursos' => 0,
+            'top_action' => null,
+            'top_target' => null,
+        ];
+
+        foreach ($activity as $entry) {
+            $target = (string) ($entry->target_type ?? 'otro');
+            $action = (string) ($entry->action_type ?? 'otro');
+            $summary['targets'][$target] = ($summary['targets'][$target] ?? 0) + 1;
+            $summary['actions'][$action] = ($summary['actions'][$action] ?? 0) + 1;
+
+            if ($target === 'ticket') {
+                $summary['total_tickets']++;
+            } elseif ($target === 'usuario') {
+                $summary['total_usuarios']++;
+            } elseif ($target === 'curso') {
+                $summary['total_cursos']++;
+            }
+        }
+
+        arsort($summary['targets']);
+        arsort($summary['actions']);
+        $summary['targets'] = array_slice($summary['targets'], 0, 4, true);
+        $summary['actions'] = array_slice($summary['actions'], 0, 6, true);
+        $summary['top_action'] = key($summary['actions']) ?: null;
+        $summary['top_target'] = key($summary['targets']) ?: null;
+
+        return $summary;
+    }
+
+    private function recomendarAccionTicket($ticket) {
+        if (($ticket->status ?? '') === 'resuelto') {
+            return 'Caso cerrado. Solo hace falta revisar notas si necesitas contexto historico.';
+        }
+
+        if (($ticket->priority_key ?? '') === 'alta' && !empty($ticket->curso_titulo)) {
+            return 'Abre el curso y su estructura antes de tocar nada mas. Este caso ya merece prioridad alta.';
+        }
+
+        if (($ticket->context_type ?? '') === 'actividad') {
+            return 'Empieza por la actividad reportada y revisa si afecta teoria, media o correccion.';
+        }
+
+        if (($ticket->context_type ?? '') === 'leccion') {
+            return 'Revisa la leccion completa para confirmar si el problema es de contexto o de secuencia.';
+        }
+
+        return 'Clasifica el caso, deja nota interna y decide si conviene moverlo a revision.';
     }
 
     private function clasificarPrioridadTicket($ticket) {

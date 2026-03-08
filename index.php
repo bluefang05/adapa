@@ -34,6 +34,7 @@ $router->add('POST', '/profesor/cursos/delete/{id}', 'profesor/CursoController',
 $router->add('GET', '/profesor/cursos/{id}/lecciones', 'profesor/LeccionController', 'index');
 $router->add('GET', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
 $router->add('POST', '/profesor/cursos/{id}/lecciones/create', 'profesor/LeccionController', 'create');
+$router->add('GET', '/profesor/lecciones/{id}/builder', 'profesor/LeccionController', 'builder');
 $router->add('GET', '/profesor/lecciones/{id}/preview', 'profesor/LeccionController', 'preview');
 $router->add('GET', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');
 $router->add('POST', '/profesor/lecciones/edit/{id}', 'profesor/LeccionController', 'edit');

@@ -21,6 +21,26 @@
                 <div class="metric-value"><?php echo count($activity); ?></div>
                 <div class="metric-note">Resultados visibles en esta consulta.</div>
             </div>
+            <div class="metric-card">
+                <div class="metric-label">Tickets</div>
+                <div class="metric-value"><?php echo (int) ($activitySummary['total_tickets'] ?? 0); ?></div>
+                <div class="metric-note">Eventos administrativos ligados a soporte.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Usuarios</div>
+                <div class="metric-value"><?php echo (int) ($activitySummary['total_usuarios'] ?? 0); ?></div>
+                <div class="metric-note">Cambios operativos sobre cuentas.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Cursos</div>
+                <div class="metric-value"><?php echo (int) ($activitySummary['total_cursos'] ?? 0); ?></div>
+                <div class="metric-note">Movimientos hechos sobre el catalogo.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Accion dominante</div>
+                <div class="metric-value"><?php echo htmlspecialchars((string) ($activitySummary['top_action'] ?? 'N/A')); ?></div>
+                <div class="metric-note">La operacion que mas se repite en este resultado.</div>
+            </div>
         </div>
     </section>
 
@@ -78,6 +98,57 @@
             <h2>Actividad reciente</h2>
             <span class="soft-badge"><i class="bi bi-clock-history"></i> Ultimos eventos</span>
         </div>
+
+        <?php if (!empty($activitySummary['targets']) || !empty($activitySummary['actions'])): ?>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <section class="panel h-100">
+                        <div class="panel-body">
+                            <div class="section-title">
+                                <h2>Objetivos mas tocados</h2>
+                            </div>
+                            <?php if (empty($activitySummary['targets'])): ?>
+                                <div class="empty-state">No hay suficientes eventos para identificar objetivos dominantes.</div>
+                            <?php else: ?>
+                                <div class="stack-list">
+                                    <?php foreach ($activitySummary['targets'] as $targetLabel => $targetCount): ?>
+                                        <article class="stack-item">
+                                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                                <div class="stack-item-title"><?php echo htmlspecialchars($targetLabel); ?></div>
+                                                <span class="soft-badge info"><?php echo (int) $targetCount; ?></span>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-lg-6">
+                    <section class="panel h-100">
+                        <div class="panel-body">
+                            <div class="section-title">
+                                <h2>Acciones mas repetidas</h2>
+                            </div>
+                            <?php if (empty($activitySummary['actions'])): ?>
+                                <div class="empty-state">No hay suficientes eventos para detectar acciones dominantes.</div>
+                            <?php else: ?>
+                                <div class="stack-list">
+                                    <?php foreach ($activitySummary['actions'] as $actionLabel => $actionCount): ?>
+                                        <article class="stack-item">
+                                            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                                                <div class="stack-item-title"><?php echo htmlspecialchars($actionLabel); ?></div>
+                                                <span class="soft-badge"><?php echo (int) $actionCount; ?></span>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <?php if (empty($activity)): ?>
             <div class="panel empty-state-card">

@@ -7,6 +7,8 @@ $currentUsersUrl = '/admin/usuarios' . ($userQuery !== '' ? '?' . $userQuery : '
 $admins = 0;
 $profesores = 0;
 $estudiantes = 0;
+$inactiveUsers = 0;
+$pendingEmails = 0;
 
 foreach ($users as $user) {
     if ($user->es_admin_institucion) {
@@ -15,6 +17,12 @@ foreach ($users as $user) {
         $profesores++;
     } elseif ($user->es_estudiante) {
         $estudiantes++;
+    }
+    if (empty($user->activo)) {
+        $inactiveUsers++;
+    }
+    if (empty($user->email_verificado)) {
+        $pendingEmails++;
     }
 }
 ?>
@@ -46,6 +54,16 @@ foreach ($users as $user) {
                 <div class="metric-label">Estudiantes</div>
                 <div class="metric-value"><?php echo $estudiantes; ?></div>
                 <div class="metric-note">Aprendices listados en esta pagina.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Inactivos</div>
+                <div class="metric-value"><?php echo $inactiveUsers; ?></div>
+                <div class="metric-note">Cuentas bloqueadas dentro del resultado visible.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Correo pendiente</div>
+                <div class="metric-value"><?php echo $pendingEmails; ?></div>
+                <div class="metric-note">Usuarios sin correo marcado como verificado.</div>
             </div>
         </div>
     </section>

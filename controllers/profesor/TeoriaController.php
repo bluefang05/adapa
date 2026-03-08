@@ -82,6 +82,22 @@ class TeoriaController extends Controller
         return $bloques;
     }
 
+    private function requestedReturnTo()
+    {
+        $returnTo = trim((string) ($_POST['return_to'] ?? $_GET['return_to'] ?? ''));
+        if ($returnTo === '' || $returnTo[0] !== '/' || str_contains($returnTo, '://') || str_contains($returnTo, "\n")) {
+            return null;
+        }
+
+        return $returnTo;
+    }
+
+    private function redirectToRequestedReturnOr($defaultPath)
+    {
+        $returnTo = $this->requestedReturnTo();
+        $this->redirect($returnTo ?: $defaultPath);
+    }
+
     public function index($leccion_id)
     {
         $leccion = $this->obtenerLeccionAutorizada($leccion_id);
@@ -112,7 +128,7 @@ class TeoriaController extends Controller
 
             if ($this->teoriaModel->crearTeoria($datos)) {
                 $this->flash('success', 'Teoria creada exitosamente');
-                $this->redirect('/profesor/lecciones/' . $leccion_id . '/teoria');
+                $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $leccion_id . '/teoria');
             }
 
             $error = 'Error al crear la teoria';
@@ -143,7 +159,7 @@ class TeoriaController extends Controller
 
             if ($this->teoriaModel->actualizarTeoria($id, $datos)) {
                 $this->flash('success', 'Teoria actualizada exitosamente');
-                $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+                $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
             }
 
             $error = 'Error al actualizar la teoria';
@@ -170,7 +186,7 @@ class TeoriaController extends Controller
             $this->flash('error', 'Error al eliminar la teoria');
         }
 
-        $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
     }
 
     public function duplicate($id)
@@ -183,11 +199,19 @@ class TeoriaController extends Controller
         $nuevoId = $this->teoriaModel->duplicarTeoria($id);
         if ($nuevoId) {
             $this->flash('success', 'Teoria duplicada en borrador operativo.');
+            if (($_POST['continue_to'] ?? $_GET['continue_to'] ?? '') === 'edit') {
+                $returnTo = $this->requestedReturnTo();
+                $target = '/profesor/teoria/edit/' . $nuevoId;
+                if ($returnTo) {
+                    $target .= '?return_to=' . rawurlencode($returnTo);
+                }
+                $this->redirect($target);
+            }
         } else {
             $this->flash('error', 'No se pudo duplicar la teoria.');
         }
 
-        $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
     }
 
     public function moveUp($id)
@@ -207,6 +231,6 @@ class TeoriaController extends Controller
 
         [$teoria] = $this->obtenerTeoriaAutorizada($id);
         $this->teoriaModel->moverTeoria($id, $direction);
-        $this->redirect('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
+        $this->redirectToRequestedReturnOr('/profesor/lecciones/' . $teoria->leccion_id . '/teoria');
     }
 }

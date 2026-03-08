@@ -1,81 +1,22 @@
 <?php
 function getEstadoColor($estado) {
     switch ($estado) {
-        case 'preparacion': return 'warning';
-        case 'activo': return 'success';
-        case 'pausado': return 'info';
-        case 'finalizado': return 'secondary';
-        case 'archivado': return 'dark';
-        default: return 'secondary';
+        case 'preparacion':
+            return 'warning';
+        case 'activo':
+            return 'success';
+        case 'pausado':
+            return 'info';
+        case 'finalizado':
+            return 'secondary';
+        case 'archivado':
+            return 'dark';
+        default:
+            return 'secondary';
     }
 }
 
 require_once __DIR__ . '/../../../models/Curso.php';
-
-function getCourseProductionHint($curso) {
-    $totalLessons = (int) ($curso->total_lecciones ?? 0);
-    $totalActivities = (int) ($curso->total_actividades ?? 0);
-    $estado = $curso->estado ?? 'preparacion';
-
-    if ($totalLessons === 0) {
-        return 'Crea la primera leccion para que este curso tenga forma real.';
-    }
-
-    if ($totalActivities === 0) {
-        return 'Ya tienes estructura minima. Lo siguiente es convertirla en practica.';
-    }
-
-    if ($estado !== 'activo') {
-        return 'El contenido ya existe. Revisa acceso, portada y estado final antes de moverlo.';
-    }
-
-    return 'Este curso ya puede operarse. Lo siguiente es pulir calidad y seguimiento.';
-}
-
-function getCourseReadinessSummary($curso) {
-    $totalLessons = (int) ($curso->total_lecciones ?? 0);
-    $totalActivities = (int) ($curso->total_actividades ?? 0);
-    $estado = $curso->estado ?? 'preparacion';
-
-    if ($totalLessons === 0) {
-        return ['label' => 'Sin estructura', 'progress' => 15];
-    }
-
-    if ($totalActivities === 0) {
-        return ['label' => 'Falta practica', 'progress' => 55];
-    }
-
-    if ($estado !== 'activo') {
-        return ['label' => 'Listo para revisar', 'progress' => 82];
-    }
-
-    return ['label' => 'Operativo', 'progress' => 100];
-}
-
-function getCourseEditorialState($curso) {
-    $totalLessons = (int) ($curso->total_lecciones ?? 0);
-    $totalActivities = (int) ($curso->total_actividades ?? 0);
-    $isPublic = (int) ($curso->es_publico ?? 0) === 1;
-    $estado = $curso->estado ?? 'preparacion';
-
-    if ($totalLessons === 0) {
-        return ['label' => 'En configuracion', 'tone' => 'warning', 'hint' => 'Todavia no tiene recorrido real.'];
-    }
-
-    if ($totalActivities === 0) {
-        return ['label' => 'En construccion', 'tone' => 'info', 'hint' => 'La estructura existe, pero aun falta practica.'];
-    }
-
-    if ($isPublic && $estado === 'activo') {
-        return ['label' => 'Publicado', 'tone' => 'success', 'hint' => 'Visible y con base suficiente para operar.'];
-    }
-
-    if ($isPublic) {
-        return ['label' => 'Visible con ajustes', 'tone' => 'accent', 'hint' => 'Ya se muestra, pero conviene revisarlo antes de empujarlo mas.'];
-    }
-
-    return ['label' => 'Listo para revisar', 'tone' => 'accent', 'hint' => 'Tiene base real. Solo falta validacion final.'];
-}
 ?>
 
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
@@ -159,8 +100,8 @@ function getCourseEditorialState($curso) {
                                 <?php
                                 $idiomaObjetivo = Curso::obtenerIdiomaObjetivo($curso);
                                 $idiomaBase = Curso::obtenerIdiomaBase($curso);
-                                $readiness = getCourseReadinessSummary($curso);
-                                $editorialState = getCourseEditorialState($curso);
+                                $readiness = app_course_readiness_summary($curso);
+                                $editorialState = app_course_editorial_snapshot($curso);
                                 ?>
                                 <tr>
                                     <td>
@@ -173,9 +114,9 @@ function getCourseEditorialState($curso) {
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
                                                 <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
-                                                <div class="small text-muted mt-1"><?php echo htmlspecialchars(getCourseProductionHint($curso)); ?></div>
+                                                <div class="small text-muted mt-1"><?php echo htmlspecialchars(app_course_production_hint($curso)); ?></div>
                                                 <div class="small mt-1 d-flex gap-2 flex-wrap">
-                                                    <span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> · <?php echo (int) $readiness['progress']; ?>%</span>
+                                                    <span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> - <?php echo (int) $readiness['progress']; ?>%</span>
                                                     <span class="soft-badge badge-<?php echo htmlspecialchars($editorialState['tone']); ?>"><?php echo htmlspecialchars($editorialState['label']); ?></span>
                                                 </div>
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars($editorialState['hint']); ?></div>
@@ -207,9 +148,9 @@ function getCourseEditorialState($curso) {
                                                 <i class="bi bi-book"></i>
                                                 <span class="visually-hidden">Ver lecciones</span>
                                             </a>
-                                            <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-sm btn-primary" title="Continuar construccion" aria-label="Continuar construccion de <?php echo htmlspecialchars($curso->titulo); ?>">
+                                            <a href="<?php echo htmlspecialchars($editorialState['action_url']); ?>" class="btn btn-sm btn-primary" title="<?php echo htmlspecialchars($editorialState['action_label']); ?>" aria-label="<?php echo htmlspecialchars($editorialState['action_label']); ?> de <?php echo htmlspecialchars($curso->titulo); ?>">
                                                 <i class="bi bi-arrow-right-circle"></i>
-                                                <span class="visually-hidden">Continuar construccion</span>
+                                                <span class="visually-hidden"><?php echo htmlspecialchars($editorialState['action_label']); ?></span>
                                             </a>
                                             <a href="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso" aria-label="Editar curso <?php echo htmlspecialchars($curso->titulo); ?>">
                                                 <i class="bi bi-pencil"></i>

@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../partials/header.php'; ?>
+<?php
+require_once __DIR__ . '/../../partials/header.php';
+$lessonEditorialStates = app_lesson_editorial_states();
+?>
 
 <div class="container">
     <section class="page-hero mb-4">
@@ -86,20 +89,22 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="estado" class="form-label">Estado *</label>
-                                    <select class="form-select" id="estado" name="estado" required>
-                                        <option value="borrador" selected>Borrador</option>
-                                        <option value="publicada">Publicada</option>
-                                        <option value="archivada">Archivada</option>
+                                    <label for="estado_editorial" class="form-label">Estado editorial *</label>
+                                    <select class="form-select" id="estado_editorial" name="estado_editorial" required>
+                                        <?php foreach ($lessonEditorialStates as $stateValue => $stateMeta): ?>
+                                            <option value="<?php echo htmlspecialchars($stateValue); ?>" <?php echo $stateValue === 'borrador' ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($stateMeta['label']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
-                                    <div class="form-text">Las lecciones en borrador no se muestran al estudiante.</div>
+                                    <div class="form-text" id="lessonEditorialCreateDescription">La leccion sigue interna hasta que marques un estado mas avanzado.</div>
                                 </div>
                             </div>
                         </section>
 
                         <div class="alert alert-info mt-4">
                             <i class="bi bi-lightbulb"></i>
-                            Despues podras agregar teoria y actividades para construir el recorrido completo de esta leccion.
+                            Despues de guardar entraras directo al constructor de la leccion para anadir teoria, practica y recursos sin perder el hilo.
                         </div>
 
                         <div class="responsive-actions mt-4">
@@ -119,17 +124,29 @@
 
 <script>
 const lessonCreateForm = document.getElementById('formCrearLeccion');
-const lessonCreateState = document.getElementById('estado');
+const lessonCreateState = document.getElementById('estado_editorial');
+const lessonEditorialStates = <?php echo json_encode($lessonEditorialStates, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+const lessonEditorialCreateDescription = document.getElementById('lessonEditorialCreateDescription');
 
 if (lessonCreateForm && lessonCreateState) {
     lessonCreateForm.addEventListener('submit', function (event) {
-        if (lessonCreateState.value === 'publicada') {
-            const shouldContinue = window.confirm('La leccion se creara como publicada desde el inicio. Todavia faltara teoria y practica despues de guardarla. ¿Quieres continuar?');
+        if (lessonCreateState.value === 'publicado') {
+            const shouldContinue = window.confirm('La leccion se creara como Publicada desde el inicio. Todavia faltara completar teoria y practica despues de guardarla. ¿Quieres continuar?');
             if (!shouldContinue) {
                 event.preventDefault();
             }
         }
     });
+}
+
+if (lessonCreateState && lessonEditorialCreateDescription) {
+    const syncLessonCreateDescription = function () {
+        const current = lessonEditorialStates[lessonCreateState.value] || lessonEditorialStates.borrador;
+        lessonEditorialCreateDescription.textContent = current.description || '';
+    };
+
+    lessonCreateState.addEventListener('change', syncLessonCreateDescription);
+    syncLessonCreateDescription();
 }
 </script>
 
