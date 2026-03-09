@@ -61,8 +61,6 @@ $lessonProgressTone = $lessonJourney['state_tone'] ?? 'warning';
 $lessonRemainingTheory = $lessonJourney['remaining_theory'] ?? 0;
 $lessonRemainingActivities = $lessonJourney['remaining_activities'] ?? 0;
 $lessonNextActionCopy = $lessonJourney['next_copy'] ?? 'Sigue con la teoria para ganar contexto antes de responder.';
-$lessonLanguageResources = app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 4);
-
 if (isset($resumenProgreso)) {
     $lessonRemainingTheory = max(0, (int) $resumenProgreso->total_teorias - (int) $resumenProgreso->teorias_completadas);
     $lessonRemainingActivities = max(0, (int) $resumenProgreso->total_actividades - (int) $resumenProgreso->actividades_completadas);
@@ -100,44 +98,32 @@ if (isset($lessonJourney['next_copy'])) {
         </div>
     </div>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-journal-richtext"></i> Leccion activa</span>
         <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle">Completa teoria y practica en este orden para avanzar mas rapido.</p>
         <?php if (!empty($leccion->descripcion)): ?>
             <p class="text-muted mb-0"><?php echo htmlspecialchars($leccion->descripcion); ?></p>
         <?php endif; ?>
-        <?php if (isset($resumenProgreso) && !empty($resumenProgreso->completada)): ?>
-            <div class="mt-3">
-                <span class="soft-badge">
-                    <i class="bi bi-check-circle-fill"></i> Leccion completada
-                </span>
-            </div>
-        <?php endif; ?>
-        <?php if (isset($resumenProgreso)): ?>
-            <div class="metric-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Progreso</div>
-                    <div class="metric-value"><?php echo (int) $resumenProgreso->porcentaje; ?>%</div>
-                    <div class="metric-note">Avance total de esta leccion.</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Teoria</div>
-                    <div class="metric-value"><?php echo (int) $resumenProgreso->teorias_completadas; ?>/<?php echo (int) $resumenProgreso->total_teorias; ?></div>
-                    <div class="metric-note">Bloques conceptuales ya leidos.</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Actividades</div>
-                    <div class="metric-value"><?php echo (int) $resumenProgreso->actividades_completadas; ?>/<?php echo (int) $resumenProgreso->total_actividades; ?></div>
-                    <div class="metric-note">Practicas respondidas hasta ahora.</div>
-                </div>
-            </div>
-        <?php endif; ?>
+        <div class="compact-meta-row">
+            <?php if (isset($resumenProgreso)): ?>
+                <span class="soft-badge info"><i class="bi bi-graph-up"></i> <?php echo (int) $resumenProgreso->porcentaje; ?>% progreso</span>
+                <span class="soft-badge"><i class="bi bi-book"></i> <?php echo (int) $resumenProgreso->teorias_completadas; ?>/<?php echo (int) $resumenProgreso->total_teorias; ?> teoria</span>
+                <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo (int) $resumenProgreso->actividades_completadas; ?>/<?php echo (int) $resumenProgreso->total_actividades; ?> practica</span>
+                <span class="soft-badge badge-<?php echo htmlspecialchars($lessonProgressTone); ?>"><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($lessonProgressStateLabel); ?></span>
+            <?php else: ?>
+                <span class="soft-badge"><i class="bi bi-book"></i> <?php echo count($teorias); ?> piezas de teoria</span>
+                <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo count($actividades); ?> actividades</span>
+            <?php endif; ?>
+            <?php if (isset($resumenProgreso) && !empty($resumenProgreso->completada)): ?>
+                <span class="soft-badge success"><i class="bi bi-check-circle-fill"></i> Leccion completada</span>
+            <?php endif; ?>
+        </div>
     </section>
 
     <?php if (isset($siguienteItem)): ?>
-        <div class="panel mb-4">
-            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div class="alert context-note mb-4">
+            <div class="split-head">
                 <div>
                     <div class="metric-label">Siguiente paso sugerido</div>
                     <div class="fw-semibold mt-1">
@@ -147,8 +133,9 @@ if (isset($lessonJourney['next_copy'])) {
                             <?php echo htmlspecialchars($siguienteItem['mensaje']); ?>: <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
                         <?php endif; ?>
                     </div>
+                    <div class="small text-muted mt-1"><?php echo htmlspecialchars($lessonNextActionCopy); ?></div>
                 </div>
-                <div>
+                <div class="responsive-actions">
                     <?php if ($siguienteItem['tipo'] === 'teoria'): ?>
                         <a href="#teoria-<?php echo $siguienteItem['id']; ?>" class="btn btn-primary">Ir a teoria</a>
                     <?php elseif ($siguienteItem['tipo'] === 'actividad'): ?>
@@ -165,105 +152,46 @@ if (isset($lessonJourney['next_copy'])) {
         </div>
     <?php endif; ?>
 
-    <?php if (!empty($teorias) || !empty($actividades)): ?>
-        <section class="panel mb-4">
-            <div class="panel-body">
-                <div class="section-title mb-3">
-                    <h2>Ruta de la leccion</h2>
-                </div>
-                <div class="course-meta d-flex flex-wrap gap-2">
-                    <?php if (!empty($teorias)): ?>
-                        <span class="soft-badge"><i class="bi bi-book"></i> <?php echo count($teorias); ?> piezas de teoria</span>
-                    <?php endif; ?>
-                    <?php if (!empty($actividades)): ?>
-                        <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo count($actividades); ?> actividades</span>
-                    <?php endif; ?>
-                    <?php if (!empty($resumenProgreso->estado)): ?>
-                        <span class="soft-badge"><i class="bi bi-graph-up"></i> Estado: <?php echo $resumenProgreso->estado === 'completada' ? 'Completada' : ($resumenProgreso->estado === 'en_progreso' ? 'En progreso' : 'Pendiente'); ?></span>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
-
     <?php if (isset($resumenProgreso)): ?>
-        <section class="surface-card mb-4">
-            <div class="card-body">
-                <div class="section-title mb-3">
-                    <h2>Resumen de esta leccion</h2>
-                    <span class="soft-badge badge-<?php echo htmlspecialchars($lessonProgressTone); ?>"><?php echo htmlspecialchars($lessonProgressStateLabel); ?></span>
-                </div>
-                <div class="builder-stage-grid">
-                    <article class="builder-stage-card">
-                        <div class="builder-stage-icon"><i class="bi bi-check2-square"></i></div>
-                        <div class="builder-stage-body">
-                            <div class="builder-stage-title">Ya completaste</div>
-                            <div class="builder-stage-copy">
-                                <?php echo htmlspecialchars($lessonJourney['completed_items_copy'] ?? ((int) $resumenProgreso->teorias_completadas . ' piezas de teoria y ' . (int) $resumenProgreso->actividades_completadas . ' actividades.')); ?>
+        <section class="mb-4">
+            <details class="panel page-assist-card">
+                <summary class="page-assist-summary">
+                    <div>
+                        <div class="metric-label">Resumen de la leccion</div>
+                        <div class="fw-semibold mt-1">Estado actual y siguiente paso sugerido</div>
+                        <div class="small text-muted mt-1">Abre esta seccion si necesitas una lectura compacta antes de seguir con teoria o practica.</div>
+                    </div>
+                    <span class="soft-badge">1 bloque</span>
+                </summary>
+                <div class="panel-body pt-0 page-assist-body">
+                    <section>
+                        <div class="split-head mb-3">
+                            <div>
+                                <h2 class="h5 mb-1">Resumen de esta leccion</h2>
+                                <div class="small text-muted">Lectura compacta para saber que ya cerraste y que falta por resolver.</div>
                             </div>
+                            <span class="soft-badge badge-<?php echo htmlspecialchars($lessonProgressTone); ?>"><?php echo htmlspecialchars($lessonProgressStateLabel); ?></span>
                         </div>
-                    </article>
-                    <article class="builder-stage-card">
-                        <div class="builder-stage-icon"><i class="bi bi-hourglass-split"></i></div>
-                        <div class="builder-stage-body">
-                            <div class="builder-stage-title">Todavia falta</div>
-                            <div class="builder-stage-copy">
-                                <?php echo htmlspecialchars($lessonJourney['remaining_items_copy'] ?? ($lessonRemainingTheory . ' teorias y ' . $lessonRemainingActivities . ' actividades para cerrar esta leccion.')); ?>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="builder-stage-card is-priority">
-                        <div class="builder-stage-icon"><i class="bi bi-signpost-split"></i></div>
-                        <div class="builder-stage-body">
-                            <div class="builder-stage-title">Siguiente paso</div>
-                            <div class="builder-stage-copy"><?php echo htmlspecialchars($lessonNextActionCopy); ?></div>
-                        </div>
-                    </article>
-                </div>
-                <?php if (!empty($lessonJourney['practice_ready'])): ?>
-                    <div class="small text-muted mt-3">La teoria base ya esta cubierta. Este es buen momento para concentrarte en las actividades.</div>
-                <?php endif; ?>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (!empty($lessonLanguageResources)): ?>
-        <section class="panel mb-4">
-            <div class="panel-body">
-                <div class="section-title mb-3">
-                    <h2>Recursos utiles para esta leccion</h2>
-                    <a href="<?php echo url('/estudiante/recursos?idioma=' . urlencode(Curso::obtenerIdiomaObjetivo($curso))); ?>" class="btn btn-outline-secondary btn-sm">
-                        Ver mas
-                    </a>
-                </div>
-                <div class="row g-3">
-                    <?php foreach ($lessonLanguageResources as $resource): ?>
-                        <div class="col-lg-3 col-md-6">
-                            <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
-                            <article class="surface-card useful-resource-card h-100">
-                                <div class="card-body d-flex flex-column gap-2">
-                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
-                                    <h3 class="h6 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
-                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
-                                    <?php if (!empty($resource['best_for'])): ?>
-                                        <div class="resource-best-for">
-                                            <strong>Mejor para:</strong>
-                                            <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="resource-source-meta">
-                                        <i class="bi bi-box-arrow-up-right"></i>
-                                        Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
-                                    </div>
-                                    <div class="mt-auto">
-                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">Abrir</a>
-                                    </div>
-                                </div>
+                        <div class="summary-stat-grid">
+                            <article class="summary-stat-card">
+                                <div class="summary-stat-label">Completaste</div>
+                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonJourney['completed_items_copy'] ?? ((int) $resumenProgreso->teorias_completadas . ' teoria / ' . (int) $resumenProgreso->actividades_completadas . ' practica')); ?></div>
+                                <div class="summary-stat-copy">Avance ya consolidado dentro de esta leccion.</div>
+                            </article>
+                            <article class="summary-stat-card">
+                                <div class="summary-stat-label">Todavia falta</div>
+                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonJourney['remaining_items_copy'] ?? ($lessonRemainingTheory . ' teorias y ' . $lessonRemainingActivities . ' actividades')); ?></div>
+                                <div class="summary-stat-copy">Pendiente para cerrar este tramo del curso.</div>
+                            </article>
+                            <article class="summary-stat-card">
+                                <div class="summary-stat-label">Siguiente paso</div>
+                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonNextActionCopy); ?></div>
+                                <div class="summary-stat-copy"><?php echo !empty($lessonJourney['practice_ready']) ? 'La base teorica ya esta lista para entrar a practica.' : 'Sigue el orden sugerido para avanzar con menos friccion.'; ?></div>
                             </article>
                         </div>
-                    <?php endforeach; ?>
+                    </section>
                 </div>
-            </div>
+            </details>
         </section>
     <?php endif; ?>
 
@@ -284,7 +212,7 @@ if (isset($lessonJourney['next_copy'])) {
                     <details class="lesson-theory-details" <?php echo empty($teoria->leido) ? 'open' : ''; ?>>
                         <summary class="lesson-theory-summary">
                             <span><?php echo htmlspecialchars($teoria->titulo); ?></span>
-                            <div class="d-flex gap-2 flex-wrap">
+                            <div class="badge-row">
                             <?php if (!empty($teoria->is_next)): ?>
                                 <span class="soft-badge"><i class="bi bi-stars"></i> Sigue aqui</span>
                             <?php endif; ?>
@@ -309,14 +237,14 @@ if (isset($lessonJourney['next_copy'])) {
                                     <div class="stack-list">
                                         <?php foreach ($teoria->bloques as $bloque): ?>
                                             <div class="stack-item">
-                                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                                <div class="split-head">
                                                     <div>
                                                         <div class="stack-item-title">
                                                             <?php echo htmlspecialchars($bloque->titulo ?: ucfirst($bloque->tipo_bloque)); ?>
                                                         </div>
                                                         <div class="stack-item-subtitle"><?php echo htmlspecialchars(ucfirst($bloque->tipo_bloque)); ?></div>
                                                     </div>
-                                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                                    <div class="badge-row">
                                                         <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1 && !empty($bloque->contenido)): ?>
                                                             <button
                                                                 type="button"
@@ -375,7 +303,7 @@ if (isset($lessonJourney['next_copy'])) {
         <?php else: ?>
             <ul class="list-group lesson-stack">
                 <?php foreach ($actividades as $actividad): ?>
-                    <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                    <li class="list-group-item lesson-stack-item">
                         <div>
                             <div class="fw-semibold"><?php echo htmlspecialchars($actividad->titulo); ?></div>
                             <div class="course-meta mt-2">
@@ -406,48 +334,6 @@ if (isset($lessonJourney['next_copy'])) {
             </ul>
         <?php endif; ?>
     </section>
-
-    <?php if (!empty($courseResources)): ?>
-        <section class="panel mb-4">
-            <div class="panel-body">
-                <div class="section-title mb-3">
-                    <h2>Recursos utiles para destrabarte</h2>
-                    <a href="<?php echo url('/estudiante/recursos?idioma=' . urlencode(Curso::obtenerIdiomaObjetivo($curso))); ?>" class="btn btn-outline-secondary btn-sm">
-                        Ver todos
-                    </a>
-                </div>
-                <div class="row g-3">
-                    <?php foreach ($courseResources as $resource): ?>
-                        <div class="col-lg-3 col-md-6">
-                            <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
-                            <article class="surface-card useful-resource-card h-100">
-                                <div class="card-body d-flex flex-column gap-2">
-                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
-                                    <h3 class="h6 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
-                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
-                                    <?php if (!empty($resource['best_for'])): ?>
-                                        <div class="resource-best-for">
-                                            <strong>Mejor para:</strong>
-                                            <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="resource-source-meta">
-                                        <i class="bi bi-box-arrow-up-right"></i>
-                                        Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
-                                    </div>
-                                    <div class="mt-auto">
-                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">
-                                            <i class="bi bi-box-arrow-up-right"></i> Abrir
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
 
     <?php
     $issueReportTitle = 'Reportar un fallo en esta leccion';

@@ -20,6 +20,52 @@ $serverThemeClass = 'theme-' . $serverTheme;
 $serverThemeModeClass = $serverTheme === 'dark' ? 'theme-dark' : 'theme-light';
 $appCssPath = __DIR__ . '/../../assets/css/app.css';
 $appCssVersion = file_exists($appCssPath) ? (string) filemtime($appCssPath) : '1';
+$requestPath = parse_url(current_path(), PHP_URL_PATH);
+$currentPath = is_string($requestPath) && $requestPath !== '' ? $requestPath : '/';
+$currentPath = '/' . ltrim($currentPath, '/');
+$navGroups = [
+    'profesor_cursos' => ['/profesor/cursos', '/profesor/lecciones', '/profesor/teoria', '/profesor/actividad', '/profesor/actividades'],
+    'profesor_estudiantes' => ['/profesor/estudiantes'],
+    'profesor_recursos' => ['/profesor/recursos'],
+    'profesor_calificaciones' => ['/profesor/calificaciones'],
+    'estudiante_cursos' => ['/estudiante/cursos', '/estudiante/lecciones', '/estudiante/actividades', '/estudiante/teoria'],
+    'estudiante_recursos' => ['/estudiante/recursos'],
+    'estudiante_progreso' => ['/estudiante/progreso'],
+    'estudiante_calificaciones' => ['/estudiante/calificaciones'],
+    'admin_dashboard' => ['/admin'],
+    'admin_usuarios' => ['/admin/usuarios'],
+    'admin_profesores' => ['/admin/profesores'],
+    'admin_cursos' => ['/admin/cursos'],
+    'admin_tickets' => ['/admin/tickets'],
+    'admin_actividad' => ['/admin/actividad'],
+    'auth_login' => ['/login'],
+    'auth_register' => ['/register'],
+];
+$navMatches = static function (array $prefixes, bool $exact = false) use ($currentPath): bool {
+    foreach ($prefixes as $prefix) {
+        $prefix = '/' . ltrim((string) $prefix, '/');
+
+        if ($exact) {
+            if ($currentPath === $prefix) {
+                return true;
+            }
+            continue;
+        }
+
+        if ($currentPath === $prefix || strpos($currentPath, $prefix . '/') === 0) {
+            return true;
+        }
+    }
+
+    return false;
+};
+$navLinkClass = static function (string $baseClass, array $prefixes, bool $exact = false) use ($navMatches): string {
+    return $baseClass . ($navMatches($prefixes, $exact) ? ' active' : '');
+};
+$navCurrent = static function (array $prefixes, bool $exact = false) use ($navMatches): string {
+    return $navMatches($prefixes, $exact) ? ' aria-current="page"' : '';
+};
+$studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navGroups['estudiante_cursos']);
 ?>
 <html
     lang="es"
@@ -110,74 +156,74 @@ $appCssVersion = file_exists($appCssPath) ? (string) filemtime($appCssPath) : '1
                     </li>
                     <?php if ($_SESSION['user_role'] === 'profesor'): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/profesor/cursos'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['profesor_cursos']); ?>"<?php echo $navCurrent($navGroups['profesor_cursos']); ?> href="<?php echo url('/profesor/cursos'); ?>">
                                 <i class="bi bi-journal-bookmark-fill"></i> Mis Cursos
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/profesor/estudiantes'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['profesor_estudiantes']); ?>"<?php echo $navCurrent($navGroups['profesor_estudiantes']); ?> href="<?php echo url('/profesor/estudiantes'); ?>">
                                 <i class="bi bi-people"></i> Estudiantes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/profesor/recursos'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['profesor_recursos']); ?>"<?php echo $navCurrent($navGroups['profesor_recursos']); ?> href="<?php echo url('/profesor/recursos'); ?>">
                                 <i class="bi bi-images"></i> Recursos
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/profesor/calificaciones'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['profesor_calificaciones']); ?>"<?php echo $navCurrent($navGroups['profesor_calificaciones']); ?> href="<?php echo url('/profesor/calificaciones'); ?>">
                                 <i class="bi bi-check2-square"></i> Calificaciones
                             </a>
                         </li>
                     <?php elseif ($_SESSION['user_role'] === 'estudiante'): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/estudiante'); ?>">
+                            <a class="nav-link<?php echo $studentLearningActive ? ' active' : ''; ?>"<?php echo $studentLearningActive ? ' aria-current="page"' : ''; ?> href="<?php echo url('/estudiante'); ?>">
                                 <i class="bi bi-person-badge"></i> Mis Cursos
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/estudiante/recursos'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['estudiante_recursos']); ?>"<?php echo $navCurrent($navGroups['estudiante_recursos']); ?> href="<?php echo url('/estudiante/recursos'); ?>">
                                 <i class="bi bi-compass"></i> Recursos utiles
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/estudiante/progreso'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['estudiante_progreso']); ?>"<?php echo $navCurrent($navGroups['estudiante_progreso']); ?> href="<?php echo url('/estudiante/progreso'); ?>">
                                 <i class="bi bi-graph-up-arrow"></i> Progreso
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/estudiante/calificaciones'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['estudiante_calificaciones']); ?>"<?php echo $navCurrent($navGroups['estudiante_calificaciones']); ?> href="<?php echo url('/estudiante/calificaciones'); ?>">
                                 <i class="bi bi-award"></i> Calificaciones
                             </a>
                         </li>
                     <?php elseif ($_SESSION['user_role'] === 'admin'): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_dashboard'], true); ?>"<?php echo $navCurrent($navGroups['admin_dashboard'], true); ?> href="<?php echo url('/admin'); ?>">
                                 <i class="bi bi-speedometer2"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin/usuarios'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_usuarios']); ?>"<?php echo $navCurrent($navGroups['admin_usuarios']); ?> href="<?php echo url('/admin/usuarios'); ?>">
                                 <i class="bi bi-people-fill"></i> Usuarios
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin/profesores'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_profesores']); ?>"<?php echo $navCurrent($navGroups['admin_profesores']); ?> href="<?php echo url('/admin/profesores'); ?>">
                                 <i class="bi bi-person-workspace"></i> Profesores
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin/cursos'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_cursos']); ?>"<?php echo $navCurrent($navGroups['admin_cursos']); ?> href="<?php echo url('/admin/cursos'); ?>">
                                 <i class="bi bi-book-fill"></i> Cursos
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin/tickets'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_tickets']); ?>"<?php echo $navCurrent($navGroups['admin_tickets']); ?> href="<?php echo url('/admin/tickets'); ?>">
                                 <i class="bi bi-life-preserver"></i> Tickets
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo url('/admin/actividad'); ?>">
+                            <a class="<?php echo $navLinkClass('nav-link', $navGroups['admin_actividad']); ?>"<?php echo $navCurrent($navGroups['admin_actividad']); ?> href="<?php echo url('/admin/actividad'); ?>">
                                 <i class="bi bi-activity"></i> Actividad
                             </a>
                         </li>
@@ -192,12 +238,12 @@ $appCssVersion = file_exists($appCssPath) ? (string) filemtime($appCssPath) : '1
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo url('/login'); ?>">
+                        <a class="<?php echo $navLinkClass('nav-link', $navGroups['auth_login'], true); ?>"<?php echo $navCurrent($navGroups['auth_login'], true); ?> href="<?php echo url('/login'); ?>">
                             <i class="bi bi-box-arrow-in-right"></i> Iniciar sesion
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo url('/register'); ?>">
+                        <a class="<?php echo $navLinkClass('nav-link', $navGroups['auth_register'], true); ?>"<?php echo $navCurrent($navGroups['auth_register'], true); ?> href="<?php echo url('/register'); ?>">
                             <i class="bi bi-person-plus"></i> Registrarse
                         </a>
                     </li>

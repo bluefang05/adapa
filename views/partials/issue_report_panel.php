@@ -15,7 +15,7 @@ $issueReportDescriptionPlaceholder = $issueReportDescriptionPlaceholder ?? 'Que 
             <summary class="issue-report-summary">
                 <i class="bi bi-bug"></i> <?php echo htmlspecialchars($issueReportTitle); ?>
             </summary>
-            <form action="<?php echo htmlspecialchars($issueReportAction); ?>" method="POST" class="mt-3">
+            <form action="<?php echo htmlspecialchars($issueReportAction); ?>" method="POST" class="mt-3 issue-report-form">
                 <?php echo csrf_input(); ?>
                 <input type="hidden" name="context_type" value="<?php echo htmlspecialchars($issueReportContextType); ?>">
                 <?php if ($issueReportCourseId !== null): ?>
@@ -28,6 +28,7 @@ $issueReportDescriptionPlaceholder = $issueReportDescriptionPlaceholder ?? 'Que 
                     <input type="hidden" name="actividad_id" value="<?php echo (int) $issueReportActivityId; ?>">
                 <?php endif; ?>
                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($issueReportReturnTo, ENT_QUOTES, 'UTF-8'); ?>">
+                <p class="issue-report-copy mb-3">Describe el problema con contexto suficiente para poder reproducirlo y decidir si es visual, de contenido o de flujo.</p>
 
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -45,7 +46,7 @@ $issueReportDescriptionPlaceholder = $issueReportDescriptionPlaceholder ?? 'Que 
                         <textarea id="issue_desc_<?php echo htmlspecialchars($issueReportContextId); ?>" name="description" class="form-control" rows="3" minlength="12" maxlength="2000" required placeholder="<?php echo htmlspecialchars($issueReportDescriptionPlaceholder); ?>"></textarea>
                     </div>
                 </div>
-                <div class="mt-3">
+                <div class="mt-3 responsive-actions">
                     <button type="submit" class="btn btn-outline-secondary">
                         <i class="bi bi-send"></i> Enviar reporte
                     </button>

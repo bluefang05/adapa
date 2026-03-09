@@ -1,7 +1,11 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
+<?php
+$pendingReviewCount = array_reduce($respuestas, fn($carry, $item) => $carry + ($item->puntuacion === null ? 1 : 0), 0);
+?>
+
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-clipboard-check"></i> Respuestas del curso</span>
         <h1 class="page-title"><?php echo htmlspecialchars($curso->titulo); ?></h1>
         <p class="page-subtitle">
@@ -12,19 +16,9 @@
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Respuestas</div>
-                <div class="metric-value"><?php echo count($respuestas); ?></div>
-                <div class="metric-note">Registros visibles en esta revision.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Pendientes</div>
-                <div class="metric-value">
-                    <?php echo array_reduce($respuestas, fn($carry, $item) => $carry + (($item->puntuacion === null || ($item->puntuacion == 0 && ($item->tipo_actividad == 'escritura' || $item->tipo_actividad == 'escucha'))) ? 1 : 0), 0); ?>
-                </div>
-                <div class="metric-note">Items que todavia necesitan criterio docente.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-chat-square-text"></i> <?php echo count($respuestas); ?> respuestas</span>
+            <span class="soft-badge <?php echo $pendingReviewCount > 0 ? 'warning' : 'success'; ?>"><i class="bi bi-hourglass-split"></i> <?php echo $pendingReviewCount; ?> pendientes</span>
         </div>
     </section>
 
@@ -73,8 +67,6 @@
                                     <td>
                                         <?php if ($respuesta->puntuacion === null): ?>
                                             <span class="soft-badge">Pendiente</span>
-                                        <?php elseif ($respuesta->puntuacion == 0 && ($respuesta->tipo_actividad == 'escritura' || $respuesta->tipo_actividad == 'escucha')): ?>
-                                            <span class="soft-badge">Pendiente (0.00)</span>
                                         <?php else: ?>
                                             <span class="soft-badge"><?php echo number_format($respuesta->puntuacion, 2); ?></span>
                                         <?php endif; ?>

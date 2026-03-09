@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../models/Curso.php';
-$resourceCategoryLabels = app_useful_resource_category_labels();
 ?>
 
 <div class="container">
@@ -14,7 +13,7 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
     $dashboardFocusCta = $dashboardFocus['cta_label'] ?? 'Continuar ahora';
     ?>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-stars"></i> Panel de aprendizaje</span>
         <h1 class="page-title">Continua tu aprendizaje.</h1>
         <p class="page-subtitle">
@@ -28,46 +27,39 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
             <?php endif; ?>
             <a href="<?php echo url('/estudiante/progreso'); ?>" class="btn btn-outline-secondary"><i class="bi bi-graph-up-arrow"></i> Progreso</a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Cursos inscritos</div>
-                <div class="metric-value"><?php echo count($cursosInscritos); ?></div>
-                <div class="metric-note">Tu espacio activo de estudio.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Promedio de avance</div>
-                <div class="metric-value">
-                    <?php
-                    $avgProgress = 0;
-                    if (!empty($cursosInscritos)) {
-                        $sum = array_reduce($cursosInscritos, function ($carry, $curso) {
-                            return $carry + (int) ($curso->porcentaje ?? 0);
-                        }, 0);
-                        $avgProgress = (int) round($sum / count($cursosInscritos));
-                    }
-                    echo $avgProgress;
-                    ?>%
-                </div>
-                <div class="metric-note">Promedio entre todos tus cursos.</div>
-            </div>
+        <div class="compact-meta-row">
+            <?php
+            $avgProgress = 0;
+            if (!empty($cursosInscritos)) {
+                $sum = array_reduce($cursosInscritos, function ($carry, $curso) {
+                    return $carry + (int) ($curso->porcentaje ?? 0);
+                }, 0);
+                $avgProgress = (int) round($sum / count($cursosInscritos));
+            }
+            ?>
+            <span class="soft-badge info"><i class="bi bi-journal-bookmark"></i> <?php echo count($cursosInscritos); ?> cursos inscritos</span>
+            <span class="soft-badge"><i class="bi bi-graph-up-arrow"></i> <?php echo $avgProgress; ?>% promedio de avance</span>
+            <?php if ($cursoContinuar): ?>
+                <span class="soft-badge badge-accent"><i class="bi bi-play-circle"></i> Listo para continuar</span>
+            <?php endif; ?>
         </div>
     </section>
 
     <?php if ($cursoContinuar): ?>
-        <section class="panel mb-4 focus-next-panel">
-            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div class="alert context-note mb-4">
+            <div class="split-head">
                 <div>
                     <div class="metric-label">Siguiente accion recomendada</div>
                     <div class="fw-semibold mt-1"><?php echo htmlspecialchars($dashboardFocusHeadline); ?></div>
                     <div class="small text-muted mt-1"><?php echo htmlspecialchars($dashboardFocusSummary); ?></div>
                     <div class="small text-muted mt-1"><?php echo (int) ($cursoContinuar->porcentaje ?? 0); ?>% completado en <?php echo htmlspecialchars($cursoContinuar->titulo); ?></div>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="responsive-actions">
                     <a href="<?php echo htmlspecialchars($dashboardFocusUrl); ?>" class="btn btn-primary"><?php echo htmlspecialchars($dashboardFocusCta); ?></a>
                     <a href="<?php echo url('/estudiante/cursos/' . $cursoContinuar->id . '/lecciones'); ?>" class="btn btn-outline-primary">Ver lecciones</a>
                 </div>
             </div>
-        </section>
+        </div>
     <?php endif; ?>
 
     <section class="mb-4">
@@ -97,60 +89,6 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
         </div>
     </section>
 
-    <?php if (!empty($recommendedResources)): ?>
-        <section class="mb-4">
-            <div class="section-title">
-                <h2>Recursos utiles</h2>
-                <a href="<?php echo url('/estudiante/recursos' . (!empty($resourceLanguage) ? '?idioma=' . urlencode($resourceLanguage) : '')); ?>" class="btn btn-outline-secondary btn-sm">
-                    Ver todos
-                </a>
-            </div>
-            <p class="section-copy">Atajos curados para cuando necesitas confirmar pronunciacion, significado o uso sin salirte demasiado de tu ritmo.</p>
-            <div class="row g-4">
-                <?php foreach ($recommendedResources as $resource): ?>
-                    <div class="col-lg-3 col-md-6">
-                        <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
-                        <article class="surface-card useful-resource-card h-100">
-                            <div class="card-body d-flex flex-column gap-3">
-                                <div class="useful-resource-head">
-                                    <div>
-                                        <div class="resource-kicker">
-                                            <i class="bi <?php echo htmlspecialchars(app_useful_resource_category_icon($resource['category'] ?? 'apoyo')); ?>"></i>
-                                            <?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?>
-                                        </div>
-                                        <h3 class="h5 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
-                                    </div>
-                                    <span class="soft-badge"><?php echo htmlspecialchars($resourceCategoryLabels[$resource['category'] ?? 'apoyo'] ?? 'Apoyo'); ?></span>
-                                </div>
-                                <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
-                                <?php if (!empty($resource['best_for'])): ?>
-                                    <div class="resource-best-for">
-                                        <strong>Mejor para:</strong>
-                                        <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
-                                    </div>
-                                <?php endif; ?>
-                                <div class="resource-source-meta">
-                                    <i class="bi bi-box-arrow-up-right"></i>
-                                    Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
-                                </div>
-                                <div class="resource-language-list">
-                                    <?php foreach (array_slice($resource['languages'] ?? [], 0, 2) as $languageKey): ?>
-                                        <span class="resource-language-pill"><?php echo htmlspecialchars(app_language_label($languageKey, ucfirst($languageKey))); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
-                                <div class="mt-auto">
-                                    <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
-                                        <i class="bi bi-box-arrow-up-right"></i> <?php echo htmlspecialchars($resource['cta_label'] ?? 'Abrir'); ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-    <?php endif; ?>
-
     <section class="mb-4">
         <div class="section-title">
             <h2>Mis cursos</h2>
@@ -169,7 +107,7 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
                                 <img src="<?php echo htmlspecialchars(url('/' . ltrim($curso->portada_url, '/'))); ?>" alt="<?php echo htmlspecialchars($curso->portada_alt ?: $curso->titulo); ?>" class="course-cover-media">
                             <?php endif; ?>
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                <div class="split-head mb-2">
                                     <div>
                                         <h5 class="card-title mb-1"><?php echo htmlspecialchars($curso->titulo); ?></h5>
                                         <div class="small text-muted">
@@ -199,11 +137,11 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
                                     </div>
                                 <?php endif; ?>
                                 <div class="course-progress">
-                                    <div class="progress" style="height: 10px;">
+                                    <div class="progress progress-slim">
                                         <div class="progress-bar" role="progressbar" style="width: <?php echo (int) ($curso->porcentaje ?? 0); ?>%" aria-valuenow="<?php echo (int) ($curso->porcentaje ?? 0); ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
-                                <div class="d-flex gap-2 flex-wrap">
+                                <div class="responsive-actions">
                                     <a href="<?php echo htmlspecialchars($courseAction['url'] ?? url('/estudiante/cursos/' . $curso->id . '/continuar')); ?>" class="btn btn-success">
                                         <?php echo htmlspecialchars($courseAction['cta_label'] ?? 'Continuar'); ?>
                                     </a>
@@ -274,7 +212,7 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
                             <option value="ruta_completa" <?php echo (($filtrosCatalogo['tipo_recorrido'] ?? '') === 'ruta_completa') ? 'selected' : ''; ?>>Ruta completa</option>
                         </select>
                     </div>
-                    <div class="col-lg-12 d-flex gap-2">
+                    <div class="col-lg-12 responsive-actions">
                         <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
                         <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary">Limpiar</a>
                     </div>
@@ -309,7 +247,7 @@ $resourceCategoryLabels = app_useful_resource_category_labels();
                                     <span><i class="bi bi-ladder"></i> <?php echo htmlspecialchars(Curso::formatearRangoNivel($curso)); ?></span>
                                     <span><i class="bi bi-signpost-split"></i> <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($curso)); ?></span>
                                 </div>
-                                <form method="POST" action="<?php echo url('/estudiante/inscribir/' . $curso->id); ?>" class="d-inline">
+                                <form method="POST" action="<?php echo url('/estudiante/inscribir/' . $curso->id); ?>">
                                     <?php echo csrf_input(); ?>
                                     <button type="submit" class="btn btn-primary">Inscribirse</button>
                                 </form>

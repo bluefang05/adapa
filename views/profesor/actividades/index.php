@@ -36,7 +36,7 @@ foreach ($actividades as $actividad) {
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Practica de la leccion</span>
         <h1 class="page-title">Actividades de <?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle">
@@ -65,36 +65,22 @@ foreach ($actividades as $actividad) {
                 <i class="bi bi-book"></i> Revisar teoria
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Actividades</div>
-                <div class="metric-value"><?php echo count($actividades); ?></div>
-                <div class="metric-note">Practicas dentro de esta leccion.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Puntos totales</div>
-                <div class="metric-value"><?php echo $activitySummary['total_puntos']; ?></div>
-                <div class="metric-note">Suma de puntuacion maxima disponible.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Tiempo total</div>
-                <div class="metric-value"><?php echo $activitySummary['total_tiempo']; ?></div>
-                <div class="metric-note">Minutos estimados si el alumno completa toda la practica.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Con apoyo</div>
-                <div class="metric-value"><?php echo $supportCount; ?></div>
-                <div class="metric-note">Actividades con recurso vinculado.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-lightning-charge"></i> <?php echo count($actividades); ?> actividades</span>
+            <span class="soft-badge"><i class="bi bi-award"></i> <?php echo $activitySummary['total_puntos']; ?> puntos totales</span>
+            <span class="soft-badge"><i class="bi bi-clock"></i> <?php echo $activitySummary['total_tiempo']; ?> min estimados</span>
+            <span class="soft-badge"><i class="bi bi-paperclip"></i> <?php echo $supportCount; ?> con apoyo</span>
+            <?php if (empty($puedeCrearActividad)): ?>
+                <span class="soft-badge warning"><i class="bi bi-lock"></i> Limite de actividades alcanzado</span>
+            <?php endif; ?>
         </div>
     </section>
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info mb-4">
-            <i class="bi bi-lightbulb"></i>
-            Plan gratuito: cada leccion admite hasta 3 actividades. <?php echo !empty($mensajeLimiteActividad) ? htmlspecialchars($mensajeLimiteActividad) : 'Aun tienes espacio para una practica mas.'; ?>
+        <div class="alert context-note mb-4">
+            <strong>Plan gratuito:</strong> cada leccion admite hasta 3 actividades. <?php echo !empty($mensajeLimiteActividad) ? htmlspecialchars($mensajeLimiteActividad) : 'Aun tienes espacio para una practica mas.'; ?>
         </div>
     <?php endif; ?>
 
@@ -108,8 +94,8 @@ foreach ($actividades as $actividad) {
             </div>
         </div>
     <?php else: ?>
-        <section class="panel mb-4">
-            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div class="alert context-note mb-4">
+            <div class="split-head">
                 <div>
                     <div class="metric-label">Siguiente paso recomendado</div>
                     <div class="fw-semibold mt-1">
@@ -127,7 +113,7 @@ foreach ($actividades as $actividad) {
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="d-flex gap-2 flex-wrap">
+                <div class="responsive-actions">
                     <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/actividades/create?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-primary">Nueva actividad</a>
                     <?php if ($actividadPendiente): ?>
                         <a href="<?php echo url('/profesor/actividad/' . $actividadPendiente['actividad']->id . '/configurar?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-outline-primary">Configurar actividad detectada</a>
@@ -135,7 +121,7 @@ foreach ($actividades as $actividad) {
                     <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria'); ?>" class="btn btn-outline-primary">Volver a teoria</a>
                 </div>
             </div>
-        </section>
+        </div>
         <div class="row g-4">
             <?php foreach ($actividades as $actividad): ?>
                 <?php
@@ -145,7 +131,7 @@ foreach ($actividades as $actividad) {
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+                            <div class="split-head mb-3">
                                 <div>
                                     <h3 class="h4 mb-1"><?php echo htmlspecialchars($actividad->titulo); ?></h3>
                                     <div class="small text-muted text-capitalize"><?php echo htmlspecialchars(str_replace('_', ' ', $actividad->tipo_actividad)); ?></div>

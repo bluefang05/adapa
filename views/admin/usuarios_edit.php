@@ -2,7 +2,7 @@
 <?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-person-lines-fill"></i> Perfil institucional</span>
         <h1 class="page-title">Edita la cuenta sin perder claridad sobre su rol.</h1>
         <p class="page-subtitle">
@@ -12,6 +12,10 @@
             <a href="<?php echo url('/admin/usuarios'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a usuarios
             </a>
+        </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-person-lines-fill"></i> Usuario #<?php echo (int) $user->id; ?></span>
+            <span class="soft-badge"><i class="bi bi-pencil-square"></i> Ajuste de cuenta</span>
         </div>
     </section>
 
@@ -106,7 +110,7 @@
                             <div class="form-text text-muted">Permite corregir cuentas internas o migradas.</div>
                         </div>
 
-                        <div class="col-12 d-flex gap-2 flex-wrap pt-2">
+                        <div class="col-12 responsive-actions pt-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar cambios
                             </button>

@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Nueva actividad</span>
         <h1 class="page-title">Configura una practica clara para la leccion actual.</h1>
         <p class="page-subtitle">
@@ -24,31 +24,23 @@
                 <i class="bi bi-images"></i> Abrir biblioteca
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Leccion</div>
-                <div class="metric-value"><?php echo (int) $leccion->orden; ?></div>
-                <div class="metric-note"><?php echo htmlspecialchars($leccion->titulo); ?></div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Tipos disponibles</div>
-                <div class="metric-value"><?php echo count($tipos_actividad); ?></div>
-                <div class="metric-note">Opciones configurables para esta practica.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-collection"></i> Leccion <?php echo (int) $leccion->orden; ?></span>
+            <span class="soft-badge"><i class="bi bi-journal-richtext"></i> <?php echo htmlspecialchars($leccion->titulo); ?></span>
+            <span class="soft-badge"><i class="bi bi-grid"></i> <?php echo count($tipos_actividad); ?> tipos disponibles</span>
         </div>
     </section>
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info mb-4">
-            <i class="bi bi-lightbulb"></i>
-            Plan gratuito: esta leccion admite hasta 3 actividades antes de pasar al plan activo.
+        <div class="alert context-note mb-4">
+            <strong>Plan gratuito:</strong> esta leccion admite hasta 3 actividades antes de pasar al plan activo.
         </div>
     <?php endif; ?>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success mb-4">
+        <div class="alert context-note mb-4">
             <i class="bi bi-check2-circle"></i>
             Recurso contextual listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
             Si eliges una actividad de escucha o una configuracion con imagen, te recordare usarlo en el siguiente paso.
@@ -68,12 +60,14 @@
                                 <span class="soft-badge"><i class="bi bi-pencil-square"></i> Configuracion</span>
                             </div>
 
-                            <div class="panel mb-3">
-                                <div class="panel-body">
+                            <details class="panel page-assist-card mb-3">
+                                <summary class="page-assist-summary">
                                     <div class="section-title mb-3">
                                         <h3 class="h5 mb-0">Elige mejor, crea mas rapido</h3>
                                         <span class="soft-badge"><i class="bi bi-signpost-split"></i> Guía</span>
                                     </div>
+                                </summary>
+                                <div class="panel-body pt-0 page-assist-body">
                                     <div class="quality-checklist">
                                         <div class="quality-checklist-title">Usa cada tipo para esto:</div>
                                         <ul class="quality-checklist-list">
@@ -83,8 +77,8 @@
                                             <li>Respuesta larga o proyecto para produccion abierta.</li>
                                         </ul>
                                     </div>
-                                    <div class="production-hint-card tone-info mt-3">
-                                        <div class="production-hint-title">Checklist rapido antes de crear</div>
+                                    <div class="alert context-note mt-3 mb-0">
+                                        <div class="fw-semibold mb-2">Checklist rapido antes de crear</div>
                                         <ul class="quality-checklist-list mb-0">
                                             <li>El tipo de actividad mide exactamente lo que ensena la leccion.</li>
                                             <li>El titulo y la descripcion dicen que debe hacer el alumno.</li>
@@ -92,7 +86,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </details>
 
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Titulo de la actividad</label>
@@ -136,8 +130,7 @@
                             </div>
                         </section>
 
-                        <div class="alert alert-info mt-4" role="alert">
-                            <i class="bi bi-info-circle"></i>
+                        <div class="alert context-note mt-4" role="alert">
                             Despues de crear la actividad podras configurar el contenido especifico segun el tipo seleccionado.
                         </div>
 

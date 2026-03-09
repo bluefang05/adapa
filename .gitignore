@@ -16,3 +16,8 @@ vendor/
 
 .idea/
 .vscode/
+
+# Temporary test outputs
+tmp_*.phpout
+tmp_*.txt
+*.tmp

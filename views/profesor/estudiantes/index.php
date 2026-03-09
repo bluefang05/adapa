@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-people"></i> Seguimiento docente</span>
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <p class="page-subtitle">
@@ -15,30 +15,16 @@
                 <i class="bi bi-check2-square"></i> Ver calificaciones
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Registros</div>
-                <div class="metric-value"><?php echo count($estudiantes); ?></div>
-                <div class="metric-note">Filas activas en esta vista.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Promedio avance</div>
-                <div class="metric-value">
-                    <?php
-                    $avg = 0;
-                    if (!empty($estudiantes)) {
-                        $avg = (int) round(array_reduce($estudiantes, fn($carry, $item) => $carry + (int) $item->porcentaje, 0) / count($estudiantes));
-                    }
-                    echo $avg;
-                    ?>%
-                </div>
-                <div class="metric-note">Progreso promedio de la vista actual.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Actividades respondidas</div>
-                <div class="metric-value"><?php echo array_reduce($estudiantes, fn($carry, $item) => $carry + (int) $item->actividades_respondidas, 0); ?></div>
-                <div class="metric-note">Practica ya registrada por estudiantes.</div>
-            </div>
+        <?php
+        $avg = 0;
+        if (!empty($estudiantes)) {
+            $avg = (int) round(array_reduce($estudiantes, fn($carry, $item) => $carry + (int) $item->porcentaje, 0) / count($estudiantes));
+        }
+        ?>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-files"></i> <?php echo count($estudiantes); ?> registros</span>
+            <span class="soft-badge"><i class="bi bi-graph-up-arrow"></i> <?php echo $avg; ?>% promedio de avance</span>
+            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo array_reduce($estudiantes, fn($carry, $item) => $carry + (int) $item->actividades_respondidas, 0); ?> actividades respondidas</span>
         </div>
     </section>
 
@@ -77,8 +63,8 @@
                                     <td><?php echo htmlspecialchars(trim($estudiante->nombre . ' ' . $estudiante->apellido)); ?></td>
                                     <td><?php echo htmlspecialchars($estudiante->email); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($estudiante->fecha_inscripcion)); ?></td>
-                                    <td style="min-width: 220px;">
-                                        <div class="progress mb-2" role="progressbar" aria-valuenow="<?php echo (int) $estudiante->porcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="height: 10px;">
+                                    <td class="progress-cell">
+                                        <div class="progress progress-slim mb-2" role="progressbar" aria-valuenow="<?php echo (int) $estudiante->porcentaje; ?>" aria-valuemin="0" aria-valuemax="100">
                                             <div class="progress-bar" style="width: <?php echo (int) $estudiante->porcentaje; ?>%"></div>
                                         </div>
                                         <div class="small text-muted"><?php echo (int) $estudiante->porcentaje; ?>% completado</div>

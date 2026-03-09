@@ -40,6 +40,6 @@ Los accesos visibles en la pantalla de login usan estas cuentas:
 
 ## Notas
 
-- `install.php` esta deshabilitado a proposito.
+- No existe instalador web; la referencia canonica es `adapa_db.sql`.
 - Las rutas mutadoras ya usan `POST`.
 - El proyecto debe ejecutarse a traves de Apache para que el rewrite funcione correctamente.

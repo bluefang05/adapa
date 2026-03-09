@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle-fill"></i> Nuevo curso</span>
         <h1 class="page-title">Crea cursos de forma centralizada desde administracion.</h1>
         <p class="page-subtitle">Define idioma, nivel, acceso y workflow editorial del curso.</p>
@@ -9,6 +9,10 @@
             <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a cursos
             </a>
+        </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-journal-bookmark"></i> Alta centralizada</span>
+            <span class="soft-badge"><i class="bi bi-person-workspace"></i> Responsable asignable</span>
         </div>
     </section>
 
@@ -141,7 +145,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" id="codigoWrap" style="display:none;">
+                        <div class="col-md-6 is-hidden" id="codigoWrap">
                             <label for="codigo_acceso" class="form-label">Codigo de acceso</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="codigo_acceso" name="codigo_acceso" maxlength="255">
@@ -149,7 +153,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" id="tipoCodigoWrap" style="display:none;">
+                        <div class="col-md-6 is-hidden" id="tipoCodigoWrap">
                             <label for="tipo_codigo" class="form-label">Tipo de codigo</label>
                             <select class="form-select" id="tipo_codigo" name="tipo_codigo">
                                 <option value="unico_curso">Unico para el curso</option>
@@ -158,7 +162,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12 d-flex gap-2 flex-wrap pt-2">
+                        <div class="col-12 responsive-actions pt-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Crear curso
                             </button>

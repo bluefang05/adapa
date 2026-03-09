@@ -224,7 +224,7 @@ class ActividadController extends Controller
         [$actividad] = $this->obtenerActividadAutorizada($id);
         $siguienteActividad = $this->actividadModel->obtenerSiguienteActividadEnLeccion($actividad->leccion_id, $actividad->id);
 
-        $this->view('estudiante/actividades/index', [
+        $this->view('profesor/actividades/preview', [
             'actividad' => $actividad,
             'siguienteActividad' => $siguienteActividad
         ]);

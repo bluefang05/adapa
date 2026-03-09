@@ -111,10 +111,10 @@ function renderProfessorActivityPreviewSummary($actividad) {
     if ($tipo === 'opcion_multiple' || $tipo === 'verdadero_falso') {
         $preguntas = $contenido['preguntas'] ?? [];
         if (!empty($preguntas)) {
-            $html = '<div class="activity-preview-stack mt-3">';
+            $html = '<div class="stack-list mt-3">';
             foreach (array_slice($preguntas, 0, 2) as $index => $pregunta) {
                 $texto = htmlspecialchars((string) ($pregunta['texto'] ?? $pregunta['pregunta'] ?? ('Pregunta ' . ($index + 1))));
-                $html .= '<div class="activity-preview-card"><div class="fw-semibold">' . $texto . '</div>';
+                $html .= '<div class="stack-item"><div class="stack-item-title">' . $texto . '</div>';
                 if (!empty($pregunta['image_url'])) {
                     $html .= '<div class="small text-muted mt-1">Incluye imagen asociada.</div>';
                 }
@@ -134,7 +134,7 @@ function renderProfessorActivityPreviewSummary($actividad) {
         }
 
         if ($tipo === 'verdadero_falso' && !empty($contenido['afirmacion'])) {
-            return '<div class="activity-preview-card mt-3"><div class="fw-semibold">' . htmlspecialchars((string) $contenido['afirmacion']) . '</div><div class="small text-muted mt-1">Respuesta correcta: ' . htmlspecialchars((string) ($contenido['respuesta_correcta'] ?? '')) . '</div></div>' . $supportResourceHtml;
+            return '<div class="stack-list mt-3"><div class="stack-item"><div class="stack-item-title">' . htmlspecialchars((string) $contenido['afirmacion']) . '</div><div class="small text-muted mt-1">Respuesta correcta: ' . htmlspecialchars((string) ($contenido['respuesta_correcta'] ?? '')) . '</div></div></div>' . $supportResourceHtml;
         }
     }
 
@@ -142,21 +142,21 @@ function renderProfessorActivityPreviewSummary($actividad) {
         $preguntas = $contenido['preguntas'] ?? [];
         $audioUrl = htmlspecialchars((string) ($contenido['audio_url'] ?? ''));
         $transcripcion = trim((string) ($contenido['transcripcion'] ?? ''));
-        $html = '<div class="activity-preview-card mt-3">';
-        $html .= '<div class="fw-semibold">Audio configurado</div>';
+        $html = '<div class="stack-list mt-3"><div class="stack-item">';
+        $html .= '<div class="stack-item-title">Audio configurado</div>';
         $html .= $audioUrl !== '' ? '<div class="small text-muted mt-1">Fuente: ' . $audioUrl . '</div>' : '<div class="small text-muted mt-1">Sin audio vinculado.</div>';
         if ($transcripcion !== '') {
             $html .= '<div class="small mt-2">Transcripcion disponible.</div>';
         }
         $html .= '<div class="small mt-2">Preguntas de comprension: ' . count((array) $preguntas) . '</div>';
-        $html .= '</div>' . $supportResourceHtml;
+        $html .= '</div></div>' . $supportResourceHtml;
         return $html;
     }
 
     if ($tipo === 'ordenar_palabras' || $tipo === 'arrastrar_soltar' || $tipo === 'emparejamiento') {
         $items = $contenido['items'] ?? [];
         $targets = $contenido['targets'] ?? [];
-        $html = '<div class="activity-preview-card mt-3"><div class="fw-semibold">Vista de estructura</div>';
+        $html = '<div class="stack-list mt-3"><div class="stack-item"><div class="stack-item-title">Vista de estructura</div>';
         if (!empty($items)) {
             $firstItem = $items[0] ?? '';
             $sampleItem = is_array($firstItem) ? ($firstItem['texto'] ?? $firstItem['content'] ?? $firstItem['left'] ?? '') : (string) $firstItem;
@@ -173,41 +173,41 @@ function renderProfessorActivityPreviewSummary($actividad) {
                 $html .= '<div class="small mt-2">Destino: ' . htmlspecialchars($sampleTarget) . '</div>';
             }
         }
-        $html .= '</div>' . $supportResourceHtml;
+        $html .= '</div></div>' . $supportResourceHtml;
         return $html;
     }
 
     if ($tipo === 'respuesta_corta' || $tipo === 'respuesta_larga' || $tipo === 'completar_oracion') {
-        $html = '<div class="activity-preview-card mt-3">';
+        $html = '<div class="stack-list mt-3"><div class="stack-item">';
         if (!empty($contenido['pregunta'])) {
-            $html .= '<div class="fw-semibold">' . htmlspecialchars((string) $contenido['pregunta']) . '</div>';
+            $html .= '<div class="stack-item-title">' . htmlspecialchars((string) $contenido['pregunta']) . '</div>';
         } elseif (!empty($contenido['texto_completo'])) {
-            $html .= '<div class="fw-semibold">' . htmlspecialchars((string) $contenido['texto_completo']) . '</div>';
+            $html .= '<div class="stack-item-title">' . htmlspecialchars((string) $contenido['texto_completo']) . '</div>';
         } else {
-            $html .= '<div class="fw-semibold">Consigna abierta</div>';
+            $html .= '<div class="stack-item-title">Consigna abierta</div>';
         }
         if (!empty($contenido['respuestas_correctas'])) {
             $html .= '<div class="small text-muted mt-1">Respuestas esperadas: ' . count((array) $contenido['respuestas_correctas']) . '</div>';
         }
-        $html .= '</div>' . $supportResourceHtml;
+        $html .= '</div></div>' . $supportResourceHtml;
         return $html;
     }
 
     if ($tipo === 'proyecto') {
-        $html = '<div class="activity-preview-card mt-3">';
+        $html = '<div class="stack-list mt-3"><div class="stack-item">';
         if (!empty($contenido['instrucciones'])) {
-            $html .= '<div class="fw-semibold">Proyecto configurado</div><div class="small mt-1">' . htmlspecialchars((string) $contenido['instrucciones']) . '</div>';
+            $html .= '<div class="stack-item-title">Proyecto configurado</div><div class="small mt-1">' . htmlspecialchars((string) $contenido['instrucciones']) . '</div>';
         }
         if (!empty($contenido['entregables'])) {
             $html .= '<div class="small text-muted mt-2">Entregables: ' . htmlspecialchars((string) $contenido['entregables']) . '</div>';
         }
-        $html .= '</div>' . $supportResourceHtml;
+        $html .= '</div></div>' . $supportResourceHtml;
         return $html;
     }
 
     if ($tipo === 'codigo') {
-        $html = '<div class="activity-preview-card mt-3">';
-        $html .= '<div class="fw-semibold">Actividad tecnica</div>';
+        $html = '<div class="stack-list mt-3"><div class="stack-item">';
+        $html .= '<div class="stack-item-title">Actividad tecnica</div>';
         if (!empty($contenido['lenguaje'])) {
             $html .= '<div class="small text-muted mt-1">Lenguaje: ' . htmlspecialchars((string) $contenido['lenguaje']) . '</div>';
         }
@@ -217,12 +217,12 @@ function renderProfessorActivityPreviewSummary($actividad) {
         if (!empty($contenido['codigo_inicial'])) {
             $html .= '<div class="small text-muted mt-2">Incluye codigo inicial.</div>';
         }
-        $html .= '</div>' . $supportResourceHtml;
+        $html .= '</div></div>' . $supportResourceHtml;
         return $html;
     }
 
     if ($supportResourceHtml !== '') {
-        return '<div class="activity-preview-card mt-3"><div class="fw-semibold">Recurso de apoyo vinculado</div></div>' . $supportResourceHtml;
+        return '<div class="stack-list mt-3"><div class="stack-item"><div class="stack-item-title">Recurso de apoyo vinculado</div></div></div>' . $supportResourceHtml;
     }
 
     return '<div class="small text-muted mt-2">Sin resumen especifico para este tipo todavia.</div>';
@@ -282,6 +282,10 @@ if (empty($previewQuickFixes)) {
         'url' => url('/profesor/lecciones/' . $leccion->id . '/builder'),
     ];
 }
+
+$previewChecklistPending = count(array_filter($previewChecklist, function ($item) {
+    return empty($item['ok']);
+}));
 ?>
 
 <div class="container">
@@ -293,7 +297,7 @@ if (empty($previewQuickFixes)) {
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-eye"></i> Vista completa de leccion</span>
         <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle">Aqui revisas la experiencia completa antes de poner a un alumno enfrente.</p>
@@ -308,69 +312,73 @@ if (empty($previewQuickFixes)) {
                 <i class="bi bi-pencil"></i> Editar leccion
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Teoria</div>
-                <div class="metric-value"><?php echo count($teorias); ?></div>
-                <div class="metric-note">Piezas teoricas cargadas.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Actividades</div>
-                <div class="metric-value"><?php echo count($actividades); ?></div>
-                <div class="metric-note">Practicas visibles para el alumno.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Estado editorial</div>
-                <div class="metric-value"><?php echo htmlspecialchars($lessonEditorialState['label'] ?? 'En progreso'); ?></div>
-                <div class="metric-note"><?php echo htmlspecialchars($lessonEditorialState['hint'] ?? 'Workflow actual de la leccion.'); ?></div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-book"></i> <?php echo count($teorias); ?> teorias</span>
+            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo count($actividades); ?> actividades</span>
+            <span class="soft-badge badge-<?php echo htmlspecialchars($lessonEditorialState['tone'] ?? 'info'); ?>">
+                <i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($lessonEditorialState['label'] ?? 'En progreso'); ?>
+            </span>
+            <?php if ($previewChecklistPending > 0): ?>
+                <span class="soft-badge warning"><i class="bi bi-exclamation-circle"></i> <?php echo (int) $previewChecklistPending; ?> ajustes detectados</span>
+            <?php endif; ?>
         </div>
     </section>
 
-    <section class="panel mb-4">
-        <div class="panel-body">
-            <div class="section-title mb-3">
-                <h2>Checklist editorial</h2>
-            </div>
-            <div class="row g-3">
-                <?php foreach ($previewChecklist as $item): ?>
-                    <div class="col-lg-3 col-md-6">
-                        <article class="surface-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start gap-2">
-                                    <div class="fw-semibold"><?php echo htmlspecialchars($item['label']); ?></div>
-                                    <span class="soft-badge"><?php echo $item['ok'] ? 'OK' : 'Falta'; ?></span>
-                                </div>
-                                <p class="text-muted mt-2 mb-0"><?php echo htmlspecialchars($item['hint']); ?></p>
-                            </div>
-                        </article>
+    <section class="mb-4">
+        <details class="panel page-assist-card">
+            <summary class="page-assist-summary">
+                <div>
+                    <div class="metric-label">Control editorial</div>
+                    <div class="fw-semibold mt-1">Checklist y correcciones rapidas</div>
+                    <div class="small text-muted mt-1">Abre este bloque para revisar ajustes pendientes sin mezclarlo con la experiencia principal.</div>
+                </div>
+                <span class="soft-badge"><?php echo (int) $previewChecklistPending + count($previewQuickFixes); ?> items</span>
+            </summary>
+            <div class="panel-body pt-0 page-assist-body">
+                <section>
+                    <div class="split-head mb-3">
+                        <div>
+                            <h2 class="h5 mb-1">Checklist editorial</h2>
+                            <div class="small text-muted">Lectura rapida de vacios antes de exponer la leccion al alumno.</div>
+                        </div>
                     </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
+                    <div class="guidance-list">
+                        <?php foreach ($previewChecklist as $item): ?>
+                            <article class="guidance-item">
+                                <div class="split-head">
+                                    <div class="stack-item-title"><?php echo htmlspecialchars($item['label']); ?></div>
+                                    <span class="soft-badge <?php echo $item['ok'] ? 'success' : 'warning'; ?>"><?php echo $item['ok'] ? 'OK' : 'Falta'; ?></span>
+                                </div>
+                                <div class="stack-item-subtitle mt-2"><?php echo htmlspecialchars($item['hint']); ?></div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
 
-    <section class="panel mb-4">
-        <div class="panel-body">
-            <div class="section-title mb-3">
-                <h2>Correccion rapida</h2>
-                <span class="soft-badge"><i class="bi bi-tools"></i> Sin perder contexto</span>
-            </div>
-            <div class="publish-checklist-grid">
-                <?php foreach ($previewQuickFixes as $quickFix): ?>
-                    <article class="publish-check-card">
-                        <div class="publish-check-head">
-                            <div class="publish-check-title"><?php echo htmlspecialchars($quickFix['label']); ?></div>
-                            <span class="soft-badge">Ahora</span>
+                <section>
+                    <div class="split-head mb-3">
+                        <div>
+                            <h2 class="h5 mb-1">Correccion rapida</h2>
+                            <div class="small text-muted">Accesos directos para corregir sin salir del contexto actual.</div>
                         </div>
-                        <div class="publish-check-copy"><?php echo htmlspecialchars($quickFix['copy']); ?></div>
-                        <div class="mt-3">
-                            <a href="<?php echo $quickFix['url']; ?>" class="btn btn-sm btn-outline-primary">Abrir</a>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
+                    </div>
+                    <div class="publish-checklist-grid">
+                        <?php foreach ($previewQuickFixes as $quickFix): ?>
+                            <article class="publish-check-card">
+                                <div class="publish-check-head">
+                                    <div class="publish-check-title"><?php echo htmlspecialchars($quickFix['label']); ?></div>
+                                    <span class="soft-badge">Ahora</span>
+                                </div>
+                                <div class="publish-check-copy"><?php echo htmlspecialchars($quickFix['copy']); ?></div>
+                                <div class="mt-3">
+                                    <a href="<?php echo $quickFix['url']; ?>" class="btn btn-sm btn-outline-primary">Abrir</a>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
             </div>
-        </div>
+        </details>
     </section>
 
     <section class="mb-4">
@@ -385,9 +393,9 @@ if (empty($previewQuickFixes)) {
                 </div>
             </div>
         <?php else: ?>
-            <?php foreach ($teorias as $teoria): ?>
+            <?php foreach ($teorias as $teoriaIndex => $teoria): ?>
                 <div class="content-block">
-                    <details class="lesson-theory-details" open>
+                    <details class="lesson-theory-details" <?php echo $teoriaIndex === 0 ? 'open' : ''; ?>>
                         <summary class="lesson-theory-summary">
                             <span><?php echo htmlspecialchars($teoria->titulo); ?></span>
                             <span class="soft-badge">Orden <?php echo (int) $teoria->orden; ?></span>
@@ -401,7 +409,7 @@ if (empty($previewQuickFixes)) {
                                 <div class="stack-list">
                                     <?php foreach ($teoria->bloques as $bloque): ?>
                                         <div class="stack-item">
-                                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                            <div class="split-head">
                                                 <div>
                                                     <div class="stack-item-title"><?php echo htmlspecialchars($bloque->titulo ?: ucfirst($bloque->tipo_bloque)); ?></div>
                                                     <div class="stack-item-subtitle"><?php echo htmlspecialchars(ucfirst($bloque->tipo_bloque)); ?></div>
@@ -446,7 +454,7 @@ if (empty($previewQuickFixes)) {
             <ul class="list-group lesson-stack">
                 <?php foreach ($actividades as $actividad): ?>
                     <?php $activitySummary = Actividad::resumenDocente($actividad); ?>
-                    <li class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                    <li class="list-group-item lesson-stack-item">
                         <div>
                             <div class="fw-semibold"><?php echo htmlspecialchars($actividad->titulo); ?></div>
                             <div class="course-meta mt-2">
@@ -465,7 +473,7 @@ if (empty($previewQuickFixes)) {
                             <div class="small text-muted mt-2"><?php echo htmlspecialchars($activitySummary['message']); ?></div>
                             <?php echo renderProfessorActivityPreviewSummary($actividad); ?>
                         </div>
-                        <div class="d-flex gap-2 flex-wrap">
+                        <div class="responsive-actions">
                             <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/configurar?return_to=' . rawurlencode($previewReturnTo)); ?>" class="btn btn-outline-secondary btn-sm">Configurar</a>
                             <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id . '?return_to=' . rawurlencode($previewReturnTo)); ?>" class="btn btn-outline-primary btn-sm">Editar</a>
                             <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/preview'); ?>" class="btn btn-outline-secondary btn-sm">Vista actividad</a>

@@ -17,8 +17,6 @@ $router->add('GET', '/', 'shared/HomeController', 'index');
 $router->add('GET', '/enm', 'shared/EnmController', 'index');
 $router->add('POST', '/enm/login', 'shared/EnmController', 'loginAs');
 
-// About route
-$router->add('GET', '/about', 'shared/AboutController', 'index');
 $router->add('POST', '/theme/preference', 'shared/ThemeController', 'store');
 
 // Profesor routes
@@ -69,17 +67,12 @@ $router->add('POST', '/profesor/actividad/delete/{id}', 'profesor/ActividadContr
 $router->add('GET', '/profesor/actividad/{id}/preview', 'profesor/ActividadController', 'preview');
 $router->add('GET', '/profesor/actividad/{id}/configurar', 'profesor/ActividadController', 'configurar');
 
-// Rutas de actividades para estudiantes
-$router->add('GET', '/estudiante/actividad/{id}', 'estudiante/EstudianteActividadController', 'index');
-$router->add('POST', '/estudiante/actividad/guardar-respuesta', 'estudiante/EstudianteActividadController', 'guardarRespuesta');
-
 // Rutas de calificaciones (Profesor)
 $router->add('GET', '/profesor/calificaciones', 'profesor/CalificacionesController', 'index');
 $router->add('GET', '/profesor/calificaciones/curso/{id}', 'profesor/CalificacionesController', 'curso');
 $router->add('GET', '/profesor/calificaciones/revisar/{id}', 'profesor/CalificacionesController', 'revisar');
 $router->add('POST', '/profesor/calificaciones/calificar/{id}', 'profesor/CalificacionesController', 'calificar');
 
-// Placeholder: profesor estudiantes
 $router->add('GET', '/profesor/estudiantes', 'profesor/EstudiantesController', 'index');
 $router->add('GET', '/profesor/recursos', 'profesor/MediaController', 'index');
 $router->add('POST', '/profesor/recursos', 'profesor/MediaController', 'index');
@@ -99,12 +92,10 @@ $router->add('POST', '/estudiante/actividades/{id}/responder', 'estudiante/Estud
 $router->add('POST', '/estudiante/teoria/{id}/leer', 'estudiante/EstudianteController', 'marcarTeoria');
 $router->add('POST', '/estudiante/reportar-fallo', 'estudiante/IssueReportController', 'store');
 $router->add('POST', '/reportar-fallo', 'estudiante/IssueReportController', 'store');
-// $router->add('GET', '/estudiante/curso/{id}', 'estudiante/EstudianteController', 'curso'); // Removed as redundant
-// Placeholder: estudiante progreso y calificaciones
 $router->add('GET', '/estudiante/progreso', 'estudiante/ProgresoController', 'index');
 $router->add('GET', '/estudiante/calificaciones', 'estudiante/CalificacionesController', 'index');
 
-// Admin routes (placeholders)
+// Admin routes
 $router->add('GET', '/admin', 'admin/AdminController', 'index');
 $router->add('GET', '/admin/usuarios', 'admin/AdminController', 'usuarios');
 $router->add('GET', '/admin/usuarios/create', 'admin/AdminController', 'createUsuario');
@@ -134,7 +125,7 @@ $router->add('POST', '/admin/tickets/bulk-status', 'admin/AdminController', 'bul
 $router->add('POST', '/admin/tickets/note/{id}', 'admin/AdminController', 'addTicketNote');
 $router->add('GET', '/admin/actividad', 'admin/AdminController', 'actividad');
 
-// Register routes (placeholders)
+// Register routes
 $router->add('GET', '/register', 'shared/RegisterController', 'showRegisterForm');
 $router->add('POST', '/register', 'shared/RegisterController', 'register');
 

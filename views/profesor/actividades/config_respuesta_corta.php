@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-keyboard"></i> Configurador</span>
         <h1 class="page-title">Actividad de respuesta corta</h1>
         <p class="page-subtitle">
@@ -21,6 +21,10 @@
                 <i class="bi bi-images"></i> Elegir recurso de apoyo
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-keyboard"></i> Configurador</span>
+            <span class="soft-badge"><i class="bi bi-chat-left-text"></i> Respuestas breves</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -28,9 +32,8 @@
     <?php endif; ?>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
-            <i class="bi bi-check2-circle"></i>
-            Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        <div class="alert context-note">
+            <strong>Recurso de apoyo listo:</strong> <?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?>.
         </div>
     <?php endif; ?>
 
@@ -128,7 +131,7 @@
         const placeholderValue = datos ? (datos.placeholder || 'Escribe aqui tu respuesta...') : 'Escribe aqui tu respuesta...';
 
         preguntaDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div class="split-head mb-3">
                 <div>
                     <h3 class="h5 mb-1">Pregunta ${preguntasCount}</h3>
                     <div class="small text-muted">Define la consigna y una o varias respuestas correctas.</div>
@@ -181,7 +184,7 @@
     function agregarRespuesta(preguntaId, valor = '') {
         const container = document.getElementById(`respuestas-container-${preguntaId}`);
         const div = document.createElement('div');
-        div.className = 'option-item d-flex align-items-center gap-2';
+        div.className = 'option-item inline-field-actions';
         div.innerHTML = `
             <input type="text" class="form-control respuesta-input" value="${valor}" placeholder="Respuesta correcta" required>
             <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">Eliminar</button>

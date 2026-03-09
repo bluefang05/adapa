@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-arrows-angle-contract"></i> Configurador</span>
         <h1 class="page-title">Actividad de emparejamiento</h1>
         <p class="page-subtitle">
@@ -21,18 +21,22 @@
                 <i class="bi bi-images"></i> Elegir recurso de apoyo
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-arrows-angle-contract"></i> Configurador</span>
+            <span class="soft-badge"><i class="bi bi-diagram-3"></i> Pares relacionados</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <div class="alert alert-info">
+    <div class="alert context-note">
         <i class="bi bi-info-circle"></i> Ejemplos utiles: pais-capital, palabra-traduccion, termino-definicion.
     </div>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
+        <div class="alert context-note">
             <i class="bi bi-check2-circle"></i>
             Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
         </div>

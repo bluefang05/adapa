@@ -2,7 +2,7 @@
 <?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-person-plus-fill"></i> Nuevo usuario</span>
         <h1 class="page-title">Crea cuentas con rol y plan desde el panel administrativo.</h1>
         <p class="page-subtitle">Alta rapida de usuario para administracion, docencia o estudiantes.</p>
@@ -10,6 +10,10 @@
             <a href="<?php echo url('/admin/usuarios'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a usuarios
             </a>
+        </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-person-plus-fill"></i> Alta rapida</span>
+            <span class="soft-badge"><i class="bi bi-shield-check"></i> Rol y plan en un paso</span>
         </div>
     </section>
 
@@ -106,7 +110,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 d-flex gap-2 flex-wrap pt-2">
+                        <div class="col-12 responsive-actions pt-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Crear usuario
                             </button>

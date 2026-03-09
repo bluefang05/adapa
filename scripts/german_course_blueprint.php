@@ -1,5 +1,41 @@
 <?php
 
+function german_blueprint_language_hits(string $text, array $needles): int {
+    $hits = 0;
+    foreach ($needles as $needle) {
+        if (preg_match('/(^|\\s)' . preg_quote($needle, '/') . '(\\s|$)/u', $text) === 1) {
+            $hits++;
+        }
+    }
+
+    return $hits;
+}
+
+function german_blueprint_detect_language(string $content, string $fallback = 'espanol'): string {
+    $normalized = mb_strtolower(trim($content), 'UTF-8');
+    if ($normalized === '') {
+        return $fallback;
+    }
+
+    $normalized = ' ' . preg_replace('/[^\\p{L}\\p{N}\\s]+/u', ' ', $normalized) . ' ';
+
+    $germanNeedles = ['ich', 'du', 'er', 'sie', 'wir', 'ihr', 'nicht', 'bitte', 'guten', 'wie', 'wo', 'wann', 'was', 'habe', 'hast', 'hat', 'haben', 'bin', 'bist', 'ist', 'sind', 'komme', 'heisse', 'heiße', 'moechte', 'möchte', 'koennen', 'können', 'weil', 'dass', 'zeit', 'familie', 'termin', 'wohnung'];
+    $spanishNeedles = ['el', 'la', 'los', 'las', 'un', 'una', 'que', 'como', 'cuando', 'donde', 'explica', 'pregunta', 'preguntas', 'responde', 'escribe', 'elige', 'consejo', 'errores', 'mejor', 'puedes', 'deberias'];
+
+    $germanScore = german_blueprint_language_hits($normalized, $germanNeedles);
+    $spanishScore = german_blueprint_language_hits($normalized, $spanishNeedles);
+
+    if ($germanScore > $spanishScore) {
+        return 'aleman';
+    }
+
+    if ($spanishScore > $germanScore) {
+        return 'espanol';
+    }
+
+    return $fallback;
+}
+
 function german_theory_html(string $intro, array $sections, string $tip): string {
     $html = '<div class="theory-rich"><p>' . htmlspecialchars($intro, ENT_QUOTES, 'UTF-8') . '</p>';
 
@@ -43,7 +79,7 @@ function german_theory_blocks(string $intro, array $sections, string $tip): arra
                 'tipo_bloque' => 'explicacion',
                 'titulo' => $section['title'],
                 'contenido' => $section['text'],
-                'idioma_bloque' => 'espanol',
+                'idioma_bloque' => german_blueprint_detect_language((string) $section['text'], 'espanol'),
                 'tts_habilitado' => 1,
             ];
         }
@@ -54,7 +90,7 @@ function german_theory_blocks(string $intro, array $sections, string $tip): arra
                 'tipo_bloque' => str_contains($title, 'vocabulario') ? 'vocabulario' : 'explicacion',
                 'titulo' => $section['title'],
                 'contenido' => implode("\n", array_map(static fn($item) => '- ' . $item, $section['bullets'])),
-                'idioma_bloque' => (str_contains($title, 'frases') || str_contains($title, 'dialogo')) ? 'aleman' : 'espanol',
+                'idioma_bloque' => german_blueprint_detect_language(implode(' ', $section['bullets']), 'espanol'),
                 'tts_habilitado' => 1,
             ];
         }
@@ -64,7 +100,7 @@ function german_theory_blocks(string $intro, array $sections, string $tip): arra
                 'tipo_bloque' => 'ejemplo',
                 'titulo' => $section['title'],
                 'contenido' => $section['example'],
-                'idioma_bloque' => 'aleman',
+                'idioma_bloque' => german_blueprint_detect_language((string) $section['example'], 'aleman'),
                 'tts_habilitado' => 1,
             ];
         }
@@ -152,7 +188,7 @@ function german_course_blueprint(): array {
             ],
         ],
         'actividades' => [
-            ['titulo' => 'Saludos y datos personales', 'descripcion' => 'Elige la opcion correcta en situaciones basicas de presentacion.', 'tipo' => 'opcion_multiple', 'instrucciones' => 'Marca la mejor respuesta.', 'puntos' => 15, 'tiempo' => 6, 'contenido' => ['pregunta_global' => 'Selecciona la respuesta correcta.', 'preguntas' => [['texto' => 'Frase correcta para presentarte:', 'opciones' => [['texto' => 'Ich heiße Marta.', 'es_correcta' => true], ['texto' => 'Ich heißt Marta.', 'es_correcta' => false], ['texto' => 'Ich name Marta.', 'es_correcta' => false]]], ['texto' => 'Respuesta natural a "Woher kommst du?"', 'opciones' => [['texto' => 'Ich komme aus Chile.', 'es_correcta' => true], ['texto' => 'Ich bin Chile.', 'es_correcta' => false], ['texto' => 'Aus komme ich Chile.', 'es_correcta' => false]]], ['texto' => 'Forma correcta de "to be" con ich:', 'opciones' => [['texto' => 'bin', 'es_correcta' => true], ['texto' => 'bist', 'es_correcta' => false], ['texto' => 'seid', 'es_correcta' => false]]]]]],
+            ['titulo' => 'Saludos y datos personales', 'descripcion' => 'Elige la opcion correcta en situaciones basicas de presentacion.', 'tipo' => 'opcion_multiple', 'instrucciones' => 'Marca la mejor respuesta.', 'puntos' => 15, 'tiempo' => 6, 'contenido' => ['pregunta_global' => 'Selecciona la respuesta correcta.', 'preguntas' => [['texto' => 'Frase correcta para presentarte:', 'opciones' => [['texto' => 'Ich heiße Marta.', 'es_correcta' => true], ['texto' => 'Ich heißt Marta.', 'es_correcta' => false], ['texto' => 'Ich name Marta.', 'es_correcta' => false]]], ['texto' => 'Respuesta natural a "Woher kommst du?"', 'opciones' => [['texto' => 'Ich komme aus Chile.', 'es_correcta' => true], ['texto' => 'Ich bin Chile.', 'es_correcta' => false], ['texto' => 'Aus komme ich Chile.', 'es_correcta' => false]]], ['texto' => 'Forma correcta del verbo "sein" con ich:', 'opciones' => [['texto' => 'bin', 'es_correcta' => true], ['texto' => 'bist', 'es_correcta' => false], ['texto' => 'seid', 'es_correcta' => false]]]]]],
             ['titulo' => 'Ordena tu presentacion', 'descripcion' => 'Reconstruye una presentacion breve y natural.', 'tipo' => 'ordenar_palabras', 'instrucciones' => 'Ordena las palabras correctamente.', 'puntos' => 10, 'tiempo' => 4, 'contenido' => [['id' => 'a1_intro_1', 'instruction' => 'Ordena la frase.', 'items' => ['Ich', 'heiße', 'Lucia.']], ['id' => 'a1_intro_2', 'instruction' => 'Ordena la frase.', 'items' => ['Ich', 'komme', 'aus', 'Kolumbien.']]]],
             ['titulo' => 'Sein y haben en contexto', 'descripcion' => 'Escribe la palabra que falta.', 'tipo' => 'completar_oracion', 'instrucciones' => 'Escribe solo la palabra correcta.', 'puntos' => 12, 'tiempo' => 5, 'contenido' => [['id' => 'a1_gap_1', 'oracion' => 'Ich ____ 19 Jahre alt.', 'respuesta_correcta' => 'bin'], ['id' => 'a1_gap_2', 'oracion' => 'Wir ____ einen Deutschkurs.', 'respuesta_correcta' => 'haben'], ['id' => 'a1_gap_3', 'oracion' => 'Sie ____ aus Peru.', 'respuesta_correcta' => 'ist']]],
             ['titulo' => 'Escucha la mini presentacion', 'descripcion' => 'Escucha y escribe la frase exacta.', 'tipo' => 'escucha', 'instrucciones' => 'Escucha con atencion y transcribe.', 'puntos' => 18, 'tiempo' => 6, 'contenido' => ['texto_tts' => 'Guten Tag, ich heiße Daniel und ich komme aus Chile.', 'transcripcion' => 'Guten Tag, ich heiße Daniel und ich komme aus Chile.']],
@@ -202,7 +238,7 @@ function german_course_blueprint(): array {
             ['titulo' => 'Perfekt y dativo en contexto', 'descripcion' => 'Elige la forma correcta en frases de vida diaria.', 'tipo' => 'opcion_multiple', 'instrucciones' => 'Selecciona la mejor opcion.', 'puntos' => 15, 'tiempo' => 6, 'contenido' => ['pregunta_global' => 'Elige la opcion correcta.', 'preguntas' => [['texto' => 'Gestern ____ ich sehr frueh aufgestanden.', 'opciones' => [['texto' => 'bin', 'es_correcta' => true], ['texto' => 'habe', 'es_correcta' => false], ['texto' => 'war', 'es_correcta' => false]]], ['texto' => 'Ich helfe ____ Mutter.', 'opciones' => [['texto' => 'meiner', 'es_correcta' => true], ['texto' => 'meine', 'es_correcta' => false], ['texto' => 'meinen', 'es_correcta' => false]]], ['texto' => 'Comparativo correcto:', 'opciones' => [['texto' => 'groesser', 'es_correcta' => true], ['texto' => 'groess', 'es_correcta' => false], ['texto' => 'mehr gross', 'es_correcta' => false]]]]]],
             ['titulo' => 'Completa el relato breve', 'descripcion' => 'Escribe la palabra que falta en pasado y dativo.', 'tipo' => 'completar_oracion', 'instrucciones' => 'Escribe solo una palabra por espacio.', 'puntos' => 12, 'tiempo' => 5, 'contenido' => [['id' => 'a2_gap_1', 'oracion' => 'Ich ____ gestern im Kino gewesen.', 'respuesta_correcta' => 'bin'], ['id' => 'a2_gap_2', 'oracion' => 'Ich habe ____ Freundin geholfen.', 'respuesta_correcta' => 'meiner'], ['id' => 'a2_gap_3', 'oracion' => 'Mein Zimmer ist ____ als frueher.', 'respuesta_correcta' => 'groesser']]],
             ['titulo' => 'Respuesta corta de salud', 'descripcion' => 'Completa una frase comun sobre sintomas.', 'tipo' => 'respuesta_corta', 'instrucciones' => 'Escribe una sola palabra.', 'puntos' => 10, 'tiempo' => 4, 'contenido' => ['pregunta' => 'Completa: Mir tut der ____ weh.', 'respuesta_correcta' => 'Kopf', 'respuestas_correctas' => ['Kopf'], 'placeholder' => 'Escribe una palabra']],
-            ['titulo' => 'Email informal A2', 'descripcion' => 'Describe tu casa, tu fin de semana o una molestia de salud.', 'tipo' => 'escritura', 'instrucciones' => 'Escribe 90 a 120 palabras.', 'puntos' => 20, 'tiempo' => 12, 'contenido' => ['tema' => 'Escribe un email informal contando que hiciste, como es tu casa o como te sentias ayer.', 'min_palabras' => 90]],
+            ['titulo' => 'Correo informal A2', 'descripcion' => 'Describe tu casa, tu fin de semana o una molestia de salud.', 'tipo' => 'escritura', 'instrucciones' => 'Escribe 90 a 120 palabras.', 'puntos' => 20, 'tiempo' => 12, 'contenido' => ['tema' => 'Escribe un correo informal contando que hiciste, como es tu casa o como te sentias ayer.', 'min_palabras' => 90]],
         ],
     ];
 

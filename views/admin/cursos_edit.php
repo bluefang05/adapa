@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de curso</span>
         <h1 class="page-title">Actualiza configuracion, acceso y workflow del curso.</h1>
         <p class="page-subtitle">Gestion operativa completa del curso dentro de la instancia.</p>
@@ -9,6 +9,10 @@
             <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver a cursos
             </a>
+        </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-pencil-square"></i> Edicion administrativa</span>
+            <span class="soft-badge"><i class="bi bi-shield-lock"></i> Control de acceso y workflow</span>
         </div>
     </section>
 
@@ -145,7 +149,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" id="codigoWrap" style="display: <?php echo !empty($course->requiere_codigo) ? 'block' : 'none'; ?>;">
+                        <div class="col-md-6 <?php echo !empty($course->requiere_codigo) ? '' : 'is-hidden'; ?>" id="codigoWrap">
                             <label for="codigo_acceso" class="form-label">Codigo de acceso</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="codigo_acceso" name="codigo_acceso" maxlength="255" value="<?php echo htmlspecialchars((string) ($course->codigo_acceso ?? '')); ?>">
@@ -153,7 +157,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" id="tipoCodigoWrap" style="display: <?php echo !empty($course->requiere_codigo) ? 'block' : 'none'; ?>;">
+                        <div class="col-md-6 <?php echo !empty($course->requiere_codigo) ? '' : 'is-hidden'; ?>" id="tipoCodigoWrap">
                             <label for="tipo_codigo" class="form-label">Tipo de codigo</label>
                             <select class="form-select" id="tipo_codigo" name="tipo_codigo">
                                 <option value="unico_curso" <?php echo (($course->tipo_codigo ?? 'unico_curso') === 'unico_curso') ? 'selected' : ''; ?>>Unico para el curso</option>
@@ -162,7 +166,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12 d-flex gap-2 flex-wrap pt-2">
+                        <div class="col-12 responsive-actions pt-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar cambios
                             </button>

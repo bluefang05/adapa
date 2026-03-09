@@ -4,7 +4,7 @@ $lessonEditorialStates = app_lesson_editorial_states();
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nueva leccion</span>
         <h1 class="page-title">Agrega una leccion clara y bien ordenada dentro del curso.</h1>
         <p class="page-subtitle">
@@ -15,6 +15,10 @@ $lessonEditorialStates = app_lesson_editorial_states();
                 <i class="bi bi-arrow-left"></i> Volver a lecciones
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-collection"></i> Nueva leccion</span>
+            <span class="soft-badge"><i class="bi bi-signpost-split"></i> Orden y estado en un paso</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -22,9 +26,8 @@ $lessonEditorialStates = app_lesson_editorial_states();
     <?php endif; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info">
-            <i class="bi bi-lightbulb"></i>
-            Plan gratuito: puedes crear hasta 3 lecciones dentro de este curso piloto.
+        <div class="alert context-note">
+            <strong>Plan gratuito:</strong> puedes crear hasta 3 lecciones dentro de este curso piloto.
         </div>
     <?php endif; ?>
 
@@ -41,14 +44,26 @@ $lessonEditorialStates = app_lesson_editorial_states();
                                 <span class="soft-badge"><i class="bi bi-book"></i> Curso: <?php echo htmlspecialchars($curso->titulo); ?></span>
                             </div>
 
-                            <div class="production-hint-card tone-info mb-3">
-                                <div class="production-hint-title">Checklist rapido antes de crear</div>
-                                <ul class="quality-checklist-list mb-0">
-                                    <li>El titulo deja claro que habilidad, tema o situacion cubre la leccion.</li>
-                                    <li>La descripcion ayuda al alumno a entender que lograra al completarla.</li>
-                                    <li>El orden, la duracion y el estado coinciden con el momento real del curso.</li>
-                                </ul>
-                            </div>
+                            <details class="panel page-assist-card mb-3">
+                                <summary class="page-assist-summary">
+                                    <div>
+                                        <div class="metric-label">Ayuda opcional</div>
+                                        <div class="fw-semibold mt-1">Checklist rapido antes de crear</div>
+                                        <div class="small text-muted mt-1">Abre esta seccion si quieres validar que la leccion nace con suficiente claridad.</div>
+                                    </div>
+                                    <span class="soft-badge">1 bloque</span>
+                                </summary>
+                                <div class="panel-body pt-0 page-assist-body">
+                                    <div class="alert context-note mb-0">
+                                        <div class="fw-semibold mb-2">Checklist rapido antes de crear</div>
+                                        <ul class="quality-checklist-list mb-0">
+                                            <li>El titulo deja claro que habilidad, tema o situacion cubre la leccion.</li>
+                                            <li>La descripcion ayuda al alumno a entender que lograra al completarla.</li>
+                                            <li>El orden, la duracion y el estado coinciden con el momento real del curso.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </details>
 
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Titulo de la leccion *</label>
@@ -102,8 +117,7 @@ $lessonEditorialStates = app_lesson_editorial_states();
                             </div>
                         </section>
 
-                        <div class="alert alert-info mt-4">
-                            <i class="bi bi-lightbulb"></i>
+                        <div class="alert context-note mt-4">
                             Despues de guardar entraras directo al constructor de la leccion para anadir teoria, practica y recursos sin perder el hilo.
                         </div>
 

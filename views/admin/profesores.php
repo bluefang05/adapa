@@ -38,7 +38,7 @@ function adminTeacherLoadTone($teacher) {
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-person-workspace"></i> Supervisar profesores</span>
         <h1 class="page-title">Lee la carga real de cada docente y abre cursos o tickets sin dar vueltas.</h1>
         <p class="page-subtitle">
@@ -55,42 +55,14 @@ function adminTeacherLoadTone($teacher) {
                 <i class="bi bi-life-preserver"></i> Tickets del equipo docente
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Profesores</div>
-                <div class="metric-value"><?php echo count($teachers); ?></div>
-                <div class="metric-note">Docentes filtrados en esta vista.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Activos</div>
-                <div class="metric-value"><?php echo $activeTeachers; ?></div>
-                <div class="metric-note">Cuentas habilitadas para operar.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Cursos</div>
-                <div class="metric-value"><?php echo $managedCourses; ?></div>
-                <div class="metric-note"><?php echo $publicCourses; ?> de ellos ya visibles en catalogo.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Alumnos</div>
-                <div class="metric-value"><?php echo $totalStudents; ?></div>
-                <div class="metric-note">Inscritos sobre sus cursos.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Tickets abiertos</div>
-                <div class="metric-value"><?php echo $openTickets; ?></div>
-                <div class="metric-note">Casos reportados por ellos o en sus cursos.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Con huecos visibles</div>
-                <div class="metric-value"><?php echo (int) ($teacherSummary['with_visible_gaps'] ?? 0); ?></div>
-                <div class="metric-note">Profesores con cursos visibles que conviene corregir.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Listos para revisar</div>
-                <div class="metric-value"><?php echo (int) ($teacherSummary['ready_for_review'] ?? 0); ?></div>
-                <div class="metric-note">Docentes que ya tienen base suficiente para revision editorial.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-person-workspace"></i> <?php echo count($teachers); ?> profesores</span>
+            <span class="soft-badge <?php echo $activeTeachers < count($teachers) ? 'warning' : 'success'; ?>"><i class="bi bi-person-check"></i> <?php echo $activeTeachers; ?> activos</span>
+            <span class="soft-badge"><i class="bi bi-journal-bookmark"></i> <?php echo $managedCourses; ?> cursos</span>
+            <span class="soft-badge"><i class="bi bi-broadcast"></i> <?php echo $publicCourses; ?> visibles</span>
+            <span class="soft-badge"><i class="bi bi-people"></i> <?php echo $totalStudents; ?> alumnos</span>
+            <span class="soft-badge <?php echo $openTickets > 0 ? 'warning' : 'success'; ?>"><i class="bi bi-life-preserver"></i> <?php echo $openTickets; ?> tickets abiertos</span>
+            <span class="soft-badge <?php echo ((int) ($teacherSummary['ready_for_review'] ?? 0) > 0) ? 'badge-accent' : 'success'; ?>"><i class="bi bi-patch-check"></i> <?php echo (int) ($teacherSummary['ready_for_review'] ?? 0); ?> listos para revisar</span>
         </div>
     </section>
 
@@ -123,7 +95,7 @@ function adminTeacherLoadTone($teacher) {
                         <option value="con_tickets" <?php echo ($load ?? '') === 'con_tickets' ? 'selected' : ''; ?>>Con tickets abiertos</option>
                     </select>
                 </div>
-                <div class="col-md-4 col-lg-2 d-flex gap-2">
+                <div class="col-md-4 col-lg-2 responsive-actions">
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filtrar</button>
                     <a href="<?php echo url('/admin/profesores'); ?>" class="btn btn-outline-secondary">Limpiar</a>
                 </div>
@@ -152,7 +124,7 @@ function adminTeacherLoadTone($teacher) {
                     <div class="col-xl-6">
                         <article class="surface-card h-100">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                                <div class="split-head mb-3">
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="avatar-token"><?php echo strtoupper(substr((string) ($teacher->nombre ?? '?'), 0, 1)); ?></span>
                                         <div>
@@ -160,7 +132,7 @@ function adminTeacherLoadTone($teacher) {
                                             <div class="small text-muted"><?php echo htmlspecialchars($teacher->email ?? ''); ?></div>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2 flex-wrap justify-content-end">
+                                    <div class="badge-row badge-row-end">
                                         <span class="soft-badge <?php echo !empty($teacher->activo) ? 'success' : 'warning'; ?>">
                                             <?php echo !empty($teacher->activo) ? 'Activo' : 'Inactivo'; ?>
                                         </span>
@@ -179,37 +151,25 @@ function adminTeacherLoadTone($teacher) {
                                     <span><i class="bi bi-lightning"></i> <?php echo (int) ($teacher->total_actividades ?? 0); ?> actividades</span>
                                 </div>
 
-                                <div class="activity-preview-stack mb-3">
-                                    <div class="activity-preview-card">
-                                        <div class="fw-semibold mb-2">Operacion</div>
-                                        <ul class="quality-checklist-list mb-0">
-                                            <li><?php echo (int) ($teacher->total_cursos ?? 0); ?> cursos propios</li>
-                                            <li><?php echo (int) ($teacher->cursos_publicos ?? 0); ?> visibles en catalogo</li>
-                                            <li><?php echo (int) ($teacher->total_estudiantes ?? 0); ?> inscripciones activas</li>
-                                        </ul>
-                                    </div>
-                                    <div class="activity-preview-card">
-                                        <div class="fw-semibold mb-2">Soporte</div>
-                                        <ul class="quality-checklist-list mb-0">
-                                            <li><?php echo (int) ($teacher->tickets_docente ?? 0); ?> tickets enviados por el profesor</li>
-                                            <li><?php echo (int) ($teacher->tickets_cursos ?? 0); ?> tickets ligados a sus cursos</li>
-                                            <li><?php echo $openTeacherTickets; ?> abiertos ahora mismo</li>
-                                        </ul>
-                                    </div>
+                                <div class="badge-stack mb-3">
+                                    <span class="soft-badge"><i class="bi bi-journal-bookmark"></i> Operacion: <?php echo (int) ($teacher->total_cursos ?? 0); ?> cursos, <?php echo (int) ($teacher->cursos_publicos ?? 0); ?> visibles, <?php echo (int) ($teacher->total_estudiantes ?? 0); ?> alumnos</span>
+                                    <span class="soft-badge"><i class="bi bi-life-preserver"></i> Soporte: <?php echo (int) ($teacher->tickets_docente ?? 0); ?> tickets del profesor, <?php echo (int) ($teacher->tickets_cursos ?? 0); ?> de cursos, <?php echo $openTeacherTickets; ?> abiertos</span>
                                 </div>
 
-                                <section class="production-hint-card tone-<?php echo htmlspecialchars($teacher->admin_focus_tone ?? 'info'); ?> mb-3">
-                                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
-                                        <div class="production-hint-title"><?php echo htmlspecialchars($teacher->admin_focus_label ?? 'Control operativo'); ?></div>
+                                <div class="alert context-note mb-3">
+                                    <div class="split-head">
+                                        <div>
+                                            <div class="fw-semibold"><?php echo htmlspecialchars($teacher->admin_focus_label ?? 'Control operativo'); ?></div>
+                                            <div class="small text-muted mt-1"><?php echo htmlspecialchars($teacher->admin_focus_hint ?? ''); ?></div>
+                                            <?php if (!empty($teacher->hotspot_course_title)): ?>
+                                                <div class="small text-muted mt-2"><strong>Curso foco:</strong> <?php echo htmlspecialchars($teacher->hotspot_course_title); ?></div>
+                                            <?php endif; ?>
+                                        </div>
                                         <?php if ((int) ($teacher->ready_courses ?? 0) > 0): ?>
                                             <span class="soft-badge info"><?php echo (int) ($teacher->ready_courses ?? 0); ?> listos para revisar</span>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="small text-muted"><?php echo htmlspecialchars($teacher->admin_focus_hint ?? ''); ?></div>
-                                    <?php if (!empty($teacher->hotspot_course_title)): ?>
-                                        <div class="small text-muted mt-2"><strong>Curso foco:</strong> <?php echo htmlspecialchars($teacher->hotspot_course_title); ?></div>
-                                    <?php endif; ?>
-                                </section>
+                                </div>
 
                                 <div class="responsive-actions">
                                     <a href="<?php echo url('/admin/usuarios/edit/' . (int) $teacher->id); ?>" class="btn btn-sm btn-outline-secondary">
@@ -227,7 +187,7 @@ function adminTeacherLoadTone($teacher) {
                                     <a href="<?php echo url('/admin/tickets?owner_id=' . (int) $teacher->id); ?>" class="btn btn-sm btn-outline-secondary">
                                         <i class="bi bi-life-preserver"></i> Tickets de sus cursos
                                     </a>
-                                    <form method="POST" action="<?php echo url('/admin/usuarios/toggle-activo/' . (int) $teacher->id); ?>" class="d-inline">
+                                    <form method="POST" action="<?php echo url('/admin/usuarios/toggle-activo/' . (int) $teacher->id); ?>">
                                         <?php echo csrf_input(); ?>
                                         <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentProfessorsUrl); ?>">
                                         <button type="submit" class="btn btn-sm <?php echo !empty($teacher->activo) ? 'btn-outline-danger' : 'btn-outline-success'; ?>">
@@ -236,7 +196,7 @@ function adminTeacherLoadTone($teacher) {
                                         </button>
                                     </form>
                                     <?php if (empty($teacher->email_verificado)): ?>
-                                        <form method="POST" action="<?php echo url('/admin/usuarios/verify-email/' . (int) $teacher->id); ?>" class="d-inline">
+                                        <form method="POST" action="<?php echo url('/admin/usuarios/verify-email/' . (int) $teacher->id); ?>">
                                             <?php echo csrf_input(); ?>
                                             <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentProfessorsUrl); ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-secondary">

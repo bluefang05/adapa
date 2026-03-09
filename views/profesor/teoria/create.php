@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nueva teoria</span>
         <h1 class="page-title">Crea una teoria lista para evolucionar a bloques.</h1>
         <p class="page-subtitle">
@@ -24,6 +24,10 @@
                 <i class="bi bi-images"></i> Abrir biblioteca
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-book"></i> Nueva teoria</span>
+            <span class="soft-badge"><i class="bi bi-collection"></i> Lista para bloques</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
@@ -34,9 +38,8 @@
     <?php endif; ?>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
-            <i class="bi bi-check2-circle"></i>
-            Recurso listo para insertar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        <div class="alert context-note">
+            <strong>Recurso listo para insertar:</strong> <?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?>.
             Lo asignare al primer bloque sin recurso.
         </div>
     <?php endif; ?>
@@ -73,8 +76,16 @@
                                 <span class="soft-badge"><i class="bi bi-collection"></i> Autoría guiada</span>
                             </div>
 
-                            <div class="panel mb-3">
-                                <div class="panel-body">
+                            <details class="panel page-assist-card mb-3">
+                                <summary class="page-assist-summary">
+                                    <div>
+                                        <div class="metric-label">Ayuda opcional</div>
+                                        <div class="fw-semibold mt-1">Atajos para construir bloques con menos friccion</div>
+                                        <div class="small text-muted mt-1">Abre esta seccion si necesitas plantillas, checklist o acceso rapido a biblioteca.</div>
+                                    </div>
+                                    <span class="soft-badge">3 bloques</span>
+                                </summary>
+                                <div class="panel-body pt-0 page-assist-body">
                                     <div class="builder-toolbar">
                                         <button type="button" class="btn btn-outline-primary" id="addBlockBtn">
                                             <i class="bi bi-plus-circle"></i> Anadir bloque
@@ -86,8 +97,8 @@
                                     <div class="form-text mt-3">
                                         Usa bloques para explicacion, ejemplo, traduccion o vocabulario. Cada bloque puede marcar idioma y habilitar TTS.
                                     </div>
-                                    <div class="production-hint-card tone-info mt-3">
-                                        <div class="production-hint-title">Checklist rapido antes de guardar</div>
+                                    <div class="alert context-note mt-3 mb-0">
+                                        <div class="fw-semibold mb-2">Checklist rapido antes de guardar</div>
                                         <ul class="quality-checklist-list mb-0">
                                             <li>El titulo explica la idea o habilidad que trabajara el alumno.</li>
                                             <li>Hay al menos un bloque base y, si aplica, un ejemplo o recurso.</li>
@@ -101,7 +112,7 @@
                                         <a href="<?php echo url('/profesor/recursos?return_to=' . rawurlencode(url('/profesor/lecciones/' . $leccion->id . '/teoria/create')) . '&context=teoria'); ?>" class="template-chip template-chip-link">Elegir recurso en biblioteca</a>
                                     </div>
                                 </div>
-                            </div>
+                            </details>
 
                             <div id="blocksBuilder" class="config-builder"></div>
                         </section>
@@ -153,7 +164,7 @@
 
 <template id="blockTemplate">
     <div class="builder-item content-block-item">
-        <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <div class="split-head mb-3">
             <div>
                 <div class="stack-item-title">Bloque de teoria</div>
                 <div class="stack-item-subtitle">Explicacion estructurada con idioma y audio opcional.</div>

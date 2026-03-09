@@ -5,13 +5,13 @@ $lessonEditorialMeta = app_lesson_editorial_state_meta($leccion);
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de leccion</span>
         <h1 class="page-title">Actualiza la leccion sin perder el orden del curso.</h1>
         <p class="page-subtitle">
             Ajusta titulo, estado y duracion desde una version mas clara y responsive del formulario.
         </p>
-        <div class="d-flex gap-2 flex-wrap mt-3">
+        <div class="compact-meta-row">
             <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</span>
             <span class="soft-badge badge-<?php echo htmlspecialchars($lessonEditorialMeta['tone']); ?>">
                 <i class="bi bi-eye"></i> <?php echo htmlspecialchars($lessonEditorialMeta['label']); ?>
@@ -38,44 +38,48 @@ $lessonEditorialMeta = app_lesson_editorial_state_meta($leccion);
                     <form method="POST" action="<?php echo url('/profesor/lecciones/edit/' . $leccion->id); ?>" id="formEditarLeccion">
                         <?php echo csrf_input(); ?>
 
-                        <section class="form-section">
-                            <div class="section-title">
-                                <h2 class="form-section-title">Checklist de publicacion</h2>
-                                <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Control rapido</span>
-                            </div>
-
-                            <div class="production-hint-card tone-info mb-3">
-                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-                                    <div>
-                                        <div class="production-hint-title">Preparacion actual: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</div>
-                                        <div class="text-muted mt-1"><?php echo htmlspecialchars($lessonPublishHint ?? ''); ?></div>
-                                    </div>
-                                    <div class="soft-badge"><?php echo (int) ($lessonPublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($lessonPublishSummary['total'] ?? 0); ?> puntos</div>
+                        <details class="panel page-assist-card mb-4">
+                            <summary class="page-assist-summary">
+                                <div>
+                                    <div class="metric-label">Lectura editorial</div>
+                                    <div class="fw-semibold mt-1">Checklist de publicacion y estado real de la leccion</div>
+                                    <div class="small text-muted mt-1">Abre esta seccion si necesitas revisar huecos antes de tocar la ficha principal.</div>
                                 </div>
-                                <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%"></span></div>
-                                <div class="course-meta mt-3">
-                                    <span><i class="bi bi-book"></i> <?php echo (int) ($lessonPublishSummary['theories'] ?? 0); ?> teorias</span>
-                                    <span><i class="bi bi-lightning"></i> <?php echo (int) ($lessonPublishSummary['activities'] ?? 0); ?> actividades</span>
-                                </div>
-                            </div>
-
-                            <div class="publish-checklist-grid">
-                                <?php foreach (($lessonPublishChecklist ?? []) as $item): ?>
-                                    <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
-                                        <div class="publish-check-head">
-                                            <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
-                                            <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                <span class="soft-badge"><?php echo (int) ($lessonPublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($lessonPublishSummary['total'] ?? 0); ?> puntos</span>
+                            </summary>
+                            <div class="panel-body pt-0 page-assist-body">
+                                <div class="alert context-note mb-3">
+                                    <div class="split-head">
+                                        <div>
+                                            <div class="fw-semibold">Preparacion actual: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</div>
+                                            <div class="small text-muted mt-1"><?php echo htmlspecialchars($lessonPublishHint ?? ''); ?></div>
                                         </div>
-                                        <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
-                                    </article>
-                                <?php endforeach; ?>
-                            </div>
+                                        <div class="soft-badge"><?php echo (int) ($lessonPublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($lessonPublishSummary['total'] ?? 0); ?> puntos</div>
+                                    </div>
+                                    <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%"></span></div>
+                                    <div class="course-meta mt-3">
+                                        <span><i class="bi bi-book"></i> <?php echo (int) ($lessonPublishSummary['theories'] ?? 0); ?> teorias</span>
+                                        <span><i class="bi bi-lightning"></i> <?php echo (int) ($lessonPublishSummary['activities'] ?? 0); ?> actividades</span>
+                                    </div>
+                                </div>
 
-                            <div id="lessonPublishHint" class="alert alert-warning mt-3 mb-0" <?php echo app_lesson_editorial_state_value($leccion) === 'publicado' && (int) ($lessonPublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
-                                <i class="bi bi-exclamation-triangle"></i>
-                                La leccion esta publicada, pero todavia tiene huecos que el alumno puede notar.
+                                <div class="publish-checklist-grid">
+                                    <?php foreach (($lessonPublishChecklist ?? []) as $item): ?>
+                                        <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
+                                            <div class="publish-check-head">
+                                                <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
+                                                <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                            </div>
+                                            <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div id="lessonPublishHint" class="alert context-note mt-3 mb-0" <?php echo app_lesson_editorial_state_value($leccion) === 'publicado' && (int) ($lessonPublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
+                                    La leccion esta publicada, pero todavia tiene huecos que el alumno puede notar.
+                                </div>
                             </div>
-                        </section>
+                        </details>
 
                         <section class="form-section">
                             <div class="section-title">

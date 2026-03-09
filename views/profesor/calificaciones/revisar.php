@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-search"></i> Revision individual</span>
         <h1 class="page-title">Revisa la respuesta y deja una devolucion util.</h1>
         <p class="page-subtitle">
@@ -11,6 +11,10 @@
             <a href="<?php echo url('/profesor/calificaciones/curso/' . $actividad->curso_id); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Volver al curso
             </a>
+        </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-search"></i> Revision manual</span>
+            <span class="soft-badge"><i class="bi bi-chat-square-text"></i> Actividad y respuesta en paralelo</span>
         </div>
     </section>
 
@@ -65,7 +69,7 @@
                     <div class="mb-4">
                         <label class="form-label fw-bold">Contenido de la respuesta</label>
                         <div class="content-block">
-                            <div class="card-body" style="min-height: 140px; white-space: pre-wrap;"><?php echo htmlspecialchars($respuesta->respuesta_texto); ?></div>
+                            <div class="card-body response-copy-block"><?php echo htmlspecialchars($respuesta->respuesta_texto); ?></div>
                         </div>
                     </div>
 

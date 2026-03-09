@@ -32,7 +32,7 @@ foreach ($teorias as $teoria) {
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-book"></i> Contenido teorico</span>
         <h1 class="page-title">Teoria de <?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle">
@@ -55,22 +55,11 @@ foreach ($teorias as $teoria) {
                 <i class="bi bi-lightning-charge"></i> Ver practica
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Piezas</div>
-                <div class="metric-value"><?php echo count($teorias); ?></div>
-                <div class="metric-note">Bloques teoricos dentro de esta leccion.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Duracion total</div>
-                <div class="metric-value"><?php echo $teoriaSummary['duracion_total']; ?></div>
-                <div class="metric-note">Minutos estimados de estudio.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Bloques</div>
-                <div class="metric-value"><?php echo $teoriaSummary['total_bloques']; ?></div>
-                <div class="metric-note">Piezas estructuradas visibles para el alumno.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-book"></i> <?php echo count($teorias); ?> piezas</span>
+            <span class="soft-badge"><i class="bi bi-clock"></i> <?php echo $teoriaSummary['duracion_total']; ?> min estimados</span>
+            <span class="soft-badge"><i class="bi bi-collection"></i> <?php echo $teoriaSummary['total_bloques']; ?> bloques</span>
+            <span class="soft-badge <?php echo $teoriaPorPulir ? 'warning' : 'success'; ?>"><i class="bi bi-check2-circle"></i> <?php echo $teoriaPorPulir ? 'Requiere una pasada' : 'Base teorica en forma'; ?></span>
         </div>
     </section>
 
@@ -84,8 +73,8 @@ foreach ($teorias as $teoria) {
             </div>
         </div>
     <?php else: ?>
-        <section class="panel mb-4">
-            <div class="panel-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div class="alert context-note mb-4">
+            <div class="split-head">
                 <div>
                     <div class="metric-label">Siguiente paso recomendado</div>
                     <div class="fw-semibold mt-1">
@@ -107,7 +96,7 @@ foreach ($teorias as $teoria) {
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="d-flex gap-2 flex-wrap">
+                <div class="responsive-actions">
                     <a href="<?php echo url('/profesor/lecciones/' . $leccion->id . '/teoria/create?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-primary">Anadir teoria</a>
                     <?php if ($teoriaPorPulir): ?>
                         <a href="<?php echo url('/profesor/teoria/edit/' . $teoriaPorPulir['teoria']->id . '?return_to=' . rawurlencode($currentReturnTo)); ?>" class="btn btn-outline-primary">Pulir pieza detectada</a>
@@ -116,7 +105,7 @@ foreach ($teorias as $teoria) {
                     <?php endif; ?>
                 </div>
             </div>
-        </section>
+        </div>
         <div class="row g-4">
             <?php foreach ($teorias as $teoria): ?>
                 <?php
@@ -125,7 +114,7 @@ foreach ($teorias as $teoria) {
                 <div class="col-xl-6">
                     <article class="surface-card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+                            <div class="split-head mb-3">
                                 <div>
                                     <h3 class="h4 mb-1"><?php echo htmlspecialchars($teoria->titulo); ?></h3>
                                     <div class="small text-muted text-capitalize"><?php echo htmlspecialchars($teoria->tipo_contenido); ?></div>

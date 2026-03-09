@@ -18,8 +18,7 @@ $pdo = new PDO($dsn, DB_USER, DB_PASS, [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 ]);
 
-$studentId = isset($argv[1]) ? (int) $argv[1] : 14;
-$result = german_master_seed_new_course($pdo, $studentId > 0 ? $studentId : null);
-$result['professor_id'] = 13;
+$courseId = isset($argv[1]) ? (int) $argv[1] : 17;
+$result = german_master_apply_to_course($pdo, $courseId);
 
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL;

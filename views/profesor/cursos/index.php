@@ -3,7 +3,7 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-layers"></i> Panel docente</span>
         <h1 class="page-title">Tus cursos, sin tabla ciega.</h1>
         <p class="page-subtitle">
@@ -17,34 +17,17 @@
                 <i class="bi bi-people"></i> Ver estudiantes
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Cuenta</div>
-                <div class="metric-value"><?php echo htmlspecialchars($planUso['plan_label'] ?? 'Plan gratuito'); ?></div>
-                <div class="metric-note"><?php echo !empty($planUso['is_official']) ? 'Cuenta interna o institucional con acceso completo.' : 'Estado actual de tu cuenta docente.'; ?></div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Cursos</div>
-                <div class="metric-value"><?php echo count($cursos); ?></div>
-                <div class="metric-note">Catalogo actualmente a tu cargo.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Inscritos</div>
-                <div class="metric-value"><?php echo array_reduce($cursos, fn($carry, $curso) => $carry + (int) ($curso->total_estudiantes ?? 0), 0); ?></div>
-                <div class="metric-note">Suma total entre todos tus cursos.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Actividades</div>
-                <div class="metric-value"><?php echo array_reduce($cursos, fn($carry, $curso) => $carry + (int) ($curso->total_actividades ?? 0), 0); ?></div>
-                <div class="metric-note">Practica creada y lista para usarse.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge badge-accent"><i class="bi bi-person-badge"></i> <?php echo htmlspecialchars($planUso['plan_label'] ?? 'Plan gratuito'); ?></span>
+            <span class="soft-badge info"><i class="bi bi-journal-bookmark"></i> <?php echo count($cursos); ?> cursos</span>
+            <span class="soft-badge"><i class="bi bi-people"></i> <?php echo array_reduce($cursos, fn($carry, $curso) => $carry + (int) ($curso->total_estudiantes ?? 0), 0); ?> inscritos</span>
+            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo array_reduce($cursos, fn($carry, $curso) => $carry + (int) ($curso->total_actividades ?? 0), 0); ?> actividades</span>
         </div>
     </section>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info mb-4">
-            <i class="bi bi-lightbulb"></i>
-            Estas en plan gratuito: 1 curso, hasta 3 lecciones por curso, 3 actividades por leccion y 3 estudiantes por codigo.
+        <div class="alert context-note mb-4">
+            <strong>Plan gratuito:</strong> 1 curso, hasta 3 lecciones por curso, 3 actividades por leccion y 3 estudiantes por codigo.
         </div>
     <?php endif; ?>
 
@@ -98,7 +81,7 @@
                                                 <div class="fw-semibold"><?php echo htmlspecialchars($curso->titulo); ?></div>
                                                 <div class="small text-muted"><?php echo htmlspecialchars($curso->descripcion ? substr($curso->descripcion, 0, 70) : 'Sin descripcion'); ?></div>
                                                 <div class="small text-muted mt-1"><?php echo htmlspecialchars(app_course_production_hint($curso)); ?></div>
-                                                <div class="small mt-1 d-flex gap-2 flex-wrap">
+                                                <div class="small mt-1 badge-row">
                                                     <span class="soft-badge"><?php echo htmlspecialchars($readiness['label']); ?> - <?php echo (int) $readiness['progress']; ?>%</span>
                                                     <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
                                                         <?php echo htmlspecialchars($catalogStatus['label']); ?>
@@ -131,7 +114,7 @@
                                     <td><?php echo (int) ($curso->total_estudiantes ?? 0); ?></td>
                                     <td><?php echo (int) $curso->max_estudiantes; ?></td>
                                     <td>
-                                        <div class="d-flex gap-2 flex-wrap">
+                                        <div class="responsive-actions table-actions">
                                             <a href="<?php echo url('/profesor/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-sm btn-outline-primary" title="Ver lecciones" aria-label="Ver lecciones de <?php echo htmlspecialchars($curso->titulo); ?>">
                                                 <i class="bi bi-book"></i>
                                                 <span class="visually-hidden">Ver lecciones</span>
@@ -144,14 +127,14 @@
                                                 <i class="bi bi-pencil"></i>
                                                 <span class="visually-hidden">Editar curso</span>
                                             </a>
-                                            <form method="POST" action="<?php echo url('/profesor/cursos/duplicate/' . $curso->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/profesor/cursos/duplicate/' . $curso->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="Duplicar curso" aria-label="Duplicar curso <?php echo htmlspecialchars($curso->titulo); ?>">
                                                     <i class="bi bi-copy"></i>
                                                     <span class="visually-hidden">Duplicar curso</span>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo url('/profesor/cursos/delete/' . $curso->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este curso?');">
+                                            <form method="POST" action="<?php echo url('/profesor/cursos/delete/' . $curso->id); ?>" onsubmit="return confirm('Estas seguro de eliminar este curso?');">
                                                 <?php echo csrf_input(); ?>
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Eliminar curso" aria-label="Eliminar curso <?php echo htmlspecialchars($curso->titulo); ?>">
                                                     <i class="bi bi-trash"></i>

@@ -4,7 +4,7 @@ $courseEditorialStates = app_course_editorial_states();
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-plus-circle"></i> Nuevo curso</span>
         <h1 class="page-title">Crea un curso listo para escalar a contenido, cupos y acceso.</h1>
         <p class="page-subtitle">
@@ -15,6 +15,10 @@ $courseEditorialStates = app_course_editorial_states();
                 <i class="bi bi-arrow-left"></i> Volver a mis cursos
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-translate"></i> Curso nuevo</span>
+            <span class="soft-badge"><i class="bi bi-signpost-split"></i> Nivel y acceso en un paso</span>
+        </div>
     </section>
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
@@ -24,9 +28,8 @@ $courseEditorialStates = app_course_editorial_states();
     <?php endif; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info">
-            <i class="bi bi-shield-check"></i>
-            Plan gratuito activo: este curso piloto quedara privado, funcionara por codigo y mantendra un cupo maximo de 3 estudiantes.
+        <div class="alert context-note">
+            <strong>Plan gratuito activo:</strong> este curso piloto quedara privado, funcionara por codigo y mantendra un cupo maximo de 3 estudiantes.
         </div>
     <?php endif; ?>
 
@@ -43,12 +46,16 @@ $courseEditorialStates = app_course_editorial_states();
                                 <span class="soft-badge"><i class="bi bi-journal-text"></i> Base academica</span>
                             </div>
 
-                            <div class="panel mb-3">
-                                <div class="panel-body">
-                                    <div class="section-title mb-3">
-                                        <h3 class="h5 mb-0">Arranca con una base premium</h3>
-                                        <span class="soft-badge"><i class="bi bi-lightbulb"></i> Plantillas</span>
+                            <details class="panel page-assist-card mb-3">
+                                <summary class="page-assist-summary">
+                                    <div>
+                                        <div class="metric-label">Ayuda opcional</div>
+                                        <div class="fw-semibold mt-1">Plantillas y checklist para arrancar mejor</div>
+                                        <div class="small text-muted mt-1">Abre esta seccion si quieres una base rapida antes de completar la identidad del curso.</div>
                                     </div>
+                                    <span class="soft-badge">2 bloques</span>
+                                </summary>
+                                <div class="panel-body pt-0 page-assist-body">
                                     <div class="template-chip-group mb-3">
                                         <button type="button" class="template-chip" data-course-template="conversacion">Curso de conversacion</button>
                                         <button type="button" class="template-chip" data-course-template="ruta">Ruta completa</button>
@@ -64,7 +71,7 @@ $courseEditorialStates = app_course_editorial_states();
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </details>
 
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Titulo del curso *</label>
@@ -198,7 +205,7 @@ $courseEditorialStates = app_course_editorial_states();
                                 </div>
                             </div>
 
-                            <div id="fechas_ciclo" class="mt-3" style="display: none;">
+                            <div id="fechas_ciclo" class="mt-3 is-hidden">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
@@ -231,9 +238,9 @@ $courseEditorialStates = app_course_editorial_states();
                                     <div class="form-text">Define si el curso sigue interno, esta en revision o ya debe operar como experiencia real.</div>
                                 </div>
                                 <div class="col-lg-5">
-                                    <div class="production-hint-card tone-info h-100" id="courseEditorialCard">
-                                        <div class="production-hint-title" id="courseEditorialTitle">Borrador</div>
-                                        <div class="text-muted" id="courseEditorialDescription">Todavia se esta armando. Mantiene el curso fuera de vista publica.</div>
+                                    <div class="alert context-note h-100 mb-0" id="courseEditorialCard">
+                                        <div class="fw-semibold" id="courseEditorialTitle">Borrador</div>
+                                        <div class="small text-muted mt-1" id="courseEditorialDescription">Todavia se esta armando. Mantiene el curso fuera de vista publica.</div>
                                     </div>
                                 </div>
                             </div>
@@ -251,12 +258,12 @@ $courseEditorialStates = app_course_editorial_states();
                                 <label class="form-check-label" for="requiere_codigo">Requiere codigo de acceso para inscribirse</label>
                             </div>
 
-                            <div class="alert alert-warning mt-3 mb-0" id="courseVisibilityWorkflowHint" hidden>
+                            <div class="alert context-note mt-3 mb-0" id="courseVisibilityWorkflowHint" hidden>
                                 <i class="bi bi-exclamation-triangle"></i>
                                 Aunque lo marques para catalogo, seguira fuera de la vista del estudiante mientras no quede en estado <strong>Publicado</strong> y no tenga una leccion publicada.
                             </div>
 
-                            <div id="codigo_acceso_div" class="mt-3" style="display: none;">
+                            <div id="codigo_acceso_div" class="mt-3 is-hidden">
                                 <div class="row g-3">
                                     <div class="col-lg-7">
                                         <label for="codigo_acceso" class="form-label">Codigo de acceso</label>

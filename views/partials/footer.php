@@ -8,6 +8,13 @@ if (session_status() === PHP_SESSION_NONE) {
 ?>
     <footer class="app-footer">
         <div class="container">
+            <div class="footer-theme-bar">
+                <button type="button" class="theme-toggle theme-toggle-footer" data-theme-toggle aria-label="Cambiar tema" aria-pressed="false">
+                    <i class="bi bi-moon-stars-fill d-none" data-theme-icon="dark"></i>
+                    <i class="bi bi-sun-fill" data-theme-icon="light"></i>
+                    <span data-theme-label>Tema: Calido</span>
+                </button>
+            </div>
             <div class="footer-shell d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                     <div class="footer-brand">ADAPA</div>

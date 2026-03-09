@@ -337,6 +337,7 @@ class EstudianteController extends Controller {
     }
 
     public function recursos() {
+        $estudiante_id = Auth::getUserId();
         $language = trim($_GET['idioma'] ?? '');
         $language = $language !== '' ? $language : null;
 
@@ -344,6 +345,16 @@ class EstudianteController extends Controller {
         $groupedResources = app_group_useful_resources_by_category($resources);
         $resourceCategories = app_useful_resource_category_labels();
         $languageLabel = $language ? app_language_label($language, ucfirst($language)) : 'Todos los idiomas';
+        $relatedCourses = [];
+        $resourceContextCourse = null;
+
+        if ($language !== null) {
+            $studentCourses = $this->cursoModel->obtenerResumenCursosPorEstudiante($estudiante_id);
+            $relatedCourses = array_values(array_filter($studentCourses, static function ($curso) use ($language): bool {
+                return Curso::obtenerIdiomaObjetivo($curso) === $language;
+            }));
+            $resourceContextCourse = count($relatedCourses) === 1 ? $relatedCourses[0] : null;
+        }
 
         require_once __DIR__ . '/../../views/estudiante/recursos.php';
     }
@@ -714,10 +725,12 @@ class EstudianteController extends Controller {
 
         // Calcular puntuación según el tipo de actividad
         // Ahora Respuesta::calcularPuntuacion maneja todos los tipos soportados
-        $puntuacion = $respuestaModel->calcularPuntuacion($actividad_id, $respuesta_texto);
+        $evaluacion = $respuestaModel->evaluarRespuesta($actividad_id, $respuesta_texto);
+        $puntuacion = $evaluacion['puntuacion'] ?? null;
+        $comentarios = $evaluacion['comentarios'] ?? null;
 
         // Guardar la respuesta
-        $resultado = $respuestaModel->guardarRespuesta($estudiante_id, $actividad_id, $respuesta_texto, $puntuacion);
+        $resultado = $respuestaModel->guardarRespuesta($estudiante_id, $actividad_id, $respuesta_texto, $puntuacion, $comentarios);
 
         if ($resultado) {
             $this->leccionModel->sincronizarProgresoEstudiante($actividad->leccion_id, $estudiante_id);

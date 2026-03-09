@@ -98,43 +98,30 @@ function renderStudentSupportResource($resource) {
                 $isRetry = isset($_GET['retry']) && $_GET['retry'] == '1';
                 $showFeedback = isset($respuestaExistente) && $respuestaExistente && !$isRetry;
                 $activitySummaryCta = $activitySummaryCta ?? ($showFeedback ? 'Continuar' : 'Volver a la leccion');
-                $activityLanguageResources = $activityLanguageResources ?? app_useful_resources_for_language(Curso::obtenerIdiomaObjetivo($curso), 3);
+                $activityStateLabel = $isRetry ? 'Modo practica' : ($showFeedback ? 'Respuesta guardada' : 'Lista para responder');
+                $activityStateTone = $isRetry ? 'badge-accent' : ($showFeedback ? 'success' : 'info');
             ?>
-            <div class="page-hero mb-4">
+            <div class="page-hero activity-hero mb-4">
                 <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Actividad activa</span>
                 <h1 class="page-title"><?php echo htmlspecialchars($actividad->titulo); ?></h1>
                 <p class="page-subtitle"><?php echo htmlspecialchars($actividad->descripcion ?: 'Completa la actividad y revisa tu avance dentro de la leccion.'); ?></p>
-                <div class="hero-actions">
-                    <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver a la leccion
-                    </a>
-                    <?php if ($showFeedback && !$isRetry): ?>
-                        <a href="?retry=1" class="btn btn-success">
-                            <i class="bi bi-arrow-repeat"></i> Practicar otra vez
+                <?php if ($isRetry && isset($respuestaExistente) && $respuestaExistente): ?>
+                    <div class="hero-actions">
+                        <a href="?" class="btn btn-outline-primary">
+                            <i class="bi bi-eye"></i> Ver respuesta anterior
                         </a>
+                    </div>
+                <?php endif; ?>
+                <div class="activity-meta-row">
+                    <span class="soft-badge info"><i class="bi bi-grid"></i> <?php echo htmlspecialchars(studentActivityTypeLabel($actividad->tipo_actividad)); ?></span>
+                    <span class="soft-badge <?php echo htmlspecialchars($activityStateTone); ?>"><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($activityStateLabel); ?></span>
+                    <span class="soft-badge"><i class="bi bi-journal-text"></i> Leccion <?php echo (int) $leccion->orden; ?></span>
+                    <?php if (!empty($actividad->puntos_maximos)): ?>
+                        <span class="soft-badge"><i class="bi bi-award"></i> <?php echo (int) $actividad->puntos_maximos; ?> pts</span>
                     <?php endif; ?>
-                </div>
-                <div class="metric-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">Tipo</div>
-                        <div class="metric-value"><?php echo htmlspecialchars(studentActivityTypeLabel($actividad->tipo_actividad)); ?></div>
-                        <div class="metric-note">Formato de esta practica.</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Estado</div>
-                        <div class="metric-value"><?php echo $isRetry ? 'Practica' : ($showFeedback ? 'Hecha' : 'Nueva'); ?></div>
-                        <div class="metric-note"><?php echo $showFeedback ? 'Ya existe una respuesta registrada.' : 'Aun no envias esta actividad.'; ?></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Leccion</div>
-                        <div class="metric-value"><?php echo (int) $leccion->orden; ?></div>
-                        <div class="metric-note"><?php echo htmlspecialchars($leccion->titulo); ?></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Objetivo</div>
-                        <div class="metric-value"><?php echo !empty($actividad->puntos_maximos) ? (int) $actividad->puntos_maximos . ' pts' : 'Practica'; ?></div>
-                        <div class="metric-note"><?php echo !empty($actividad->tiempo_limite_minutos) ? ((int) $actividad->tiempo_limite_minutos . ' min estimados') : 'Sin tiempo fijo'; ?></div>
-                    </div>
+                    <?php if (!empty($actividad->tiempo_limite_minutos)): ?>
+                        <span class="soft-badge warning"><i class="bi bi-clock"></i> <?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
+                    <?php endif; ?>
                 </div>
             </div>
             
@@ -149,172 +136,63 @@ function renderStudentSupportResource($resource) {
                         $ttsLanguageMap = app_tts_language_map();
                         $langCode = $ttsLanguageMap[$idiomaCurso] ?? 'en-US';
                         $supportResource = app_activity_support_resource($actividad->contenido ?? null);
+                        $supportSectionsCount = ($supportResource ? 1 : 0)
+                            + (!empty($activityGuidance) ? 1 : 0);
                     ?>
 
-                    <?php ob_start(); ?>
-                    <?php if (!empty($actividad->instrucciones) || !empty($actividad->descripcion)): ?>
-                        <div class="alert alert-light border mb-4">
+                    <?php if (!empty($actividad->instrucciones)): ?>
+                        <div class="alert context-note mb-4">
                             <div class="fw-semibold mb-2">Como abordar esta actividad</div>
                             <div class="small text-muted">
-                                <?php echo htmlspecialchars($actividad->instrucciones ?: $actividad->descripcion); ?>
+                                <?php echo htmlspecialchars($actividad->instrucciones); ?>
                             </div>
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($supportResource): ?>
-                        <?php renderStudentSupportResource($supportResource); ?>
-                    <?php endif; ?>
-
-                    <?php if (!empty($activityLanguageResources)): ?>
-                        <section class="surface-card mb-4">
-                            <div class="card-body">
-                                <div class="section-title mb-3">
-                                    <h2>Apoyos rapidos</h2>
-                                    <a href="<?php echo url('/estudiante/recursos?idioma=' . urlencode(Curso::obtenerIdiomaObjetivo($curso))); ?>" class="btn btn-outline-secondary btn-sm">
-                                        Ver mas
-                                    </a>
-                                </div>
-                                <div class="row g-3">
-                                    <?php foreach ($activityLanguageResources as $resource): ?>
-                                        <div class="col-lg-4">
-                                            <?php $sourceLabel = app_url_host_label($resource['url'] ?? ''); ?>
-                                            <article class="surface-card useful-resource-card h-100">
-                                                <div class="card-body d-flex flex-column gap-2">
-                                                    <div class="small text-muted"><?php echo htmlspecialchars($resource['badge'] ?? 'Recurso'); ?></div>
-                                                    <h3 class="h6 mb-0"><?php echo htmlspecialchars($resource['title']); ?></h3>
-                                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($resource['description']); ?></p>
-                                                    <?php if (!empty($resource['best_for'])): ?>
-                                                        <div class="resource-best-for">
-                                                            <strong>Mejor para:</strong>
-                                                            <span><?php echo htmlspecialchars($resource['best_for']); ?></span>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="resource-source-meta">
-                                                        <i class="bi bi-box-arrow-up-right"></i>
-                                                        Fuente: <?php echo htmlspecialchars($sourceLabel); ?>
-                                                    </div>
-                                                    <div class="mt-auto">
-                                                        <a href="<?php echo htmlspecialchars($resource['url']); ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">Abrir</a>
-                                                    </div>
-                                                </div>
-                                            </article>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </section>
-                    <?php endif; ?>
-
-                    <?php if (!empty($activityGuidance)): ?>
-                        <section class="surface-card mb-4">
-                            <div class="card-body">
-                                <div class="section-title mb-3">
-                                    <h2>Como sacarle mas provecho</h2>
-                                </div>
-                                <div class="builder-stage-grid">
-                                    <?php foreach ($activityGuidance as $guide): ?>
-                                        <article class="builder-stage-card">
-                                            <div class="builder-stage-icon"><i class="bi bi-signpost"></i></div>
-                                            <div class="builder-stage-body">
-                                                <div class="builder-stage-title"><?php echo htmlspecialchars($guide['title'] ?? 'Guia'); ?></div>
-                                                <div class="builder-stage-copy"><?php echo htmlspecialchars($guide['copy'] ?? ''); ?></div>
-                                            </div>
-                                        </article>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </section>
-                    <?php endif; ?>
-
-                    <?php if (!empty($activityOutcome)): ?>
-                        <section class="surface-card mb-4">
-                            <div class="card-body">
-                                <div class="section-title mb-3">
-                                    <h2>Resumen de esta practica</h2>
-                                    <span class="soft-badge badge-<?php echo htmlspecialchars($activityOutcome['tone'] ?? 'info'); ?>">
-                                        <?php echo htmlspecialchars($activityOutcome['label'] ?? 'En progreso'); ?>
-                                    </span>
-                                </div>
-                                <div class="builder-stage-grid">
-                                    <article class="builder-stage-card is-priority">
-                                        <div class="builder-stage-icon"><i class="bi bi-clipboard-data"></i></div>
-                                        <div class="builder-stage-body">
-                                            <div class="builder-stage-title"><?php echo htmlspecialchars($activityOutcome['headline'] ?? 'Sigue con esta actividad'); ?></div>
-                                            <div class="builder-stage-copy"><?php echo htmlspecialchars($activityOutcome['summary'] ?? ''); ?></div>
-                                        </div>
-                                    </article>
-                                    <article class="builder-stage-card">
-                                        <div class="builder-stage-icon"><i class="bi bi-award"></i></div>
-                                        <div class="builder-stage-body">
-                                            <div class="builder-stage-title">Resultado</div>
-                                            <div class="builder-stage-copy">
-                                                <?php if (($activityOutcome['score'] ?? null) !== null): ?>
-                                                    <?php echo rtrim(rtrim(number_format((float) $activityOutcome['score'], 2, '.', ''), '0'), '.'); ?>
-                                                    <?php if (($activityOutcome['max_score'] ?? null) !== null): ?>
-                                                        / <?php echo rtrim(rtrim(number_format((float) $activityOutcome['max_score'], 2, '.', ''), '0'), '.'); ?>
-                                                    <?php endif; ?>
-                                                    puntos.
-                                                <?php elseif ($showFeedback): ?>
-                                                    Tu intento ya esta guardado.
-                                                <?php else: ?>
-                                                    Se calculara cuando envies la respuesta.
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </article>
-                                    <article class="builder-stage-card">
-                                        <div class="builder-stage-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                                        <div class="builder-stage-body">
-                                            <div class="builder-stage-title">Avance en la leccion</div>
-                                            <div class="builder-stage-copy">
-                                                <?php echo (int) ($activityOutcome['lesson_progress'] ?? 0); ?>% completado en esta leccion.
-                                            </div>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="responsive-actions mt-3">
-                                    <a href="<?php echo htmlspecialchars($nextActionUrl ?? url('/estudiante/lecciones/' . $leccion->id . '/contenido')); ?>" class="btn btn-primary">
-                                        <i class="bi bi-arrow-right-circle"></i> <?php echo htmlspecialchars($activitySummaryCta); ?>
-                                    </a>
-                                    <div class="small text-muted align-self-center"><?php echo htmlspecialchars($activityOutcome['next_hint'] ?? ''); ?></div>
-                                </div>
-                            </div>
-                        </section>
-                    <?php endif; ?>
-                     
-                    <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
-                        <div class="alert alert-info mb-4 activity-feedback-alert" role="alert">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-info-circle-fill me-2 fs-4"></i>
-                                <div class="flex-grow-1">
-                                    <strong>Actividad ya completada</strong>
-                                    <br>
-                                    Has realizado esta actividad el <?php echo date('d/m/Y H:i', strtotime($respuestaExistente->fecha_respuesta)); ?>.
-                                    <?php if (isset($respuestaExistente->puntuacion)): ?>
-                                        Tu puntuacion fue: <strong><?php echo $respuestaExistente->puntuacion; ?></strong> puntos.
-                                    <?php elseif (($actividad->tipo_actividad == 'escritura' || $actividad->tipo_actividad == 'escucha') && !isset($respuestaExistente->puntuacion)): ?>
-                                        <span class="badge bg-warning text-dark">Pendiente de calificacion</span>
-                                    <?php endif; ?>
-                                    <br>
-                                    Puedes volver a realizarla para mejorar tu resultado.
-                                </div>
-                                <?php if (isset($siguienteItem) && $siguienteItem): ?>
-                                    <div class="ms-3">
-                                        <a href="<?php echo htmlspecialchars($nextActionUrl ?? url('/estudiante/lecciones/' . $leccion->id . '/contenido')); ?>" class="btn btn-primary text-nowrap">
-                                            <?php echo htmlspecialchars($siguienteItem['mensaje']); ?> <i class="bi bi-arrow-right"></i>
-                                        </a>
+                    <?php if ($supportSectionsCount > 0): ?>
+                        <section class="mb-4">
+                            <details class="panel activity-details-card">
+                                <summary class="activity-details-summary">
+                                    <div>
+                                        <div class="metric-label">Ayuda opcional</div>
+                                        <div class="fw-semibold mt-1">Ayuda y atajos para destrabarte</div>
+                                        <div class="small text-muted mt-1">Abre esta seccion solo si necesitas contexto extra antes de responder.</div>
                                     </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                                    <span class="soft-badge"><?php echo (int) $supportSectionsCount; ?> bloques</span>
+                                </summary>
+                                <div class="panel-body pt-0 activity-details-body">
+                                    <?php if ($supportResource): ?>
+                                        <?php renderStudentSupportResource($supportResource); ?>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($activityGuidance)): ?>
+                                        <section>
+                                            <div class="split-head mb-3">
+                                                <div>
+                                                    <h2 class="h5 mb-1">Como sacarle mas provecho</h2>
+                                                    <div class="small text-muted">Pistas cortas para resolver mejor sin recargar la pantalla principal.</div>
+                                                </div>
+                                            </div>
+                                            <div class="activity-guidance-list">
+                                                <?php foreach ($activityGuidance as $guide): ?>
+                                                    <article class="activity-guidance-item">
+                                                        <div class="stack-item-title"><?php echo htmlspecialchars($guide['title'] ?? 'Guia'); ?></div>
+                                                        <div class="stack-item-subtitle"><?php echo htmlspecialchars($guide['copy'] ?? ''); ?></div>
+                                                    </article>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </section>
+                                    <?php endif; ?>
+                                </div>
+                            </details>
+                        </section>
                     <?php endif; ?>
-                    <?php $postActivityContext = ob_get_clean(); ?>
                     <form action="<?php echo url('/estudiante/actividades/' . $actividad->id . '/responder'); ?>" method="post">
                         <?php echo csrf_input(); ?>
                         <?php if (($actividad->tipo_actividad === 'opcion_multiple' || $actividad->tipo_actividad === 'verdadero_falso') && !empty($configActividad)): ?>
                             <!-- Actividad de opcion multiple / verdadero o falso -->
                             <?php foreach ($configActividad as $preguntaIndex => $pregunta): ?>
-                                    <div class="card mb-4 border-light shadow-sm">
+                                    <div class="activity-question-card mb-4">
                                     <div class="card-body">
                                         <?php if (!empty($pregunta->texto)): ?>
                                             <h5 class="card-title mb-3"><?php echo htmlspecialchars($pregunta->texto); ?></h5>
@@ -429,58 +307,154 @@ function renderStudentSupportResource($resource) {
                             <?php endforeach; ?>
                         <?php elseif ($actividad->tipo_actividad === 'pronunciacion'): ?>
                             <!-- Actividad de pronunciacion -->
+                            <?php
+                                $normalizePron = static function(string $text): string {
+                                    $text = mb_strtolower(trim($text), 'UTF-8');
+                                    $text = strtr($text, [
+                                        'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                        'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                        'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                    ]);
+                                    $text = preg_replace('/[^a-z0-9\\s]/u', ' ', $text);
+                                    $text = preg_replace('/\\s+/u', ' ', $text);
+                                    return trim((string) $text);
+                                };
+                                $tokenizePron = static function(string $text) use ($normalizePron): array {
+                                    $normalized = $normalizePron($text);
+                                    return $normalized === '' ? [] : array_values(array_filter(explode(' ', $normalized), static fn($token) => $token !== ''));
+                                };
+                                $comparePron = static function(string $target, string $response) use ($normalizePron, $tokenizePron): array {
+                                    $targetNorm = $normalizePron($target);
+                                    $responseNorm = $normalizePron($response);
+                                    if ($targetNorm === '' || $responseNorm === '') {
+                                        return ['ratio' => 0.0, 'missing' => $tokenizePron($target)];
+                                    }
 
+                                    $targetTokens = $tokenizePron($target);
+                                    $responseTokens = $tokenizePron($response);
+                                    $matched = 0;
+                                    $missing = [];
+                                    $targetFreq = array_count_values($targetTokens);
+                                    $responseFreq = array_count_values($responseTokens);
+                                    foreach ($targetFreq as $token => $count) {
+                                        $present = min($count, $responseFreq[$token] ?? 0);
+                                        $matched += $present;
+                                        if ($present < $count) {
+                                            $missing[] = $token;
+                                        }
+                                    }
+                                    similar_text($targetNorm, $responseNorm, $percent);
+                                    $maxLen = max(strlen($targetNorm), strlen($responseNorm));
+                                    $levScore = $maxLen > 0 ? 1 - (min($maxLen, levenshtein($targetNorm, $responseNorm)) / $maxLen) : 0.0;
+                                    $stringScore = (($percent / 100) * 0.60) + ($levScore * 0.40);
+                                    $recall = $matched / max(1, count($targetTokens));
+                                    $precision = $matched / max(1, count($responseTokens));
+                                    $completitud = min(1, count($responseTokens) / max(1, count($targetTokens)));
+                                    $ratio = $targetNorm === $responseNorm
+                                        ? 1.0
+                                        : (($recall * 0.45) + ($precision * 0.15) + ($stringScore * 0.30) + ($completitud * 0.10));
+
+                                    return [
+                                        'ratio' => max(0.0, min(1.0, $ratio)),
+                                        'missing' => array_values(array_unique($missing)),
+                                    ];
+                                };
+                                $pronunciationSequence = array_values(array_map(static function($item): array {
+                                    return [
+                                        'text' => (string) ($item->texto_tts ?? $item->frase ?? ''),
+                                        'normal_rate' => (float) ($item->tts_rate ?? 0.88),
+                                        'slow_rate' => (float) ($item->tts_rate_slow ?? 0.72),
+                                        'pitch' => (float) ($item->tts_pitch ?? 1.0),
+                                    ];
+                                }, (array) $configActividad));
+                            ?>
                             <div class="mb-4">
-                                <p class="mb-3">Presiona el microfono y lee la frase en voz alta:</p>
+                                <p class="mb-3">Escucha el modelo, activa el microfono y repite cada frase con calma. Busca claridad, no velocidad.</p>
+                                <?php if (!$showFeedback && !empty($pronunciationSequence)): ?>
+                                    <div class="responsive-actions mb-3">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick='playPronunciationSequence(<?php echo json_encode($pronunciationSequence, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, "normal")'>
+                                            <i class="bi bi-collection-play"></i> Secuencia
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick='playPronunciationSequence(<?php echo json_encode($pronunciationSequence, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, "slow")'>
+                                            <i class="bi bi-hourglass-split"></i> Secuencia lenta
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                                 
                                 <?php foreach ($configActividad as $idx => $pregunta): ?>
                                     <div class="card mb-3 border-light shadow-sm">
                                         <div class="card-body">
-                                            <h5 class="card-title text-center mb-4 display-6">"<?php echo htmlspecialchars($pregunta->frase); ?>"</h5>
-                                            
+                                            <h5 class="card-title text-center mb-3 display-6">"<?php echo htmlspecialchars($pregunta->frase); ?>"</h5>
+                                            <div class="text-center mb-3">
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Controles de reproduccion">
+                                                    <button type="button" class="btn btn-outline-secondary" onclick='playPronunciationTarget(<?php echo json_encode((string) ($pregunta->texto_tts ?? $pregunta->frase), JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode((float) ($pregunta->tts_rate ?? 0.88)); ?>, <?php echo json_encode((float) ($pregunta->tts_pitch ?? 1.0)); ?>)'>
+                                                        <i class="bi bi-volume-up"></i> Modelo
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" onclick='playPronunciationTarget(<?php echo json_encode((string) ($pregunta->texto_tts ?? $pregunta->frase), JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode((float) ($pregunta->tts_rate_slow ?? 0.72)); ?>, <?php echo json_encode((float) ($pregunta->tts_pitch ?? 1.0)); ?>)'>
+                                                        <i class="bi bi-hourglass-split"></i> Lento
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                             <?php 
                                                 $qId = $pregunta->id ?? "q$idx";
                                                 $val = '';
                                                 if (isset($respuestasUsuario) && is_array($respuestasUsuario)) {
                                                     $val = $respuestasUsuario[$qId] ?? '';
                                                 }
-                                                
-                                                $isCorrect = false;
-                                                $feedbackClass = '';
+
+                                                $pronAnalysis = $showFeedback ? $comparePron((string) $pregunta->frase, (string) $val) : ['ratio' => null, 'missing' => []];
+                                                $pronRatio = $pronAnalysis['ratio'];
                                                 $feedbackIcon = '';
-                                                
+                                                $feedbackCopy = '';
+                                                $inputClass = '';
+
                                                 if ($showFeedback) {
-                                                    // Simple normalization for comparison
-                                                    $target = strtolower(trim(preg_replace('/[^\w\s]/', '', $pregunta->frase)));
-                                                    $response = strtolower(trim(preg_replace('/[^\w\s]/', '', $val)));
-                                                    // Allow some fuzzy matching or just strict for now
-                                                    // Check if response contains the target phrase or is close enough
-                                                    $isCorrect = ($target === $response) || (levenshtein($target, $response) < 3);
-                                                    
-                                                    if ($isCorrect) {
-                                                        $feedbackClass = 'alert-success';
+                                                    if ($pronRatio >= 0.90) {
+                                                        $inputClass = 'is-valid';
                                                         $feedbackIcon = '<i class="bi bi-check-circle-fill text-success fs-4 ms-2"></i>';
+                                                        $feedbackCopy = 'Muy bien. La frase se reconocio con buena claridad.';
+                                                    } elseif ($pronRatio >= 0.65) {
+                                                        $feedbackIcon = '<i class="bi bi-exclamation-circle-fill text-warning fs-4 ms-2"></i>';
+                                                        $feedbackCopy = 'Base correcta, pero todavia conviene limpiar algunas palabras o el final de la frase.';
                                                     } else {
-                                                        $feedbackClass = 'alert-danger';
+                                                        $inputClass = 'is-invalid';
                                                         $feedbackIcon = '<i class="bi bi-x-circle-fill text-danger fs-4 ms-2"></i>';
+                                                        $feedbackCopy = 'Aun falta claridad. Repite mas lento y cuida mejor los bloques clave.';
                                                     }
                                                 }
                                             ?>
+
+                                            <?php if (!empty($pregunta->focos) || !empty($pregunta->pista)): ?>
+                                                <div class="alert context-note mb-3">
+                                                    <?php if (!empty($pregunta->focos)): ?>
+                                                        <div class="small mb-1"><strong>Foco:</strong> <?php echo htmlspecialchars(implode(' | ', array_map('strval', (array) $pregunta->focos))); ?></div>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($pregunta->pista)): ?>
+                                                        <div class="small mb-0"><?php echo htmlspecialchars((string) $pregunta->pista); ?></div>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($pregunta->practice_goal)): ?>
+                                                        <div class="small mt-1"><strong>Meta oral:</strong> <?php echo htmlspecialchars((string) $pregunta->practice_goal); ?></div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
                                             
                                             <div class="text-center mb-3">
                                                 <?php if (!$showFeedback): ?>
-                                                    <button type="button" class="btn btn-outline-primary btn-lg rounded-circle p-3" 
-                                                            onclick="startListening('<?php echo $qId; ?>')">
+                                                    <button type="button" class="btn btn-outline-primary btn-lg rounded-circle p-3" onclick="startListening('<?php echo $qId; ?>')">
                                                         <i class="bi bi-mic-fill fs-3"></i>
                                                     </button>
-                                                    <div id="recording-status-<?php echo $qId; ?>" class="text-muted mt-2 small" style="height: 20px;"></div>
+                                                    <div id="recording-status-<?php echo $qId; ?>" class="text-muted mt-2 small recording-status-slot"></div>
                                                 <?php endif; ?>
                                             </div>
                                             
                                             <div class="form-group">
-                                                <label for="display-<?php echo $qId; ?>" class="form-label text-muted small">Lo que escuchamos:</label>
+                                                <label for="display-<?php echo $qId; ?>" class="form-label text-muted small">Lo que reconocio el sistema:</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control <?php echo $showFeedback ? ($isCorrect ? 'is-valid' : 'is-invalid') : ''; ?>" 
+                                                    <input type="text" class="form-control <?php echo htmlspecialchars($inputClass); ?>" 
                                                            id="display-<?php echo $qId; ?>" 
                                                            value="<?php echo htmlspecialchars($val); ?>" 
                                                            readonly 
@@ -490,9 +464,12 @@ function renderStudentSupportResource($resource) {
                                                 <input type="hidden" name="respuesta[<?php echo $qId; ?>]" id="respuesta-<?php echo $qId; ?>" value="<?php echo htmlspecialchars($val); ?>">
                                             </div>
                                             
-                                            <?php if ($showFeedback && !$isCorrect): ?>
-                                                <div class="mt-2 text-danger small">
-                                                    <i class="bi bi-info-circle"></i> Intenta pronunciar mas claro.
+                                            <?php if ($showFeedback): ?>
+                                                <div class="mt-2 small <?php echo $pronRatio >= 0.90 ? 'text-success' : ($pronRatio >= 0.65 ? 'text-warning' : 'text-danger'); ?>">
+                                                    <i class="bi bi-info-circle"></i> <?php echo htmlspecialchars($feedbackCopy); ?>
+                                                    <?php if (!empty($pronAnalysis['missing']) && $pronRatio < 0.90): ?>
+                                                        <span> Revisa: <?php echo htmlspecialchars(implode(', ', array_slice((array) $pronAnalysis['missing'], 0, 3))); ?>.</span>
+                                                    <?php endif; ?>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
@@ -501,13 +478,69 @@ function renderStudentSupportResource($resource) {
                             </div>
                             
                             <script>
+                                let pronunciationPlaybackToken = 0;
+
+                                function playSpeechModel(text, lang, rate, pitch) {
+                                    if (!('speechSynthesis' in window)) {
+                                        alert('Tu navegador no soporta sintesis de voz.');
+                                        return;
+                                    }
+                                    window.speechSynthesis.cancel();
+                                    const utterance = new SpeechSynthesisUtterance(text);
+                                    utterance.lang = lang;
+                                    utterance.rate = rate || 0.88;
+                                    utterance.pitch = pitch || 1;
+                                    window.speechSynthesis.speak(utterance);
+                                }
+
+                                function playPronunciationTarget(text, lang, rate, pitch) {
+                                    pronunciationPlaybackToken += 1;
+                                    playSpeechModel(text, lang, rate, pitch);
+                                }
+
+                                function playPronunciationSequence(items, lang, mode) {
+                                    if (!('speechSynthesis' in window)) {
+                                        alert('Tu navegador no soporta sintesis de voz.');
+                                        return;
+                                    }
+
+                                    pronunciationPlaybackToken += 1;
+                                    const token = pronunciationPlaybackToken;
+                                    const sequence = Array.isArray(items) ? items.filter(item => item && item.text) : [];
+                                    if (!sequence.length) {
+                                        return;
+                                    }
+
+                                    window.speechSynthesis.cancel();
+                                    const playNext = function(index) {
+                                        if (token !== pronunciationPlaybackToken || index >= sequence.length) {
+                                            return;
+                                        }
+
+                                        const item = sequence[index];
+                                        const utterance = new SpeechSynthesisUtterance(item.text);
+                                        utterance.lang = lang;
+                                        utterance.rate = mode === 'slow' ? (item.slow_rate || 0.72) : (item.normal_rate || 0.88);
+                                        utterance.pitch = item.pitch || 1;
+                                        utterance.onend = function() {
+                                            window.setTimeout(function() {
+                                                playNext(index + 1);
+                                            }, 420);
+                                        };
+                                        window.speechSynthesis.speak(utterance);
+                                    };
+
+                                    playNext(0);
+                                }
+
                                 function startListening(questionId) {
-                                    if (!('webkitSpeechRecognition' in window)) {
+                                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                                    if (!SpeechRecognition) {
                                         alert('Tu navegador no soporta reconocimiento de voz. Por favor usa Chrome o Edge.');
                                         return;
                                     }
                                     
-                                    const recognition = new webkitSpeechRecognition();
+                                    const recognition = new SpeechRecognition();
                                     recognition.lang = '<?php echo $langCode; ?>';
                                     recognition.interimResults = false;
                                     recognition.maxAlternatives = 1;
@@ -604,11 +637,11 @@ function renderStudentSupportResource($resource) {
                                     ?>
                                     <div class="mt-2">
                                         <?php if ($isCorrect): ?>
-                                            <div class="alert alert-success">
+                                            <div class="feedback correct">
                                                 <i class="bi bi-check-circle-fill me-2"></i> Correcto.
                                             </div>
                                         <?php else: ?>
-                                            <div class="alert alert-danger">
+                                            <div class="feedback incorrect">
                                                 <i class="bi bi-x-circle-fill me-2"></i> Incorrecto.
                                                 <?php if (isset($contenido->respuesta_correcta)): ?>
                                                     <br>La respuesta correcta es: <strong><?php echo htmlspecialchars($contenido->respuesta_correcta); ?></strong>
@@ -686,7 +719,7 @@ function renderStudentSupportResource($resource) {
                                 ?>
 
                                 <input type="hidden" name="respuesta" id="drag-drop-response" value="<?php echo htmlspecialchars(json_encode($userAnswers)); ?>">
-                                <div class="alert alert-light border mb-3">
+                                <div class="alert context-note mb-3">
                                     <strong>Modo tactil:</strong> en movil puedes tocar un elemento y luego tocar el contenedor donde quieres dejarlo.
                                 </div>
 
@@ -946,8 +979,7 @@ function renderStudentSupportResource($resource) {
                                             <div class="col-md-6 mb-2">
                                                 <div class="d-flex align-items-center">
                                                     <div id="slot-<?php echo $pairId; ?>" 
-                                                         class="p-2 border rounded w-100 <?php echo $feedbackClass; ?>" 
-                                                         style="min-height: 45px; cursor: pointer; background-color: #f8f9fa;"
+                                                         class="p-2 border rounded w-100 selection-slot <?php echo $feedbackClass; ?>" 
                                                          onclick="placeChip('<?php echo $pairId; ?>')">
                                                         <?php if ($assignedChip): ?>
                                                             <span class="badge bg-primary fs-6 chip-item" 
@@ -969,11 +1001,10 @@ function renderStudentSupportResource($resource) {
                                 <!-- Pool -->
                                 <div class="card">
                                     <div class="card-header bg-light">Opciones disponibles:</div>
-                                    <div class="card-body" id="pool-container" style="min-height: 60px;">
+                                    <div class="card-body selection-pool" id="pool-container">
                                         <?php foreach ($allOptions as $opt): ?>
                                             <?php if (!in_array($opt['id'], $usedOptionIds)): ?>
-                                                <span class="badge bg-secondary fs-6 me-2 mb-2 chip-item" 
-                                                      style="cursor: pointer;" 
+                                                <span class="badge bg-secondary fs-6 me-2 mb-2 chip-item clickable-word" 
                                                       data-id="<?php echo $opt['id']; ?>" 
                                                       data-text="<?php echo htmlspecialchars($opt['text']); ?>"
                                                       onclick="selectChip(this)">
@@ -1127,7 +1158,7 @@ function renderStudentSupportResource($resource) {
                                 <div class="mb-4">
                                     <p class="mb-3 fw-bold"><?php echo htmlspecialchars($pregunta->instruction ?? 'Ordena correctamente:'); ?></p>
                                     <?php if (!$showFeedback): ?>
-                                        <div class="alert alert-light border mb-3">
+                                        <div class="alert context-note mb-3">
                                             <strong>Modo tactil:</strong> toca las palabras para formar la frase y usa subir o bajar para ajustar el orden fino.
                                         </div>
                                     <?php endif; ?>
@@ -1135,7 +1166,7 @@ function renderStudentSupportResource($resource) {
                                     <!-- Contenedor de Respuesta -->
                                     <div class="card mb-3">
                                         <div class="card-header bg-light">Tu respuesta:</div>
-                                        <div class="card-body" id="sentence-container-<?php echo $pregunta->id; ?>" style="min-height: 60px;">
+                                        <div class="card-body selection-pool" id="sentence-container-<?php echo $pregunta->id; ?>">
                                             <!-- Palabras seleccionadas iran aqui -->
                                             <?php
                                                 // Determine user answer for this question
@@ -1166,7 +1197,7 @@ function renderStudentSupportResource($resource) {
                                                             $itemId = isset($item->id) ? $item->id : '';
                                                             
                                                             if ($itemText === $wordText && !in_array($itemId, $usedIds)) {
-                                                                echo '<span class="badge bg-primary fs-6 me-2 mb-2 draggable-word" style="cursor: pointer;" data-id="' . $itemId . '" data-text="' . htmlspecialchars($itemText) . '" onclick="moveWord(this, \'pool\', \'' . $pregunta->id . '\')">' . htmlspecialchars($itemText) . '</span>';
+                                                                echo '<span class="badge bg-primary fs-6 me-2 mb-2 draggable-word clickable-word" data-id="' . $itemId . '" data-text="' . htmlspecialchars($itemText) . '" onclick="moveWord(this, \'pool\', \'' . $pregunta->id . '\')">' . htmlspecialchars($itemText) . '</span>';
                                                                 $usedIds[] = $itemId;
                                                                 break; 
                                                             }
@@ -1180,7 +1211,7 @@ function renderStudentSupportResource($resource) {
                                     <!-- Contenedor de Palabras Disponibles -->
                                     <div class="card">
                                         <div class="card-header bg-light">Palabras disponibles:</div>
-                                        <div class="card-body" id="pool-container-<?php echo $pregunta->id; ?>" style="min-height: 60px;">
+                                        <div class="card-body selection-pool" id="pool-container-<?php echo $pregunta->id; ?>">
                                             <?php 
                                                 if (isset($pregunta->items) && is_array($pregunta->items)) {
                                                     foreach ($pregunta->items as $item) {
@@ -1188,7 +1219,7 @@ function renderStudentSupportResource($resource) {
                                                         $itemId = isset($item->id) ? $item->id : '';
                                                         
                                                         if (!in_array($itemId, $usedIds)) {
-                                                            echo '<span class="badge bg-secondary fs-6 me-2 mb-2 draggable-word" style="cursor: pointer;" data-id="' . $itemId . '" data-text="' . htmlspecialchars($itemText) . '" onclick="moveWord(this, \'sentence\', \'' . $pregunta->id . '\')">' . htmlspecialchars($itemText) . '</span>';
+                                                            echo '<span class="badge bg-secondary fs-6 me-2 mb-2 draggable-word clickable-word" data-id="' . $itemId . '" data-text="' . htmlspecialchars($itemText) . '" onclick="moveWord(this, \'sentence\', \'' . $pregunta->id . '\')">' . htmlspecialchars($itemText) . '</span>';
                                                         }
                                                     }
                                                 }
@@ -1224,9 +1255,9 @@ function renderStudentSupportResource($resource) {
                                                 
                                                 // Compare arrays
                                                 if ($userAnswer === $correctOrder) {
-                                                    echo '<div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> Correcto.</div>';
+                                                    echo '<div class="feedback correct"><i class="bi bi-check-circle-fill"></i> Correcto.</div>';
                                                 } else {
-                                                    echo '<div class="alert alert-danger"><i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>' . htmlspecialchars(implode(' ', $correctOrder)) . '</strong></div>';
+                                                    echo '<div class="feedback incorrect"><i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>' . htmlspecialchars(implode(' ', $correctOrder)) . '</strong></div>';
                                                 }
                                             ?>
                                         </div>
@@ -1345,8 +1376,100 @@ function renderStudentSupportResource($resource) {
                             <!-- Actividad de Escritura -->
                             <div class="mb-4">
                                 <?php if (isset($configActividad->tema)): ?>
-                                    <div class="alert alert-light border">
+                                    <div class="alert context-note">
                                         <strong>Tema:</strong> <?php echo htmlspecialchars($configActividad->tema); ?>
+                                        <?php if (!empty($configActividad->criterios) || !empty($configActividad->palabras_clave) || !empty($configActividad->conectores_sugeridos) || !empty($configActividad->estructura_sugerida) || !empty($configActividad->movimientos_clave) || !empty($configActividad->patrones_morfosintacticos) || !empty($configActividad->diagnosticos_gramaticales) || !empty($configActividad->modelo_inicio) || !empty($configActividad->marcadores_registro) || !empty($configActividad->errores_a_evitar) || !empty($configActividad->focos_gramaticales) || !empty($configActividad->errores_gramaticales_comunes) || !empty($configActividad->registro)): ?>
+                                            <div class="mt-3">
+                                                <?php if (!empty($configActividad->registro)): ?>
+                                                    <div class="small mb-1"><strong>Registro esperado:</strong> <?php echo htmlspecialchars(ucfirst((string) $configActividad->registro)); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->focos_gramaticales)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Focos gramaticales</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->focos_gramaticales as $foco): ?>
+                                                            <li><?php echo htmlspecialchars((string) $foco); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->criterios)): ?>
+                                                    <div class="small fw-semibold mb-1">Debe cubrir</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->criterios as $criterio): ?>
+                                                            <li><?php echo htmlspecialchars((string) $criterio); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->palabras_clave)): ?>
+                                                    <div class="small mb-1"><strong>Piezas utiles:</strong> <?php echo htmlspecialchars(implode(' | ', array_map('strval', (array) $configActividad->palabras_clave))); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->conectores_sugeridos)): ?>
+                                                    <div class="small"><strong>Conectores sugeridos:</strong> <?php echo htmlspecialchars(implode(' | ', array_map('strval', (array) $configActividad->conectores_sugeridos))); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->marcadores_registro)): ?>
+                                                    <div class="small mt-2"><strong>Marcadores de registro:</strong> <?php echo htmlspecialchars(implode(' | ', array_map('strval', (array) $configActividad->marcadores_registro))); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->estructura_sugerida)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Recorrido sugerido</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->estructura_sugerida as $paso): ?>
+                                                            <li><?php echo htmlspecialchars((string) $paso); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->movimientos_clave)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Movimientos clave</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->movimientos_clave as $movimiento): ?>
+                                                            <?php $movimientoLabel = is_object($movimiento) ? ($movimiento->label ?? '') : ((is_array($movimiento) && isset($movimiento['label'])) ? $movimiento['label'] : ''); ?>
+                                                            <?php if ($movimientoLabel !== ''): ?>
+                                                                <li><?php echo htmlspecialchars((string) $movimientoLabel); ?></li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->patrones_morfosintacticos)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Patrones gramaticales a cuidar</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->patrones_morfosintacticos as $patron): ?>
+                                                            <?php $patronLabel = is_object($patron) ? ($patron->label ?? '') : ((is_array($patron) && isset($patron['label'])) ? $patron['label'] : ''); ?>
+                                                            <?php if ($patronLabel !== ''): ?>
+                                                                <li><?php echo htmlspecialchars((string) $patronLabel); ?></li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->diagnosticos_gramaticales)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Controles delicados</div>
+                                                    <ul class="small mb-2">
+                                                        <?php foreach ((array) $configActividad->diagnosticos_gramaticales as $diagnostico): ?>
+                                                            <?php $diagnosticoLabel = is_object($diagnostico) ? ($diagnostico->label ?? '') : ((is_array($diagnostico) && isset($diagnostico['label'])) ? $diagnostico['label'] : ''); ?>
+                                                            <?php if ($diagnosticoLabel !== ''): ?>
+                                                                <li><?php echo htmlspecialchars((string) $diagnosticoLabel); ?></li>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->modelo_inicio)): ?>
+                                                    <div class="small mt-2"><strong>Arranque util:</strong> <?php echo htmlspecialchars((string) $configActividad->modelo_inicio); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->errores_a_evitar)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Evita esto</div>
+                                                    <ul class="small mb-0">
+                                                        <?php foreach ((array) $configActividad->errores_a_evitar as $alerta): ?>
+                                                            <li><?php echo htmlspecialchars((string) $alerta); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                                <?php if (!empty($configActividad->errores_gramaticales_comunes)): ?>
+                                                    <div class="small fw-semibold mt-2 mb-1">Vigila estos errores</div>
+                                                    <ul class="small mb-0">
+                                                        <?php foreach ((array) $configActividad->errores_gramaticales_comunes as $alerta): ?>
+                                                            <li><?php echo htmlspecialchars((string) $alerta); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                                 
@@ -1397,63 +1520,223 @@ function renderStudentSupportResource($resource) {
                         <?php elseif ($actividad->tipo_actividad === 'escucha'): ?>
                             <!-- Actividad de Escucha -->
                             <div class="mb-4">
-                                <?php if (isset($configActividad->audio_url) && !empty($configActividad->audio_url)): ?>
-                                    <div class="mb-4 text-center">
-                                        <audio controls class="w-100">
-                                            <source src="<?php echo htmlspecialchars($configActividad->audio_url); ?>" type="audio/mpeg">
-                                            Tu navegador no soporta el elemento de audio.
-                                        </audio>
-                                    </div>
-                                <?php elseif (isset($configActividad->texto_tts) || isset($configActividad->transcripcion)): ?>
-                                    <div class="mb-4 text-center">
-                                        <?php 
-                                            $textToSpeak = $configActividad->texto_tts ?? $configActividad->transcripcion ?? '';
-                                        ?>
-                                        <button type="button" class="btn btn-primary btn-lg" onclick="speakText('<?php echo htmlspecialchars(addslashes($textToSpeak)); ?>', '<?php echo $langCode; ?>')">
-                                            <i class="bi bi-volume-up-fill"></i> Reproducir Audio
-                                        </button>
-                                        <p class="text-muted mt-2"><small>Haz clic para escuchar el texto</small></p>
-                                    </div>
-                                    <script>
-                                        function speakText(text, lang) {
-                                            if ('speechSynthesis' in window) {
-                                                window.speechSynthesis.cancel(); // Stop any current speech
-                                                const utterance = new SpeechSynthesisUtterance(text);
-                                                utterance.lang = lang;
-                                                utterance.rate = 0.9; // Slightly slower for clarity
-                                                window.speechSynthesis.speak(utterance);
-                                            } else {
-                                                alert('Tu navegador no soporta la sintesis de voz.');
-                                            }
+                                <?php
+                                    $normalizeListen = static function(string $text): string {
+                                        $text = mb_strtolower(trim($text), 'UTF-8');
+                                        $text = strtr($text, [
+                                            'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                            'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                            'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss',
+                                            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+                                        ]);
+                                        $text = preg_replace('/[^a-z0-9\\s]/u', ' ', $text);
+                                        $text = preg_replace('/\\s+/u', ' ', $text);
+                                        return trim((string) $text);
+                                    };
+                                    $tokenizeListen = static function(string $text) use ($normalizeListen): array {
+                                        $normalized = $normalizeListen($text);
+                                        return $normalized === '' ? [] : array_values(array_filter(explode(' ', $normalized), static fn($token) => $token !== ''));
+                                    };
+                                    $compareListen = static function(string $target, string $response) use ($normalizeListen, $tokenizeListen): float {
+                                        $targetNorm = $normalizeListen($target);
+                                        $responseNorm = $normalizeListen($response);
+                                        if ($targetNorm === '' || $responseNorm === '') {
+                                            return 0.0;
                                         }
-                                    </script>
-                                <?php endif; ?>
+                                        $targetTokens = $tokenizeListen($target);
+                                        $responseTokens = $tokenizeListen($response);
+                                        $targetFreq = array_count_values($targetTokens);
+                                        $responseFreq = array_count_values($responseTokens);
+                                        $matched = 0;
+                                        foreach ($targetFreq as $token => $count) {
+                                            $matched += min($count, $responseFreq[$token] ?? 0);
+                                        }
+                                        similar_text($targetNorm, $responseNorm, $percent);
+                                        $maxLen = max(strlen($targetNorm), strlen($responseNorm));
+                                        $levScore = $maxLen > 0 ? 1 - (min($maxLen, levenshtein($targetNorm, $responseNorm)) / $maxLen) : 0.0;
+                                        $stringScore = (($percent / 100) * 0.60) + ($levScore * 0.40);
+                                        $recall = $matched / max(1, count($targetTokens));
+                                        $precision = $matched / max(1, count($responseTokens));
+                                        $completitud = min(1, count($responseTokens) / max(1, count($targetTokens)));
+                                        return max(0.0, min(1.0, ($recall * 0.55) + ($precision * 0.15) + ($stringScore * 0.20) + ($completitud * 0.10)));
+                                    };
+                                    $listeningPrompts = (isset($configActividad->preguntas) && is_array($configActividad->preguntas)) ? $configActividad->preguntas : [];
+                                    $listeningSequence = array_values(array_map(static function($prompt): array {
+                                        return [
+                                            'text' => (string) ($prompt->texto_tts ?? $prompt->transcripcion ?? ''),
+                                            'normal_rate' => (float) ($prompt->tts_rate ?? 0.9),
+                                            'slow_rate' => (float) ($prompt->tts_rate_slow ?? 0.75),
+                                            'pitch' => (float) ($prompt->tts_pitch ?? 1.0),
+                                        ];
+                                    }, $listeningPrompts));
+                                ?>
 
-                                <label for="respuesta" class="form-label">Escribe lo que escuchaste o responde a la pregunta:</label>
-                                <textarea class="form-control" id="respuesta" name="respuesta" rows="4" <?php echo $showFeedback ? 'readonly' : 'required'; ?> lang="<?php echo $langCode; ?>"><?php echo htmlspecialchars($respuestasUsuario[0] ?? ''); ?></textarea>
-                                
-                                <?php if ($showFeedback && isset($configActividad->transcripcion)): ?>
-                                    <div class="mt-3 p-3 bg-light border rounded">
-                                        <strong>Transcripcion correcta:</strong>
-                                        <p class="mb-0 mt-1 fst-italic"><?php echo htmlspecialchars($configActividad->transcripcion); ?></p>
-                                        
-                                        <?php 
-                                            // Comparacion simple para mostrar feedback visual inmediato
-                                            $respUser = trim(strip_tags($respuestasUsuario[0] ?? ''));
-                                            $transcrip = trim($configActividad->transcripcion);
-                                            // Normalizar para comparacion
-                                            $respUserNorm = strtolower(preg_replace('/[.,;!?]/', '', $respUser));
-                                            $transcripNorm = strtolower(preg_replace('/[.,;!?]/', '', $transcrip));
-                                            
-                                            if ($respUserNorm === $transcripNorm && $respUserNorm !== '') {
-                                                echo '<div class="mt-2 text-success"><i class="bi bi-check-circle-fill"></i> Correcto. Tu respuesta coincide exactamente.</div>';
-                                            } elseif (levenshtein($respUserNorm, $transcripNorm) < 5) {
-                                                echo '<div class="mt-2 text-warning"><i class="bi bi-exclamation-triangle-fill"></i> Casi correcto. Revisa la ortografia o puntuacion.</div>';
-                                            } else {
-                                                echo '<div class="mt-2 text-danger"><i class="bi bi-x-circle-fill"></i> Tu respuesta es diferente.</div>';
+                                <script>
+                                    let listeningPlaybackToken = 0;
+
+                                    function speakText(text, lang, rate, pitch) {
+                                        if ('speechSynthesis' in window) {
+                                            window.speechSynthesis.cancel();
+                                            const utterance = new SpeechSynthesisUtterance(text);
+                                            utterance.lang = lang;
+                                            utterance.rate = rate || 0.9;
+                                            utterance.pitch = pitch || 1;
+                                            window.speechSynthesis.speak(utterance);
+                                        } else {
+                                            alert('Tu navegador no soporta la sintesis de voz.');
+                                        }
+                                    }
+
+                                    function playListeningSequence(items, lang, mode) {
+                                        if (!('speechSynthesis' in window)) {
+                                            alert('Tu navegador no soporta la sintesis de voz.');
+                                            return;
+                                        }
+
+                                        listeningPlaybackToken += 1;
+                                        const token = listeningPlaybackToken;
+                                        const sequence = Array.isArray(items) ? items.filter(item => item && item.text) : [];
+                                        if (!sequence.length) {
+                                            return;
+                                        }
+
+                                        window.speechSynthesis.cancel();
+                                        const pauseMs = <?php echo json_encode((int) ($configActividad->tts_pause_ms ?? 600)); ?>;
+                                        const playNext = function(index) {
+                                            if (token !== listeningPlaybackToken || index >= sequence.length) {
+                                                return;
                                             }
+
+                                            const item = sequence[index];
+                                            const utterance = new SpeechSynthesisUtterance(item.text);
+                                            utterance.lang = lang;
+                                            utterance.rate = mode === 'slow' ? (item.slow_rate || 0.75) : (item.normal_rate || 0.9);
+                                            utterance.pitch = item.pitch || 1;
+                                            utterance.onend = function() {
+                                                window.setTimeout(function() {
+                                                    playNext(index + 1);
+                                                }, pauseMs);
+                                            };
+                                            window.speechSynthesis.speak(utterance);
+                                        };
+
+                                        playNext(0);
+                                    }
+                                </script>
+
+                                <?php if (!empty($listeningPrompts)): ?>
+                                    <?php if (!empty($configActividad->intro)): ?>
+                                        <div class="alert context-note mb-3"><?php echo htmlspecialchars((string) $configActividad->intro); ?></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($configActividad->practice_goal) || !$showFeedback): ?>
+                                        <div class="responsive-actions mb-3">
+                                            <?php if (!empty($configActividad->practice_goal)): ?>
+                                                <span class="small text-muted align-self-center">Objetivo oral: <?php echo htmlspecialchars((string) $configActividad->practice_goal); ?></span>
+                                            <?php endif; ?>
+                                            <?php if (!$showFeedback && !empty($listeningSequence)): ?>
+                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick='playListeningSequence(<?php echo json_encode($listeningSequence, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, "normal")'>
+                                                    <i class="bi bi-collection-play"></i> Secuencia
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary btn-sm" onclick='playListeningSequence(<?php echo json_encode($listeningSequence, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, "slow")'>
+                                                    <i class="bi bi-hourglass-split"></i> Secuencia lenta
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php foreach ($listeningPrompts as $idx => $prompt): ?>
+                                        <?php
+                                            $promptId = $prompt->id ?? ('listen_' . ($idx + 1));
+                                            $promptText = (string) ($prompt->texto_tts ?? $prompt->transcripcion ?? '');
+                                            $promptTranscript = (string) ($prompt->transcripcion ?? $prompt->texto_tts ?? '');
+                                            $promptResponse = is_array($respuestasUsuario ?? null) ? (string) ($respuestasUsuario[$promptId] ?? '') : '';
+                                            $promptRatio = $showFeedback ? $compareListen($promptTranscript, $promptResponse) : null;
                                         ?>
-                                    </div>
+                                        <div class="card mb-3 border-light shadow-sm">
+                                            <div class="card-body">
+                                                <div class="split-head">
+                                                    <div>
+                                                        <h5 class="card-title mb-1"><?php echo htmlspecialchars((string) ($prompt->descripcion ?? ('Bloque ' . ($idx + 1)))); ?></h5>
+                                                        <?php if (!empty($prompt->speaker_label)): ?>
+                                                            <div class="small text-muted">Referencia: <?php echo htmlspecialchars((string) $prompt->speaker_label); ?></div>
+                                                        <?php endif; ?>
+                                                        <?php if (!empty($prompt->palabras_clave)): ?>
+                                                            <div class="small text-muted">Pistas clave: <?php echo htmlspecialchars(implode(' | ', array_map('strval', (array) $prompt->palabras_clave))); ?></div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="btn-group btn-group-sm" role="group" aria-label="Controles de escucha">
+                                                        <button type="button" class="btn btn-outline-primary" onclick='speakText(<?php echo json_encode($promptText, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode((float) ($prompt->tts_rate ?? ($configActividad->tts_rate_normal ?? 0.9))); ?>, <?php echo json_encode((float) ($prompt->tts_pitch ?? ($configActividad->tts_pitch ?? 1.0))); ?>)'>
+                                                            <i class="bi bi-volume-up-fill"></i> Normal
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-primary" onclick='speakText(<?php echo json_encode($promptText, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode((float) ($prompt->tts_rate_slow ?? ($configActividad->tts_rate_slow ?? 0.75))); ?>, <?php echo json_encode((float) ($prompt->tts_pitch ?? ($configActividad->tts_pitch ?? 1.0))); ?>)'>
+                                                            <i class="bi bi-hourglass-split"></i> Lento
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <label for="respuesta-<?php echo htmlspecialchars($promptId); ?>" class="form-label mt-3">Escribe lo que escuchaste:</label>
+                                                <textarea class="form-control" id="respuesta-<?php echo htmlspecialchars($promptId); ?>" name="respuesta[<?php echo htmlspecialchars($promptId); ?>]" rows="3" <?php echo $showFeedback ? 'readonly' : 'required'; ?> lang="<?php echo $langCode; ?>"><?php echo htmlspecialchars($promptResponse); ?></textarea>
+
+                                                <?php if ($showFeedback): ?>
+                                                    <div class="mt-3 p-3 bg-light border rounded">
+                                                        <strong>Transcripcion correcta:</strong>
+                                                        <p class="mb-0 mt-1 fst-italic"><?php echo htmlspecialchars($promptTranscript); ?></p>
+                                                        <?php if ($promptRatio !== null && $promptRatio >= 0.95): ?>
+                                                            <div class="mt-2 text-success"><i class="bi bi-check-circle-fill"></i> Transcripcion muy precisa.</div>
+                                                        <?php elseif ($promptRatio !== null && $promptRatio >= 0.75): ?>
+                                                            <div class="mt-2 text-warning"><i class="bi bi-exclamation-triangle-fill"></i> Buen intento. Ajusta algunas palabras o el orden final.</div>
+                                                        <?php elseif ($promptRatio !== null): ?>
+                                                            <div class="mt-2 text-danger"><i class="bi bi-x-circle-fill"></i> Aun faltan bloques importantes del audio.</div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <?php if (isset($configActividad->audio_url) && !empty($configActividad->audio_url)): ?>
+                                        <div class="mb-4 text-center">
+                                            <audio controls class="w-100">
+                                                <source src="<?php echo htmlspecialchars($configActividad->audio_url); ?>" type="audio/mpeg">
+                                                Tu navegador no soporta el elemento de audio.
+                                            </audio>
+                                        </div>
+                                    <?php elseif (isset($configActividad->texto_tts) || isset($configActividad->transcripcion)): ?>
+                                        <div class="mb-4 text-center">
+                                            <?php $textToSpeak = $configActividad->texto_tts ?? $configActividad->transcripcion ?? ''; ?>
+                                            <button type="button" class="btn btn-primary btn-lg" onclick='speakText(<?php echo json_encode($textToSpeak, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode($langCode, JSON_UNESCAPED_UNICODE); ?>, <?php echo json_encode((float) ($configActividad->tts_rate_normal ?? 0.9)); ?>, <?php echo json_encode((float) ($configActividad->tts_pitch ?? 1.0)); ?>)'>
+                                                <i class="bi bi-volume-up-fill"></i> Reproducir Audio
+                                            </button>
+                                            <p class="text-muted mt-2"><small>Haz clic para escuchar el texto</small></p>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <label for="respuesta" class="form-label">Escribe lo que escuchaste o responde a la pregunta:</label>
+                                    <textarea class="form-control" id="respuesta" name="respuesta" rows="4" <?php echo $showFeedback ? 'readonly' : 'required'; ?> lang="<?php echo $langCode; ?>"><?php echo htmlspecialchars($respuestasUsuario[0] ?? ''); ?></textarea>
+                                    
+                                    <?php if ($showFeedback && isset($configActividad->transcripcion)): ?>
+                                        <div class="mt-3 p-3 bg-light border rounded">
+                                            <strong>Transcripcion correcta:</strong>
+                                            <p class="mb-0 mt-1 fst-italic"><?php echo htmlspecialchars($configActividad->transcripcion); ?></p>
+                                            
+                                            <?php 
+                                                $listeningScore = $activityOutcome['score'] ?? ($respuestaExistente->puntuacion ?? null);
+                                                $listeningMax = (float) ($activityOutcome['max_score'] ?? ($actividad->puntos_maximos ?? 0));
+                                                $listeningRatio = ($listeningScore !== null && $listeningMax > 0)
+                                                    ? ((float) $listeningScore / $listeningMax)
+                                                    : null;
+
+                                                if ($listeningRatio !== null && $listeningRatio >= 0.95) {
+                                                    echo '<div class="mt-2 text-success"><i class="bi bi-check-circle-fill"></i> Transcripcion muy precisa. Captaste casi toda la frase.</div>';
+                                                } elseif ($listeningRatio !== null && $listeningRatio >= 0.75) {
+                                                    echo '<div class="mt-2 text-warning"><i class="bi bi-exclamation-triangle-fill"></i> Buen intento. Hay detalles por corregir en algunas palabras o en el orden.</div>';
+                                                } elseif ($listeningRatio !== null) {
+                                                    echo '<div class="mt-2 text-danger"><i class="bi bi-x-circle-fill"></i> Aun faltan bloques importantes del audio. Revisa la transcripcion y vuelve a escuchar.</div>';
+                                                }
+                                            ?>
+                                        </div>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
 
@@ -1466,7 +1749,7 @@ function renderStudentSupportResource($resource) {
                         <?php endif; ?>
                         
                         <?php if (!$showFeedback): ?>
-                            <div class="d-flex gap-2 flex-wrap mt-3">
+                            <div class="responsive-actions mt-3">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-send"></i> Enviar respuesta
                                 </button>
@@ -1477,41 +1760,100 @@ function renderStudentSupportResource($resource) {
                         <?php endif; ?>
                     </form>
 
-                    <?php if (!empty($postActivityContext)): ?>
-                        <?php echo $postActivityContext; ?>
-                    <?php endif; ?>
+                    <?php if ($showFeedback || !empty($activityOutcome) || (!empty($respuestaExistente) && !empty($respuestaExistente->comentarios))): ?>
+                        <section class="surface-card activity-outcome-panel mt-4">
+                            <div class="card-body">
+                                <div class="split-head">
+                                    <div>
+                                        <h2 class="h4 mb-1">Cierre de esta practica</h2>
+                                        <div class="small text-muted">
+                                            <?php
+                                            echo htmlspecialchars($activityOutcome['summary']
+                                                ?? ($showFeedback
+                                                    ? 'Tu respuesta ya quedo registrada. Revisa el resultado y decide si sigues o vuelves a practicar.'
+                                                    : 'Cuando envies la actividad, aqui veras un cierre compacto con resultado y siguiente paso.'));
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <span class="soft-badge <?php echo htmlspecialchars($activityOutcome['tone'] ?? ($showFeedback ? 'success' : 'info')); ?>">
+                                        <?php echo htmlspecialchars($activityOutcome['label'] ?? ($showFeedback ? 'Respuesta guardada' : 'En progreso')); ?>
+                                    </span>
+                                </div>
 
-                    <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
-                        
-                        <?php if (isset($respuestaExistente->comentarios) && !empty($respuestaExistente->comentarios)): ?>
-                            <div class="alert alert-info mt-3">
-                                <h5><i class="bi bi-chat-square-text"></i> Comentarios del profesor</h5>
-                                <p class="mb-0"><?php echo nl2br(htmlspecialchars($respuestaExistente->comentarios)); ?></p>
-                            </div>
-                        <?php endif; ?>
+                                <div class="activity-outcome-grid">
+                                    <article class="activity-outcome-stat">
+                                        <div class="activity-outcome-label">Resultado</div>
+                                        <div class="activity-outcome-value">
+                                            <?php if (($activityOutcome['score'] ?? null) !== null): ?>
+                                                <?php echo rtrim(rtrim(number_format((float) $activityOutcome['score'], 2, '.', ''), '0'), '.'); ?>
+                                                <?php if (($activityOutcome['max_score'] ?? null) !== null): ?>
+                                                    / <?php echo rtrim(rtrim(number_format((float) $activityOutcome['max_score'], 2, '.', ''), '0'), '.'); ?>
+                                                <?php endif; ?>
+                                                pts
+                                            <?php elseif (isset($respuestaExistente->puntuacion)): ?>
+                                                <?php echo rtrim(rtrim(number_format((float) $respuestaExistente->puntuacion, 2, '.', ''), '0'), '.'); ?> pts
+                                            <?php elseif (($actividad->tipo_actividad === 'escritura' || $actividad->tipo_actividad === 'escucha') && isset($respuestaExistente) && $respuestaExistente): ?>
+                                                Pendiente
+                                            <?php elseif ($showFeedback): ?>
+                                                Guardado
+                                            <?php else: ?>
+                                                Por calcular
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="activity-outcome-copy">
+                                            <?php if (($actividad->tipo_actividad === 'escritura' || $actividad->tipo_actividad === 'escucha') && isset($respuestaExistente) && $respuestaExistente && !isset($respuestaExistente->puntuacion)): ?>
+                                                Esta actividad todavia espera revision docente.
+                                            <?php else: ?>
+                                                <?php echo htmlspecialchars($activityOutcome['headline'] ?? 'Lectura compacta del intento actual.'); ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
 
-                        <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
-                            <div>
-                                <?php if (!$isRetry): ?>
-                                    <a href="?retry=1" class="btn btn-success me-2">
-                                        <i class="bi bi-arrow-repeat"></i> Practicar otra vez
-                                    </a>
-                                    <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn btn-outline-secondary">
-                                        <i class="bi bi-arrow-left"></i> Volver a la leccion
-                                    </a>
-                                <?php else: ?>
-                                    <div class="text-muted">
-                                        <i class="bi bi-info-circle"></i> Estas en modo practica.
+                                    <article class="activity-outcome-stat">
+                                        <div class="activity-outcome-label">Registro</div>
+                                        <div class="activity-outcome-value">
+                                            <?php if (isset($respuestaExistente) && $respuestaExistente): ?>
+                                                <?php echo date('d/m/Y H:i', strtotime($respuestaExistente->fecha_respuesta)); ?>
+                                            <?php else: ?>
+                                                Aun sin envio
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="activity-outcome-copy">
+                                            <?php echo $showFeedback ? 'Tu intento quedo almacenado y ya puedes seguir con la leccion.' : 'Todavia no se ha registrado una respuesta en esta sesion.'; ?>
+                                        </div>
+                                    </article>
+
+                                    <article class="activity-outcome-stat">
+                                        <div class="activity-outcome-label">Avance en la leccion</div>
+                                        <div class="activity-outcome-value"><?php echo (int) ($activityOutcome['lesson_progress'] ?? 0); ?>%</div>
+                                        <div class="activity-outcome-copy">
+                                            <?php echo htmlspecialchars($activityOutcome['next_hint'] ?? 'Usa este resultado para decidir si conviene seguir, repasar o volver a practicar.'); ?>
+                                        </div>
+                                    </article>
+                                </div>
+
+                                <?php if (isset($respuestaExistente->comentarios) && !empty($respuestaExistente->comentarios)): ?>
+                                    <div class="alert context-note mb-0">
+                                        <div class="fw-semibold mb-2"><i class="bi bi-chat-square-text"></i> Comentarios del profesor</div>
+                                        <p class="mb-0"><?php echo nl2br(htmlspecialchars($respuestaExistente->comentarios)); ?></p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($showFeedback): ?>
+                                    <div class="responsive-actions">
+                                        <a href="<?php echo htmlspecialchars($nextActionUrl ?? url('/estudiante/lecciones/' . $leccion->id . '/contenido')); ?>" class="btn btn-primary">
+                                            <i class="bi bi-arrow-right-circle"></i> <?php echo htmlspecialchars(!empty($siguienteItem['mensaje']) ? $siguienteItem['mensaje'] : $activitySummaryCta); ?>
+                                        </a>
+                                        <a href="?retry=1" class="btn btn-success">
+                                            <i class="bi bi-arrow-repeat"></i> Practicar otra vez
+                                        </a>
+                                        <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn btn-outline-secondary">
+                                            <i class="bi bi-arrow-left"></i> Volver a la leccion
+                                        </a>
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            
-                            <?php if ($isRetry): ?>
-                                <a href="?" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-eye"></i> Ver respuesta anterior
-                                </a>
-                            <?php endif; ?>
-                        </div>
+                        </section>
                     <?php endif; ?>
                 </div>
             </div>

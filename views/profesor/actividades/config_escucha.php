@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-headphones"></i> Configurador</span>
         <h1 class="page-title">Actividad de escucha</h1>
         <p class="page-subtitle">
@@ -21,20 +21,23 @@
                 <i class="bi bi-images"></i> Elegir audio en biblioteca
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-headphones"></i> Configurador</span>
+            <span class="soft-badge"><i class="bi bi-soundwave"></i> Audio y comprension</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i> Puedes usar una URL directa de audio. La subida de archivos todavia no esta integrada en esta pantalla.
+    <div class="alert context-note">
+        Puedes usar una URL directa de audio. La subida de archivos todavia no esta integrada en esta pantalla.
     </div>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
-            <i class="bi bi-check2-circle"></i>
-            Recurso listo para escuchar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        <div class="alert context-note">
+            <strong>Recurso listo para escuchar:</strong> <?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?>.
             Si es audio o video, la URL se colocara automaticamente.
         </div>
     <?php endif; ?>
@@ -129,7 +132,7 @@
 
 <template id="pregunta-template">
     <div class="pregunta-item">
-        <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
+        <div class="split-head mb-3">
             <h6 class="mb-0">Pregunta <span class="numero-pregunta"></span></h6>
             <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarPregunta(this)">
                 <i class="bi bi-trash"></i>

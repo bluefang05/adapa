@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Configurador</span>
         <h1 class="page-title">Actividad de completar oracion</h1>
         <p class="page-subtitle">
@@ -21,18 +21,22 @@
                 <i class="bi bi-images"></i> Elegir recurso de apoyo
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-pencil-square"></i> Configurador</span>
+            <span class="soft-badge"><i class="bi bi-input-cursor-text"></i> Huecos guiados</span>
+        </div>
     </section>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <div class="alert alert-info">
+    <div class="alert context-note">
         <i class="bi bi-info-circle"></i> Encierra entre <strong>[ ]</strong> las palabras que quieres convertir en huecos. Ejemplo: La capital de [Francia] es [Paris].
     </div>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
+        <div class="alert context-note">
             <i class="bi bi-check2-circle"></i>
             Recurso de apoyo listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
         </div>
@@ -67,7 +71,7 @@
                                 <div class="form-text">Las palabras entre corchetes se convierten en espacios en blanco.</div>
                             </div>
 
-                            <div class="content-block" id="preview-container" style="display:none;">
+                            <div class="content-block is-hidden" id="preview-container">
                                 <div class="card-body">
                                     <h3 class="h6 mb-3">Vista previa</h3>
                                     <div id="preview-content"></div>

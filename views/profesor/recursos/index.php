@@ -61,99 +61,94 @@ function renderMediaPreview($recurso) {
     ?>
 
     <?php if (!empty($returnTo)): ?>
-        <div class="alert alert-info">
-            <i class="bi bi-arrow-return-left"></i>
-            Biblioteca abierta en contexto <?php echo htmlspecialchars($resourceContext ?: 'de autoria'); ?>. Elige un recurso y vuelve directo al punto donde estabas trabajando.
-            <a href="<?php echo htmlspecialchars($returnTo); ?>" class="btn btn-sm btn-outline-secondary ms-2">Volver sin seleccionar</a>
+        <div class="alert context-note mb-4">
+            <div class="split-head">
+                <div>
+                    <div class="metric-label">Biblioteca en contexto</div>
+                    <div class="fw-semibold mt-1">Abierta para <?php echo htmlspecialchars($resourceContext ?: 'autoria'); ?></div>
+                    <div class="small text-muted mt-1">Elige un recurso y vuelve directo al punto donde estabas trabajando.</div>
+                </div>
+                <div class="responsive-actions">
+                    <a href="<?php echo htmlspecialchars($returnTo); ?>" class="btn btn-outline-secondary btn-sm">Volver sin seleccionar</a>
+                </div>
+            </div>
         </div>
     <?php endif; ?>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-images"></i> Biblioteca</span>
         <h1 class="page-title">Biblioteca de media lista para reutilizar.</h1>
         <p class="page-subtitle">
             Reune imagenes, audios, videos y documentos en un solo lugar para insertarlos luego en teoria, actividades y apoyos sin repetir trabajo.
         </p>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Recursos</div>
-                <div class="metric-value"><?php echo count($recursos); ?></div>
-                <div class="metric-note">Elementos listos para reutilizar.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Imagenes</div>
-                <div class="metric-value"><?php echo count(array_filter($recursos, fn($item) => $item->tipo_media === 'imagen')); ?></div>
-                <div class="metric-note">Apoyo visual del curso.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Audios</div>
-                <div class="metric-value"><?php echo count(array_filter($recursos, fn($item) => $item->tipo_media === 'audio')); ?></div>
-                <div class="metric-note">Material reutilizable para escucha o TTS.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">YouTube listo para embed</div>
-                <div class="metric-value"><?php echo $youtubeReadyCount; ?></div>
-                <div class="metric-note">Recursos externos que ya se pueden embeber sin pegar iframes.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Archivo propio</div>
-                <div class="metric-value"><?php echo (int) $uploadedCount; ?></div>
-                <div class="metric-note">Media subida directamente a tu biblioteca.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-images"></i> <?php echo count($recursos); ?> recursos</span>
+            <span class="soft-badge"><i class="bi bi-image"></i> <?php echo count(array_filter($recursos, fn($item) => $item->tipo_media === 'imagen')); ?> imagenes</span>
+            <span class="soft-badge"><i class="bi bi-volume-up"></i> <?php echo count(array_filter($recursos, fn($item) => $item->tipo_media === 'audio')); ?> audios</span>
+            <span class="soft-badge badge-accent"><i class="bi bi-youtube"></i> <?php echo $youtubeReadyCount; ?> YouTube listo para embed</span>
+            <span class="soft-badge"><i class="bi bi-hdd-stack"></i> <?php echo (int) $uploadedCount; ?> archivo propio</span>
         </div>
     </section>
 
-    <section class="panel mb-4">
-        <div class="panel-body">
-            <div class="section-title mb-3">
-                <h2>Flujo recomendado para video externo</h2>
-                <span class="soft-badge badge-accent"><i class="bi bi-youtube"></i> <?php echo htmlspecialchars($videoPolicy['provider']); ?></span>
+    <details class="panel page-assist-card mb-4">
+        <summary class="page-assist-summary">
+            <div>
+                <div class="metric-label">Guia de reutilizacion</div>
+                <div class="fw-semibold mt-1">Politica de video externo y lectura rapida de la biblioteca</div>
+                <div class="small text-muted mt-1">Abre esta seccion si necesitas recordar el flujo correcto antes de subir o vincular media.</div>
             </div>
-            <div class="resource-guidance-grid">
-                <?php foreach ($videoPolicy['workflow'] as $index => $step): ?>
+            <span class="soft-badge">2 bloques</span>
+        </summary>
+        <div class="panel-body pt-0 page-assist-body">
+            <section>
+                <div class="section-title mb-3">
+                    <h2>Flujo recomendado para video externo</h2>
+                    <span class="soft-badge badge-accent"><i class="bi bi-youtube"></i> <?php echo htmlspecialchars($videoPolicy['provider']); ?></span>
+                </div>
+                <div class="resource-guidance-grid">
+                    <?php foreach ($videoPolicy['workflow'] as $index => $step): ?>
+                        <article class="resource-guidance-card">
+                            <div class="resource-guidance-icon"><?php echo $index + 1; ?></div>
+                            <div>
+                                <h3>Paso <?php echo $index + 1; ?></h3>
+                                <p><?php echo htmlspecialchars($step); ?></p>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <section class="mt-4">
+                <div class="section-title mb-3">
+                    <h2>Como leer la biblioteca</h2>
+                    <span class="soft-badge"><i class="bi bi-collection-play"></i> Reutilizacion real</span>
+                </div>
+                <div class="resource-guidance-grid">
                     <article class="resource-guidance-card">
-                        <div class="resource-guidance-icon"><?php echo $index + 1; ?></div>
+                        <div class="resource-guidance-icon"><i class="bi bi-hdd-stack"></i></div>
                         <div>
-                            <h3>Paso <?php echo $index + 1; ?></h3>
-                            <p><?php echo htmlspecialchars($step); ?></p>
+                            <h3>Archivo propio</h3>
+                            <p>Usalo cuando necesitas control total sobre imagen, audio, video o documento dentro del curso.</p>
                         </div>
                     </article>
-                <?php endforeach; ?>
-            </div>
+                    <article class="resource-guidance-card">
+                        <div class="resource-guidance-icon"><i class="bi bi-youtube"></i></div>
+                        <div>
+                            <h3>YouTube</h3>
+                            <p>Es la fuente oficial para video externo. Pega la URL normal y la app resuelve el embed.</p>
+                        </div>
+                    </article>
+                    <article class="resource-guidance-card">
+                        <div class="resource-guidance-icon"><i class="bi bi-link-45deg"></i></div>
+                        <div>
+                            <h3>Enlace externo</h3>
+                            <p>Sirve como apoyo o referencia, pero no todos los enlaces tendran experiencia embebida.</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
         </div>
-    </section>
-
-    <section class="panel mb-4">
-        <div class="panel-body">
-            <div class="section-title mb-3">
-                <h2>Como leer la biblioteca</h2>
-                <span class="soft-badge"><i class="bi bi-collection-play"></i> Reutilizacion real</span>
-            </div>
-            <div class="resource-guidance-grid">
-                <article class="resource-guidance-card">
-                    <div class="resource-guidance-icon"><i class="bi bi-hdd-stack"></i></div>
-                    <div>
-                        <h3>Archivo propio</h3>
-                        <p>Usalo cuando necesitas control total sobre imagen, audio, video o documento dentro del curso.</p>
-                    </div>
-                </article>
-                <article class="resource-guidance-card">
-                    <div class="resource-guidance-icon"><i class="bi bi-youtube"></i></div>
-                    <div>
-                        <h3>YouTube</h3>
-                        <p>Es la fuente oficial para video externo. Pega la URL normal y la app resuelve el embed.</p>
-                    </div>
-                </article>
-                <article class="resource-guidance-card">
-                    <div class="resource-guidance-icon"><i class="bi bi-link-45deg"></i></div>
-                    <div>
-                        <h3>Enlace externo</h3>
-                        <p>Sirve como apoyo o referencia, pero no todos los enlaces tendran experiencia embebida.</p>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+    </details>
 
     <div class="row g-4">
         <div class="col-xl-5">
@@ -165,37 +160,36 @@ function renderMediaPreview($recurso) {
                     </div>
                     <form method="POST" action="<?php echo url('/profesor/recursos'); ?>" enctype="multipart/form-data">
                         <?php echo csrf_input(); ?>
-                        <div class="media-policy-card mb-3">
-                            <div class="media-policy-header">
+                        <details class="panel page-assist-card mb-3">
+                            <summary class="page-assist-summary">
                                 <div>
-                                    <div class="resource-kicker">
-                                        <i class="bi bi-youtube"></i>
-                                        Politica oficial de video externo
+                                    <div class="metric-label">Ayuda opcional</div>
+                                    <div class="fw-semibold mt-1">Politica oficial de video externo</div>
+                                    <div class="small text-muted mt-1"><?php echo htmlspecialchars($videoPolicy['summary']); ?></div>
+                                </div>
+                                <span class="soft-badge badge-accent"><?php echo htmlspecialchars($videoPolicy['provider']); ?></span>
+                            </summary>
+                            <div class="panel-body pt-0 page-assist-body">
+                                <div class="media-policy-grid">
+                                    <div>
+                                        <div class="media-policy-title">Formatos que la app acepta</div>
+                                        <ul class="media-policy-list">
+                                            <?php foreach ($videoPolicy['accepted_formats'] as $format): ?>
+                                                <li><code><?php echo htmlspecialchars($format); ?></code></li>
+                                            <?php endforeach; ?>
+                                        </ul>
                                     </div>
-                                    <h3>Solo <?php echo htmlspecialchars($videoPolicy['provider']); ?> para embed</h3>
-                                    <p><?php echo htmlspecialchars($videoPolicy['summary']); ?></p>
-                                </div>
-                                <span class="soft-badge badge-accent">Fuente oficial</span>
-                            </div>
-                            <div class="media-policy-grid">
-                                <div>
-                                    <div class="media-policy-title">Formatos que la app acepta</div>
-                                    <ul class="media-policy-list">
-                                        <?php foreach ($videoPolicy['accepted_formats'] as $format): ?>
-                                            <li><code><?php echo htmlspecialchars($format); ?></code></li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <div class="media-policy-title">Lo que no deberias pegar aqui</div>
-                                    <ul class="media-policy-list is-muted">
-                                        <?php foreach ($videoPolicy['rejected_examples'] as $format): ?>
-                                            <li><?php echo htmlspecialchars($format); ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
+                                    <div>
+                                        <div class="media-policy-title">Lo que no deberias pegar aqui</div>
+                                        <ul class="media-policy-list is-muted">
+                                            <?php foreach ($videoPolicy['rejected_examples'] as $format): ?>
+                                                <li><?php echo htmlspecialchars($format); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </details>
                         <div class="mb-3">
                             <label for="titulo" class="form-label">Titulo</label>
                             <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ejemplo: Imagen de restaurante">
@@ -320,7 +314,7 @@ function renderMediaPreview($recurso) {
                                         <td><span class="soft-badge"><?php echo htmlspecialchars(ucfirst($recurso->tipo_media)); ?></span></td>
                                         <td><?php echo htmlspecialchars($recurso->idioma ? ucfirst($recurso->idioma) : 'General'); ?></td>
                                         <td>
-                                            <div class="d-flex gap-2 flex-wrap">
+                                            <div class="responsive-actions table-actions">
                                                 <?php if (!empty($returnTo)): ?>
                                                     <a href="<?php echo htmlspecialchars(mediaReturnUrl($returnTo, $recurso)); ?>" class="btn btn-sm btn-success">
                                                         <i class="bi bi-check2-circle"></i> Usar aqui

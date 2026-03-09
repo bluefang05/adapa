@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-award"></i> Rendimiento</span>
         <h1 class="page-title">Tus respuestas ya cuentan una historia.</h1>
         <p class="page-subtitle">
@@ -15,39 +15,22 @@
                 <i class="bi bi-graph-up-arrow"></i> Ver progreso
             </a>
         </div>
+        <?php
+        $graded = array_values(array_filter($calificaciones, fn($item) => $item->puntuacion !== null && $item->puntos_maximos > 0));
+        $avg = 0;
+        if (!empty($graded)) {
+            $avg = (int) round(array_reduce($graded, function ($carry, $item) {
+                return $carry + (((float) $item->puntuacion / (float) $item->puntos_maximos) * 100);
+            }, 0) / count($graded));
+        }
+        ?>
         <?php if (!empty($calificacionesScopeHint)): ?>
-            <div class="alert alert-info mt-3 mb-0">
-                <i class="bi bi-info-circle"></i>
-                <?php echo htmlspecialchars($calificacionesScopeHint); ?>
-            </div>
+            <div class="alert context-note mt-3 mb-0"><?php echo htmlspecialchars($calificacionesScopeHint); ?></div>
         <?php endif; ?>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Respuestas</div>
-                <div class="metric-value"><?php echo count($calificaciones); ?></div>
-                <div class="metric-note">Intentos registrados en la plataforma.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Evaluadas</div>
-                <div class="metric-value"><?php echo count(array_filter($calificaciones, fn($item) => $item->puntuacion !== null)); ?></div>
-                <div class="metric-note">Respuestas con puntaje visible.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Promedio</div>
-                <div class="metric-value">
-                    <?php
-                    $graded = array_values(array_filter($calificaciones, fn($item) => $item->puntuacion !== null && $item->puntos_maximos > 0));
-                    $avg = 0;
-                    if (!empty($graded)) {
-                        $avg = (int) round(array_reduce($graded, function ($carry, $item) {
-                            return $carry + (((float) $item->puntuacion / (float) $item->puntos_maximos) * 100);
-                        }, 0) / count($graded));
-                    }
-                    echo $avg;
-                    ?>%
-                </div>
-                <div class="metric-note">Promedio relativo sobre respuestas evaluadas.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-chat-square-text"></i> <?php echo count($calificaciones); ?> respuestas</span>
+            <span class="soft-badge"><i class="bi bi-check2-circle"></i> <?php echo count(array_filter($calificaciones, fn($item) => $item->puntuacion !== null)); ?> evaluadas</span>
+            <span class="soft-badge"><i class="bi bi-award"></i> <?php echo $avg; ?>% promedio</span>
         </div>
     </section>
 
@@ -82,10 +65,10 @@
                             <?php foreach ($calificaciones as $item): ?>
                                 <?php
                                 $scoreLabel = 'Pendiente';
-                                $scoreClass = 'text-bg-warning';
+                                $scoreTone = 'warning';
                                 if ($item->puntuacion !== null) {
                                     $scoreLabel = number_format((float) $item->puntuacion, 1) . ' / ' . (int) $item->puntos_maximos;
-                                    $scoreClass = ((float) $item->puntuacion >= ((float) $item->puntos_maximos * 0.7)) ? 'text-bg-success' : 'text-bg-secondary';
+                                    $scoreTone = ((float) $item->puntuacion >= ((float) $item->puntos_maximos * 0.7)) ? 'success' : 'warning';
                                 }
                                 ?>
                                 <tr>
@@ -94,8 +77,8 @@
                                     </td>
                                     <td><?php echo htmlspecialchars($item->leccion_titulo); ?></td>
                                     <td><?php echo htmlspecialchars($item->actividad_titulo); ?></td>
-                                    <td><span class="badge text-bg-light"><?php echo htmlspecialchars(str_replace('_', ' ', $item->tipo_actividad)); ?></span></td>
-                                    <td><span class="badge <?php echo $scoreClass; ?>"><?php echo $scoreLabel; ?></span></td>
+                                    <td><span class="soft-badge"><?php echo htmlspecialchars(str_replace('_', ' ', $item->tipo_actividad)); ?></span></td>
+                                    <td><span class="soft-badge <?php echo $scoreTone; ?>"><?php echo $scoreLabel; ?></span></td>
                                     <td><?php echo date('d/m/Y H:i', strtotime($item->fecha_respuesta)); ?></td>
                                 </tr>
                             <?php endforeach; ?>

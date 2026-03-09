@@ -34,53 +34,19 @@ foreach ($courses as $course) {
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-book-fill"></i> Oferta academica</span>
         <h1 class="page-title">Revisa el catalogo completo sin entrar a cada curso por separado.</h1>
         <p class="page-subtitle">
             Revisa responsable, visibilidad y alcance formativo para entender rapidamente el estado del catalogo institucional.
         </p>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Cursos</div>
-                <div class="metric-value"><?php echo count($courses); ?></div>
-                <div class="metric-note">Cursos visibles dentro de la instancia.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Visibles en catalogo</div>
-                <div class="metric-value"><?php echo $publicCourses; ?></div>
-                <div class="metric-note">Cursos actualmente visibles para estudiantes.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Rutas completas</div>
-                <div class="metric-value"><?php echo $fullRoutes; ?></div>
-                <div class="metric-note">Cursos que cubren mas de un tramo CEFR.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Listos para revisar</div>
-                <div class="metric-value"><?php echo $readyToReviewCourses; ?></div>
-                <div class="metric-note">Cursos con base suficiente, pero aun no empujados del todo.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Visibles con ajustes</div>
-                <div class="metric-value"><?php echo $publicCoursesWithGaps; ?></div>
-                <div class="metric-note">Oferta visible que todavia conviene revisar editorialmente.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Sin lecciones</div>
-                <div class="metric-value"><?php echo (int) ($catalogSummary['without_lessons'] ?? 0); ?></div>
-                <div class="metric-note">Cursos que aun no tienen recorrido base.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Sin practica</div>
-                <div class="metric-value"><?php echo (int) ($catalogSummary['without_practice'] ?? 0); ?></div>
-                <div class="metric-note">Cursos que ya necesitan convertir teoria en actividad.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Con tickets abiertos</div>
-                <div class="metric-value"><?php echo (int) ($catalogSummary['with_open_tickets'] ?? 0); ?></div>
-                <div class="metric-note">Cursos donde soporte ya esta dando senales.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-journal-bookmark"></i> <?php echo count($courses); ?> cursos</span>
+            <span class="soft-badge"><i class="bi bi-broadcast"></i> <?php echo $publicCourses; ?> visibles en catalogo</span>
+            <span class="soft-badge"><i class="bi bi-signpost-split"></i> <?php echo $fullRoutes; ?> rutas completas</span>
+            <span class="soft-badge <?php echo $readyToReviewCourses > 0 ? 'badge-accent' : 'success'; ?>"><i class="bi bi-patch-check"></i> <?php echo $readyToReviewCourses; ?> listos para revisar</span>
+            <span class="soft-badge <?php echo $publicCoursesWithGaps > 0 ? 'warning' : 'success'; ?>"><i class="bi bi-exclamation-circle"></i> <?php echo $publicCoursesWithGaps; ?> visibles con ajustes</span>
+            <span class="soft-badge <?php echo ((int) ($catalogSummary['with_open_tickets'] ?? 0) > 0) ? 'warning' : 'success'; ?>"><i class="bi bi-life-preserver"></i> <?php echo (int) ($catalogSummary['with_open_tickets'] ?? 0); ?> con tickets abiertos</span>
         </div>
     </section>
 
@@ -139,7 +105,7 @@ foreach ($courses as $course) {
                         </option>
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3 d-flex gap-2">
+                <div class="col-lg-2 col-md-3 responsive-actions">
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filtrar</button>
                     <a href="<?php echo url('/admin/cursos'); ?>" class="btn btn-outline-secondary">Limpiar</a>
                 </div>
@@ -150,7 +116,7 @@ foreach ($courses as $course) {
     <section>
         <div class="section-title">
             <h2>Cursos de la instancia</h2>
-            <div class="d-flex align-items-center gap-2">
+            <div class="section-actions">
                 <span class="soft-badge"><i class="bi bi-grid"></i> Vista administrativa</span>
                 <?php if (!empty($teacherFilter) && !empty($teachers)): ?>
                     <?php foreach ($teachers as $teacher): ?>
@@ -165,11 +131,16 @@ foreach ($courses as $course) {
             </div>
         </div>
 
-        <section class="filter-shell mb-4">
-            <div class="panel-body">
-                <div class="section-title">
-                    <h2>Accion masiva</h2>
+        <details class="panel page-assist-card mb-4">
+            <summary class="page-assist-summary">
+                <div>
+                    <div class="metric-label">Herramientas de catalogo</div>
+                    <div class="fw-semibold mt-1">Acciones masivas sobre los cursos visibles</div>
+                    <div class="small text-muted mt-1">Abre esta seccion cuando necesites publicar, ocultar o mover de estado varios cursos a la vez.</div>
                 </div>
+                <span class="soft-badge">1 bloque</span>
+            </summary>
+            <div class="panel-body pt-0 page-assist-body">
                 <form method="POST" action="<?php echo url('/admin/cursos/bulk-action'); ?>" id="course-bulk-form" class="row g-3 align-items-end">
                     <?php echo csrf_input(); ?>
                     <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
@@ -198,7 +169,7 @@ foreach ($courses as $course) {
                     </div>
                 </form>
             </div>
-        </section>
+        </details>
 
         <div class="data-table-shell">
             <div class="table-responsive">
@@ -242,7 +213,7 @@ foreach ($courses as $course) {
                                                 <div class="small text-muted">
                                                     <?php echo htmlspecialchars(Curso::formatearRangoNivel($course)); ?> &middot; <?php echo htmlspecialchars(Curso::obtenerEtiquetaNivel($course)); ?>
                                                 </div>
-                                                <div class="small mt-1 d-flex gap-2 flex-wrap">
+                                                <div class="small mt-1 badge-row">
                                                     <span class="soft-badge <?php echo !empty($course->inscripcion_abierta) ? 'info' : ''; ?>">
                                                         <?php echo !empty($course->inscripcion_abierta) ? 'Inscripcion abierta' : 'Inscripcion cerrada'; ?>
                                                     </span>
@@ -278,7 +249,7 @@ foreach ($courses as $course) {
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($course->fecha_creacion)); ?></td>
                                     <td>
-                                        <div class="d-flex gap-2 flex-wrap">
+                                        <div class="responsive-actions table-actions">
                                             <a href="<?php echo url('/admin/cursos/estructura/' . $course->id); ?>" class="btn btn-sm btn-outline-primary" title="Ver estructura" aria-label="Ver estructura de <?php echo htmlspecialchars($course->titulo); ?>">
                                                 <i class="bi bi-diagram-3"></i>
                                             </a>
@@ -288,35 +259,35 @@ foreach ($courses as $course) {
                                             <a href="<?php echo url('/admin/cursos/edit/' . $course->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar curso" aria-label="Editar curso <?php echo htmlspecialchars($course->titulo); ?>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form method="POST" action="<?php echo url('/admin/cursos/duplicate/' . $course->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/admin/cursos/duplicate/' . $course->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="Duplicar curso" aria-label="Duplicar curso <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi bi-copy"></i>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo url('/admin/cursos/toggle-publico/' . $course->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/admin/cursos/toggle-publico/' . $course->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo ($catalogStatus['short_label'] ?? '') === 'Visible' ? 'Ocultar del catalogo' : 'Marcar para catalogo'; ?>" aria-label="Cambiar visibilidad de <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi <?php echo ($catalogStatus['short_label'] ?? '') === 'Visible' ? 'bi-eye-slash' : 'bi-broadcast'; ?>"></i>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo url('/admin/cursos/toggle-inscripcion/' . $course->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/admin/cursos/toggle-inscripcion/' . $course->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo !empty($course->inscripcion_abierta) ? 'Cerrar inscripcion' : 'Abrir inscripcion'; ?>" aria-label="Cambiar inscripcion de <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi <?php echo !empty($course->inscripcion_abierta) ? 'bi-door-closed' : 'bi-door-open'; ?>"></i>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo url('/admin/cursos/cycle-estado/' . $course->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/admin/cursos/cycle-estado/' . $course->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentCoursesUrl); ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-primary" title="Avanzar workflow editorial" aria-label="Avanzar workflow editorial de <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi bi-arrow-repeat"></i>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo url('/admin/cursos/delete/' . $course->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este curso? Esta accion no se puede deshacer.');">
+                                            <form method="POST" action="<?php echo url('/admin/cursos/delete/' . $course->id); ?>" onsubmit="return confirm('Estas seguro de eliminar este curso? Esta accion no se puede deshacer.');">
                                                 <?php echo csrf_input(); ?>
                                                 <button type="submit" class="btn btn-sm btn-danger" title="Eliminar curso" aria-label="Eliminar curso <?php echo htmlspecialchars($course->titulo); ?>">
                                                     <i class="bi bi-trash"></i>

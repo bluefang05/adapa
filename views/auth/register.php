@@ -21,17 +21,21 @@ require_once __DIR__ . '/../partials/header.php';
 
         <section class="form-shell auth-card">
             <div class="card-body">
-                <?php if ($success): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="bi bi-check-circle-fill"></i> <?php echo htmlspecialchars($success); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
+                <?php if ($success || $error): ?>
+                    <div class="auth-notice-stack">
+                        <?php if ($success): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill"></i> <?php echo htmlspecialchars($success); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
 
-                <?php if ($error): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill"></i> <?php echo htmlspecialchars($error); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <?php if ($error): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i> <?php echo htmlspecialchars($error); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 
@@ -40,22 +44,22 @@ require_once __DIR__ . '/../partials/header.php';
                     <div class="row g-3 mb-2">
                         <div class="col-12">
                             <label class="form-label">Tipo de cuenta inicial</label>
-                            <div class="row g-3">
+                            <div class="row g-3 account-choice-grid">
                                 <div class="col-md-6">
-                                    <label class="form-check h-100">
+                                    <label class="form-check account-choice h-100">
                                         <input class="form-check-input" type="radio" name="account_type" value="estudiante" checked>
                                         <span class="form-check-label d-block">
-                                            <strong>Estudiante</strong><br>
-                                            <span class="text-muted">Aprende y sigue tu progreso.</span>
+                                            <span class="account-choice-title"><i class="bi bi-journal-text"></i> Estudiante</span>
+                                            <span class="account-choice-copy">Aprende, sigue tu progreso y entra directo a tus lecciones.</span>
                                         </span>
                                     </label>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-check h-100">
+                                    <label class="form-check account-choice h-100">
                                         <input class="form-check-input" type="radio" name="account_type" value="profesor">
                                         <span class="form-check-label d-block">
-                                            <strong>Profesor</strong><br>
-                                            <span class="text-muted">Crea cursos y gestiona estudiantes.</span>
+                                            <span class="account-choice-title"><i class="bi bi-person-workspace"></i> Profesor</span>
+                                            <span class="account-choice-copy">Crea cursos, organiza contenido y gestiona estudiantes desde el panel docente.</span>
                                         </span>
                                     </label>
                                 </div>

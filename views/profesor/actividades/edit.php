@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil"></i> Ajuste de actividad</span>
         <h1 class="page-title">Edita la ficha general antes de entrar al contenido interno.</h1>
         <p class="page-subtitle">
@@ -27,6 +27,10 @@
                 <i class="bi bi-images"></i> Abrir biblioteca
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-pencil-square"></i> Edicion activa</span>
+            <span class="soft-badge"><i class="bi bi-sliders"></i> Contenido se ajusta aparte</span>
+        </div>
     </section>
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
@@ -39,9 +43,8 @@
     <?php endif; ?>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
-            <i class="bi bi-check2-circle"></i>
-            Recurso contextual listo: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        <div class="alert context-note">
+            <strong>Recurso contextual listo:</strong> <?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?>.
             Usa <em>Configurar contenido</em> para insertarlo donde corresponda.
         </div>
     <?php endif; ?>
@@ -58,14 +61,26 @@
                                 <h2 class="form-section-title">Datos base</h2>
                                 <span class="soft-badge"><i class="bi bi-pencil-square"></i> Configuracion</span>
                             </div>
-                            <div class="production-hint-card tone-info mb-3">
-                                <div class="production-hint-title">Checklist rapido antes de guardar</div>
-                                <ul class="quality-checklist-list mb-0">
-                                    <li>La ficha general dice que habilidad medira esta actividad.</li>
-                                    <li>El tipo sigue alineado con el contenido interno configurado.</li>
-                                    <li>Si usas media, aplicala en la configuracion especializada.</li>
-                                </ul>
-                            </div>
+                            <details class="panel page-assist-card mb-3">
+                                <summary class="page-assist-summary">
+                                    <div>
+                                        <div class="metric-label">Ayuda opcional</div>
+                                        <div class="fw-semibold mt-1">Checklist rapido antes de guardar</div>
+                                        <div class="small text-muted mt-1">Abre esta seccion si quieres revisar alineacion entre ficha general y configuracion interna.</div>
+                                    </div>
+                                    <span class="soft-badge">1 bloque</span>
+                                </summary>
+                                <div class="panel-body pt-0 page-assist-body">
+                                    <div class="alert context-note mb-0">
+                                        <div class="fw-semibold mb-2">Checklist rapido antes de guardar</div>
+                                        <ul class="quality-checklist-list mb-0">
+                                            <li>La ficha general dice que habilidad medira esta actividad.</li>
+                                            <li>El tipo sigue alineado con el contenido interno configurado.</li>
+                                            <li>Si usas media, aplicala en la configuracion especializada.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </details>
 
                             <div class="mb-3">
                                 <label for="titulo" class="form-label">Titulo de la actividad</label>
@@ -113,8 +128,7 @@
                             </div>
                         </section>
 
-                        <div class="alert alert-info mt-4" role="alert">
-                            <i class="bi bi-info-circle"></i>
+                        <div class="alert context-note mt-4" role="alert">
                             Estos cambios afectan la ficha general. El contenido interno de preguntas, audios u opciones se edita aparte.
                         </div>
 

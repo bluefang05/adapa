@@ -8,13 +8,13 @@ $catalogStatus = app_course_catalog_status($curso);
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-pencil-square"></i> Edicion de curso</span>
         <h1 class="page-title">Ajusta la configuracion del curso sin perder claridad operativa.</h1>
         <p class="page-subtitle">
             Revisa idioma objetivo, idioma base del estudiante, modalidad y acceso desde la misma estructura visual del formulario de creacion.
         </p>
-        <div class="d-flex gap-2 flex-wrap mt-3">
+        <div class="compact-meta-row">
             <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Preparacion <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</span>
             <span class="soft-badge <?php echo htmlspecialchars($catalogStatus['tone']); ?>">
                 <i class="bi bi-broadcast"></i>
@@ -35,9 +35,8 @@ $catalogStatus = app_course_catalog_status($curso);
     <?php endif; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info">
-            <i class="bi bi-shield-check"></i>
-            Este curso opera como piloto gratuito: acceso por codigo, cupo maximo de 3 estudiantes y sin inscripcion publica directa.
+        <div class="alert context-note">
+            <strong>Plan gratuito:</strong> este curso opera como piloto gratuito: acceso por codigo, cupo maximo de 3 estudiantes y sin inscripcion publica directa.
         </div>
     <?php endif; ?>
 
@@ -48,47 +47,51 @@ $catalogStatus = app_course_catalog_status($curso);
                     <form method="POST" action="<?php echo url('/profesor/cursos/edit/' . $curso->id); ?>" id="formEditarCurso">
                         <?php echo csrf_input(); ?>
 
-                        <section class="form-section">
-                            <div class="section-title">
-                                <h2 class="form-section-title">Checklist de publicacion</h2>
-                                <span class="soft-badge"><i class="bi bi-clipboard-check"></i> Estado real</span>
-                            </div>
-
-                            <div class="production-hint-card tone-info mb-3">
-                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-                                    <div>
-                                        <div class="production-hint-title">Preparacion actual: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</div>
-                                        <div class="text-muted mt-1"><?php echo htmlspecialchars($coursePublishHint ?? ''); ?></div>
-                                    </div>
-                                    <div class="soft-badge"><?php echo (int) ($coursePublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($coursePublishSummary['total'] ?? 0); ?> puntos</div>
+                        <details class="panel page-assist-card mb-4">
+                            <summary class="page-assist-summary">
+                                <div>
+                                    <div class="metric-label">Lectura editorial</div>
+                                    <div class="fw-semibold mt-1">Checklist de publicacion y estado real del curso</div>
+                                    <div class="small text-muted mt-1">Abre esta seccion si necesitas revisar huecos antes de tocar la configuracion principal.</div>
                                 </div>
-                                <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%"></span></div>
-                                <div class="course-meta mt-3">
-                                    <span><i class="bi bi-journal-richtext"></i> <?php echo (int) ($coursePublishSummary['lessons'] ?? 0); ?> lecciones</span>
-                                    <span><i class="bi bi-broadcast"></i> <?php echo $publishedLessons; ?> publicadas</span>
-                                    <span><i class="bi bi-book"></i> <?php echo (int) ($coursePublishSummary['theories'] ?? 0); ?> teorias</span>
-                                    <span><i class="bi bi-lightning"></i> <?php echo (int) ($coursePublishSummary['activities'] ?? 0); ?> actividades</span>
-                                </div>
-                                <div class="small text-muted mt-2"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
-                            </div>
-
-                            <div class="publish-checklist-grid">
-                                <?php foreach (($coursePublishChecklist ?? []) as $item): ?>
-                                    <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
-                                        <div class="publish-check-head">
-                                            <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
-                                            <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                <span class="soft-badge"><?php echo (int) ($coursePublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($coursePublishSummary['total'] ?? 0); ?> puntos</span>
+                            </summary>
+                            <div class="panel-body pt-0 page-assist-body">
+                                <div class="alert context-note mb-3">
+                                    <div class="split-head">
+                                        <div>
+                                            <div class="fw-semibold">Preparacion actual: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%</div>
+                                            <div class="small text-muted mt-1"><?php echo htmlspecialchars($coursePublishHint ?? ''); ?></div>
                                         </div>
-                                        <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
-                                    </article>
-                                <?php endforeach; ?>
-                            </div>
+                                        <div class="soft-badge"><?php echo (int) ($coursePublishSummary['ok'] ?? 0); ?>/<?php echo (int) ($coursePublishSummary['total'] ?? 0); ?> puntos</div>
+                                    </div>
+                                    <div class="readiness-meter mt-3"><span style="width: <?php echo (int) ($coursePublishSummary['percentage'] ?? 0); ?>%"></span></div>
+                                    <div class="course-meta mt-3">
+                                        <span><i class="bi bi-journal-richtext"></i> <?php echo (int) ($coursePublishSummary['lessons'] ?? 0); ?> lecciones</span>
+                                        <span><i class="bi bi-broadcast"></i> <?php echo $publishedLessons; ?> publicadas</span>
+                                        <span><i class="bi bi-book"></i> <?php echo (int) ($coursePublishSummary['theories'] ?? 0); ?> teorias</span>
+                                        <span><i class="bi bi-lightning"></i> <?php echo (int) ($coursePublishSummary['activities'] ?? 0); ?> actividades</span>
+                                    </div>
+                                    <div class="small text-muted mt-2"><?php echo htmlspecialchars($catalogStatus['hint']); ?></div>
+                                </div>
 
-                            <div id="courseVisibilityHint" class="alert alert-warning mt-3 mb-0" <?php echo !empty($curso->es_publico) && (int) ($coursePublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
-                                <i class="bi bi-exclamation-triangle"></i>
-                                El curso esta marcado para catalogo, pero todavia no quedara bien expuesto hasta cerrar los huecos editoriales principales.
+                                <div class="publish-checklist-grid">
+                                    <?php foreach (($coursePublishChecklist ?? []) as $item): ?>
+                                        <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
+                                            <div class="publish-check-head">
+                                                <div class="publish-check-title"><?php echo htmlspecialchars($item['label']); ?></div>
+                                                <span class="soft-badge"><?php echo !empty($item['ok']) ? 'OK' : 'Falta'; ?></span>
+                                            </div>
+                                            <div class="publish-check-copy"><?php echo htmlspecialchars($item['hint']); ?></div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div id="courseVisibilityHint" class="alert context-note mt-3 mb-0" <?php echo !empty($curso->es_publico) && (int) ($coursePublishSummary['percentage'] ?? 0) < 100 ? '' : 'hidden'; ?>>
+                                    El curso esta marcado para catalogo, pero todavia no quedara bien expuesto hasta cerrar los huecos editoriales principales.
+                                </div>
                             </div>
-                        </section>
+                        </details>
 
                         <section class="form-section">
                             <div class="section-title">
@@ -252,9 +255,9 @@ $catalogStatus = app_course_catalog_status($curso);
                                     <div class="form-text">Mantiene separado lo que esta listo editorialmente de lo que ya esta visible para alumnos.</div>
                                 </div>
                                 <div class="col-lg-5">
-                                    <div class="production-hint-card tone-info h-100" id="courseEditorialCard">
-                                        <div class="production-hint-title" id="courseEditorialTitle"><?php echo htmlspecialchars($courseEditorialMeta['label']); ?></div>
-                                        <div class="text-muted" id="courseEditorialDescription"><?php echo htmlspecialchars($courseEditorialMeta['description']); ?></div>
+                                    <div class="alert context-note h-100 mb-0" id="courseEditorialCard">
+                                        <div class="fw-semibold" id="courseEditorialTitle"><?php echo htmlspecialchars($courseEditorialMeta['label']); ?></div>
+                                        <div class="small text-muted mt-1" id="courseEditorialDescription"><?php echo htmlspecialchars($courseEditorialMeta['description']); ?></div>
                                     </div>
                                 </div>
                             </div>
@@ -272,12 +275,12 @@ $catalogStatus = app_course_catalog_status($curso);
                                 <label class="form-check-label" for="requiere_codigo">Requiere codigo de acceso</label>
                             </div>
 
-                            <div class="alert alert-warning mt-3 mb-0" id="courseEditorialWorkflowHint" hidden>
+                            <div class="alert context-note mt-3 mb-0" id="courseEditorialWorkflowHint" hidden>
                                 <i class="bi bi-exclamation-triangle"></i>
                                 Mientras el curso no quede en <strong>Publicado</strong> o no tenga una leccion publicada, seguira fuera de la vista del estudiante aunque marques la casilla.
                             </div>
 
-                            <div id="codigo_acceso_div" class="mt-3" style="display: <?php echo $curso->requiere_codigo ? 'block' : 'none'; ?>;">
+                            <div id="codigo_acceso_div" class="mt-3 <?php echo $curso->requiere_codigo ? '' : 'is-hidden'; ?>">
                                 <div class="row g-3">
                                     <div class="col-lg-7">
                                         <label for="codigo_acceso" class="form-label">Codigo de acceso</label>

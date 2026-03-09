@@ -10,7 +10,7 @@
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-ui-checks-grid"></i> Configurador</span>
         <h1 class="page-title">Actividad de seleccion multiple</h1>
         <p class="page-subtitle">
@@ -24,12 +24,15 @@
                 <i class="bi bi-images"></i> Elegir imagen en biblioteca
             </a>
         </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-ui-checks-grid"></i> Configurador</span>
+            <span class="soft-badge"><i class="bi bi-card-checklist"></i> Preguntas con opciones</span>
+        </div>
     </section>
 
     <?php if (!empty($_GET['selected_media_id'])): ?>
-        <div class="alert alert-success">
-            <i class="bi bi-check2-circle"></i>
-            Imagen lista para usar: <strong><?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?></strong>.
+        <div class="alert context-note">
+            <strong>Imagen lista para usar:</strong> <?php echo htmlspecialchars((string) ($_GET['selected_media_title'] ?? 'Recurso seleccionado')); ?>.
             La aplicare a la primera pregunta sin imagen.
         </div>
     <?php endif; ?>
@@ -62,7 +65,7 @@
                                 <input type="text" class="form-control" id="pregunta" name="pregunta" placeholder="Ejemplo: selecciona la respuesta correcta en cada caso" value="">
                             </div>
 
-                            <div class="alert alert-light border" role="alert">
+                            <div class="alert context-note" role="alert">
                                 <i class="bi bi-image"></i>
                                 Puedes convertir cualquier pregunta en una actividad visual asociando una imagen desde tu biblioteca.
                             </div>
@@ -131,7 +134,7 @@
         preguntaDiv.dataset.preguntaId = preguntasCount;
 
         preguntaDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div class="split-head mb-3">
                 <div>
                     <h3 class="h5 mb-1">Pregunta ${preguntasCount}</h3>
                     <div class="small text-muted">Define el texto y sus opciones.</div>
@@ -208,7 +211,7 @@
         opcionDiv.className = 'option-item';
 
         opcionDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div class="split-head mb-3">
                 <label class="form-label mb-0">Opcion ${nextIndex}</label>
                 <button type="button" class="btn btn-sm btn-outline-danger btn-remove">Eliminar</button>
             </div>
@@ -289,7 +292,7 @@
         preguntaDiv.dataset.preguntaId = preguntasCount;
 
         preguntaDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div class="split-head mb-3">
                 <div>
                     <h3 class="h5 mb-1">Pregunta ${preguntasCount}</h3>
                     <div class="small text-muted">Define el texto y sus opciones.</div>
@@ -371,7 +374,7 @@
         }
 
         opcionDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+            <div class="split-head mb-3">
                 <label class="form-label mb-0">Opcion ${nextIndex}</label>
                 <button type="button" class="btn btn-sm btn-outline-danger btn-remove">Eliminar</button>
             </div>

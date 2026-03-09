@@ -1,7 +1,7 @@
 <?php require_once __DIR__ . '/../../partials/header.php'; ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-collection"></i> Estructura del curso</span>
         <h1 class="page-title"><?php echo htmlspecialchars($curso->titulo); ?></h1>
         <p class="page-subtitle"><?php echo nl2br(htmlspecialchars($curso->descripcion)); ?></p>
@@ -19,31 +19,21 @@
                 <i class="bi bi-arrow-left"></i> Volver a cursos
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Lecciones</div>
-                <div class="metric-value"><?php echo count($lecciones); ?></div>
-                <div class="metric-note">Bloques creados dentro del curso.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Teoria</div>
-                <div class="metric-value"><?php echo array_reduce($lecciones, fn($carry, $item) => $carry + (int) $item->total_teorias, 0); ?></div>
-                <div class="metric-note">Piezas teoricas agregadas.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Actividades</div>
-                <div class="metric-value"><?php echo array_reduce($lecciones, fn($carry, $item) => $carry + (int) $item->total_actividades, 0); ?></div>
-                <div class="metric-note">Practicas listas para editar.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-collection"></i> <?php echo count($lecciones); ?> lecciones</span>
+            <span class="soft-badge"><i class="bi bi-book"></i> <?php echo array_reduce($lecciones, fn($carry, $item) => $carry + (int) $item->total_teorias, 0); ?> piezas de teoria</span>
+            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo array_reduce($lecciones, fn($carry, $item) => $carry + (int) $item->total_actividades, 0); ?> actividades</span>
+            <?php if (empty($puedeCrearLeccion)): ?>
+                <span class="soft-badge warning"><i class="bi bi-lock"></i> Limite de lecciones alcanzado</span>
+            <?php endif; ?>
         </div>
     </section>
 
     <?php require __DIR__ . '/../../partials/flash.php'; ?>
 
     <?php if (!empty($planUso['is_free'])): ?>
-        <div class="alert alert-info mb-4">
-            <i class="bi bi-lightbulb"></i>
-            Plan gratuito: este curso admite hasta 3 lecciones. <?php echo !empty($mensajeLimiteLeccion) ? htmlspecialchars($mensajeLimiteLeccion) : 'Aun tienes espacio para seguir construyendo.'; ?>
+        <div class="alert context-note mb-4">
+            <strong>Plan gratuito:</strong> este curso admite hasta 3 lecciones. <?php echo !empty($mensajeLimiteLeccion) ? htmlspecialchars($mensajeLimiteLeccion) : 'Aun tienes espacio para seguir construyendo.'; ?>
         </div>
     <?php endif; ?>
 
@@ -75,11 +65,11 @@
                     <div class="col-xl-6">
                         <article class="surface-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+                                <div class="mb-3">
                                     <div>
                                         <div class="small text-muted mb-1">Leccion <?php echo (int) $leccion->orden; ?></div>
                                         <h3 class="h4 mb-1"><?php echo htmlspecialchars($leccion->titulo); ?></h3>
-                                        <div class="d-flex gap-2 flex-wrap">
+                                        <div class="badge-row">
                                             <?php if ($leccion->es_obligatoria): ?>
                                                 <span class="soft-badge">Obligatoria</span>
                                             <?php endif; ?>
@@ -100,7 +90,7 @@
                                 </div>
 
                                 <section class="production-hint-card mt-4 tone-<?php echo htmlspecialchars($readiness['tone']); ?>">
-                                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
+                                    <div class="split-head mb-2">
                                         <div class="production-hint-title"><?php echo htmlspecialchars($readiness['label']); ?></div>
                                         <span class="soft-badge"><?php echo (int) $readiness['progress']; ?>%</span>
                                     </div>

@@ -28,43 +28,19 @@ foreach ($users as $user) {
 ?>
 
 <div class="container">
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-people-fill"></i> Administracion de usuarios</span>
         <h1 class="page-title">Gestiona acceso, roles y limpieza operativa sin perder contexto.</h1>
         <p class="page-subtitle">
             Filtra por rol, localiza usuarios por nombre o correo y corrige cuentas desde una misma vista de trabajo.
         </p>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Resultados visibles</div>
-                <div class="metric-value"><?php echo count($users); ?></div>
-                <div class="metric-note">Usuarios cargados en la pagina actual.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Admins</div>
-                <div class="metric-value"><?php echo $admins; ?></div>
-                <div class="metric-note">Administradores dentro del resultado.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Profesores</div>
-                <div class="metric-value"><?php echo $profesores; ?></div>
-                <div class="metric-note">Docentes visibles con el filtro actual.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Estudiantes</div>
-                <div class="metric-value"><?php echo $estudiantes; ?></div>
-                <div class="metric-note">Aprendices listados en esta pagina.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Inactivos</div>
-                <div class="metric-value"><?php echo $inactiveUsers; ?></div>
-                <div class="metric-note">Cuentas bloqueadas dentro del resultado visible.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Correo pendiente</div>
-                <div class="metric-value"><?php echo $pendingEmails; ?></div>
-                <div class="metric-note">Usuarios sin correo marcado como verificado.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge info"><i class="bi bi-files"></i> <?php echo count($users); ?> resultados visibles</span>
+            <span class="soft-badge"><i class="bi bi-shield-check"></i> <?php echo $admins; ?> admins</span>
+            <span class="soft-badge"><i class="bi bi-person-workspace"></i> <?php echo $profesores; ?> profesores</span>
+            <span class="soft-badge"><i class="bi bi-mortarboard"></i> <?php echo $estudiantes; ?> estudiantes</span>
+            <span class="soft-badge <?php echo $inactiveUsers > 0 ? 'warning' : 'success'; ?>"><i class="bi bi-person-slash"></i> <?php echo $inactiveUsers; ?> inactivos</span>
+            <span class="soft-badge <?php echo $pendingEmails > 0 ? 'warning' : 'info'; ?>"><i class="bi bi-envelope-exclamation"></i> <?php echo $pendingEmails; ?> correo pendiente</span>
         </div>
     </section>
 
@@ -122,7 +98,7 @@ foreach ($users as $user) {
     <section>
         <div class="section-title">
             <h2>Usuarios</h2>
-            <div class="d-flex align-items-center gap-2">
+            <div class="section-actions">
                 <span class="soft-badge"><i class="bi bi-shield-check"></i> Control de roles</span>
                 <a href="<?php echo url('/admin/usuarios/create'); ?>" class="btn btn-sm btn-primary">
                     <i class="bi bi-person-plus"></i> Crear usuario
@@ -130,11 +106,16 @@ foreach ($users as $user) {
             </div>
         </div>
 
-        <section class="filter-shell mb-4">
-            <div class="panel-body">
-                <div class="section-title">
-                    <h2>Accion masiva</h2>
+        <details class="panel page-assist-card mb-4">
+            <summary class="page-assist-summary">
+                <div>
+                    <div class="metric-label">Herramientas de administracion</div>
+                    <div class="fw-semibold mt-1">Accion masiva para los usuarios visibles</div>
+                    <div class="small text-muted mt-1">Abre esta seccion cuando necesites activar accesos o marcar correos desde la lista actual.</div>
                 </div>
+                <span class="soft-badge">1 bloque</span>
+            </summary>
+            <div class="panel-body pt-0 page-assist-body">
                 <form method="POST" action="<?php echo url('/admin/usuarios/bulk-action'); ?>" id="user-bulk-form" class="row g-3 align-items-end">
                     <?php echo csrf_input(); ?>
                     <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
@@ -157,7 +138,7 @@ foreach ($users as $user) {
                     </div>
                 </form>
             </div>
-        </section>
+        </details>
 
         <div class="data-table-shell">
             <div class="table-responsive">
@@ -192,7 +173,7 @@ foreach ($users as $user) {
                                             <div>
                                                 <div class="fw-semibold"><?php echo htmlspecialchars(trim($user->nombre . ' ' . $user->apellido)); ?></div>
                                                 <div class="small text-muted">Cuenta de la instancia actual</div>
-                                                <div class="small mt-1 d-flex gap-2 flex-wrap">
+                                                <div class="small mt-1 badge-row">
                                                     <span class="soft-badge <?php echo !empty($user->activo) ? 'success' : 'warning'; ?>">
                                                         <?php echo !empty($user->activo) ? 'Activa' : 'Inactiva'; ?>
                                                     </span>
@@ -225,11 +206,11 @@ foreach ($users as $user) {
                                     </td>
                                     <td><?php echo date('d/m/Y H:i', strtotime($user->creado_en)); ?></td>
                                     <td>
-                                        <div class="d-flex gap-2 flex-wrap">
+                                        <div class="responsive-actions table-actions">
                                             <a href="<?php echo url('/admin/usuarios/edit/' . $user->id); ?>" class="btn btn-sm btn-outline-secondary" title="Editar usuario">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form method="POST" action="<?php echo url('/admin/usuarios/toggle-activo/' . $user->id); ?>" class="d-inline">
+                                            <form method="POST" action="<?php echo url('/admin/usuarios/toggle-activo/' . $user->id); ?>">
                                                 <?php echo csrf_input(); ?>
                                                 <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-primary" title="<?php echo !empty($user->activo) ? 'Desactivar acceso' : 'Activar acceso'; ?>">
@@ -237,7 +218,7 @@ foreach ($users as $user) {
                                                 </button>
                                             </form>
                                             <?php if (empty($user->email_verificado)): ?>
-                                                <form method="POST" action="<?php echo url('/admin/usuarios/verify-email/' . $user->id); ?>" class="d-inline">
+                                                <form method="POST" action="<?php echo url('/admin/usuarios/verify-email/' . $user->id); ?>">
                                                     <?php echo csrf_input(); ?>
                                                     <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($currentUsersUrl); ?>">
                                                     <button type="submit" class="btn btn-sm btn-outline-primary" title="Marcar correo como verificado">
@@ -246,7 +227,7 @@ foreach ($users as $user) {
                                                 </form>
                                             <?php endif; ?>
                                             <?php if ($user->id != $_SESSION['user_id']): ?>
-                                                <form method="POST" action="<?php echo url('/admin/usuarios/delete/' . $user->id); ?>" class="d-inline" onsubmit="return confirm('Estas seguro de eliminar este usuario?');">
+                                                <form method="POST" action="<?php echo url('/admin/usuarios/delete/' . $user->id); ?>" onsubmit="return confirm('Estas seguro de eliminar este usuario?');">
                                                     <?php echo csrf_input(); ?>
                                                     <button type="submit" class="btn btn-sm btn-danger" title="Eliminar usuario">
                                                         <i class="bi bi-trash"></i>

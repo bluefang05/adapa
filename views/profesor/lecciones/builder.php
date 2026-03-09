@@ -95,7 +95,7 @@ $builderLanes = [
         </ol>
     </nav>
 
-    <section class="page-hero mb-4">
+    <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-diagram-3"></i> Constructor de leccion</span>
         <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
         <p class="page-subtitle">
@@ -112,27 +112,11 @@ $builderLanes = [
                 <i class="bi bi-eye"></i> Vista completa
             </a>
         </div>
-        <div class="metric-grid">
-            <div class="metric-card">
-                <div class="metric-label">Preparacion</div>
-                <div class="metric-value"><?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>%</div>
-                <div class="metric-note"><?php echo htmlspecialchars($lessonSupportLabel); ?></div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Teoria</div>
-                <div class="metric-value"><?php echo $theoryCount; ?></div>
-                <div class="metric-note">Piezas teoricas ya creadas.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Practica</div>
-                <div class="metric-value"><?php echo $activityCount; ?></div>
-                <div class="metric-note">Actividades listas para revisar.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Recursos recientes</div>
-                <div class="metric-value"><?php echo $resourceCount; ?></div>
-                <div class="metric-note">Atajos directos a tu biblioteca.</div>
-            </div>
+        <div class="compact-meta-row">
+            <span class="soft-badge <?php echo htmlspecialchars($lessonSupportTone); ?>"><i class="bi bi-check2-circle"></i> <?php echo (int) ($lessonPublishSummary['percentage'] ?? 0); ?>% preparacion</span>
+            <span class="soft-badge"><i class="bi bi-book"></i> <?php echo $theoryCount; ?> piezas de teoria</span>
+            <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo $activityCount; ?> actividades</span>
+            <span class="soft-badge"><i class="bi bi-images"></i> <?php echo $resourceCount; ?> recursos recientes</span>
         </div>
     </section>
 
@@ -140,24 +124,28 @@ $builderLanes = [
 
     <div class="row g-4">
         <div class="col-xl-8">
-            <section class="surface-card mb-4">
-                <div class="card-body">
-                    <div class="section-title">
-                        <h2>Estado editorial</h2>
-                        <span class="soft-badge badge-<?php echo htmlspecialchars($lessonSupportTone); ?>"><?php echo htmlspecialchars($lessonSupportLabel); ?></span>
+            <details class="panel page-assist-card mb-4">
+                <summary class="page-assist-summary">
+                    <div>
+                        <div class="metric-label">Estado editorial</div>
+                        <div class="fw-semibold mt-1"><?php echo htmlspecialchars($lessonSupportLabel); ?> - <?php echo $lessonSupportProgress; ?>%</div>
+                        <div class="small text-muted mt-1"><?php echo htmlspecialchars($lessonSupportHint); ?></div>
                     </div>
-                    <section class="production-hint-card tone-<?php echo htmlspecialchars($lessonSupportTone); ?>">
-                        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
-                            <div class="production-hint-title"><?php echo htmlspecialchars($lessonSupportLabel); ?></div>
+                    <span class="soft-badge badge-<?php echo htmlspecialchars($lessonSupportTone); ?>">Checklist</span>
+                </summary>
+                <div class="panel-body pt-0 page-assist-body">
+                    <div class="alert context-note mb-0">
+                        <div class="split-head mb-2">
+                            <div class="fw-semibold"><?php echo htmlspecialchars($lessonSupportLabel); ?></div>
                             <span class="soft-badge"><?php echo $lessonSupportProgress; ?>%</span>
                         </div>
                         <div class="readiness-meter mb-2">
                             <span style="width: <?php echo $lessonSupportProgress; ?>%"></span>
                         </div>
                         <p class="text-muted mb-0"><?php echo htmlspecialchars($lessonSupportHint); ?></p>
-                    </section>
+                    </div>
 
-                    <div class="publish-checklist-grid mt-4">
+                    <div class="publish-checklist-grid">
                         <?php foreach (($lessonPublishChecklist ?? []) as $item): ?>
                             <article class="publish-check-card <?php echo !empty($item['ok']) ? 'is-ready' : 'is-missing'; ?>">
                                 <div class="publish-check-head">
@@ -169,7 +157,7 @@ $builderLanes = [
                         <?php endforeach; ?>
                     </div>
                 </div>
-            </section>
+            </details>
 
             <section class="surface-card mb-4">
                 <div class="card-body">
@@ -192,12 +180,16 @@ $builderLanes = [
                 </div>
             </section>
 
-            <section class="surface-card mb-4">
-                <div class="card-body">
-                    <div class="section-title">
-                        <h2>Construccion en una mirada</h2>
-                        <span class="soft-badge"><i class="bi bi-speedometer2"></i> Donde invertir tiempo</span>
+            <details class="panel page-assist-card mb-4">
+                <summary class="page-assist-summary">
+                    <div>
+                        <div class="metric-label">Mapa rapido</div>
+                        <div class="fw-semibold mt-1">Donde invertir tiempo antes de publicar</div>
+                        <div class="small text-muted mt-1">Abre esta seccion si quieres una lectura compacta de ficha, teoria, practica y apoyo.</div>
                     </div>
+                    <span class="soft-badge"><?php echo count($builderLanes); ?> focos</span>
+                </summary>
+                <div class="panel-body pt-0 page-assist-body">
                     <div class="publish-checklist-grid">
                         <?php foreach ($builderLanes as $lane): ?>
                             <article class="publish-check-card">
@@ -213,7 +205,7 @@ $builderLanes = [
                         <?php endforeach; ?>
                     </div>
                 </div>
-            </section>
+            </details>
 
             <section class="surface-card mb-4">
                 <div class="card-body">
@@ -241,17 +233,17 @@ $builderLanes = [
                                 <?php
                                 $summary = $theorySummaries[$teoria->id] ?? Teoria::resumenDocente($teoria);
                                 ?>
-                                <article class="builder-item-row">
+                                <article class="builder-item-row builder-item-row--theory">
                                     <div class="builder-item-main">
                                         <div class="builder-item-title"><?php echo htmlspecialchars($teoria->titulo); ?></div>
-                                        <div class="builder-item-copy">
-                                            <?php echo (int) ($teoria->duracion_minutos ?? 0); ?> min -
-                                            <?php echo (int) $summary['block_count']; ?> bloques -
-                                            <?php echo (int) $summary['media_count']; ?> con media
+                                        <div class="course-meta builder-inline-meta">
+                                            <span><i class="bi bi-clock"></i> <?php echo (int) ($teoria->duracion_minutos ?? 0); ?> min</span>
+                                            <span><i class="bi bi-layers"></i> <?php echo (int) $summary['block_count']; ?> bloques</span>
+                                            <span><i class="bi bi-image"></i> <?php echo (int) $summary['media_count']; ?> con media</span>
                                         </div>
-                                        <div class="small text-muted mt-1"><?php echo htmlspecialchars($summary['label']); ?>: <?php echo htmlspecialchars($summary['message']); ?></div>
+                                        <div class="small text-muted builder-item-status"><?php echo htmlspecialchars($summary['label']); ?>: <?php echo htmlspecialchars($summary['message']); ?></div>
                                     </div>
-                                    <div class="builder-item-actions">
+                                    <div class="builder-item-actions builder-item-actions-rail">
                                         <a href="<?php echo url('/profesor/teoria/edit/' . $teoria->id . '?return_to=' . rawurlencode($builderReturnTo)); ?>" class="btn btn-sm btn-outline-primary">Editar</a>
                                         <form method="POST" action="<?php echo url('/profesor/teoria/duplicate/' . $teoria->id) . '?continue_to=edit&return_to=' . rawurlencode($builderReturnTo); ?>">
                                             <?php echo csrf_input(); ?>
@@ -289,20 +281,20 @@ $builderLanes = [
                         <div class="builder-item-list">
                             <?php foreach ($actividades as $actividad): ?>
                                 <?php $summary = $activitySummaries[$actividad->id] ?? Actividad::resumenDocente($actividad); ?>
-                                <article class="builder-item-row">
+                                <article class="builder-item-row builder-item-row--activity">
                                     <div class="builder-item-main">
                                         <div class="builder-item-title"><?php echo htmlspecialchars($actividad->titulo); ?></div>
-                                        <div class="builder-item-copy">
-                                            <?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $actividad->tipo_actividad))); ?> -
-                                            <?php echo (int) ($actividad->puntos_maximos ?? 0); ?> pts -
-                                            <?php echo (int) ($actividad->tiempo_limite_minutos ?? 0); ?> min
+                                        <div class="course-meta builder-inline-meta">
+                                            <span><i class="bi bi-ui-checks-grid"></i> <?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $actividad->tipo_actividad))); ?></span>
+                                            <span><i class="bi bi-award"></i> <?php echo (int) ($actividad->puntos_maximos ?? 0); ?> pts</span>
+                                            <span><i class="bi bi-clock-history"></i> <?php echo (int) ($actividad->tiempo_limite_minutos ?? 0); ?> min</span>
                                             <?php if (!empty($summary['has_support_resource'])): ?>
-                                                - Con recurso de apoyo
+                                                <span><i class="bi bi-paperclip"></i> Con recurso de apoyo</span>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="small text-muted mt-1"><?php echo htmlspecialchars($summary['label']); ?>: <?php echo htmlspecialchars($summary['message']); ?></div>
+                                        <div class="small text-muted builder-item-status"><?php echo htmlspecialchars($summary['label']); ?>: <?php echo htmlspecialchars($summary['message']); ?></div>
                                     </div>
-                                    <div class="builder-item-actions">
+                                    <div class="builder-item-actions builder-item-actions-rail">
                                         <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/configurar?return_to=' . rawurlencode($builderReturnTo)); ?>" class="btn btn-sm btn-outline-secondary">Configurar</a>
                                         <a href="<?php echo url('/profesor/actividad/edit/' . $actividad->id . '?return_to=' . rawurlencode($builderReturnTo)); ?>" class="btn btn-sm btn-outline-primary">Editar</a>
                                         <a href="<?php echo url('/profesor/actividad/' . $actividad->id . '/preview'); ?>" class="btn btn-sm btn-outline-secondary">Probar</a>
@@ -320,10 +312,10 @@ $builderLanes = [
         </div>
 
         <div class="col-xl-4">
-            <section class="surface-card mb-4">
+            <section class="surface-card builder-sidebar-card mb-4">
                 <div class="card-body">
                     <div class="section-title">
-                        <h2>Recursos utiles</h2>
+                        <h2>Biblioteca reciente</h2>
                         <span class="soft-badge"><i class="bi bi-collection-play"></i> Biblioteca</span>
                     </div>
                     <p class="text-muted">Abre la biblioteca desde contexto o reutiliza uno de los recursos recientes para acelerar la leccion.</p>
@@ -356,7 +348,7 @@ $builderLanes = [
                 </div>
             </section>
 
-            <section class="surface-card">
+            <section class="surface-card builder-sidebar-card">
                 <div class="card-body">
                     <div class="section-title">
                         <h2>Publicacion</h2>

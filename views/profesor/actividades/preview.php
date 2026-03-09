@@ -70,9 +70,8 @@ function renderPreviewSupportResource($resource) {
     <?php
 }
 
-$isPreviewUser = Auth::getUserRole() === 'profesor' || Auth::getUserRole() === 'admin';
-$backUrl = $isPreviewUser ? url('/profesor/lecciones/' . $actividad->leccion_id . '/actividades') : url('/estudiante');
-$backLabel = $isPreviewUser ? 'Volver a actividades' : 'Volver al panel';
+$backUrl = url('/profesor/lecciones/' . $actividad->leccion_id . '/actividades');
+$backLabel = 'Volver a actividades';
 $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 ?>
 
@@ -80,46 +79,48 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 
 <div class="container activity-player-page">
     <div class="activity-container activity-player">
-        <section class="page-hero mb-4">
-            <span class="eyebrow"><i class="bi bi-lightning-charge"></i> <?php echo $isPreviewUser ? 'Vista previa interactiva' : 'Actividad interactiva'; ?></span>
+        <section class="page-hero content-hero mb-4">
+            <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Vista previa interactiva</span>
             <h1 class="page-title"><?php echo htmlspecialchars($actividad->titulo); ?></h1>
             <p class="page-subtitle"><?php echo htmlspecialchars($actividad->descripcion ?: 'Resuelve la actividad y recibe retroalimentacion inmediata.'); ?></p>
-            <?php if ($isPreviewUser): ?>
-                <p class="text-muted mb-0">Esta vista ayuda a comprobar interaccion, feedback y orden de preguntas antes de que la vea el alumno.</p>
-            <?php endif; ?>
-            <div class="metric-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Tipo</div>
-                    <div class="metric-value"><?php echo htmlspecialchars(previewActivityTypeLabel($actividad->tipo_actividad)); ?></div>
-                    <div class="metric-note">Formato configurado para esta practica.</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Secuencia</div>
-                    <div class="metric-value"><?php echo isset($siguienteActividad) && $siguienteActividad ? 'Con siguiente paso' : 'Ultima actividad'; ?></div>
-                    <div class="metric-note"><?php echo isset($siguienteActividad) && $siguienteActividad ? 'Podras continuar al terminar.' : 'Al cerrar volveras a la leccion.'; ?></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Modo</div>
-                    <div class="metric-value">Interactivo</div>
-                    <div class="metric-note">Retroalimentacion dentro de la misma pantalla.</div>
-                </div>
+            <div class="compact-meta-row">
+                <span class="soft-badge info"><i class="bi bi-grid"></i> <?php echo htmlspecialchars(previewActivityTypeLabel($actividad->tipo_actividad)); ?></span>
+                <span class="soft-badge"><i class="bi bi-cursor"></i> Preview interactivo</span>
+                <span class="soft-badge <?php echo isset($siguienteActividad) && $siguienteActividad ? 'success' : 'warning'; ?>">
+                    <i class="bi bi-signpost-split"></i> <?php echo isset($siguienteActividad) && $siguienteActividad ? 'Con siguiente paso' : 'Ultima actividad'; ?>
+                </span>
+                <?php if ($supportResource): ?>
+                    <span class="soft-badge badge-accent"><i class="bi bi-paperclip"></i> Con apoyo vinculado</span>
+                <?php endif; ?>
             </div>
         </section>
 
         <div class="activity-card activity-player-shell">
             <?php if ($supportResource): ?>
-                <?php renderPreviewSupportResource($supportResource); ?>
+                <details class="panel page-assist-card mb-4">
+                    <summary class="page-assist-summary">
+                        <div>
+                            <div class="metric-label">Apoyo docente</div>
+                            <div class="fw-semibold mt-1">Recurso vinculado a esta actividad</div>
+                            <div class="small text-muted mt-1">Abre esta seccion solo para comprobar si el apoyo realmente ayuda a resolver la practica.</div>
+                        </div>
+                        <span class="soft-badge">1 bloque</span>
+                    </summary>
+                    <div class="panel-body pt-0 page-assist-body">
+                        <?php renderPreviewSupportResource($supportResource); ?>
+                    </div>
+                </details>
             <?php endif; ?>
             
             <div id="activity-content" class="activity-player-content">
                 <!-- El contenido de la actividad se cargará aquí dinámicamente -->
             </div>
             
-            <div id="feedback" class="feedback" style="display: none;"></div>
+            <div id="feedback" class="feedback is-hidden"></div>
             
             <div class="responsive-actions activity-player-actions">
                 <button id="submit-activity" class="btn btn-primary btn-lg submit-button" onclick="submitActivity()">Enviar respuesta</button>
-                <button id="next-activity" class="btn btn-success btn-lg submit-button" style="display: none;" onclick="nextActivity()">Siguiente actividad</button>
+                <button id="next-activity" class="btn btn-success btn-lg submit-button is-hidden" onclick="nextActivity()">Siguiente actividad</button>
                 <a href="<?php echo $backUrl; ?>" class="btn btn-outline-secondary btn-lg"><?php echo $backLabel; ?></a>
             </div>
         </div>
@@ -129,7 +130,6 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 <script>
     const actividadData = <?php echo json_encode($actividad); ?>;
     const siguienteActividad = <?php echo isset($siguienteActividad) && $siguienteActividad ? json_encode($siguienteActividad) : 'null'; ?>;
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     
     // Mejor manejo del contenido JSON
     let contenido;
@@ -146,7 +146,6 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
     }
     
     const sortableCorrectOrder = (contenido.items || []).map(text => (text || '').trim());
-    const userRole = '<?php echo Auth::getUserRole(); ?>';
     let currentOptions = [];
     let questionMode = 'single';
     let questions = [];
@@ -193,7 +192,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                 loadListening(contentDiv);
                 break;
             default:
-                contentDiv.innerHTML = '<div class="alert alert-warning">Tipo de actividad no soportado en esta vista previa.</div>';
+                contentDiv.innerHTML = '<div class="alert context-note">Tipo de actividad no soportado en esta vista previa.</div>';
         }
     }
     
@@ -209,7 +208,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             selectedOptionsByQuestion = {};
 
             if (!questions.length) {
-                container.innerHTML = '<div class="alert alert-warning">Esta actividad aun no tiene preguntas configuradas.</div>';
+                container.innerHTML = '<div class="alert context-note">Esta actividad aun no tiene preguntas configuradas.</div>';
                 const submitBtn = document.getElementById('submit-activity');
                 if (submitBtn) submitBtn.style.display = 'none';
                 return;
@@ -243,7 +242,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             const pregunta = contenido.pregunta || contenido.pregunta_global || 'Selecciona la respuesta correcta:';
             
             if (!currentOptions.length) {
-                container.innerHTML = '<div class="alert alert-warning">Esta actividad aun no tiene opciones configuradas.</div>';
+                container.innerHTML = '<div class="alert context-note">Esta actividad aun no tiene opciones configuradas.</div>';
                 const submitBtn = document.getElementById('submit-activity');
                 if (submitBtn) submitBtn.style.display = 'none';
                 return;
@@ -289,7 +288,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             targets = contenido.targets || [];
         }
         
-        let html = `<div class="alert alert-light border mb-3"><strong>Modo tactil:</strong> toca un elemento y luego toca la columna destino para moverlo.</div>
+        let html = `<div class="alert context-note mb-3"><strong>Modo tactil:</strong> toca un elemento y luego toca la columna destino para moverlo.</div>
         <div class="drag-drop-container">
             <div class="drag-zone">
                 <h4>Arrastra aqui:</h4>`;
@@ -331,7 +330,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                     <div class="mb-4 question-block" data-index="${index}">
                         <p><strong>${texto}</strong></p>
                         <input type="text" class="form-control text-input mb-2" id="short-answer-${index}" placeholder="${placeholder}">
-                        <div class="feedback-msg" id="feedback-${index}" style="display:none; font-size: 0.9em;"></div>
+                        <div class="feedback-msg is-hidden" id="feedback-${index}"></div>
                     </div>
                 `;
             });
@@ -349,22 +348,81 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
     }
 
     function loadListening(container) {
+        const prompts = Array.isArray(contenido.preguntas) ? contenido.preguntas : null;
         const textToSpeak = contenido.texto_tts || contenido.transcripcion || '';
         const transcript = contenido.transcripcion || '';
-        let html = '<div class="alert alert-info">Vista previa de actividad de escucha.</div>';
+        let html = '<div class="alert context-note">Vista previa de actividad de escucha.</div>';
+
+        if (prompts && prompts.length) {
+            const sequencePayload = encodeURIComponent(JSON.stringify(prompts.map(prompt => ({
+                text: prompt.texto_tts || prompt.transcripcion || '',
+                normal_rate: prompt.tts_rate || contenido.tts_rate_normal || 0.9,
+                slow_rate: prompt.tts_rate_slow || contenido.tts_rate_slow || 0.75,
+                pitch: prompt.tts_pitch || contenido.tts_pitch || 1,
+                pause_ms: contenido.tts_pause_ms || 500
+            }))));
+            if (contenido.intro) {
+                html += `<div class="alert context-note">${escapeHtml(contenido.intro)}</div>`;
+            }
+            if (contenido.practice_goal) {
+                html += `<div class="small text-muted mb-3">Objetivo oral: ${escapeHtml(contenido.practice_goal)}</div>`;
+            }
+            html += `
+                <div class="responsive-actions mb-3">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="speakPreviewSequence(JSON.parse(decodeURIComponent('${sequencePayload}')), 'normal')">
+                        <i class="bi bi-collection-play"></i> Secuencia
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="speakPreviewSequence(JSON.parse(decodeURIComponent('${sequencePayload}')), 'slow')">
+                        <i class="bi bi-hourglass-split"></i> Secuencia lenta
+                    </button>
+                </div>
+            `;
+            prompts.forEach((prompt, index) => {
+                const promptId = prompt.id || `listen-${index}`;
+                const promptText = prompt.texto_tts || prompt.transcripcion || '';
+                const promptTranscript = prompt.transcripcion || prompt.texto_tts || '';
+                const encodedText = encodeURIComponent(promptText);
+                html += `
+                    <div class="card mb-3 border-light shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                <div>
+                                    <h5 class="card-title mb-1">${escapeHtml(prompt.descripcion || `Bloque ${index + 1}`)}</h5>
+                                    ${prompt.speaker_label ? `<div class="small text-muted">Referencia: ${escapeHtml(prompt.speaker_label)}</div>` : ''}
+                                    ${Array.isArray(prompt.palabras_clave) && prompt.palabras_clave.length ? `<div class="small text-muted">Pistas clave: ${escapeHtml(prompt.palabras_clave.join(' | '))}</div>` : ''}
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="speakPreviewText(decodeURIComponent('${encodedText}'), ${JSON.stringify(prompt.tts_rate || contenido.tts_rate_normal || 0.9)}, ${JSON.stringify(prompt.tts_pitch || contenido.tts_pitch || 1)})">
+                                        <i class="bi bi-volume-up-fill"></i> Normal
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="speakPreviewText(decodeURIComponent('${encodedText}'), ${JSON.stringify(prompt.tts_rate_slow || contenido.tts_rate_slow || 0.75)}, ${JSON.stringify(prompt.tts_pitch || contenido.tts_pitch || 1)})">
+                                        <i class="bi bi-hourglass-split"></i> Lento
+                                    </button>
+                                </div>
+                            </div>
+                            <label for="listening-answer-${promptId}" class="form-label mt-3">Escribe lo que escuchaste:</label>
+                            <textarea id="listening-answer-${promptId}" class="form-control text-input listening-answer" data-listening-id="${promptId}" rows="3" placeholder="Escribe aqui tu respuesta..."></textarea>
+                            <div class="alert context-note mt-3 mb-0"><strong>Referencia:</strong> ${escapeHtml(promptTranscript || 'Sin transcripcion configurada.')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            return;
+        }
 
         if (textToSpeak) {
             const encodedText = encodeURIComponent(textToSpeak);
             html += `
                 <div class="text-center mb-4">
-                    <button type="button" class="btn btn-primary btn-lg" onclick="speakPreviewText(decodeURIComponent('${encodedText}'))">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="speakPreviewText(decodeURIComponent('${encodedText}'), ${JSON.stringify(contenido.tts_rate_normal || 0.9)}, ${JSON.stringify(contenido.tts_pitch || 1)})">
                         <i class="bi bi-volume-up-fill"></i> Reproducir audio
                     </button>
                     <p class="text-muted mt-2 mb-0"><small>Usa sintesis de voz del navegador para una comprobacion rapida.</small></p>
                 </div>
             `;
         } else {
-            html += '<div class="alert alert-warning">Esta actividad no tiene audio o texto TTS configurado.</div>';
+            html += '<div class="alert context-note">Esta actividad no tiene audio o texto TTS configurado.</div>';
         }
 
         html += `
@@ -372,9 +430,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             <textarea id="listening-answer" class="form-control text-input" rows="4" placeholder="Escribe aqui tu respuesta..."></textarea>
         `;
 
-        if (userRole === 'profesor' || userRole === 'admin') {
-            html += `<div class="alert alert-light border mt-3 mb-0"><strong>Referencia:</strong> ${escapeHtml(transcript || 'Sin transcripcion configurada.')}</div>`;
-        }
+        html += `<div class="alert context-note mt-3 mb-0"><strong>Referencia:</strong> ${escapeHtml(transcript || 'Sin transcripcion configurada.')}</div>`;
 
         container.innerHTML = html;
     }
@@ -383,23 +439,55 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
         const prompts = Array.isArray(contenido) ? contenido : [];
 
         if (!prompts.length) {
-            container.innerHTML = '<div class="alert alert-warning">Esta actividad no tiene frases configuradas para pronunciacion.</div>';
+            container.innerHTML = '<div class="alert context-note">Esta actividad no tiene frases configuradas para pronunciacion.</div>';
             return;
         }
 
-        let html = '<div class="alert alert-info">Vista previa de actividad de pronunciacion.</div>';
+        let html = '<div class="alert context-note">Vista previa de actividad de pronunciacion.</div>';
+        const sequencePayload = encodeURIComponent(JSON.stringify(prompts.map(prompt => ({
+            text: prompt.texto_tts || prompt.frase || '',
+            normal_rate: prompt.tts_rate || 0.88,
+            slow_rate: prompt.tts_rate_slow || 0.72,
+            pitch: prompt.tts_pitch || 1,
+            pause_ms: 420
+        }))));
+        html += `
+            <div class="responsive-actions mb-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="speakPreviewSequence(JSON.parse(decodeURIComponent('${sequencePayload}')), 'normal')">
+                    <i class="bi bi-collection-play"></i> Secuencia
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="speakPreviewSequence(JSON.parse(decodeURIComponent('${sequencePayload}')), 'slow')">
+                    <i class="bi bi-hourglass-split"></i> Secuencia lenta
+                </button>
+            </div>
+        `;
         prompts.forEach((prompt, index) => {
             const promptId = prompt.id || `pron-${index}`;
             const phrase = prompt.frase || '';
+            const encodedText = encodeURIComponent(prompt.texto_tts || phrase);
             html += `
                 <div class="card mb-3 border-light shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-center mb-3">"${escapeHtml(phrase)}"</h5>
+                        ${(Array.isArray(prompt.focos) && prompt.focos.length) || prompt.practice_goal ? `
+                            <div class="alert context-note mb-3">
+                                ${Array.isArray(prompt.focos) && prompt.focos.length ? `<div class="small mb-1"><strong>Foco:</strong> ${escapeHtml(prompt.focos.join(' | '))}</div>` : ''}
+                                ${prompt.practice_goal ? `<div class="small mb-0"><strong>Meta oral:</strong> ${escapeHtml(prompt.practice_goal)}</div>` : ''}
+                            </div>
+                        ` : ''}
                         <div class="text-center mb-3">
+                            <div class="btn-group btn-group-sm mb-3" role="group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="speakPreviewText(decodeURIComponent('${encodedText}'), ${JSON.stringify(prompt.tts_rate || 0.88)}, ${JSON.stringify(prompt.tts_pitch || 1)})">
+                                    <i class="bi bi-volume-up"></i> Modelo
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="speakPreviewText(decodeURIComponent('${encodedText}'), ${JSON.stringify(prompt.tts_rate_slow || 0.72)}, ${JSON.stringify(prompt.tts_pitch || 1)})">
+                                    <i class="bi bi-hourglass-split"></i> Lento
+                                </button>
+                            </div>
                             <button type="button" class="btn btn-outline-primary btn-lg rounded-circle p-3" onclick="startPronunciationListening('${promptId}')">
                                 <i class="bi bi-mic-fill fs-3"></i>
                             </button>
-                            <div id="pron-status-${promptId}" class="text-muted mt-2 small" style="min-height: 20px;">Pulsa para probar reconocimiento.</div>
+                            <div id="pron-status-${promptId}" class="text-muted mt-2 small preview-status-slot">Pulsa para probar reconocimiento.</div>
                         </div>
                         <label for="pron-input-${promptId}" class="form-label text-muted small">Texto reconocido:</label>
                         <input type="text" id="pron-input-${promptId}" class="form-control text-input" placeholder="Tu pronunciacion aparecera aqui...">
@@ -408,14 +496,14 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             `;
         });
 
-        if (userRole === 'profesor' || userRole === 'admin') {
-            html += '<div class="alert alert-light border mb-0">El preview usa reconocimiento de voz del navegador. No reemplaza la experiencia completa del alumno.</div>';
-        }
+        html += '<div class="alert context-note mb-0">El preview usa reconocimiento de voz del navegador. No reemplaza la experiencia completa del alumno.</div>';
 
         container.innerHTML = html;
     }
 
-    function speakPreviewText(text) {
+    let previewPlaybackToken = 0;
+
+    function speakPreviewText(text, rate = 0.9, pitch = 1) {
         if (!('speechSynthesis' in window)) {
             alert('Tu navegador no soporta sintesis de voz.');
             return;
@@ -424,8 +512,41 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = detectSpeechLang();
-        utterance.rate = 0.9;
+        utterance.rate = rate;
+        utterance.pitch = pitch;
         window.speechSynthesis.speak(utterance);
+    }
+
+    function speakPreviewSequence(items, mode = 'normal') {
+        if (!('speechSynthesis' in window)) {
+            alert('Tu navegador no soporta sintesis de voz.');
+            return;
+        }
+
+        const sequence = Array.isArray(items) ? items.filter(item => item && item.text) : [];
+        if (!sequence.length) {
+            return;
+        }
+
+        previewPlaybackToken += 1;
+        const token = previewPlaybackToken;
+        window.speechSynthesis.cancel();
+
+        const playNext = (index) => {
+            if (token !== previewPlaybackToken || index >= sequence.length) {
+                return;
+            }
+
+            const item = sequence[index];
+            const utterance = new SpeechSynthesisUtterance(item.text);
+            utterance.lang = detectSpeechLang();
+            utterance.rate = mode === 'slow' ? (item.slow_rate || 0.75) : (item.normal_rate || 0.9);
+            utterance.pitch = item.pitch || 1;
+            utterance.onend = () => window.setTimeout(() => playNext(index + 1), item.pause_ms || 420);
+            window.speechSynthesis.speak(utterance);
+        };
+
+        playNext(0);
     }
 
     function startPronunciationListening(promptId) {
@@ -488,7 +609,7 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 
     function loadSortable(container) {
         const items = shuffleArray(sortableCorrectOrder);
-        let html = '<div class="alert alert-light border mb-3"><strong>Modo tactil:</strong> arrastra o usa subir y bajar para ajustar el orden.</div><ul id="sortable-list" class="sortable-list">';
+        let html = '<div class="alert context-note mb-3"><strong>Modo tactil:</strong> arrastra o usa subir y bajar para ajustar el orden.</div><ul id="sortable-list" class="sortable-list">';
         items.forEach(text => {
             html += `<li class="sortable-item" draggable="true"><span class="sortable-item-label">${text}</span><span class="word-order-controls"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftPreviewSortable(this, 'up')"><i class="bi bi-arrow-up"></i></button><button type="button" class="btn btn-sm btn-outline-secondary" onclick="shiftPreviewSortable(this, 'down')"><i class="bi bi-arrow-down"></i></button></span></li>`;
         });
@@ -807,12 +928,26 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                 }
                 break;
             case 'escucha':
-                const listeningAnswer = document.getElementById('listening-answer');
-                if (listeningAnswer) {
-                    respuesta = listeningAnswer.value.trim();
-                    const expectedTranscript = (contenido.transcripcion || '').trim().toLowerCase();
-                    const normalizedAnswer = respuesta.toLowerCase().trim();
-                    esCorrecta = normalizedAnswer !== '' && normalizedAnswer === expectedTranscript;
+                const listeningAnswers = document.querySelectorAll('.listening-answer');
+                if (listeningAnswers.length) {
+                    const answers = {};
+                    esCorrecta = true;
+                    listeningAnswers.forEach((field) => {
+                        const fieldId = field.dataset.listeningId || field.id;
+                        answers[fieldId] = field.value.trim();
+                        if (!field.value.trim()) {
+                            esCorrecta = false;
+                        }
+                    });
+                    respuesta = JSON.stringify(answers);
+                } else {
+                    const listeningAnswer = document.getElementById('listening-answer');
+                    if (listeningAnswer) {
+                        respuesta = listeningAnswer.value.trim();
+                        const expectedTranscript = (contenido.transcripcion || '').trim().toLowerCase();
+                        const normalizedAnswer = respuesta.toLowerCase().trim();
+                        esCorrecta = normalizedAnswer !== '' && normalizedAnswer === expectedTranscript;
+                    }
                 }
                 break;
             case 'pronunciacion':
@@ -836,39 +971,6 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                 break;
         }
         
-        // Guardar respuesta en servidor
-        const data = {
-            actividad_id: actividadData.id,
-            respuesta: respuesta,
-            es_correcta: esCorrecta ? 1 : 0,
-            tiempo_respuesta: 0 // TODO: Implement timer
-        };
-
-        fetch('<?= url('/estudiante/actividad/guardar-respuesta') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': csrfToken
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log('Guardado:', result);
-            if (result && result.message) {
-                const feedbackDiv = document.getElementById('feedback');
-                if (feedbackDiv) {
-                    const serverNote = document.createElement('div');
-                    serverNote.className = 'mt-3 border-top pt-3';
-                    serverNote.innerHTML = '<strong>Guardado:</strong> ' + escapeHtml(result.message + (typeof result.lesson_progress === 'number' ? ' Progreso de la leccion: ' + result.lesson_progress + '%.' : ''));
-                    feedbackDiv.appendChild(serverNote);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error al guardar:', error);
-        });
-
         // Mostrar feedback
         const feedbackDiv = document.getElementById('feedback');
         feedbackDiv.style.display = 'block';
@@ -936,6 +1038,8 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
             feedbackDiv.innerHTML += `<div class="mt-3 border-top pt-3">${summaryHtml}</div>`;
         }
 
+        feedbackDiv.innerHTML += '<div class="mt-3 border-top pt-3"><strong>Preview:</strong> este resultado no se guarda y no altera progreso real.</div>';
+
         document.getElementById('submit-activity').disabled = true;
         const nextBtn = document.getElementById('next-activity');
 
@@ -952,17 +1056,9 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
     // Funcion para ir a la siguiente actividad
     function nextActivity() {
         if (siguienteActividad && siguienteActividad.id) {
-            if (userRole === 'profesor' || userRole === 'admin') {
-                window.location.href = '<?= url('/profesor/actividad/') ?>' + siguienteActividad.id + '/preview';
-            } else {
-                window.location.href = '<?= url('/estudiante/actividad/') ?>' + siguienteActividad.id;
-            }
+            window.location.href = '<?= url('/profesor/actividad/') ?>' + siguienteActividad.id + '/preview';
         } else {
-            if (userRole === 'profesor' || userRole === 'admin') {
-                window.location.href = '<?= url('/profesor/lecciones/') ?>' + actividadData.leccion_id + '/actividades';
-            } else {
-                window.location.href = '<?= url('/estudiante/lecciones/') ?>' + actividadData.leccion_id + '/contenido';
-            }
+            window.location.href = '<?= url('/profesor/lecciones/') ?>' + actividadData.leccion_id + '/actividades';
         }
     }
     
