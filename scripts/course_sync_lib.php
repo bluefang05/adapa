@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/RemoteDB.php';
+
 function course_sync_root_path(): string
 {
     return dirname(__DIR__);
@@ -9,50 +11,25 @@ function course_sync_root_path(): string
 
 function course_sync_local_config(): array
 {
-    return [
-        'label' => 'local',
-        'host' => '127.0.0.1',
-        'user' => 'root',
-        'pass' => '',
-        'name' => 'adapa',
-        'port' => 3306,
-        'charset' => 'utf8mb4',
-    ];
+    return RemoteDB::getLocalConfig();
 }
 
 function course_sync_remote_config(): array
 {
-    $path = course_sync_root_path() . '/config/database.hosting.php';
-    if (!is_file($path)) {
-        throw new RuntimeException('No se encontro config/database.hosting.php');
+    try {
+        return RemoteDB::getRemoteConfig();
+    } catch (RuntimeException $e) {
+        throw new RuntimeException($e->getMessage());
     }
-
-    $config = require $path;
-    if (!is_array($config)) {
-        throw new RuntimeException('database.hosting.php no devolvio un array valido.');
-    }
-
-    $config['label'] = 'remote';
-    $config['port'] = (int) ($config['port'] ?? 3306);
-    $config['charset'] = $config['charset'] ?? 'utf8mb4';
-
-    return $config;
 }
 
 function course_sync_connect(array $config): PDO
 {
-    $dsn = sprintf(
-        'mysql:host=%s;port=%d;dbname=%s;charset=%s',
-        $config['host'] ?? '127.0.0.1',
-        (int) ($config['port'] ?? 3306),
-        $config['name'] ?? '',
-        $config['charset'] ?? 'utf8mb4'
-    );
-
-    return new PDO($dsn, $config['user'] ?? '', $config['pass'] ?? '', [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    try {
+        return RemoteDB::connect($config);
+    } catch (RuntimeException $e) {
+        throw new RuntimeException($e->getMessage());
+    }
 }
 
 function course_sync_cli_write(string $message): void

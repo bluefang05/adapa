@@ -2,8 +2,10 @@
 
 // Asegurar configuración de sesión antes de iniciarla
 if (session_status() === PHP_SESSION_NONE) {
+    // Si ya estamos en un contexto donde la sesión se inició (como dev/index.php), no hacemos nada
+    // Si no, iniciamos con la configuración estándar
     $secureCookie = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-
+    
     // Configuración para evitar problemas en hosting compartido
     ini_set('session.gc_maxlifetime', 3600); // 1 hora
     ini_set('session.cookie_lifetime', 3600);
@@ -24,10 +26,11 @@ if (session_status() === PHP_SESSION_NONE) {
         ]);
     }
     
-    // Intentar iniciar sesión
-    if (!session_start()) {
-        // Fallback si falla el inicio normal (común en algunos hostings)
-        error_log("Fallo al iniciar sesión en Auth.php");
+    // Intentar iniciar sesión SOLO si no hay una activa
+    if (session_status() === PHP_SESSION_NONE) {
+        if (!session_start()) {
+             error_log("Fallo al iniciar sesión en Auth.php");
+        }
     }
 }
 

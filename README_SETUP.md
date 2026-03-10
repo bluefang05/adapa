@@ -11,13 +11,13 @@
 
 El esquema oficial actual del proyecto es:
 
-- `adapa_db.sql`
+- `dev/adapa_db.sql`
 
 Para importar el dump en XAMPP:
 
 ```powershell
 C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS adapa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-C:\xampp\mysql\bin\mysql.exe -u root adapa < adapa_db.sql
+C:\xampp\mysql\bin\mysql.exe -u root adapa < dev/adapa_db.sql
 ```
 
 ## Configuracion
@@ -40,6 +40,6 @@ Los accesos visibles en la pantalla de login usan estas cuentas:
 
 ## Notas
 
-- No existe instalador web; la referencia canonica es `adapa_db.sql`.
+- No existe instalador web; la referencia canonica es `dev/adapa_db.sql`.
 - Las rutas mutadoras ya usan `POST`.
 - El proyecto debe ejecutarse a traves de Apache para que el rewrite funcione correctamente.

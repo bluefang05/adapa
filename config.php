@@ -14,7 +14,10 @@ if ($envBaseUrl !== false && $envBaseUrl !== '') {
     $baseUrl = ($scriptName === '/' || $scriptName === '.') ? '' : rtrim($scriptName, '/');
 }
 
-define('BASE_URL', $baseUrl);
+// Define BASE_URL if not already defined
+if (!defined('BASE_URL')) {
+    define('BASE_URL', $baseUrl);
+}
 
 /**
  * Genera una URL absoluta basada en la ruta relativa
@@ -586,6 +589,9 @@ function app_useful_resources_catalog() {
 }
 
 function app_useful_resources_for_language($languageKey = null, $limit = null) {
+    if (!is_string($languageKey) && !is_numeric($languageKey)) {
+        $languageKey = null;
+    }
     $languageKey = $languageKey ? strtolower((string) $languageKey) : null;
     $catalog = array_values(array_filter(app_useful_resources_catalog(), function ($resource) use ($languageKey) {
         if (!$languageKey) {

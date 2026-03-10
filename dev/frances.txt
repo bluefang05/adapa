@@ -1,0 +1,434 @@
+{
+  "course": {
+    "title": "Francés de Cero a Héroe: Ruta completa A1-C1",
+    "description": "Ruta extensa de francés para hispanohablantes con progresión guiada desde la fonética inicial y la interacción básica hasta la comunicación funcional. Cada lección alterna teoría breve, práctica activa, escucha, pronunciación y actividades de refuerzo con referencias culturales reales de Francia y la Francofonía.",
+    "level": "A1-C1",
+    "lessons": [
+      {
+        "title": "Nivel A1.1: Les sons, les salutations et le premier contact",
+        "description": "Pronunciación base, saludos, cortesía inicial, presentación personal y mini diálogos de primer contacto.",
+        "duration": 185,
+        "content": [
+          {
+            "type": "theory",
+            "title": "La pronunciación base del francés",
+            "content_preview": "El francés combina sonidos familiares para un hispanohablante con otros completamente nuevos, como la r gutural, la u cerrada y varias vocales nasales. En esta primera fase no buscamos perfección, sino reconocimiento auditivo y producción inicial comprensible.",
+            "order": 1
+          },
+          {
+            "type": "activity",
+            "activity_type": "pronunciacion",
+            "title": "Primer contacto con los sonidos franceses",
+            "content_json": "[{\"frase\": \"Bonjour.\", \"focos\": [\"nasal en bon\", \"r francesa\", \"entonación descendente\"]}, {\"frase\": \"Salut !\", \"focos\": [\"u francesa\", \"t final apenas marcada\"]}, {\"frase\": \"Merci beaucoup.\", \"focos\": [\"r francesa\", \"ou cerrada\", \"ritmo natural\"]}, {\"frase\": \"Au revoir.\", \"focos\": [\"enchaînement\", \"r francesa\", \"oi como ua\"]}]",
+            "order": 2
+          },
+          {
+            "type": "theory",
+            "title": "Saludos formales e informales",
+            "content_preview": "En Francia y en la mayoría de contextos francófonos, bonjour es la base de toda interacción educada. Salut se reserva para relaciones cercanas o contextos relajados. También aparecen bonsoir, au revoir y à bientôt.",
+            "order": 3
+          },
+          {
+            "type": "activity",
+            "activity_type": "opcion_multiple",
+            "title": "Elegir el saludo adecuado",
+            "content_json": "{\"pregunta_global\": \"Selecciona la opción más adecuada según la situación.\", \"preguntas\": [{\"texto\": \"Llegas a una oficina en París a las 10:00 de la mañana.\", \"opciones\": [{\"texto\": \"Bonjour, Madame.\", \"es_correcta\": true}, {\"texto\": \"Salut, toi !\", \"es_correcta\": false}, {\"texto\": \"Bonne nuit, Monsieur.\", \"es_correcta\": false}]}, {\"texto\": \"Te encuentras con un amigo en la universidad en Lille.\", \"opciones\": [{\"texto\": \"Salut, Hugo !\", \"es_correcta\": true}, {\"texto\": \"Bonsoir, Monsieur.\", \"es_correcta\": false}, {\"texto\": \"Je voudrais un café.\", \"es_correcta\": false}]}, {\"texto\": \"Te despides de una profesora al terminar clase.\", \"opciones\": [{\"texto\": \"Au revoir, Madame.\", \"es_correcta\": true}, {\"texto\": \"Salut mec.\", \"es_correcta\": false}, {\"texto\": \"À table !\", \"es_correcta\": false}]}]}",
+            "order": 4
+          },
+          {
+            "type": "theory",
+            "title": "Presentarse con naturalidad",
+            "content_preview": "Las fórmulas más frecuentes para presentarse en nivel inicial son je m'appelle..., moi, c'est..., je suis... y enchanté(e). Aprenderlas como bloques completos acelera la producción oral.",
+            "order": 5
+          },
+          {
+            "type": "activity",
+            "activity_type": "ordenar_palabras",
+            "title": "Construye frases de presentación",
+            "content_json": "{\"instruccion\": \"Ordena las palabras para formar una oración correcta en francés.\", \"items\": [{\"tokens\": [\"m'appelle\", \"Je\", \"Lucie\"], \"respuesta_correcta\": \"Je m'appelle Lucie.\"}, {\"tokens\": [\"suis\", \"Je\", \"mexicain\"], \"respuesta_correcta\": \"Je suis mexicain.\"}, {\"tokens\": [\"et\", \"vous\", \"Et\"], \"respuesta_correcta\": \"Et vous ?\"}, {\"tokens\": [\"c'est\", \"Moi\", \"Sami\"], \"respuesta_correcta\": \"Moi, c'est Sami.\"}]}",
+            "order": 6
+          },
+          {
+            "type": "theory",
+            "title": "Tu, vous y la distancia social",
+            "content_preview": "El francés marca la relación entre interlocutores con tu y vous. Tu expresa cercanía. Vous expresa respeto, distancia profesional o plural. Dominar esta diferencia desde A1 evita errores pragmáticos frecuentes.",
+            "order": 7
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "Empareja contexto y fórmula",
+            "content_json": "{\"instruccion\": \"Relaciona cada contexto con la fórmula más adecuada.\", \"pares\": [{\"izquierda\": \"Hablar con una clienta en una tienda\", \"derecha\": \"Bonjour Madame, comment allez-vous ?\"}, {\"izquierda\": \"Hablar con tu amigo Paul\", \"derecha\": \"Salut Paul, ça va ?\"}, {\"izquierda\": \"Presentarte en una reunión\", \"derecha\": \"Je m'appelle Elena.\"}, {\"izquierda\": \"Responder con cortesía\", \"derecha\": \"Enchanté(e).\"}]}",
+            "order": 8
+          },
+          {
+            "type": "theory",
+            "title": "Entonación de preguntas cortas",
+            "content_preview": "En A1 conviene memorizar preguntas frecuentes completas: Ça va ?, Comment tu t'appelles ?, Comment allez-vous ? y Et vous ? La entonación ayuda a distinguir afirmación de pregunta.",
+            "order": 9
+          },
+          {
+            "type": "activity",
+            "activity_type": "escucha",
+            "title": "Escucha un primer microdiálogo",
+            "content_json": "{\"instruccion\": \"Escucha y escribe exactamente lo que oyes.\", \"items\": [{\"tts_text\": \"Bonjour, je m'appelle Claire. Et vous ?\", \"transcripcion_esperada\": \"Bonjour, je m'appelle Claire. Et vous ?\"}, {\"tts_text\": \"Salut, moi c'est Adam. Ça va ?\", \"transcripcion_esperada\": \"Salut, moi c'est Adam. Ça va ?\"}, {\"tts_text\": \"Bonjour Madame, enchanté.\", \"transcripcion_esperada\": \"Bonjour Madame, enchanté.\"}]}",
+            "order": 10
+          },
+          {
+            "type": "theory",
+            "title": "Mini escena cultural del primer contacto",
+            "content_preview": "En Francia, decir bonjour al entrar en una tienda, panadería o consulta médica no es opcional: es una norma social fuerte. La lengua y la cortesía funcionan juntas desde el primer saludo.",
+            "order": 11
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Completa el diálogo inicial",
+            "content_json": "{\"instruccion\": \"Escribe la palabra o expresión que falta.\", \"items\": [{\"oracion\": \"___, Madame.\", \"respuesta_correcta\": \"Bonjour\"}, {\"oracion\": \"Je m'___ Sofia.\", \"respuesta_correcta\": \"appelle\"}, {\"oracion\": \"Comment ___-vous ?\", \"respuesta_correcta\": \"appelez\"}, {\"oracion\": \"Enchanté, et ___.\", \"respuesta_correcta\": \"vous\"}]}",
+            "order": 12
+          }
+        ]
+      },
+      {
+        "title": "Nivel A1.2: Se présenter, dire son âge et parler de son origine",
+        "description": "Identidad, edad, profesiones, ciudades, nacionalidades y negación simple con être y avoir.",
+        "duration": 190,
+        "content": [
+          {
+            "type": "theory",
+            "title": "El verbo être y la identidad",
+            "content_preview": "Être permite decir quién eres, cuál es tu profesión y cuál es tu nacionalidad. En nivel A1 interesa automatizar combinaciones muy frecuentes: je suis étudiant, elle est française, nous sommes collègues.",
+            "order": 1
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Conjuga être en contexto",
+            "content_json": "{\"instruccion\": \"Completa con la forma correcta del verbo être.\", \"items\": [{\"oracion\": \"Je ___ colombien.\", \"respuesta_correcta\": \"suis\"}, {\"oracion\": \"Tu ___ belge ?\", \"respuesta_correcta\": \"es\"}, {\"oracion\": \"Elle ___ avocate à Paris.\", \"respuesta_correcta\": \"est\"}, {\"oracion\": \"Nous ___ à Montréal.\", \"respuesta_correcta\": \"sommes\"}]}",
+            "order": 2
+          },
+          {
+            "type": "theory",
+            "title": "Decir la edad con avoir",
+            "content_preview": "En francés la edad no se expresa con être, sino con avoir. Por eso se dice j'ai vingt ans y no je suis vingt ans. Este patrón debe fijarse muy pronto porque aparece en todas las presentaciones personales.",
+            "order": 3
+          },
+          {
+            "type": "activity",
+            "activity_type": "opcion_multiple",
+            "title": "Elegir la frase correcta sobre la edad",
+            "content_json": "{\"pregunta_global\": \"Selecciona la frase correcta.\", \"preguntas\": [{\"texto\": \"Forma correcta para decir 'tengo 21 años'.\", \"opciones\": [{\"texto\": \"Je suis vingt et un ans.\", \"es_correcta\": false}, {\"texto\": \"J'ai vingt et un ans.\", \"es_correcta\": true}, {\"texto\": \"Je ai vingt et un ans.\", \"es_correcta\": false}]}, {\"texto\": \"Forma correcta para preguntar la edad.\", \"opciones\": [{\"texto\": \"Tu es quel âge ?\", \"es_correcta\": false}, {\"texto\": \"Tu as quel âge ?\", \"es_correcta\": true}, {\"texto\": \"Quel âge tu es ?\", \"es_correcta\": false}]}]}",
+            "order": 4
+          },
+          {
+            "type": "theory",
+            "title": "Países, ciudades y nacionalidades",
+            "content_preview": "Aprenderás a combinar origen y lugar con estructuras muy reutilizables: je suis de Guatemala, j'habite à Lyon, il est canadien. Las ciudades se introducen como anclajes culturales reales.",
+            "order": 5
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "País, ciudad y nacionalidad",
+            "content_json": "{\"instruccion\": \"Relaciona cada elemento con su correspondencia.\", \"pares\": [{\"izquierda\": \"France\", \"derecha\": \"français / française\"}, {\"izquierda\": \"Canada\", \"derecha\": \"canadien / canadienne\"}, {\"izquierda\": \"Sénégal\", \"derecha\": \"sénégalais / sénégalaise\"}, {\"izquierda\": \"Bruxelles\", \"derecha\": \"Belgique\"}, {\"izquierda\": \"Genève\", \"derecha\": \"Suisse\"}]}",
+            "order": 6
+          },
+          {
+            "type": "theory",
+            "title": "Profesiones básicas en contexto real",
+            "content_preview": "Para un primer nivel son útiles profesiones frecuentes y transparentes: professeur, médecin, étudiant, ingénieur, serveur, vendeuse. El artículo y el género se van consolidando mediante repetición contextual.",
+            "order": 7
+          },
+          {
+            "type": "activity",
+            "activity_type": "ordenar_palabras",
+            "title": "Ordena frases sobre profesión y origen",
+            "content_json": "{\"instruccion\": \"Ordena las palabras para formar oraciones correctas.\", \"items\": [{\"tokens\": [\"suis\", \"Je\", \"ingénieur\"], \"respuesta_correcta\": \"Je suis ingénieur.\"}, {\"tokens\": [\"est\", \"Elle\", \"française\"], \"respuesta_correcta\": \"Elle est française.\"}, {\"tokens\": [\"de\", \"Nous\", \"sommes\", \"Dakar\"], \"respuesta_correcta\": \"Nous sommes de Dakar.\"}, {\"tokens\": [\"habite\", \"à\", \"Il\", \"Nice\"], \"respuesta_correcta\": \"Il habite à Nice.\"}]}",
+            "order": 8
+          },
+          {
+            "type": "theory",
+            "title": "Negación simple con ne...pas",
+            "content_preview": "La negación básica en francés rodea al verbo conjugado: je ne suis pas belge, il n'a pas vingt ans. En el habla informal a veces desaparece ne, pero en aprendizaje inicial conviene mantener la forma completa.",
+            "order": 9
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Transforma en negativo",
+            "content_json": "{\"instruccion\": \"Completa la oración con la negación correcta.\", \"items\": [{\"oracion\": \"Je ___ suis ___ étudiant.\", \"respuesta_correcta\": \"ne, pas\"}, {\"oracion\": \"Elle ___ a ___ dix-huit ans.\", \"respuesta_correcta\": \"n', pas\"}, {\"oracion\": \"Nous ___ sommes ___ à Paris.\", \"respuesta_correcta\": \"ne, pas\"}]}",
+            "order": 10
+          },
+          {
+            "type": "theory",
+            "title": "Escucha de datos personales",
+            "content_preview": "Escuchar nombres propios, edades y ciudades exige atención a números, enlaces y sonidos que no siempre coinciden con la escritura. Por eso este bloque refuerza identificación auditiva de datos personales.",
+            "order": 11
+          },
+          {
+            "type": "activity",
+            "activity_type": "escucha",
+            "title": "Transcribe presentaciones personales",
+            "content_json": "{\"instruccion\": \"Escucha y transcribe exactamente.\", \"items\": [{\"tts_text\": \"Je m'appelle Nora, j'ai vingt-deux ans et je suis belge.\", \"transcripcion_esperada\": \"Je m'appelle Nora, j'ai vingt-deux ans et je suis belge.\"}, {\"tts_text\": \"Il s'appelle Youssef, il habite à Marseille.\", \"transcripcion_esperada\": \"Il s'appelle Youssef, il habite à Marseille.\"}, {\"tts_text\": \"Nous sommes étudiants à Genève.\", \"transcripcion_esperada\": \"Nous sommes étudiants à Genève.\"}]}",
+            "order": 12
+          }
+        ]
+      },
+      {
+        "title": "Nivel A1.3: La famille, les routines et les verbes du quotidien",
+        "description": "Familia, posesivos, verbos regulares en -er, hábitos diarios y mejora de la pronunciación funcional.",
+        "duration": 195,
+        "content": [
+          {
+            "type": "theory",
+            "title": "La familia y el entorno inmediato",
+            "content_preview": "En A1 la familia sirve para practicar posesivos, género, número y descripciones simples. Aprenderás a hablar de padres, hermanos, pareja e hijos con estructuras breves y repetibles.",
+            "order": 1
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "Miembros de la familia",
+            "content_json": "{\"instruccion\": \"Relaciona el término francés con su equivalente en español.\", \"pares\": [{\"izquierda\": \"la mère\", \"derecha\": \"la madre\"}, {\"izquierda\": \"le père\", \"derecha\": \"el padre\"}, {\"izquierda\": \"la sœur\", \"derecha\": \"la hermana\"}, {\"izquierda\": \"le frère\", \"derecha\": \"el hermano\"}, {\"izquierda\": \"les parents\", \"derecha\": \"los padres\"}]}",
+            "order": 2
+          },
+          {
+            "type": "theory",
+            "title": "Mon, ma, mes y la posesión básica",
+            "content_preview": "Los posesivos franceses dependen del género y del número del sustantivo poseído, no del poseedor. Por eso se dice ma sœur, mon frère, mes amis. Este patrón aparece de inmediato en conversaciones personales.",
+            "order": 3
+          },
+          {
+            "type": "activity",
+            "activity_type": "opcion_multiple",
+            "title": "Elige el posesivo correcto",
+            "content_json": "{\"pregunta_global\": \"Selecciona la opción correcta.\", \"preguntas\": [{\"texto\": \"___ mère habite à Toulouse.\", \"opciones\": [{\"texto\": \"Mon\", \"es_correcta\": false}, {\"texto\": \"Ma\", \"es_correcta\": true}, {\"texto\": \"Mes\", \"es_correcta\": false}]}, {\"texto\": \"___ frère travaille à Lyon.\", \"opciones\": [{\"texto\": \"Mon\", \"es_correcta\": true}, {\"texto\": \"Ma\", \"es_correcta\": false}, {\"texto\": \"Mes\", \"es_correcta\": false}]}, {\"texto\": \"___ parents sont à Bruxelles.\", \"opciones\": [{\"texto\": \"Mes\", \"es_correcta\": true}, {\"texto\": \"Mon\", \"es_correcta\": false}, {\"texto\": \"Ma\", \"es_correcta\": false}]}]}",
+            "order": 4
+          },
+          {
+            "type": "theory",
+            "title": "Verbos regulares en -er",
+            "content_preview": "Los verbos aimer, habiter, parler, travailler y étudier siguen un patrón muy estable en presente. Son el corazón de muchas descripciones de rutina y permiten producir bastante con poca gramática.",
+            "order": 5
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Conjuga verbos de la vida diaria",
+            "content_json": "{\"instruccion\": \"Completa con la forma correcta del verbo indicado.\", \"items\": [{\"oracion\": \"Je ___ le français. (parler)\", \"respuesta_correcta\": \"parle\"}, {\"oracion\": \"Tu ___ à Bordeaux. (habiter)\", \"respuesta_correcta\": \"habites\"}, {\"oracion\": \"Nous ___ à l'université. (étudier)\", \"respuesta_correcta\": \"étudions\"}, {\"oracion\": \"Ils ___ dans un café. (travailler)\", \"respuesta_correcta\": \"travaillent\"}]}",
+            "order": 6
+          },
+          {
+            "type": "theory",
+            "title": "Rutinas: momentos del día y frecuencia",
+            "content_preview": "Con le matin, l'après-midi, le soir, toujours, souvent y parfois puedes construir una rutina creíble. En esta etapa importa más la claridad y la frecuencia de uso que la complejidad.",
+            "order": 7
+          },
+          {
+            "type": "activity",
+            "activity_type": "ordenar_palabras",
+            "title": "Organiza frases sobre la rutina",
+            "content_json": "{\"instruccion\": \"Ordena las palabras para formar una oración natural.\", \"items\": [{\"tokens\": [\"travaille\", \"Je\", \"le\", \"matin\"], \"respuesta_correcta\": \"Je travaille le matin.\"}, {\"tokens\": [\"étudie\", \"Elle\", \"souvent\", \"le\", \"soir\"], \"respuesta_correcta\": \"Elle étudie souvent le soir.\"}, {\"tokens\": [\"à\", \"habitent\", \"Mes\", \"Paris\", \"parents\"], \"respuesta_correcta\": \"Mes parents habitent à Paris.\"}, {\"tokens\": [\"aimons\", \"Nous\", \"le\", \"café\"], \"respuesta_correcta\": \"Nous aimons le café.\"}]}",
+            "order": 8
+          },
+          {
+            "type": "theory",
+            "title": "Pronunciación de la routine parlée",
+            "content_preview": "La liaison, la e muda y las consonantes finales silenciosas afectan mucho a la comprensión oral. En frases como nous avons cours o mes parents habitent el ritmo sonoro cambia respecto a la escritura.",
+            "order": 9
+          },
+          {
+            "type": "activity",
+            "activity_type": "pronunciacion",
+            "title": "Pronuncia tu rutina con mejor ritmo",
+            "content_json": "[{\"frase\": \"Nous avons cours à huit heures.\", \"focos\": [\"liaison en nous_avons\", \"h muda\", \"r francesa\"]}, {\"frase\": \"Mes parents habitent à Lille.\", \"focos\": [\"nasal en parents\", \"t final no sonora\", \"i breve\"]}, {\"frase\": \"Je travaille le mercredi.\", \"focos\": [\"e muda final\", \"grupo tr\", \"ritmo estable\"]}, {\"frase\": \"Elle aime le chocolat.\", \"focos\": [\"ai abierta\", \"t final muda\", \"entonación declarativa\"]}]",
+            "order": 10
+          },
+          {
+            "type": "theory",
+            "title": "Escuchar a otra persona hablar de su familia",
+            "content_preview": "Comprender información sencilla sobre familia y rutina prepara para interacciones reales. Los nombres propios y las ciudades ayudan a fijar el contenido en contextos francófonos creíbles.",
+            "order": 11
+          },
+          {
+            "type": "activity",
+            "activity_type": "escucha",
+            "title": "Transcribe una presentación familiar",
+            "content_json": "{\"instruccion\": \"Escucha y escribe exactamente lo que oyes.\", \"items\": [{\"tts_text\": \"Ma sœur s'appelle Inès et elle habite à Lyon.\", \"transcripcion_esperada\": \"Ma sœur s'appelle Inès et elle habite à Lyon.\"}, {\"tts_text\": \"Mon père travaille à Montréal et ma mère étudie le soir.\", \"transcripcion_esperada\": \"Mon père travaille à Montréal et ma mère étudie le soir.\"}]}",
+            "order": 12
+          }
+        ]
+      },
+      {
+        "title": "Nivel A1.4: Au café, à la boulangerie et au marché",
+        "description": "Comida, artículos partitivos, pedidos corteses, precios y escenas reales de compra cotidiana.",
+        "duration": 200,
+        "content": [
+          {
+            "type": "theory",
+            "title": "La comida cotidiana y el léxico de base",
+            "content_preview": "La lengua se vuelve útil muy rápido cuando puedes pedir comida y bebida. En esta lección trabajarás con café, thé, baguette, croissant, soupe, fromage, eau, jus y vocabulario de compras básicas.",
+            "order": 1
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "Vocabulario del café y la boulangerie",
+            "content_json": "{\"instruccion\": \"Relaciona la palabra en francés con su equivalente.\", \"pares\": [{\"izquierda\": \"une baguette\", \"derecha\": \"una baguette\"}, {\"izquierda\": \"un croissant\", \"derecha\": \"un croissant\"}, {\"izquierda\": \"du fromage\", \"derecha\": \"queso\"}, {\"izquierda\": \"de l'eau\", \"derecha\": \"agua\"}, {\"izquierda\": \"un café\", \"derecha\": \"café\"}]}",
+            "order": 2
+          },
+          {
+            "type": "theory",
+            "title": "Artículos partitivos: du, de la, de l', des",
+            "content_preview": "Cuando hablas de comida o bebida en cantidades no definidas, el francés suele usar el partitivo. Se dice du pain, de la soupe, de l'eau y des fruits. Es una estructura central para desenvolverse al comprar o pedir.",
+            "order": 3
+          },
+          {
+            "type": "activity",
+            "activity_type": "opcion_multiple",
+            "title": "Escoge el partitivo correcto",
+            "content_json": "{\"pregunta_global\": \"Selecciona la opción correcta.\", \"preguntas\": [{\"texto\": \"Je prends ___ pain.\", \"opciones\": [{\"texto\": \"du\", \"es_correcta\": true}, {\"texto\": \"de la\", \"es_correcta\": false}, {\"texto\": \"de l'\", \"es_correcta\": false}]}, {\"texto\": \"Elle veut ___ eau minérale.\", \"opciones\": [{\"texto\": \"du\", \"es_correcta\": false}, {\"texto\": \"de l'\", \"es_correcta\": true}, {\"texto\": \"des\", \"es_correcta\": false}]}, {\"texto\": \"Nous achetons ___ fraises.\", \"opciones\": [{\"texto\": \"de la\", \"es_correcta\": false}, {\"texto\": \"des\", \"es_correcta\": true}, {\"texto\": \"du\", \"es_correcta\": false}]}]}",
+            "order": 4
+          },
+          {
+            "type": "theory",
+            "title": "Pedir con cortesía y naturalidad",
+            "content_preview": "Las expresiones je voudrais, s'il vous plaît, merci y c'est tout convierten el vocabulario en interacción real. Este bloque simula escenas comunes de una boulangerie, un café o un marché de quartier.",
+            "order": 5
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Completa el pedido",
+            "content_json": "{\"instruccion\": \"Escribe la palabra o expresión que falta.\", \"items\": [{\"oracion\": \"Bonjour, je ___ une baguette.\", \"respuesta_correcta\": \"voudrais\"}, {\"oracion\": \"Deux croissants, s'il vous ___ .\", \"respuesta_correcta\": \"plaît\"}, {\"oracion\": \"Et avec ___ ?\", \"respuesta_correcta\": \"ça\"}, {\"oracion\": \"Non merci, c'est ___ .\", \"respuesta_correcta\": \"tout\"}]}",
+            "order": 6
+          },
+          {
+            "type": "theory",
+            "title": "Números, precios y cantidades",
+            "content_preview": "Para comprar necesitas comprender números, monedas y expresiones de cantidad. Aparecen fórmulas como ça fait cinq euros vingt, combien, un kilo, un demi-kilo y deux bouteilles.",
+            "order": 7
+          },
+          {
+            "type": "activity",
+            "activity_type": "escucha",
+            "title": "Escucha precios y pedidos",
+            "content_json": "{\"instruccion\": \"Escucha y transcribe exactamente.\", \"items\": [{\"tts_text\": \"Bonjour, je voudrais une baguette et deux croissants, s'il vous plaît.\", \"transcripcion_esperada\": \"Bonjour, je voudrais une baguette et deux croissants, s'il vous plaît.\"}, {\"tts_text\": \"Ça fait six euros vingt.\", \"transcripcion_esperada\": \"Ça fait six euros vingt.\"}, {\"tts_text\": \"Je prends un café et une soupe.\", \"transcripcion_esperada\": \"Je prends un café et une soupe.\"}]}",
+            "order": 8
+          },
+          {
+            "type": "theory",
+            "title": "Mercado y supermercado: preguntas útiles",
+            "content_preview": "En el mercado son frecuentes preguntas como Vous avez..., Combien de..., C'est combien ? y Vous prenez autre chose ? Estas fórmulas permiten sostener intercambios breves y muy funcionales.",
+            "order": 9
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "Pregunta y respuesta al comprar",
+            "content_json": "{\"instruccion\": \"Une cada pregunta con la respuesta más lógica.\", \"pares\": [{\"izquierda\": \"Bonjour, vous désirez ?\", \"derecha\": \"Je voudrais du fromage.\"}, {\"izquierda\": \"Combien de pommes ?\", \"derecha\": \"Un kilo, s'il vous plaît.\"}, {\"izquierda\": \"Ça fait combien ?\", \"derecha\": \"Quatre euros cinquante.\"}, {\"izquierda\": \"Vous prenez autre chose ?\", \"derecha\": \"Non merci, c'est tout.\"}]}",
+            "order": 10
+          },
+          {
+            "type": "theory",
+            "title": "Comer también es cultura",
+            "content_preview": "La baguette, el croissant, el café du matin y la visita a la boulangerie forman parte de la vida cotidiana francesa. Introducir cultura a través de rutinas concretas facilita la retención del lenguaje.",
+            "order": 11
+          },
+          {
+            "type": "activity",
+            "activity_type": "pronunciacion",
+            "title": "Pronuncia tu pedido con cortesía",
+            "content_json": "[{\"frase\": \"Je voudrais une baguette, s'il vous plaît.\", \"focos\": [\"grupo dr en voudrais\", \"u francesa\", \"ritmo cortés\"]}, {\"frase\": \"Ça fait trois euros.\", \"focos\": [\"ç como s\", \"r francesa\", \"eu cerrada\"]}, {\"frase\": \"Un café et un croissant, merci.\", \"focos\": [\"nasal en un\", \"r francesa\", \"t final muda\"]}]",
+            "order": 12
+          }
+        ]
+      },
+      {
+        "title": "Nivel A1.5: En ville, les horaires et les projets proches",
+        "description": "Lugares de la ciudad, direcciones simples, verbo aller, hora y futuro próximo en contextos reales.",
+        "duration": 205,
+        "content": [
+          {
+            "type": "theory",
+            "title": "La ciudad como escenario comunicativo",
+            "content_preview": "En esta etapa el estudiante debe poder orientarse, pedir ayuda y hablar de planes inmediatos. Por eso se integran lugares de la ciudad, transportes, horarios y fórmulas para desplazarse.",
+            "order": 1
+          },
+          {
+            "type": "activity",
+            "activity_type": "emparejamiento",
+            "title": "Lugares y transportes en la ciudad",
+            "content_json": "{\"instruccion\": \"Relaciona cada palabra con su equivalente.\", \"pares\": [{\"izquierda\": \"la gare\", \"derecha\": \"la estación\"}, {\"izquierda\": \"le métro\", \"derecha\": \"el metro\"}, {\"izquierda\": \"la pharmacie\", \"derecha\": \"la farmacia\"}, {\"izquierda\": \"le musée\", \"derecha\": \"el museo\"}, {\"izquierda\": \"le bus\", \"derecha\": \"el autobús\"}]}",
+            "order": 2
+          },
+          {
+            "type": "theory",
+            "title": "Aller para ir y para planear",
+            "content_preview": "El verbo aller no solo expresa movimiento, sino también futuro próximo: je vais à la gare, nous allons visiter le Louvre, elle va acheter du pain. Es uno de los verbos más productivos del nivel A1.",
+            "order": 3
+          },
+          {
+            "type": "activity",
+            "activity_type": "completar_oracion",
+            "title": "Completa con aller o con el infinitivo",
+            "content_json": "{\"instruccion\": \"Completa la oración con la forma correcta.\", \"items\": [{\"oracion\": \"Je ___ au musée cet après-midi.\", \"respuesta_correcta\": \"vais\"}, {\"oracion\": \"Nous allons ___ un café près de la gare.\", \"respuesta_correcta\": \"prendre\"}, {\"oracion\": \"Elle va ___ du pain après le travail.\", \"respuesta_correcta\": \"acheter\"}, {\"oracion\": \"Tu ___ à la pharmacie ?\", \"respuesta_correcta\": \"vas\"}]}",
+            "order": 4
+          },
+          {
+            "type": "theory",
+            "title": "La hora y las referencias temporales",
+            "content_preview": "Para orientarse en la ciudad hay que manejar horas, momentos del día y secuencias simples: à huit heures, ce matin, cet après-midi, demain. Estas expresiones se integran naturalmente con aller.",
+            "order": 5
+          },
+          {
+            "type": "activity",
+            "activity_type": "opcion_multiple",
+            "title": "Hora y momento adecuado",
+            "content_json": "{\"pregunta_global\": \"Elige la opción correcta.\", \"preguntas\": [{\"texto\": \"¿Cómo dices 'a las ocho' en francés?\", \"opciones\": [{\"texto\": \"à huit heures\", \"es_correcta\": true}, {\"texto\": \"dans huit heures\", \"es_correcta\": false}, {\"texto\": \"sur huit heures\", \"es_correcta\": false}]}, {\"texto\": \"Forma correcta para decir 'mañana por la mañana'.\", \"opciones\": [{\"texto\": \"demain matin\", \"es_correcta\": true}, {\"texto\": \"matin demain\", \"es_correcta\": false}, {\"texto\": \"le demain matin\", \"es_correcta\": false}]}]}",
+            "order": 6
+          },
+          {
+            "type": "theory",
+            "title": "Pedir y dar direcciones",
+            "content_preview": "Las secuencias Où est..., c'est loin ?, à gauche, à droite, tout droit, près de y en face de permiten resolver situaciones cotidianas sin construir frases complejas. Se prioriza funcionalidad inmediata.",
+            "order": 7
+          },
+          {
+            "type": "activity",
+            "activity_type": "ordenar_palabras",
+            "title": "Construye indicaciones urbanas",
+            "content_json": "{\"instruccion\": \"Ordena las palabras para formar una frase correcta.\", \"items\": [{\"tokens\": [\"est\", \"Où\", \"la\", \"gare\"], \"respuesta_correcta\": \"Où est la gare ?\"}, {\"tokens\": [\"à\", \"Tournez\", \"gauche\"], \"respuesta_correcta\": \"Tournez à gauche.\"}, {\"tokens\": [\"continuez\", \"tout\", \"droit\"], \"respuesta_correcta\": \"Continuez tout droit.\"}, {\"tokens\": [\"est\", \"La\", \"pharmacie\", \"face\", \"en\", \"de\", \"la\", \"banque\"], \"respuesta_correcta\": \"La pharmacie est en face de la banque.\"}]}",
+            "order": 8
+          },
+          {
+            "type": "theory",
+            "title": "Escucha en contexto urbano",
+            "content_preview": "Comprender una indicación requiere captar preposiciones y referencias espaciales rápidamente. Este tipo de escucha entrena la atención a palabras pequeñas pero decisivas.",
+            "order": 9
+          },
+          {
+            "type": "activity",
+            "activity_type": "escucha",
+            "title": "Transcribe direcciones e indicaciones",
+            "content_json": "{\"instruccion\": \"Escucha y escribe exactamente lo que oyes.\", \"items\": [{\"tts_text\": \"Bonjour, où est la station de métro la plus proche ?\", \"transcripcion_esperada\": \"Bonjour, où est la station de métro la plus proche ?\"}, {\"tts_text\": \"Elle est en face du musée, à deux minutes à pied.\", \"transcripcion_esperada\": \"Elle est en face du musée, à deux minutes à pied.\"}, {\"tts_text\": \"Je vais au Louvre demain matin.\", \"transcripcion_esperada\": \"Je vais au Louvre demain matin.\"}]}",
+            "order": 10
+          },
+          {
+            "type": "theory",
+            "title": "Cierre operativo del nivel A1",
+            "content_preview": "Al terminar A1 el estudiante debe poder presentarse, hablar de su familia y rutina, pedir comida, comprender datos personales y desenvolverse en una ciudad francófona en situaciones previsibles. Esta lección integra todo ese repertorio.",
+            "order": 11
+          },
+          {
+            "type": "activity",
+            "activity_type": "pronunciacion",
+            "title": "Frases integradas del final de A1",
+            "content_json": "[{\"frase\": \"Je vais à la gare à huit heures.\", \"focos\": [\"vais breve\", \"r francesa\", \"ritmo temporal\"]}, {\"frase\": \"Le musée est en face du métro.\", \"focos\": [\"u francesa\", \"é clara\", \"ritmo locativo\"]}, {\"frase\": \"Nous allons prendre un café après le cours.\", \"focos\": [\"liaison en nous_allons\", \"nasal en un\", \"r francesa\"]}, {\"frase\": \"Excusez-moi, où est la pharmacie ?\", \"focos\": [\"x sonora en excusez\", \"où cerrada\", \"r francesa\"]}]",
+            "order": 12
+          }
+        ]
+      }
+    ]
+  }
+}

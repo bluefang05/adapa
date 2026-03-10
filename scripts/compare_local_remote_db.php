@@ -2,42 +2,7 @@
 
 declare(strict_types=1);
 
-$root = dirname(__DIR__);
-$remoteConfigPath = $root . '/config/database.hosting.php';
-
-$localConfig = [
-    'host' => '127.0.0.1',
-    'user' => 'root',
-    'pass' => '',
-    'name' => 'adapa',
-    'port' => 3306,
-    'charset' => 'utf8mb4',
-];
-
-if (!is_file($remoteConfigPath)) {
-    fwrite(STDERR, "Remote config not found.\n");
-    exit(1);
-}
-
-$remoteConfig = require $remoteConfigPath;
-
-function connectPdo(array $config): PDO
-{
-    $host = $config['host'] ?? '127.0.0.1';
-    $port = (int) ($config['port'] ?? 3306);
-    $db = $config['name'] ?? '';
-    $user = $config['user'] ?? '';
-    $pass = $config['pass'] ?? '';
-    $charset = $config['charset'] ?? 'utf8mb4';
-
-    $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', $host, $port, $db, $charset);
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-
-    return $pdo;
-}
+require_once __DIR__ . '/RemoteDB.php';
 
 function fetchTables(PDO $pdo): array
 {
@@ -74,8 +39,16 @@ function printSection(string $title): void
     echo str_repeat('-', strlen($title)) . "\n";
 }
 
-$localPdo = connectPdo($localConfig);
-$remotePdo = connectPdo($remoteConfig);
+try {
+    $localPdo = RemoteDB::connectLocal();
+    $remotePdo = RemoteDB::connectRemote();
+    
+    $localConfig = RemoteDB::getLocalConfig();
+    $remoteConfig = RemoteDB::getRemoteConfig();
+} catch (Exception $e) {
+    fwrite(STDERR, $e->getMessage() . "\n");
+    exit(1);
+}
 
 $localTables = fetchTables($localPdo);
 $remoteTables = fetchTables($remotePdo);

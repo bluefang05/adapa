@@ -1,5 +1,14 @@
 <?php
 
+if (PHP_SAPI === 'cli') {
+    if (empty($_SERVER['HTTP_HOST'])) {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+    }
+    if (empty($_SERVER['SERVER_NAME'])) {
+        $_SERVER['SERVER_NAME'] = 'localhost';
+    }
+}
+
 require_once __DIR__ . '/../config/database.php';
 
 if (PHP_SAPI !== 'cli') {

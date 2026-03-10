@@ -1,5 +1,14 @@
 <?php
 
+if (PHP_SAPI === 'cli') {
+    if (empty($_SERVER['HTTP_HOST'])) {
+        $_SERVER['HTTP_HOST'] = 'localhost';
+    }
+    if (empty($_SERVER['SERVER_NAME'])) {
+        $_SERVER['SERVER_NAME'] = 'localhost';
+    }
+}
+
 require_once __DIR__ . '/../config/database.php';
 
 if (PHP_SAPI !== 'cli') {
@@ -19,10 +28,10 @@ if (!is_file($jsonPath)) {
 }
 
 $raw = file_get_contents($jsonPath);
-$blueprint = json_decode($raw, true);
+$rawBlueprint = json_decode($raw, true);
 
-if (!is_array($blueprint) || empty($blueprint['course']) || empty($blueprint['lessons'])) {
-    throw new RuntimeException('El JSON no cumple la estructura minima esperada.');
+if (!is_array($rawBlueprint)) {
+    throw new RuntimeException('El JSON no es valido o no se pudo decodificar.');
 }
 
 $dsn = sprintf(
@@ -51,8 +60,13 @@ if (!$student) {
     throw new RuntimeException('No se encontro el estudiante: ' . $studentEmail);
 }
 
-$course = $blueprint['course'];
-$lessons = $blueprint['lessons'];
+$blueprint = normalize_import_blueprint($rawBlueprint);
+$course = isset($blueprint['course']) && is_array($blueprint['course']) ? $blueprint['course'] : [];
+$lessons = isset($blueprint['lessons']) && is_array($blueprint['lessons']) ? $blueprint['lessons'] : [];
+
+if (empty($course) || empty($lessons)) {
+    throw new RuntimeException('El JSON no cumple la estructura minima esperada.');
+}
 
 $courseDefaults = [
     'idioma_ensenanza' => 'espanol',
@@ -151,6 +165,253 @@ $insertActivity = $pdo->prepare('
 ');
 
 $insertEnrollment = $pdo->prepare('INSERT IGNORE INTO inscripciones (curso_id, estudiante_id) VALUES (?, ?)');
+
+function parse_json_string_or_array($value): array
+{
+    if (is_array($value)) {
+        return $value;
+    }
+
+    if (!is_string($value)) {
+        return [];
+    }
+
+    $decoded = json_decode($value, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+function normalize_activity_payload(string $activityType, array $decoded, string $fallbackInstructions): array
+{
+    $instructions = trim((string) ($decoded['instruccion'] ?? $decoded['instructions'] ?? $fallbackInstructions));
+
+    if ($activityType === 'completar_oracion') {
+        $items = $decoded['items'] ?? $decoded;
+        $items = is_array($items) ? $items : [];
+        $normalized = [];
+
+        foreach ($items as $idx => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $oracion = (string) ($item['oracion'] ?? '');
+            $oracion = str_replace('___', '____', $oracion);
+
+            $normalized[] = [
+                'id' => (string) ($item['id'] ?? ('q' . ($idx + 1))),
+                'oracion' => $oracion,
+                'respuesta_correcta' => (string) ($item['respuesta_correcta'] ?? ''),
+            ];
+        }
+
+        return [$normalized, $instructions];
+    }
+
+    if ($activityType === 'ordenar_palabras') {
+        $items = $decoded['items'] ?? $decoded;
+        $items = is_array($items) ? $items : [];
+        $normalized = [];
+
+        foreach ($items as $idx => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $correctSentence = trim((string) ($item['respuesta_correcta'] ?? ''));
+            $correctTokens = $correctSentence !== '' ? preg_split('/\s+/', $correctSentence) : [];
+            if (!is_array($correctTokens)) {
+                $correctTokens = [];
+            }
+
+            $normalized[] = [
+                'id' => (string) ($item['id'] ?? ('ord_' . ($idx + 1))),
+                'instruction' => $instructions !== '' ? $instructions : 'Ordena la frase.',
+                'items' => array_values(array_filter(array_map('strval', $correctTokens), static fn($token) => trim($token) !== '')),
+            ];
+        }
+
+        return [$normalized, $instructions];
+    }
+
+    if ($activityType === 'emparejamiento') {
+        $pairs = $decoded['pares'] ?? $decoded['pairs'] ?? [];
+        $pairs = is_array($pairs) ? $pairs : [];
+        $normalizedPairs = [];
+
+        foreach ($pairs as $pair) {
+            if (!is_array($pair)) {
+                continue;
+            }
+
+            $left = (string) ($pair['left'] ?? $pair['izquierda'] ?? '');
+            $right = (string) ($pair['right'] ?? $pair['derecha'] ?? '');
+            if (trim($left) === '' || trim($right) === '') {
+                continue;
+            }
+
+            $normalizedPairs[] = [
+                'left' => $left,
+                'right' => $right,
+            ];
+        }
+
+        return [[
+            'pares' => $normalizedPairs,
+        ], $instructions];
+    }
+
+    if ($activityType === 'escucha') {
+        $items = $decoded['items'] ?? [];
+        $items = is_array($items) ? $items : [];
+        $prompts = [];
+
+        foreach ($items as $idx => $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $textoTts = (string) ($item['texto_tts'] ?? $item['tts_text'] ?? '');
+            $transcripcion = (string) ($item['transcripcion'] ?? $item['transcripcion_esperada'] ?? $textoTts);
+
+            if (trim($textoTts) === '' && trim($transcripcion) === '') {
+                continue;
+            }
+
+            $prompts[] = [
+                'id' => (string) ($item['id'] ?? ('listen_' . ($idx + 1))),
+                'descripcion' => (string) ($item['descripcion'] ?? ('Bloque ' . ($idx + 1))),
+                'speaker_label' => (string) ($item['speaker_label'] ?? ('Voz ' . ($idx + 1))),
+                'texto_tts' => $textoTts !== '' ? $textoTts : $transcripcion,
+                'transcripcion' => $transcripcion,
+            ];
+        }
+
+        return [[
+            'idioma_objetivo' => 'frances',
+            'intro' => $instructions,
+            'preguntas' => $prompts,
+        ], $instructions];
+    }
+
+    if ($activityType === 'pronunciacion') {
+        $items = $decoded['items'] ?? $decoded;
+        $items = is_array($items) ? $items : [];
+        return [$items, $instructions];
+    }
+
+    if ($activityType === 'opcion_multiple') {
+        return [$decoded, $instructions];
+    }
+
+    return [$decoded, $instructions];
+}
+
+function normalize_import_blueprint(array $rawBlueprint): array
+{
+    if (!empty($rawBlueprint['course']) && !empty($rawBlueprint['lessons'])) {
+        return $rawBlueprint;
+    }
+
+    if (isset($rawBlueprint['course']) && is_array($rawBlueprint['course']) && isset($rawBlueprint['course']['title']) && isset($rawBlueprint['course']['lessons'])) {
+        $course = $rawBlueprint['course'];
+        $lessons = $course['lessons'];
+        $lessons = is_array($lessons) ? $lessons : [];
+
+        $normalizedCourse = [
+            'titulo' => (string) ($course['title'] ?? 'Curso sin titulo'),
+            'descripcion' => (string) ($course['description'] ?? ''),
+            'idioma' => 'frances',
+            'idioma_objetivo' => 'frances',
+            'idioma_base' => 'espanol',
+            'idioma_ensenanza' => 'espanol',
+            'nivel_cefr' => 'A1',
+            'nivel_cefr_desde' => 'A1',
+            'nivel_cefr_hasta' => 'C1',
+        ];
+
+        $normalizedLessons = [];
+        foreach ($lessons as $lesson) {
+            if (!is_array($lesson)) {
+                continue;
+            }
+
+            $content = $lesson['content'] ?? [];
+            $content = is_array($content) ? $content : [];
+
+            $teoria = [];
+            $actividades = [];
+
+            foreach ($content as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $type = (string) ($item['type'] ?? '');
+                if ($type === 'theory') {
+                    $title = trim((string) ($item['title'] ?? ''));
+                    $preview = trim((string) ($item['content_preview'] ?? ''));
+                    if ($preview === '' && $title === '') {
+                        continue;
+                    }
+
+                    $blocks = [[
+                        'tipo_bloque' => 'explicacion',
+                        'titulo' => $title !== '' ? $title : null,
+                        'contenido' => $preview !== '' ? $preview : $title,
+                        'idioma_bloque' => 'espanol',
+                        'tts_habilitado' => 1,
+                    ]];
+
+                    $teoria[] = [
+                        'titulo' => $title !== '' ? $title : 'Teoria',
+                        'duracion' => (int) ($item['duration'] ?? 15),
+                        'bloques' => $blocks,
+                    ];
+                    continue;
+                }
+
+                if ($type === 'activity') {
+                    $activityType = (string) ($item['activity_type'] ?? '');
+                    if ($activityType === '') {
+                        continue;
+                    }
+
+                    $decoded = parse_json_string_or_array($item['content_json'] ?? []);
+                    [$normalizedContent, $instructions] = normalize_activity_payload(
+                        $activityType,
+                        $decoded,
+                        (string) ($item['instructions'] ?? '')
+                    );
+
+                    $actividades[] = [
+                        'titulo' => (string) ($item['title'] ?? 'Actividad'),
+                        'descripcion' => '',
+                        'tipo' => $activityType,
+                        'instrucciones' => $instructions,
+                        'contenido' => $normalizedContent,
+                        'puntos' => (int) ($item['points'] ?? 10),
+                        'tiempo' => (int) ($item['time'] ?? 5),
+                    ];
+                }
+            }
+
+            $normalizedLessons[] = [
+                'titulo' => (string) ($lesson['title'] ?? 'Leccion sin titulo'),
+                'descripcion' => (string) ($lesson['description'] ?? ''),
+                'duracion' => (int) ($lesson['duration'] ?? 90),
+                'teoria' => $teoria,
+                'actividades' => $actividades,
+            ];
+        }
+
+        return [
+            'course' => $normalizedCourse,
+            'lessons' => $normalizedLessons,
+        ];
+    }
+
+    throw new RuntimeException('El JSON no cumple la estructura minima esperada.');
+}
 
 function lesson_theory_html_from_blocks(array $blocks): string
 {
