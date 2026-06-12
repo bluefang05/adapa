@@ -73,4 +73,12 @@ class Database {
     public function lastInsertId() {
         return $this->dbh->lastInsertId();
     }
+
+    public function connection() {
+        if (!$this->dbh) {
+            throw new RuntimeException('DB connection failed: ' . ($this->error ?? 'unknown error'));
+        }
+
+        return $this->dbh;
+    }
 }

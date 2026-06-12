@@ -124,6 +124,10 @@ $router->add('POST', '/admin/tickets/status/{id}', 'admin/AdminController', 'upd
 $router->add('POST', '/admin/tickets/bulk-status', 'admin/AdminController', 'bulkTicketStatus');
 $router->add('POST', '/admin/tickets/note/{id}', 'admin/AdminController', 'addTicketNote');
 $router->add('GET', '/admin/actividad', 'admin/AdminController', 'actividad');
+$router->add('GET', '/admin/sql', 'admin/AdminController', 'sqlManager');
+$router->add('POST', '/admin/sql', 'admin/AdminController', 'sqlManager');
+$router->add('POST', '/admin/sql/export', 'admin/AdminController', 'exportSqlCsv');
+$router->add('POST', '/admin/sql/backup', 'admin/AdminController', 'downloadDatabaseBackup');
 
 // Register routes
 $router->add('GET', '/register', 'shared/RegisterController', 'showRegisterForm');

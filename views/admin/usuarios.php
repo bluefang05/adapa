@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
 <?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
+<?php $adminActiveTab = 'users'; ?>
 
 <?php
 $userQuery = $_SERVER['QUERY_STRING'] ?? '';
@@ -28,6 +29,7 @@ foreach ($users as $user) {
 ?>
 
 <div class="container">
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-people-fill"></i> Administracion de usuarios</span>
         <h1 class="page-title">Gestiona acceso, roles y limpieza operativa sin perder contexto.</h1>

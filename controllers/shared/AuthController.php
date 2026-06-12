@@ -55,8 +55,8 @@ class AuthController extends Controller {
 
         require_csrf();
 
-        $email = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
+        $email = $_POST['login_email'] ?? ($_POST['email'] ?? '');
+        $password = $_POST['login_password'] ?? ($_POST['password'] ?? '');
 
         try {
             $this->db->query("SELECT * FROM usuarios WHERE email = :email");

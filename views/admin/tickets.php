@@ -1,4 +1,5 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php $adminActiveTab = 'support'; ?>
 
 <?php
 function adminTicketRoleLabel($ticket) {
@@ -31,6 +32,7 @@ $ticketFocusBlocks = (!empty($ticketFocusSummary['by_course']) ? 1 : 0) + (!empt
 ?>
 
 <div class="container">
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-life-preserver"></i> Soporte institucional</span>
         <h1 class="page-title">Tickets de estudiantes y profesores</h1>

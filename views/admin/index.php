@@ -1,4 +1,5 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php $adminActiveTab = 'overview'; ?>
 
 <?php
 function adminDashboardTicketRole($ticket) {
@@ -25,12 +26,12 @@ function adminDashboardTicketTone($status) {
 $adminReadyToReview = (int) ($catalogSummary['ready_to_review'] ?? 0);
 ?>
 
-<div class="container">
-    <section class="page-hero content-hero mb-4">
+<div class="container admin-workspace">
+    <section class="page-hero content-hero admin-command-hero mb-4">
         <span class="eyebrow"><i class="bi bi-speedometer2"></i> Control institucional</span>
-        <h1 class="page-title">Vista operativa de la instancia.</h1>
+        <h1 class="page-title">Centro de administracion</h1>
         <p class="page-subtitle">
-            Entra a usuarios, cursos y soporte sin perder de vista lo que de verdad requiere intervencion.
+            Supervisa personas, contenido, soporte y sistema desde un espacio de trabajo unico.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/admin/usuarios'); ?>" class="btn btn-primary">
@@ -51,6 +52,66 @@ $adminReadyToReview = (int) ($catalogSummary['ready_to_review'] ?? 0);
         </div>
     </section>
 
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
+
+    <section class="admin-command-grid mb-4">
+        <a class="admin-command-card" href="<?php echo url('/admin/usuarios'); ?>">
+            <span class="admin-command-icon"><i class="bi bi-people-fill"></i></span>
+            <span>
+                <strong>Usuarios y accesos</strong>
+                <small>Crear cuentas, asignar roles, activar y verificar.</small>
+            </span>
+            <span class="admin-command-value"><?php echo (int) $totalUsers; ?></span>
+        </a>
+        <a class="admin-command-card" href="<?php echo url('/admin/cursos'); ?>">
+            <span class="admin-command-icon"><i class="bi bi-journal-richtext"></i></span>
+            <span>
+                <strong>Catalogo y contenido</strong>
+                <small>Revisar cursos, estructura y estado editorial.</small>
+            </span>
+            <span class="admin-command-value"><?php echo (int) $totalCourses; ?></span>
+        </a>
+        <a class="admin-command-card" href="<?php echo url('/admin/tickets'); ?>">
+            <span class="admin-command-icon"><i class="bi bi-life-preserver"></i></span>
+            <span>
+                <strong>Soporte</strong>
+                <small>Clasificar incidencias y cerrar bloqueos.</small>
+            </span>
+            <span class="admin-command-value"><?php echo (int) $openTickets; ?></span>
+        </a>
+        <a class="admin-command-card admin-command-card-accent" href="<?php echo url('/admin/sql'); ?>">
+            <span class="admin-command-icon"><i class="bi bi-database-gear"></i></span>
+            <span>
+                <strong>SQL Manager</strong>
+                <small>Consultar esquema, ejecutar SQL y exportar CSV.</small>
+            </span>
+            <i class="bi bi-arrow-up-right admin-command-arrow"></i>
+        </a>
+    </section>
+
+    <section class="summary-stat-grid admin-primary-metrics mb-4">
+        <article class="summary-stat-card">
+            <div class="summary-stat-label">Profesores</div>
+            <div class="summary-stat-value"><?php echo (int) $totalProfessors; ?></div>
+            <div class="summary-stat-copy">Docentes registrados en la instancia.</div>
+        </article>
+        <article class="summary-stat-card">
+            <div class="summary-stat-label">Estudiantes</div>
+            <div class="summary-stat-value"><?php echo (int) $totalStudents; ?></div>
+            <div class="summary-stat-copy">Cuentas orientadas al aprendizaje.</div>
+        </article>
+        <article class="summary-stat-card">
+            <div class="summary-stat-label">Usuarios inactivos</div>
+            <div class="summary-stat-value"><?php echo (int) $inactiveUsers; ?></div>
+            <div class="summary-stat-copy">Accesos que requieren revision.</div>
+        </article>
+        <article class="summary-stat-card">
+            <div class="summary-stat-label">Cursos visibles</div>
+            <div class="summary-stat-value"><?php echo (int) $publicCourses; ?></div>
+            <div class="summary-stat-copy">Oferta disponible en catalogo.</div>
+        </article>
+    </section>
+
     <details class="panel page-assist-card mb-4">
         <summary class="page-assist-summary">
             <div>
@@ -58,30 +119,10 @@ $adminReadyToReview = (int) ($catalogSummary['ready_to_review'] ?? 0);
                 <div class="fw-semibold mt-1">Indicadores secundarios y control interno</div>
                 <div class="small text-muted mt-1">Abre esta seccion para ver salud del catalogo, accesos secundarios y bitacora administrativa.</div>
             </div>
-            <span class="soft-badge">8 focos</span>
+            <span class="soft-badge">Analisis ampliado</span>
         </summary>
         <div class="panel-body pt-0 page-assist-body">
             <div class="summary-stat-grid">
-                <article class="summary-stat-card">
-                    <div class="summary-stat-label">Profesores</div>
-                    <div class="summary-stat-value"><?php echo (int) $totalProfessors; ?></div>
-                    <div class="summary-stat-copy">Docentes con acceso activo al panel.</div>
-                </article>
-                <article class="summary-stat-card">
-                    <div class="summary-stat-label">Estudiantes</div>
-                    <div class="summary-stat-value"><?php echo (int) $totalStudents; ?></div>
-                    <div class="summary-stat-copy">Base actual de aprendizaje dentro de la instancia.</div>
-                </article>
-                <article class="summary-stat-card">
-                    <div class="summary-stat-label">Usuarios inactivos</div>
-                    <div class="summary-stat-value"><?php echo (int) $inactiveUsers; ?></div>
-                    <div class="summary-stat-copy">Cuentas bloqueadas o desactivadas.</div>
-                </article>
-                <article class="summary-stat-card">
-                    <div class="summary-stat-label">Visibles en catalogo</div>
-                    <div class="summary-stat-value"><?php echo (int) $publicCourses; ?></div>
-                    <div class="summary-stat-copy">Oferta disponible para estudiantes ahora mismo.</div>
-                </article>
                 <article class="summary-stat-card">
                     <div class="summary-stat-label">Sin estructura</div>
                     <div class="summary-stat-value"><?php echo (int) ($catalogSummary['without_lessons'] ?? 0); ?></div>

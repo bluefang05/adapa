@@ -27,21 +27,21 @@ require_once __DIR__ . '/../partials/header.php';
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="<?php echo url('/login'); ?>" class="auth-form">
+                <form method="POST" action="<?php echo url('/login'); ?>" class="auth-form" autocomplete="off">
                     <?php echo csrf_input(); ?>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Correo electronico</label>
+                        <label for="login_email" class="form-label">Correo electronico</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" required placeholder="nombre@ejemplo.com" autocomplete="email" autocapitalize="off" spellcheck="false">
+                            <input type="email" class="form-control" id="login_email" name="login_email" required placeholder="nombre@ejemplo.com" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email">
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Contrasena</label>
+                        <label for="login_password" class="form-label">Contrasena</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-key"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="********" autocomplete="current-password">
+                            <input type="password" class="form-control" id="login_password" name="login_password" required placeholder="********" autocomplete="off">
                         </div>
                     </div>
 

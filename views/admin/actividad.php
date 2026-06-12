@@ -1,6 +1,8 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
+<?php $adminActiveTab = 'system'; ?>
 
 <div class="container">
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-activity"></i> Bitacora administrativa</span>
         <h1 class="page-title">Lee quien toco que, sobre cual entidad y en que momento.</h1>

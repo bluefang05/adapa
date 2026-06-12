@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
 <?php require_once __DIR__ . '/../../models/ProfesorPlan.php'; ?>
+<?php $adminActiveTab = 'users'; ?>
 
 <?php
 $activeTeachers = 0;
@@ -38,6 +39,7 @@ function adminTeacherLoadTone($teacher) {
 ?>
 
 <div class="container">
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-person-workspace"></i> Supervisar profesores</span>
         <h1 class="page-title">Lee la carga real de cada docente y abre cursos o tickets sin dar vueltas.</h1>

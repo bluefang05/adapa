@@ -27,6 +27,18 @@ class EnmController extends Controller {
     }
 
     private function getAccounts() {
+        $db = new Database();
+
+        $db->query("
+            SELECT email
+            FROM usuarios
+            WHERE es_admin_institucion = 1
+              AND activo = 1
+            ORDER BY creado_en ASC, id ASC
+            LIMIT 1
+        ");
+        $admin = $db->single();
+
         return [
             [
                 'key' => 'estudiante',
@@ -43,7 +55,7 @@ class EnmController extends Controller {
             [
                 'key' => 'admin',
                 'label' => 'Admin',
-                'email' => 'admin@adapa.edu',
+                'email' => $admin->email ?? 'admin no configurado',
                 'accent' => 'danger',
             ],
         ];

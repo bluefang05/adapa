@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../models/Curso.php';
+$adminActiveTab = 'content';
 ?>
 
 <?php
@@ -34,6 +35,7 @@ foreach ($courses as $course) {
 ?>
 
 <div class="container">
+    <?php require __DIR__ . '/partials/tabs.php'; ?>
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-book-fill"></i> Oferta academica</span>
         <h1 class="page-title">Revisa el catalogo completo sin entrar a cada curso por separado.</h1>

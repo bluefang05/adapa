@@ -907,6 +907,231 @@ class AdminController extends Controller {
         ]);
     }
 
+    public function sqlManager() {
+        $pdo = $this->db->connection();
+        $query = trim((string) ($_POST['query'] ?? $_GET['query'] ?? ''));
+        $result = null;
+        $error = '';
+        $executionMs = null;
+        $isWriteQuery = false;
+        $scriptResults = [];
+
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+            require_csrf();
+
+            try {
+                if ($query === '') {
+                    throw new RuntimeException('Escribe una consulta SQL.');
+                }
+
+                if (strlen($query) > 5 * 1024 * 1024) {
+                    throw new RuntimeException('El script supera el limite de 5 MB.');
+                }
+
+                $statements = $this->splitSqlScript($query);
+                if (empty($statements)) {
+                    throw new RuntimeException('No se encontraron sentencias SQL ejecutables.');
+                }
+                if (count($statements) > 2000) {
+                    throw new RuntimeException('El script supera el limite de 2,000 sentencias.');
+                }
+
+                $isScript = count($statements) > 1;
+                $isWriteQuery = $isScript || !$this->isReadOnlySql($statements[0]);
+
+                if ($isWriteQuery) {
+                    $confirmed = isset($_POST['confirm_write']);
+                    $confirmationText = strtoupper(trim((string) ($_POST['confirmation_text'] ?? '')));
+                    if (!$confirmed || $confirmationText !== 'CONFIRMAR') {
+                        throw new RuntimeException('Las consultas de escritura o scripts requieren marcar la confirmacion y escribir CONFIRMAR.');
+                    }
+                }
+
+                $startedAt = microtime(true);
+                foreach ($statements as $statementIndex => $statementSql) {
+                    try {
+                        $statementStartedAt = microtime(true);
+                        $statement = $pdo->prepare($statementSql);
+                        $statement->execute();
+                        $statementMs = round((microtime(true) - $statementStartedAt) * 1000, 2);
+
+                        if ($statement->columnCount() > 0) {
+                            $rows = [];
+                            while (count($rows) < 5000 && ($row = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                                $rows[] = $row;
+                            }
+                            $columns = !empty($rows) ? array_keys($rows[0]) : [];
+                            $statementResult = [
+                                'type' => 'rows',
+                                'columns' => $columns,
+                                'rows' => $rows,
+                                'count' => count($rows),
+                                'truncated' => count($rows) === 5000,
+                                'statement' => $statementSql,
+                                'execution_ms' => $statementMs,
+                            ];
+                            $scriptResults[] = $statementResult;
+                            $result = $statementResult;
+                            $_SESSION['admin_sql_export'] = [
+                                'columns' => $columns,
+                                'rows' => $rows,
+                            ];
+                        } else {
+                            $statementResult = [
+                                'type' => 'affected',
+                                'count' => $statement->rowCount(),
+                                'statement' => $statementSql,
+                                'execution_ms' => $statementMs,
+                            ];
+                            $scriptResults[] = $statementResult;
+                            $result = $statementResult;
+                        }
+                    } catch (Throwable $statementError) {
+                        if ($pdo->inTransaction()) {
+                            $pdo->rollBack();
+                        }
+                        throw new RuntimeException(
+                            'Error en sentencia ' . ($statementIndex + 1) . ' de ' . count($statements) .
+                            ': ' . $statementError->getMessage()
+                        );
+                    }
+                }
+                $executionMs = round((microtime(true) - $startedAt) * 1000, 2);
+
+                if ($result && $result['type'] !== 'rows') {
+                    unset($_SESSION['admin_sql_export']);
+                }
+
+                $this->rememberSqlQuery($query, $isWriteQuery, $executionMs);
+                $this->registrarActividadAdmin(
+                    $isWriteQuery ? 'sql_write_executed' : 'sql_read_executed',
+                    'database',
+                    null,
+                    $isScript ? 'Ejecuto un script SQL administrativo.' : ($isWriteQuery ? 'Ejecuto una consulta SQL de escritura.' : 'Ejecuto una consulta SQL de lectura.'),
+                    ['execution_ms' => $executionMs, 'statement_count' => count($statements)]
+                );
+            } catch (Throwable $e) {
+                $error = $e->getMessage();
+            }
+        }
+
+        $this->view('admin/sql', [
+            'query' => $query,
+            'result' => $result,
+            'error' => $error,
+            'executionMs' => $executionMs,
+            'isWriteQuery' => $isWriteQuery,
+            'scriptResults' => $scriptResults,
+            'tables' => $this->obtenerEsquemaSqlManager($pdo),
+            'history' => $_SESSION['admin_sql_history'] ?? [],
+            'databaseName' => DB_NAME,
+        ]);
+    }
+
+    public function exportSqlCsv() {
+        $this->requirePost();
+        require_csrf();
+
+        $export = $_SESSION['admin_sql_export'] ?? null;
+        if (!$export || empty($export['columns'])) {
+            $this->flash('error', 'No hay resultados SQL disponibles para exportar.');
+            $this->redirect('/admin/sql');
+        }
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="adapa-sql-' . date('Ymd-His') . '.csv"');
+        echo "\xEF\xBB\xBF";
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, $export['columns']);
+        foreach ($export['rows'] as $row) {
+            fputcsv($output, array_map(static function ($value) {
+                if (is_array($value) || is_object($value)) {
+                    return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                }
+                return $value;
+            }, $row));
+        }
+        fclose($output);
+        exit;
+    }
+
+    public function downloadDatabaseBackup() {
+        $this->requirePost();
+        require_csrf();
+
+        $pdo = $this->db->connection();
+        $filename = 'adapa-database-' . date('Ymd-His') . '.sql';
+
+        header('Content-Type: application/sql; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('X-Content-Type-Options: nosniff');
+
+        $this->writeSqlBackupLine('-- ADAPA database backup');
+        $this->writeSqlBackupLine('-- Database: `' . str_replace('`', '``', DB_NAME) . '`');
+        $this->writeSqlBackupLine('-- Generated: ' . date('c'));
+        $this->writeSqlBackupLine('');
+        $this->writeSqlBackupLine('SET NAMES utf8mb4;');
+        $this->writeSqlBackupLine('SET FOREIGN_KEY_CHECKS=0;');
+        $this->writeSqlBackupLine('SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";');
+        $this->writeSqlBackupLine('');
+
+        $tables = $pdo->query('SHOW FULL TABLES WHERE Table_type = "BASE TABLE"')->fetchAll(PDO::FETCH_NUM);
+        foreach ($tables as $tableRow) {
+            $tableName = (string) ($tableRow[0] ?? '');
+            if ($tableName === '') {
+                continue;
+            }
+
+            $quotedTable = '`' . str_replace('`', '``', $tableName) . '`';
+            $createRow = $pdo->query('SHOW CREATE TABLE ' . $quotedTable)->fetch(PDO::FETCH_ASSOC);
+            $createSql = (string) ($createRow['Create Table'] ?? '');
+
+            $this->writeSqlBackupLine('-- --------------------------------------------------------');
+            $this->writeSqlBackupLine('-- Table structure for ' . $quotedTable);
+            $this->writeSqlBackupLine('DROP TABLE IF EXISTS ' . $quotedTable . ';');
+            $this->writeSqlBackupLine($createSql . ';');
+            $this->writeSqlBackupLine('');
+
+            $statement = $pdo->query('SELECT * FROM ' . $quotedTable);
+            $columns = [];
+            $rowBuffer = [];
+            $bufferSize = 100;
+
+            while (($row = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                if (empty($columns)) {
+                    $columns = array_keys($row);
+                }
+                $rowBuffer[] = $row;
+
+                if (count($rowBuffer) >= $bufferSize) {
+                    $this->writeSqlInsertBatch($pdo, $quotedTable, $columns, $rowBuffer);
+                    $rowBuffer = [];
+                }
+            }
+
+            if (!empty($rowBuffer)) {
+                $this->writeSqlInsertBatch($pdo, $quotedTable, $columns, $rowBuffer);
+            }
+
+            $this->writeSqlBackupLine('');
+            if (function_exists('ob_flush')) {
+                @ob_flush();
+            }
+            flush();
+        }
+
+        $this->writeSqlBackupLine('SET FOREIGN_KEY_CHECKS=1;');
+        $this->registrarActividadAdmin(
+            'database_backup_downloaded',
+            'database',
+            null,
+            'Descargo una copia SQL completa de la base de datos.',
+            ['database' => DB_NAME, 'filename' => $filename]
+        );
+        exit;
+    }
+
     public function createUsuario() {
         $instanciaId = Auth::getInstanciaId();
 
@@ -2478,5 +2703,210 @@ class AdminController extends Controller {
         }
 
         return $fallback;
+    }
+
+    private function assertSingleSqlStatement($query) {
+        $withoutTrailingDelimiter = rtrim(trim((string) $query), "; \t\n\r\0\x0B");
+        if ($withoutTrailingDelimiter === '') {
+            throw new RuntimeException('La consulta SQL esta vacia.');
+        }
+
+        if (strpos($withoutTrailingDelimiter, ';') !== false) {
+            throw new RuntimeException('Ejecuta una sola sentencia SQL por vez.');
+        }
+    }
+
+    private function splitSqlScript($script) {
+        $statements = [];
+        $buffer = '';
+        $length = strlen((string) $script);
+        $quote = null;
+        $inLineComment = false;
+        $inBlockComment = false;
+
+        for ($index = 0; $index < $length; $index++) {
+            $char = $script[$index];
+            $next = $index + 1 < $length ? $script[$index + 1] : '';
+
+            if ($inLineComment) {
+                if ($char === "\n" || $char === "\r") {
+                    $inLineComment = false;
+                    $buffer .= ' ';
+                }
+                continue;
+            }
+
+            if ($inBlockComment) {
+                if ($char === '*' && $next === '/') {
+                    $inBlockComment = false;
+                    $index++;
+                    $buffer .= ' ';
+                }
+                continue;
+            }
+
+            if ($quote !== null) {
+                $buffer .= $char;
+
+                if ($char === '\\' && $index + 1 < $length) {
+                    $buffer .= $script[++$index];
+                    continue;
+                }
+
+                if ($char === $quote) {
+                    if ($next === $quote) {
+                        $buffer .= $next;
+                        $index++;
+                    } else {
+                        $quote = null;
+                    }
+                }
+                continue;
+            }
+
+            if ($char === '-' && $next === '-' && ($index + 2 >= $length || ctype_space($script[$index + 2]))) {
+                $inLineComment = true;
+                $index++;
+                continue;
+            }
+
+            if ($char === '#') {
+                $inLineComment = true;
+                continue;
+            }
+
+            if ($char === '/' && $next === '*') {
+                $inBlockComment = true;
+                $index++;
+                continue;
+            }
+
+            if ($char === "'" || $char === '"' || $char === '`') {
+                $quote = $char;
+                $buffer .= $char;
+                continue;
+            }
+
+            if ($char === ';') {
+                $statement = trim($buffer);
+                if ($statement !== '') {
+                    $statements[] = $statement;
+                }
+                $buffer = '';
+                continue;
+            }
+
+            $buffer .= $char;
+        }
+
+        if ($quote !== null) {
+            throw new RuntimeException('El script contiene una cadena o identificador sin cerrar.');
+        }
+        if ($inBlockComment) {
+            throw new RuntimeException('El script contiene un comentario de bloque sin cerrar.');
+        }
+
+        $statement = trim($buffer);
+        if ($statement !== '') {
+            $statements[] = $statement;
+        }
+
+        return $statements;
+    }
+
+    private function isReadOnlySql($query) {
+        $normalized = ltrim((string) $query);
+        $normalized = preg_replace('/\A(?:--[^\r\n]*(?:\r?\n|$)|#[^\r\n]*(?:\r?\n|$)|\/\*.*?\*\/\s*)+/s', '', $normalized);
+        $firstKeyword = strtoupper((string) strtok($normalized, " \t\n\r("));
+
+        if ($firstKeyword === 'WITH') {
+            return preg_match('/\b(INSERT|UPDATE|DELETE|REPLACE|ALTER|DROP|TRUNCATE|CREATE|RENAME)\b/i', $normalized) !== 1;
+        }
+
+        return in_array($firstKeyword, ['SELECT', 'SHOW', 'DESCRIBE', 'DESC', 'EXPLAIN'], true);
+    }
+
+    private function rememberSqlQuery($query, $isWriteQuery, $executionMs) {
+        $history = $_SESSION['admin_sql_history'] ?? [];
+        array_unshift($history, [
+            'query' => (string) $query,
+            'type' => $isWriteQuery ? 'write' : 'read',
+            'execution_ms' => $executionMs,
+            'executed_at' => date('Y-m-d H:i:s'),
+        ]);
+        $_SESSION['admin_sql_history'] = array_slice($history, 0, 12);
+    }
+
+    private function obtenerEsquemaSqlManager(PDO $pdo) {
+        try {
+            $tables = [];
+            $tableRows = $pdo->query('SHOW TABLE STATUS')->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($tableRows as $tableRow) {
+                $tableName = (string) ($tableRow['Name'] ?? '');
+                if ($tableName === '') {
+                    continue;
+                }
+
+                $quotedTable = str_replace('`', '``', $tableName);
+                $columns = $pdo->query('SHOW COLUMNS FROM `' . $quotedTable . '`')->fetchAll(PDO::FETCH_ASSOC);
+                $tables[] = [
+                    'name' => $tableName,
+                    'rows' => isset($tableRow['Rows']) ? (int) $tableRow['Rows'] : null,
+                    'engine' => $tableRow['Engine'] ?? null,
+                    'size_bytes' => (int) ($tableRow['Data_length'] ?? 0) + (int) ($tableRow['Index_length'] ?? 0),
+                    'columns' => $columns,
+                ];
+            }
+
+            return $tables;
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    private function writeSqlBackupLine($line) {
+        echo (string) $line . "\n";
+    }
+
+    private function writeSqlInsertBatch(PDO $pdo, $quotedTable, array $columns, array $rows) {
+        if (empty($columns) || empty($rows)) {
+            return;
+        }
+
+        $quotedColumns = array_map(static function ($column) {
+            return '`' . str_replace('`', '``', (string) $column) . '`';
+        }, $columns);
+
+        $valueRows = [];
+        foreach ($rows as $row) {
+            $values = [];
+            foreach ($columns as $column) {
+                $values[] = $this->quoteSqlBackupValue($pdo, $row[$column] ?? null);
+            }
+            $valueRows[] = '(' . implode(', ', $values) . ')';
+        }
+
+        $this->writeSqlBackupLine(
+            'INSERT INTO ' . $quotedTable .
+            ' (' . implode(', ', $quotedColumns) . ') VALUES' . "\n" .
+            implode(",\n", $valueRows) . ';'
+        );
+    }
+
+    private function quoteSqlBackupValue(PDO $pdo, $value) {
+        if ($value === null) {
+            return 'NULL';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return $pdo->quote((string) $value);
     }
 }
