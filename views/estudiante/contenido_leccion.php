@@ -81,9 +81,16 @@ if (isset($resumenProgreso)) {
 if (isset($lessonJourney['next_copy'])) {
     $lessonNextActionCopy = $lessonJourney['next_copy'];
 }
+
+$isLessonStarting = isset($resumenProgreso)
+    && (int) ($resumenProgreso->teorias_completadas ?? 0) === 0
+    && (int) ($resumenProgreso->actividades_completadas ?? 0) === 0;
+$nextTheoryId = isset($siguienteItem) && ($siguienteItem['tipo'] ?? '') === 'teoria'
+    ? (int) $siguienteItem['id']
+    : 0;
 ?>
 
-<div class="container">
+<div class="container student-lesson-page">
     <?php require __DIR__ . '/../partials/flash.php'; ?>
 
     <div class="row">
@@ -99,17 +106,20 @@ if (isset($lessonJourney['next_copy'])) {
     </div>
 
     <section class="page-hero content-hero mb-4">
-        <span class="eyebrow"><i class="bi bi-journal-richtext"></i> Leccion activa</span>
+        <span class="eyebrow"><i class="bi bi-journal-richtext"></i> Tu leccion de hoy</span>
         <h1 class="page-title"><?php echo htmlspecialchars($leccion->titulo); ?></h1>
-        <p class="page-subtitle">Completa teoria y practica en este orden para avanzar mas rapido.</p>
+        <p class="page-subtitle">
+            <?php echo $isLessonStarting
+                ? 'Empieza con una lectura corta. Te iremos mostrando el resto paso a paso.'
+                : 'Retoma exactamente donde lo dejaste.'; ?>
+        </p>
         <?php if (!empty($leccion->descripcion)): ?>
             <p class="text-muted mb-0"><?php echo htmlspecialchars($leccion->descripcion); ?></p>
         <?php endif; ?>
         <div class="compact-meta-row">
             <?php if (isset($resumenProgreso)): ?>
                 <span class="soft-badge info"><i class="bi bi-graph-up"></i> <?php echo (int) $resumenProgreso->porcentaje; ?>% progreso</span>
-                <span class="soft-badge"><i class="bi bi-book"></i> <?php echo (int) $resumenProgreso->teorias_completadas; ?>/<?php echo (int) $resumenProgreso->total_teorias; ?> teoria</span>
-                <span class="soft-badge"><i class="bi bi-lightning-charge"></i> <?php echo (int) $resumenProgreso->actividades_completadas; ?>/<?php echo (int) $resumenProgreso->total_actividades; ?> practica</span>
+                <span class="soft-badge"><i class="bi bi-list-check"></i> <?php echo (int) $resumenProgreso->completados; ?>/<?php echo (int) $resumenProgreso->total_items; ?> pasos</span>
                 <span class="soft-badge badge-<?php echo htmlspecialchars($lessonProgressTone); ?>"><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($lessonProgressStateLabel); ?></span>
             <?php else: ?>
                 <span class="soft-badge"><i class="bi bi-book"></i> <?php echo count($teorias); ?> piezas de teoria</span>
@@ -125,7 +135,7 @@ if (isset($lessonJourney['next_copy'])) {
         <div class="alert context-note mb-4">
             <div class="split-head">
                 <div>
-                    <div class="metric-label">Siguiente paso sugerido</div>
+                    <div class="metric-label">Haz esto ahora</div>
                     <div class="fw-semibold mt-1">
                         <?php if ($siguienteItem['tipo'] === 'curso_completado'): ?>
                             Has completado esta leccion. <?php echo htmlspecialchars($siguienteItem['titulo']); ?>
@@ -137,7 +147,7 @@ if (isset($lessonJourney['next_copy'])) {
                 </div>
                 <div class="responsive-actions">
                     <?php if ($siguienteItem['tipo'] === 'teoria'): ?>
-                        <a href="#teoria-<?php echo $siguienteItem['id']; ?>" class="btn btn-primary">Ir a teoria</a>
+                        <a href="#teoria-<?php echo $siguienteItem['id']; ?>" class="btn btn-primary">Empezar lectura</a>
                     <?php elseif ($siguienteItem['tipo'] === 'actividad'): ?>
                         <a href="<?php echo url('/estudiante/actividades/' . $siguienteItem['id']); ?>" class="btn btn-primary">Realizar actividad</a>
                     <?php elseif ($siguienteItem['tipo'] === 'leccion'): ?>
@@ -152,52 +162,13 @@ if (isset($lessonJourney['next_copy'])) {
         </div>
     <?php endif; ?>
 
-    <?php if (isset($resumenProgreso)): ?>
-        <section class="mb-4">
-            <details class="panel page-assist-card">
-                <summary class="page-assist-summary">
-                    <div>
-                        <div class="metric-label">Resumen de la leccion</div>
-                        <div class="fw-semibold mt-1">Estado actual y siguiente paso sugerido</div>
-                        <div class="small text-muted mt-1">Abre esta seccion si necesitas una lectura compacta antes de seguir con teoria o practica.</div>
-                    </div>
-                    <span class="soft-badge">1 bloque</span>
-                </summary>
-                <div class="panel-body pt-0 page-assist-body">
-                    <section>
-                        <div class="split-head mb-3">
-                            <div>
-                                <h2 class="h5 mb-1">Resumen de esta leccion</h2>
-                                <div class="small text-muted">Lectura compacta para saber que ya cerraste y que falta por resolver.</div>
-                            </div>
-                            <span class="soft-badge badge-<?php echo htmlspecialchars($lessonProgressTone); ?>"><?php echo htmlspecialchars($lessonProgressStateLabel); ?></span>
-                        </div>
-                        <div class="summary-stat-grid">
-                            <article class="summary-stat-card">
-                                <div class="summary-stat-label">Completaste</div>
-                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonJourney['completed_items_copy'] ?? ((int) $resumenProgreso->teorias_completadas . ' teoria / ' . (int) $resumenProgreso->actividades_completadas . ' practica')); ?></div>
-                                <div class="summary-stat-copy">Avance ya consolidado dentro de esta leccion.</div>
-                            </article>
-                            <article class="summary-stat-card">
-                                <div class="summary-stat-label">Todavia falta</div>
-                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonJourney['remaining_items_copy'] ?? ($lessonRemainingTheory . ' teorias y ' . $lessonRemainingActivities . ' actividades')); ?></div>
-                                <div class="summary-stat-copy">Pendiente para cerrar este tramo del curso.</div>
-                            </article>
-                            <article class="summary-stat-card">
-                                <div class="summary-stat-label">Siguiente paso</div>
-                                <div class="summary-stat-value"><?php echo htmlspecialchars($lessonNextActionCopy); ?></div>
-                                <div class="summary-stat-copy"><?php echo !empty($lessonJourney['practice_ready']) ? 'La base teorica ya esta lista para entrar a practica.' : 'Sigue el orden sugerido para avanzar con menos friccion.'; ?></div>
-                            </article>
-                        </div>
-                    </section>
-                </div>
-            </details>
-        </section>
-    <?php endif; ?>
-
     <section class="mb-4">
         <div class="section-title">
-            <h2>Teoria</h2>
+            <div>
+                <div class="metric-label">Primero</div>
+                <h2>Lecturas guiadas</h2>
+            </div>
+            <span class="small text-muted">Una a la vez, a tu ritmo.</span>
         </div>
         <?php if (empty($teorias)): ?>
             <div class="panel empty-state-card">
@@ -207,14 +178,19 @@ if (isset($lessonJourney['next_copy'])) {
                 </div>
             </div>
         <?php else: ?>
-            <?php foreach ($teorias as $teoria): ?>
-                <div class="content-block" id="teoria-<?php echo $teoria->id; ?>">
-                    <details class="lesson-theory-details" <?php echo empty($teoria->leido) ? 'open' : ''; ?>>
+            <?php foreach ($teorias as $teoriaIndex => $teoria): ?>
+                <?php
+                $isCurrentTheory = !empty($teoria->is_next)
+                    || ($nextTheoryId > 0 && (int) $teoria->id === $nextTheoryId)
+                    || ($nextTheoryId === 0 && $teoriaIndex === 0 && empty($teoria->leido));
+                ?>
+                <div class="content-block <?php echo $isCurrentTheory ? 'is-current-step' : ''; ?>" id="teoria-<?php echo $teoria->id; ?>">
+                    <details class="lesson-theory-details" <?php echo $isCurrentTheory ? 'open' : ''; ?>>
                         <summary class="lesson-theory-summary">
                             <span><?php echo htmlspecialchars($teoria->titulo); ?></span>
                             <div class="badge-row">
                             <?php if (!empty($teoria->is_next)): ?>
-                                <span class="soft-badge"><i class="bi bi-stars"></i> Sigue aqui</span>
+                                <span class="soft-badge badge-accent"><i class="bi bi-stars"></i> Ahora</span>
                             <?php endif; ?>
                             <?php if (!empty($teoria->leido)): ?>
                                 <span class="soft-badge"><i class="bi bi-check-circle-fill"></i> Completado</span>
@@ -234,17 +210,17 @@ if (isset($lessonJourney['next_copy'])) {
                                     </div>
                                 <?php endif; ?>
                                 <?php if (!empty($teoria->tiene_bloques) && !empty($teoria->bloques)): ?>
-                                    <div class="stack-list">
-                                        <?php foreach ($teoria->bloques as $bloque): ?>
-                                            <div class="stack-item">
-                                                <div class="split-head">
+                                    <div class="stack-list lesson-block-list">
+                                        <?php foreach ($teoria->bloques as $bloqueIndex => $bloque): ?>
+                                            <details class="stack-item lesson-block-details" <?php echo $bloqueIndex === 0 ? 'open' : ''; ?>>
+                                                <summary class="split-head lesson-block-summary">
                                                     <div>
                                                         <div class="stack-item-title">
                                                             <?php echo htmlspecialchars($bloque->titulo ?: ucfirst($bloque->tipo_bloque)); ?>
                                                         </div>
                                                         <div class="stack-item-subtitle"><?php echo htmlspecialchars(ucfirst($bloque->tipo_bloque)); ?></div>
                                                     </div>
-                                                    <div class="badge-row">
+                                                    <div class="badge-row lesson-block-actions">
                                                         <?php if ((int) ($bloque->tts_habilitado ?? 0) === 1 && !empty($bloque->contenido)): ?>
                                                             <button
                                                                 type="button"
@@ -255,19 +231,22 @@ if (isset($lessonJourney['next_copy'])) {
                                                                 <i class="bi bi-volume-up"></i> Escuchar
                                                             </button>
                                                         <?php endif; ?>
+                                                        <i class="bi bi-chevron-down lesson-block-chevron" aria-hidden="true"></i>
                                                     </div>
+                                                </summary>
+                                                <div class="lesson-block-content">
+                                                    <?php if (!empty($bloque->contenido)): ?>
+                                                        <div>
+                                                            <?php echo nl2br(htmlspecialchars($bloque->contenido)); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($bloque->ruta_archivo) && !empty($bloque->tipo_media)): ?>
+                                                        <div class="mt-3">
+                                                            <?php echo renderLessonBlockMedia($bloque); ?>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 </div>
-                                                <?php if (!empty($bloque->contenido)): ?>
-                                                    <div class="mt-2">
-                                                        <?php echo nl2br(htmlspecialchars($bloque->contenido)); ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if (!empty($bloque->ruta_archivo) && !empty($bloque->tipo_media)): ?>
-                                                    <div class="mt-3">
-                                                        <?php echo renderLessonBlockMedia($bloque); ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
+                                            </details>
                                         <?php endforeach; ?>
                                     </div>
                                 <?php else: ?>
@@ -289,9 +268,13 @@ if (isset($lessonJourney['next_copy'])) {
         <?php endif; ?>
     </section>
 
-    <section>
+    <section class="<?php echo $lessonRemainingTheory > 0 ? 'practice-is-upcoming' : ''; ?>">
         <div class="section-title">
-            <h2>Actividades</h2>
+            <div>
+                <div class="metric-label">Despues</div>
+                <h2>Practica</h2>
+            </div>
+            <span class="small text-muted"><?php echo count($actividades); ?> ejercicios cortos</span>
         </div>
         <?php if (empty($actividades)): ?>
             <div class="panel empty-state-card">
@@ -301,9 +284,21 @@ if (isset($lessonJourney['next_copy'])) {
                 </div>
             </div>
         <?php else: ?>
-            <ul class="list-group lesson-stack">
+            <details class="lesson-practice-details" <?php echo $lessonRemainingTheory === 0 ? 'open' : ''; ?>>
+                <summary class="panel lesson-practice-summary">
+                    <div>
+                        <div class="fw-semibold"><?php echo $lessonRemainingTheory > 0 ? 'La practica viene despues de las lecturas' : 'Tus ejercicios'; ?></div>
+                        <div class="small text-muted mt-1">
+                            <?php echo $lessonRemainingTheory > 0
+                                ? 'Puedes verla ahora si quieres, pero no necesitas resolverla todavia.'
+                                : 'Continua con el ejercicio recomendado.'; ?>
+                        </div>
+                    </div>
+                    <span class="soft-badge"><?php echo count($actividades); ?> ejercicios</span>
+                </summary>
+                <ul class="list-group lesson-stack lesson-activity-list">
                 <?php foreach ($actividades as $actividad): ?>
-                    <li class="list-group-item lesson-stack-item">
+                    <li class="list-group-item lesson-stack-item <?php echo !empty($actividad->is_next) ? 'is-current-step' : ''; ?>">
                         <div>
                             <div class="fw-semibold"><?php echo htmlspecialchars($actividad->titulo); ?></div>
                             <div class="course-meta mt-2">
@@ -315,23 +310,19 @@ if (isset($lessonJourney['next_copy'])) {
                                     <span><?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
                                 <?php endif; ?>
                             </div>
-                            <?php if (!empty($actividad->descripcion)): ?>
-                                <div class="small text-muted mt-2"><?php echo htmlspecialchars($actividad->descripcion); ?></div>
-                            <?php endif; ?>
-                            <div class="small text-muted mt-1">
-                                <strong><?php echo htmlspecialchars($actividad->student_status_label ?? (!empty($actividad->completada) ? 'Completada' : 'Pendiente')); ?>.</strong>
-                                <?php echo htmlspecialchars($actividad->student_status_copy ?? ''); ?>
-                            </div>
                             <?php if (!empty($actividad->is_next)): ?>
-                                <div class="small text-muted mt-1"><i class="bi bi-stars"></i> Esta es la mejor siguiente accion dentro de la leccion.</div>
+                                <div class="small mt-2"><i class="bi bi-stars"></i> Siguiente ejercicio recomendado</div>
+                            <?php elseif (!empty($actividad->completada)): ?>
+                                <div class="small text-muted mt-2"><i class="bi bi-check-circle-fill"></i> Completado</div>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo url('/estudiante/actividades/' . $actividad->id); ?>" class="btn btn-primary">
+                        <a href="<?php echo url('/estudiante/actividades/' . $actividad->id); ?>" class="btn <?php echo !empty($actividad->is_next) ? 'btn-primary' : 'btn-outline-secondary'; ?>">
                             <?php echo !empty($actividad->completada) ? 'Revisar actividad' : (!empty($actividad->is_next) ? 'Seguir aqui' : 'Realizar actividad'); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
-            </ul>
+                </ul>
+            </details>
         <?php endif; ?>
     </section>
 
@@ -374,7 +365,9 @@ if (isset($lessonJourney['next_copy'])) {
     }
 
     document.querySelectorAll('.tts-play-btn').forEach(function (button) {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
             const text = button.getAttribute('data-tts-text') || '';
             const langKey = button.getAttribute('data-tts-lang') || 'espanol';
             const utterance = new SpeechSynthesisUtterance(text);

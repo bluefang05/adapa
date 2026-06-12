@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 ?>
 <!DOCTYPE html>
 <?php
-$serverThemeRaw = $_SESSION['theme_preference'] ?? ($_COOKIE['adapa-theme'] ?? 'warm');
+$serverThemeRaw = $_COOKIE['adapa-theme'] ?? ($_SESSION['theme_preference'] ?? 'warm');
 $themeAliases = [
     'light' => 'warm',
 ];
@@ -78,12 +78,6 @@ $studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navG
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
     <title>Adapa - Plataforma de Aprendizaje</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?php echo url('/assets/css/app.css'); ?>?v=<?php echo urlencode($appCssVersion); ?>">
     <script>
         (function () {
             var root = document.documentElement;
@@ -100,6 +94,19 @@ $studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navG
 
             function getThemeMode(theme) {
                 return theme === 'dark' ? 'dark' : 'light';
+            }
+
+            function readCookieTheme() {
+                var match = document.cookie.match(/(?:^|;\s*)adapa-theme=([^;]+)/);
+                if (!match) {
+                    return null;
+                }
+
+                try {
+                    return sanitizeTheme(decodeURIComponent(match[1]));
+                } catch (error) {
+                    return null;
+                }
             }
 
             function applyRootTheme(theme) {
@@ -119,12 +126,24 @@ $studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navG
             window.__adapaTheme.applyRootTheme = applyRootTheme;
             window.__adapaTheme.themeSequence = themeSequence.slice();
             window.__adapaTheme.getThemeMode = getThemeMode;
+            window.__adapaTheme.readCookieTheme = readCookieTheme;
             var serverTheme = <?php echo json_encode($serverTheme); ?>;
-            // Arranque estable: usar el tema resuelto por backend para evitar saltos de dark->light en Chrome.
-            var appliedTheme = applyRootTheme(serverTheme);
+            // The cookie is synchronous and visible to both PHP and JavaScript, so it is the source of truth.
+            var appliedTheme = applyRootTheme(readCookieTheme() || serverTheme);
+            try {
+                document.cookie = 'adapa-theme=' + encodeURIComponent(appliedTheme) + '; path=/; max-age=31536000; SameSite=Lax';
+                localStorage.removeItem('adapa-theme');
+            } catch (error) {
+            }
             window.__adapaInitialTheme = appliedTheme;
         }());
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="<?php echo url('/assets/css/app.css'); ?>?v=<?php echo urlencode($appCssVersion); ?>">
 </head>
 <body
     data-server-theme="<?php echo htmlspecialchars($serverTheme, ENT_QUOTES, 'UTF-8'); ?>"
@@ -178,12 +197,12 @@ $studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navG
                     <?php elseif ($_SESSION['user_role'] === 'estudiante'): ?>
                         <li class="nav-item">
                             <a class="nav-link<?php echo $studentLearningActive ? ' active' : ''; ?>"<?php echo $studentLearningActive ? ' aria-current="page"' : ''; ?> href="<?php echo url('/estudiante'); ?>">
-                                <i class="bi bi-person-badge"></i> Mis Cursos
+                                <i class="bi bi-play-circle"></i> Aprender
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="<?php echo $navLinkClass('nav-link', $navGroups['estudiante_recursos']); ?>"<?php echo $navCurrent($navGroups['estudiante_recursos']); ?> href="<?php echo url('/estudiante/recursos'); ?>">
-                                <i class="bi bi-compass"></i> Recursos utiles
+                                <i class="bi bi-compass"></i> Recursos
                             </a>
                         </li>
                         <li class="nav-item">
@@ -193,7 +212,7 @@ $studentLearningActive = $navMatches(['/estudiante'], true) || $navMatches($navG
                         </li>
                         <li class="nav-item">
                             <a class="<?php echo $navLinkClass('nav-link', $navGroups['estudiante_calificaciones']); ?>"<?php echo $navCurrent($navGroups['estudiante_calificaciones']); ?> href="<?php echo url('/estudiante/calificaciones'); ?>">
-                                <i class="bi bi-award"></i> Calificaciones
+                                <i class="bi bi-award"></i> Resultados
                             </a>
                         </li>
                     <?php elseif ($_SESSION['user_role'] === 'admin'): ?>

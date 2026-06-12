@@ -68,12 +68,19 @@ if (session_status() === PHP_SESSION_NONE) {
                 return themeSequence.indexOf(theme) !== -1 ? theme : null;
             }
 
-            function persistTheme(theme) {
+            function readPersistedTheme() {
+                var cookieTheme = null;
+
                 try {
-                    localStorage.setItem('adapa-theme', theme);
+                    var match = document.cookie.match(/(?:^|;\s*)adapa-theme=([^;]+)/);
+                    cookieTheme = match ? sanitizeTheme(decodeURIComponent(match[1])) : null;
                 } catch (error) {
                 }
 
+                return cookieTheme;
+            }
+
+            function persistTheme(theme) {
                 try {
                     document.cookie = 'adapa-theme=' + encodeURIComponent(theme) + '; path=/; max-age=31536000; SameSite=Lax';
                 } catch (error) {
@@ -111,10 +118,12 @@ if (session_status() === PHP_SESSION_NONE) {
                 if (typeof themeApi.applyRootTheme === 'function') {
                     safeTheme = themeApi.applyRootTheme(safeTheme);
                 } else {
+                    var modeTheme = safeTheme === 'dark' ? 'dark' : 'light';
                     root.setAttribute('data-theme', safeTheme);
-                    root.setAttribute('data-bs-theme', safeTheme);
-                    root.classList.remove('theme-light', 'theme-dark');
+                    root.setAttribute('data-bs-theme', modeTheme);
+                    root.classList.remove('theme-warm', 'theme-paper', 'theme-sky', 'theme-dark', 'theme-light');
                     root.classList.add('theme-' + safeTheme);
+                    root.classList.add('theme-' + modeTheme);
                 }
 
                 syncToggles(safeTheme);
@@ -140,6 +149,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 fetch('<?php echo url('/theme/preference'); ?>', {
                     method: 'POST',
                     credentials: 'same-origin',
+                    keepalive: true,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                     },
@@ -202,13 +212,13 @@ if (session_status() === PHP_SESSION_NONE) {
                 });
             }
 
-            // En carga normal, el tema ya debe venir aplicado desde header (<html data-theme=...>).
-            // Evitamos recalcular desde storage aqui para no provocar un segundo cambio de tema.
+            // Confirm the persisted preference in case this document came from cache.
             var initialTheme =
+                readPersistedTheme() ||
                 sanitizeTheme(root.getAttribute('data-theme')) ||
                 sanitizeTheme(window.__adapaInitialTheme || null) ||
                 sanitizeTheme(document.body ? document.body.getAttribute('data-server-theme') : null) ||
-                'light';
+                'warm';
             applyTheme(initialTheme, { skipEvent: true });
             markActiveNavLink();
             lockSubmittingForms();
@@ -229,6 +239,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
             window.addEventListener('pageshow', function (event) {
                 var restoredTheme =
+                    readPersistedTheme() ||
                     sanitizeTheme(root.getAttribute('data-theme')) ||
                     sanitizeTheme(window.__adapaInitialTheme || null) ||
                     sanitizeTheme(document.body ? document.body.getAttribute('data-server-theme') : null) ||
@@ -242,6 +253,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     applyTheme(restoredTheme, { skipEvent: true });
                 }
             });
+
         }());
     </script>
 </body>

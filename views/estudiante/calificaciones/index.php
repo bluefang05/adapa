@@ -2,14 +2,14 @@
 
 <div class="container">
     <section class="page-hero content-hero mb-4">
-        <span class="eyebrow"><i class="bi bi-award"></i> Rendimiento</span>
-        <h1 class="page-title">Tus respuestas ya cuentan una historia.</h1>
+        <span class="eyebrow"><i class="bi bi-award"></i> Tus resultados</span>
+        <h1 class="page-title">Revisa lo que practicaste.</h1>
         <p class="page-subtitle">
-            Consulta puntajes, tipo de actividad y fechas de entrega desde una vista clara y util para seguimiento.
+            Los puntajes sirven para detectar que conviene repasar. No necesitas resolver todo perfecto para continuar.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/estudiante'); ?>" class="btn btn-primary">
-                <i class="bi bi-journal-text"></i> Volver al dashboard
+                <i class="bi bi-play-circle"></i> Seguir aprendiendo
             </a>
             <a href="<?php echo url('/estudiante/progreso'); ?>" class="btn btn-outline-secondary">
                 <i class="bi bi-graph-up-arrow"></i> Ver progreso
@@ -36,7 +36,7 @@
 
     <section>
         <div class="section-title">
-            <h2>Historial de calificaciones</h2>
+            <h2>Actividad reciente</h2>
             <span class="soft-badge"><i class="bi bi-clock-history"></i> Registro reciente</span>
         </div>
 
@@ -53,12 +53,12 @@
                     <table class="table table-hover align-middle">
                         <thead>
                             <tr>
-                                <th>Curso</th>
-                                <th>Leccion</th>
+                                <th class="student-results-secondary">Curso</th>
+                                <th class="student-results-secondary">Leccion</th>
                                 <th>Actividad</th>
-                                <th>Tipo</th>
+                                <th class="student-results-secondary">Tipo</th>
                                 <th>Puntaje</th>
-                                <th>Fecha</th>
+                                <th class="student-results-secondary">Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,21 +72,21 @@
                                 }
                                 ?>
                                 <tr>
-                                    <td>
+                                    <td class="student-results-secondary">
                                         <div class="fw-semibold"><?php echo htmlspecialchars($item->curso_titulo); ?></div>
                                     </td>
-                                    <td><?php echo htmlspecialchars($item->leccion_titulo); ?></td>
+                                    <td class="student-results-secondary"><?php echo htmlspecialchars($item->leccion_titulo); ?></td>
                                     <td><?php echo htmlspecialchars($item->actividad_titulo); ?></td>
-                                    <td><span class="soft-badge"><?php echo htmlspecialchars(str_replace('_', ' ', $item->tipo_actividad)); ?></span></td>
+                                    <td class="student-results-secondary"><span class="soft-badge"><?php echo htmlspecialchars(str_replace('_', ' ', $item->tipo_actividad)); ?></span></td>
                                     <td><span class="soft-badge <?php echo $scoreTone; ?>"><?php echo $scoreLabel; ?></span></td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($item->fecha_respuesta)); ?></td>
+                                    <td class="student-results-secondary"><?php echo date('d/m/Y H:i', strtotime($item->fecha_respuesta)); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="mobile-table-hint">En movil puedes desplazar horizontalmente la tabla para ver todo el historial.</div>
+            <div class="mobile-table-hint">En pantallas pequeñas mostramos primero la actividad y su resultado.</div>
         <?php endif; ?>
     </section>
 </div>

@@ -1,4 +1,5 @@
 :root {
+    color-scheme: light;
     --bg: #f4efe5;
     --bg-accent: #efe4d3;
     --surface: rgba(255, 251, 245, 0.92);
@@ -21,6 +22,7 @@
 }
 
 :root[data-theme="dark"] {
+    color-scheme: dark;
     --bg: #11161c;
     --bg-accent: #17202a;
     --surface: rgba(21, 29, 38, 0.92);
@@ -4261,6 +4263,10 @@ textarea::placeholder {
     }
 }
 
+:root:not([data-theme="dark"]) {
+    color-scheme: light;
+}
+
 /* Admin command center */
 .admin-workspace { --admin-accent: #0f766e; --admin-accent-soft: rgba(15, 118, 110, 0.1); }
 .admin-command-meta { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.1rem; }
@@ -4325,4 +4331,152 @@ textarea::placeholder {
     .sql-write-confirm, .sql-history-item { grid-template-columns: 1fr; }
     .sql-script-result summary { grid-template-columns: auto minmax(0, 1fr); }
     .sql-script-result summary small { display: none; }
+}
+
+/* Calm student journey */
+.lesson-path-card.is-recommended {
+    border-color: color-mix(in srgb, var(--brand) 44%, var(--line));
+    box-shadow: 0 16px 38px color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+.lesson-path-card:not(.is-recommended) {
+    box-shadow: none;
+}
+
+@media (max-width: 767.98px) {
+    .student-results-secondary {
+        display: none;
+    }
+
+    .data-table-shell:has(.student-results-secondary) .table {
+        min-width: 0;
+    }
+
+    .data-table-shell:has(.student-results-secondary) th,
+    .data-table-shell:has(.student-results-secondary) td {
+        white-space: normal;
+    }
+}
+
+/* Student first-run learning flow */
+.student-lesson-page {
+    max-width: 1040px;
+}
+
+.student-lesson-page .content-hero {
+    padding-block: clamp(1.5rem, 4vw, 2.4rem);
+}
+
+.student-lesson-page .context-note {
+    border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
+    background:
+        linear-gradient(120deg, color-mix(in srgb, var(--brand) 12%, transparent), transparent 72%),
+        var(--surface);
+}
+
+.student-lesson-page .is-current-step {
+    border-color: color-mix(in srgb, var(--brand) 48%, var(--line)) !important;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+.student-lesson-page .lesson-theory-details:not([open]) {
+    opacity: 0.82;
+}
+
+.student-lesson-page .lesson-theory-summary {
+    padding-block: 0.95rem;
+}
+
+.student-lesson-page .lesson-activity-list {
+    gap: 0.65rem;
+}
+
+.student-lesson-page .lesson-activity-list .lesson-stack-item {
+    min-height: auto;
+    padding: 0.9rem 1rem;
+    border-radius: 0.85rem;
+}
+
+.student-lesson-page .lesson-activity-list .lesson-stack-item:not(.is-current-step) {
+    background: color-mix(in srgb, var(--surface) 84%, var(--surface-muted));
+}
+
+.student-lesson-page .lesson-activity-list .course-meta {
+    margin-top: 0.45rem !important;
+}
+
+.student-lesson-page .lesson-activity-list .btn {
+    min-width: 150px;
+}
+
+:root:not([data-theme="dark"]) .activity-shell .list-group-item {
+    background-color: var(--surface-strong);
+    color: var(--text);
+    border-color: var(--line);
+}
+
+:root:not([data-theme="dark"]) .activity-shell .form-check-input {
+    background-color: #fff;
+    border-color: rgba(78, 58, 33, 0.28);
+}
+
+.student-lesson-page .lesson-block-details {
+    padding: 0;
+    overflow: hidden;
+}
+
+.student-lesson-page .lesson-block-summary {
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.student-lesson-page .lesson-block-summary::-webkit-details-marker,
+.student-lesson-page .lesson-practice-summary::-webkit-details-marker {
+    display: none;
+}
+
+.student-lesson-page .lesson-block-content {
+    padding: 0 1rem 1rem;
+}
+
+.student-lesson-page .lesson-block-chevron {
+    transition: transform 160ms ease;
+}
+
+.student-lesson-page .lesson-block-details[open] .lesson-block-chevron {
+    transform: rotate(180deg);
+}
+
+.student-lesson-page .lesson-practice-details {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.student-lesson-page .lesson-practice-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.student-lesson-page .practice-is-upcoming {
+    opacity: 0.88;
+}
+
+@media (max-width: 767.98px) {
+    .student-lesson-page .lesson-activity-list .lesson-stack-item {
+        align-items: stretch;
+    }
+
+    .student-lesson-page .lesson-activity-list .btn {
+        width: 100%;
+    }
+
+    .student-lesson-page .lesson-practice-summary {
+        align-items: flex-start;
+    }
 }

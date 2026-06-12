@@ -15,21 +15,21 @@ require_once __DIR__ . '/../../models/Curso.php';
 
     <section class="page-hero content-hero mb-4">
         <span class="eyebrow"><i class="bi bi-journal-bookmark"></i> Recorrido del curso</span>
-        <h1 class="page-title">Lecciones de <?php echo htmlspecialchars($curso->titulo); ?></h1>
-        <p class="page-subtitle">Abre la siguiente leccion y continua.</p>
+        <h1 class="page-title"><?php echo htmlspecialchars($curso->titulo); ?></h1>
+        <p class="page-subtitle">Te mostramos por donde continuar. Las demas lecciones quedan disponibles para cuando las necesites.</p>
         <?php if (!empty($curso->descripcion)): ?>
             <p class="text-muted mb-0"><?php echo htmlspecialchars($curso->descripcion); ?></p>
         <?php endif; ?>
         <div class="hero-actions">
             <a href="<?php echo url('/estudiante'); ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Volver al dashboard
+                <i class="bi bi-arrow-left"></i> Volver a mis cursos
             </a>
         </div>
 
         <?php if (isset($resumenCurso) && $resumenCurso): ?>
             <div class="compact-meta-row">
                 <span class="soft-badge info"><i class="bi bi-graph-up"></i> <?php echo (int) $resumenCurso->porcentaje; ?>% progreso del curso</span>
-                <span class="soft-badge"><i class="bi bi-check2-circle"></i> <?php echo (int) $resumenCurso->completados; ?>/<?php echo (int) $resumenCurso->total_items; ?> items completados</span>
+                <span class="soft-badge"><i class="bi bi-check2-circle"></i> <?php echo (int) $resumenCurso->completados; ?>/<?php echo (int) $resumenCurso->total_items; ?> pasos completados</span>
                 <span class="soft-badge"><i class="bi bi-journal-bookmark"></i> <?php echo count($lecciones); ?> lecciones</span>
             </div>
         <?php endif; ?>
@@ -39,7 +39,7 @@ require_once __DIR__ . '/../../models/Curso.php';
         <div class="alert context-note mb-4">
             <div class="split-head">
                 <div>
-                    <div class="metric-label">Siguiente paso recomendado</div>
+                    <div class="metric-label">Continua por aqui</div>
                     <div class="fw-semibold mt-1"><?php echo htmlspecialchars($courseJourney['headline'] ?? 'Sigue con el curso'); ?></div>
                     <div class="small text-muted mt-1"><?php echo htmlspecialchars($courseJourney['summary'] ?? 'Abre la siguiente leccion para continuar.'); ?></div>
                 </div>
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../../models/Curso.php';
 
     <section>
         <div class="section-title">
-            <h2>Lecciones</h2>
+            <h2>Tu recorrido</h2>
         </div>
 
         <?php if (empty($lecciones)): ?>
@@ -65,7 +65,7 @@ require_once __DIR__ . '/../../models/Curso.php';
             <div class="row g-4">
                 <?php foreach ($lecciones as $leccion): ?>
                     <div class="col-xl-6">
-                        <article class="surface-card lesson-path-card h-100">
+                        <article class="surface-card lesson-path-card h-100 <?php echo !empty($leccion->is_recommended) ? 'is-recommended' : ''; ?>">
                             <div class="card-body lesson-path-body">
                                 <div class="lesson-path-head">
                                     <div>
@@ -86,7 +86,7 @@ require_once __DIR__ . '/../../models/Curso.php';
 
                                 <div class="course-meta lesson-path-status">
                                     <?php if (isset($leccion->completados, $leccion->total_items) && (int) $leccion->total_items > 0): ?>
-                                        <span><?php echo (int) $leccion->completados; ?>/<?php echo (int) $leccion->total_items; ?> items</span>
+                                        <span><?php echo (int) $leccion->completados; ?>/<?php echo (int) $leccion->total_items; ?> pasos</span>
                                     <?php endif; ?>
                                     <?php if (!empty($leccion->state_label)): ?>
                                         <span class="soft-badge badge-<?php echo htmlspecialchars($leccion->state_tone ?? 'info'); ?>">
@@ -106,7 +106,7 @@ require_once __DIR__ . '/../../models/Curso.php';
                                 <?php endif; ?>
 
                                 <div class="responsive-actions lesson-path-footer mt-4">
-                                    <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn btn-primary">
+                                    <a href="<?php echo url('/estudiante/lecciones/' . $leccion->id . '/contenido'); ?>" class="btn <?php echo !empty($leccion->is_recommended) ? 'btn-primary' : 'btn-outline-secondary'; ?>">
                                         <?php echo htmlspecialchars($leccion->cta_label ?? (!empty($leccion->completados) ? 'Continuar leccion' : 'Abrir leccion')); ?>
                                     </a>
                                 </div>

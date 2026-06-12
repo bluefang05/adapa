@@ -5,17 +5,17 @@ require_once __DIR__ . '/../../../models/Curso.php';
 
 <div class="container">
     <section class="page-hero content-hero mb-4">
-        <span class="eyebrow"><i class="bi bi-graph-up-arrow"></i> Seguimiento</span>
-        <h1 class="page-title">Progreso por curso, no solo por sensacion.</h1>
+        <span class="eyebrow"><i class="bi bi-graph-up-arrow"></i> Tu avance</span>
+        <h1 class="page-title">Mira todo lo que ya has avanzado.</h1>
         <p class="page-subtitle">
-            Revisa tu avance con una lectura clara de teoria, actividades y ritmo general en cada curso inscrito.
+            Este resumen es una guia, no una carrera. Continua a tu propio ritmo.
         </p>
         <div class="hero-actions">
             <a href="<?php echo url('/estudiante'); ?>" class="btn btn-primary">
-                <i class="bi bi-journal-text"></i> Volver al dashboard
+                <i class="bi bi-play-circle"></i> Seguir aprendiendo
             </a>
             <a href="<?php echo url('/estudiante/calificaciones'); ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-award"></i> Ver calificaciones
+                <i class="bi bi-award"></i> Ver resultados
             </a>
         </div>
         <?php
@@ -30,7 +30,7 @@ require_once __DIR__ . '/../../../models/Curso.php';
         <div class="compact-meta-row">
             <span class="soft-badge info"><i class="bi bi-journal-bookmark"></i> <?php echo count($resumenCursos); ?> cursos medidos</span>
             <span class="soft-badge"><i class="bi bi-graph-up-arrow"></i> <?php echo $avg; ?>% promedio general</span>
-            <span class="soft-badge"><i class="bi bi-check2-circle"></i> <?php echo array_reduce($resumenCursos, fn($carry, $curso) => $carry + (int) $curso->completados, 0); ?> items completados</span>
+            <span class="soft-badge"><i class="bi bi-check2-circle"></i> <?php echo array_reduce($resumenCursos, fn($carry, $curso) => $carry + (int) $curso->completados, 0); ?> pasos completados</span>
         </div>
     </section>
 
@@ -97,8 +97,8 @@ require_once __DIR__ . '/../../../models/Curso.php';
                                 </div>
 
                                 <div class="responsive-actions mt-4">
-                                    <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/continuar'); ?>" class="btn btn-success">Continuar curso</a>
-                                    <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-outline-primary">Ver lecciones</a>
+                                    <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/continuar'); ?>" class="btn btn-primary">Continuar curso</a>
+                                    <a href="<?php echo url('/estudiante/cursos/' . $curso->id . '/lecciones'); ?>" class="btn btn-outline-secondary">Ver recorrido</a>
                                 </div>
                             </div>
                         </div>

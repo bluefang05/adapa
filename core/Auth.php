@@ -35,6 +35,30 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 class Auth {
+    private const THEMES = ['warm', 'paper', 'sky', 'dark'];
+
+    private static function normalizeTheme($theme) {
+        $theme = strtolower(trim((string) $theme));
+        if ($theme === 'light') {
+            $theme = 'warm';
+        }
+
+        return in_array($theme, self::THEMES, true) ? $theme : 'warm';
+    }
+
+    private static function persistThemeCookie($theme) {
+        $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        setcookie('adapa-theme', $theme, [
+            'expires' => time() + 31536000,
+            'path' => '/',
+            'samesite' => 'Lax',
+            'secure' => $isHttps,
+            'httponly' => false,
+        ]);
+
+        $_COOKIE['adapa-theme'] = $theme;
+    }
+
     public static function isLoggedIn() {
         return isset($_SESSION['user_id']);
     }
@@ -65,6 +89,9 @@ class Auth {
         $_SESSION['is_official'] = !empty($user->is_official) ? 1 : 0;
         $_SESSION['user_base_language'] = $user->idioma_base ?? 'espanol';
         $_SESSION['user_interface_language'] = $user->idioma_interfaz ?? 'espanol';
+        $theme = self::normalizeTheme($user->theme_preference ?? ($_COOKIE['adapa-theme'] ?? 'warm'));
+        $_SESSION['theme_preference'] = $theme;
+        self::persistThemeCookie($theme);
     }
 
     public static function logout() {

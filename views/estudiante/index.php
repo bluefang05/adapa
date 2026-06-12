@@ -14,10 +14,12 @@ require_once __DIR__ . '/../../models/Curso.php';
     ?>
 
     <section class="page-hero content-hero mb-4">
-        <span class="eyebrow"><i class="bi bi-stars"></i> Panel de aprendizaje</span>
-        <h1 class="page-title">Continua tu aprendizaje.</h1>
+        <span class="eyebrow"><i class="bi bi-stars"></i> Tu espacio de aprendizaje</span>
+        <h1 class="page-title"><?php echo $cursoContinuar ? 'Sigamos desde donde quedaste.' : 'Elige tu primer curso.'; ?></h1>
         <p class="page-subtitle">
-            Entra directo a lo siguiente que debes completar.
+            <?php echo $cursoContinuar
+                ? 'No tienes que decidir que hacer: te llevamos al siguiente paso.'
+                : 'Empieza con calma. Podras avanzar una leccion a la vez.'; ?>
         </p>
         <div class="hero-actions">
             <?php if ($cursoContinuar): ?>
@@ -62,12 +64,16 @@ require_once __DIR__ . '/../../models/Curso.php';
         </div>
     <?php endif; ?>
 
-    <section class="mb-4">
-        <div class="panel">
-            <div class="panel-body">
-                <div class="section-title mb-3">
-                    <h2>Entrar con codigo</h2>
-                </div>
+    <details class="panel page-assist-card mb-4">
+        <summary class="page-assist-summary">
+            <div>
+                <div class="metric-label">Opcional</div>
+                <div class="fw-semibold mt-1">Tengo un codigo de profesor</div>
+                <div class="small text-muted mt-1">Abre esto solo si te compartieron un codigo para activar otro curso.</div>
+            </div>
+            <i class="bi bi-chevron-down"></i>
+        </summary>
+        <div class="panel-body pt-0 page-assist-body">
                 <form method="POST" action="<?php echo url('/estudiante/codigo'); ?>" class="form-shell border-0 shadow-none bg-transparent p-0">
                     <?php echo csrf_input(); ?>
                     <div class="input-group">
@@ -85,9 +91,8 @@ require_once __DIR__ . '/../../models/Curso.php';
                         </button>
                     </div>
                 </form>
-            </div>
         </div>
-    </section>
+    </details>
 
     <section class="mb-4">
         <div class="section-title">
@@ -128,7 +133,7 @@ require_once __DIR__ . '/../../models/Curso.php';
                                 </p>
                                 <div class="course-meta">
                                     <span><i class="bi bi-journal-text"></i> <?php echo (int) ($curso->total_lecciones ?? 0); ?> lecciones</span>
-                                    <span><i class="bi bi-check2-circle"></i> <?php echo (int) ($curso->completados ?? 0); ?>/<?php echo (int) ($curso->total_items ?? 0); ?> items</span>
+                                    <span><i class="bi bi-check2-circle"></i> <?php echo (int) ($curso->completados ?? 0); ?>/<?php echo (int) ($curso->total_items ?? 0); ?> pasos</span>
                                 </div>
                                 <?php if ($courseAction): ?>
                                     <div class="small text-muted mt-3">
@@ -164,11 +169,17 @@ require_once __DIR__ . '/../../models/Curso.php';
         </div>
     </section>
 
-    <section>
-        <div class="section-title">
-            <h2>Cursos disponibles</h2>
-        </div>
-        <div class="panel mb-4">
+    <details class="panel page-assist-card">
+        <summary class="page-assist-summary">
+            <div>
+                <div class="metric-label">Explorar</div>
+                <div class="fw-semibold mt-1">Buscar otros cursos</div>
+                <div class="small text-muted mt-1">Revisa el catalogo cuando quieras añadir otro idioma o recorrido.</div>
+            </div>
+            <span class="soft-badge"><?php echo count($cursosDisponibles); ?> disponibles</span>
+        </summary>
+        <div class="panel-body pt-0 page-assist-body">
+        <div class="panel mb-4 border-0 shadow-none">
             <div class="panel-body">
                 <form method="GET" action="<?php echo url('/estudiante'); ?>" class="row g-3 align-items-end">
                     <div class="col-lg-4">
@@ -266,7 +277,8 @@ require_once __DIR__ . '/../../models/Curso.php';
                 </div>
             <?php endif; ?>
         </div>
-    </section>
+        </div>
+    </details>
 </div>
 
 <?php require_once __DIR__ . '/../partials/footer.php'; ?>

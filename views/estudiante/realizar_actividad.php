@@ -102,9 +102,9 @@ function renderStudentSupportResource($resource) {
                 $activityStateTone = $isRetry ? 'badge-accent' : ($showFeedback ? 'success' : 'info');
             ?>
             <div class="page-hero activity-hero mb-4">
-                <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Actividad activa</span>
+                <span class="eyebrow"><i class="bi bi-lightning-charge"></i> Practica breve</span>
                 <h1 class="page-title"><?php echo htmlspecialchars($actividad->titulo); ?></h1>
-                <p class="page-subtitle"><?php echo htmlspecialchars($actividad->descripcion ?: 'Completa la actividad y revisa tu avance dentro de la leccion.'); ?></p>
+                <p class="page-subtitle"><?php echo htmlspecialchars($actividad->descripcion ?: 'Responde con calma. Podras revisar el resultado y volver a intentarlo.'); ?></p>
                 <?php if ($isRetry && isset($respuestaExistente) && $respuestaExistente): ?>
                     <div class="hero-actions">
                         <a href="?" class="btn btn-outline-primary">
@@ -117,7 +117,7 @@ function renderStudentSupportResource($resource) {
                     <span class="soft-badge <?php echo htmlspecialchars($activityStateTone); ?>"><i class="bi bi-check2-circle"></i> <?php echo htmlspecialchars($activityStateLabel); ?></span>
                     <span class="soft-badge"><i class="bi bi-journal-text"></i> Leccion <?php echo (int) $leccion->orden; ?></span>
                     <?php if (!empty($actividad->puntos_maximos)): ?>
-                        <span class="soft-badge"><i class="bi bi-award"></i> <?php echo (int) $actividad->puntos_maximos; ?> pts</span>
+                        <span class="soft-badge"><i class="bi bi-award"></i> Hasta <?php echo (int) $actividad->puntos_maximos; ?> puntos</span>
                     <?php endif; ?>
                     <?php if (!empty($actividad->tiempo_limite_minutos)): ?>
                         <span class="soft-badge warning"><i class="bi bi-clock"></i> <?php echo (int) $actividad->tiempo_limite_minutos; ?> min</span>
