@@ -388,7 +388,12 @@ $nextTheoryId = isset($siguienteItem) && ($siguienteItem['tipo'] ?? '') === 'teo
                 resetButton(activeButton);
             }
 
-            utterance.lang = languageMap[langKey] || 'es-ES';
+            const resolvedLocale = languageMap[String(langKey).toLocaleLowerCase()] || langKey;
+            if (window.AdapaTTS) {
+                window.AdapaTTS.applyVoice(utterance, resolvedLocale);
+            } else {
+                utterance.lang = resolvedLocale || 'es-ES';
+            }
             utterance.rate = 0.95;
 
             utterance.onend = function () {

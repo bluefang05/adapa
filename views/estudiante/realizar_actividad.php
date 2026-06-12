@@ -133,8 +133,7 @@ function renderStudentSupportResource($resource) {
                         $idiomaCurso = isset($curso->idioma_objetivo) && $curso->idioma_objetivo
                             ? strtolower($curso->idioma_objetivo)
                             : (isset($curso->idioma) ? strtolower($curso->idioma) : 'ingles');
-                        $ttsLanguageMap = app_tts_language_map();
-                        $langCode = $ttsLanguageMap[$idiomaCurso] ?? 'en-US';
+                        $langCode = app_normalize_tts_locale($idiomaCurso, 'en-US');
                         $supportResource = app_activity_support_resource($actividad->contenido ?? null);
                         $supportSectionsCount = ($supportResource ? 1 : 0)
                             + (!empty($activityGuidance) ? 1 : 0);
@@ -487,7 +486,11 @@ function renderStudentSupportResource($resource) {
                                     }
                                     window.speechSynthesis.cancel();
                                     const utterance = new SpeechSynthesisUtterance(text);
-                                    utterance.lang = lang;
+                                    if (window.AdapaTTS) {
+                                        window.AdapaTTS.applyVoice(utterance, lang);
+                                    } else {
+                                        utterance.lang = lang;
+                                    }
                                     utterance.rate = rate || 0.88;
                                     utterance.pitch = pitch || 1;
                                     window.speechSynthesis.speak(utterance);
@@ -519,7 +522,11 @@ function renderStudentSupportResource($resource) {
 
                                         const item = sequence[index];
                                         const utterance = new SpeechSynthesisUtterance(item.text);
-                                        utterance.lang = lang;
+                                        if (window.AdapaTTS) {
+                                            window.AdapaTTS.applyVoice(utterance, lang);
+                                        } else {
+                                            utterance.lang = lang;
+                                        }
                                         utterance.rate = mode === 'slow' ? (item.slow_rate || 0.72) : (item.normal_rate || 0.88);
                                         utterance.pitch = item.pitch || 1;
                                         utterance.onend = function() {
@@ -1580,7 +1587,11 @@ function renderStudentSupportResource($resource) {
                                         if ('speechSynthesis' in window) {
                                             window.speechSynthesis.cancel();
                                             const utterance = new SpeechSynthesisUtterance(text);
-                                            utterance.lang = lang;
+                                            if (window.AdapaTTS) {
+                                                window.AdapaTTS.applyVoice(utterance, lang);
+                                            } else {
+                                                utterance.lang = lang;
+                                            }
                                             utterance.rate = rate || 0.9;
                                             utterance.pitch = pitch || 1;
                                             window.speechSynthesis.speak(utterance);
@@ -1611,7 +1622,11 @@ function renderStudentSupportResource($resource) {
 
                                             const item = sequence[index];
                                             const utterance = new SpeechSynthesisUtterance(item.text);
-                                            utterance.lang = lang;
+                                            if (window.AdapaTTS) {
+                                                window.AdapaTTS.applyVoice(utterance, lang);
+                                            } else {
+                                                utterance.lang = lang;
+                                            }
                                             utterance.rate = mode === 'slow' ? (item.slow_rate || 0.75) : (item.normal_rate || 0.9);
                                             utterance.pitch = item.pitch || 1;
                                             utterance.onend = function() {

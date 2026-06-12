@@ -511,7 +511,12 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = detectSpeechLang();
+        const speechLang = detectSpeechLang();
+        if (window.AdapaTTS) {
+            window.AdapaTTS.applyVoice(utterance, speechLang);
+        } else {
+            utterance.lang = speechLang;
+        }
         utterance.rate = rate;
         utterance.pitch = pitch;
         window.speechSynthesis.speak(utterance);
@@ -539,7 +544,12 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
 
             const item = sequence[index];
             const utterance = new SpeechSynthesisUtterance(item.text);
-            utterance.lang = detectSpeechLang();
+            const speechLang = detectSpeechLang();
+            if (window.AdapaTTS) {
+                window.AdapaTTS.applyVoice(utterance, speechLang);
+            } else {
+                utterance.lang = speechLang;
+            }
             utterance.rate = mode === 'slow' ? (item.slow_rate || 0.75) : (item.normal_rate || 0.9);
             utterance.pitch = item.pitch || 1;
             utterance.onend = () => window.setTimeout(() => playNext(index + 1), item.pause_ms || 420);
@@ -593,12 +603,10 @@ $supportResource = app_activity_support_resource($actividad->contenido ?? null);
     }
 
     function detectSpeechLang() {
-        const languageMap = {
-            ingles: 'en-US',
-            frances: 'fr-FR',
-            aleman: 'de-DE'
-        };
-        return languageMap[actividadData.idioma_objetivo] || languageMap[actividadData.idioma] || 'es-ES';
+        const language = actividadData.idioma_objetivo || actividadData.idioma || 'espanol';
+        return window.AdapaTTS
+            ? window.AdapaTTS.normalizeLocale(language)
+            : language;
     }
 
     function escapeHtml(text) {

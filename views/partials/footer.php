@@ -33,6 +33,58 @@ if (session_status() === PHP_SESSION_NONE) {
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        window.AdapaTTS = window.AdapaTTS || (function () {
+            var languageMap = <?php echo json_encode(app_tts_language_map(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+
+            function normalizeLocale(language, fallback) {
+                var raw = String(language || '').trim();
+                var key = raw.toLocaleLowerCase();
+                var resolved = languageMap[key];
+
+                if (resolved) {
+                    return resolved;
+                }
+
+                var matchingLocale = Object.keys(languageMap).map(function (mapKey) {
+                    return languageMap[mapKey];
+                }).find(function (locale) {
+                    return locale.toLowerCase() === key;
+                });
+
+                return matchingLocale || fallback || 'es-ES';
+            }
+
+            function applyVoice(utterance, language) {
+                var locale = normalizeLocale(language);
+                utterance.lang = locale;
+
+                if (!window.speechSynthesis || typeof window.speechSynthesis.getVoices !== 'function') {
+                    return locale;
+                }
+
+                var voices = window.speechSynthesis.getVoices();
+                var localeLower = locale.toLowerCase();
+                var languagePrefix = localeLower.split('-')[0];
+                var selectedVoice = voices.find(function (voice) {
+                    return String(voice.lang || '').toLowerCase() === localeLower;
+                }) || voices.find(function (voice) {
+                    return String(voice.lang || '').toLowerCase().startsWith(languagePrefix);
+                });
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                return locale;
+            }
+
+            return {
+                normalizeLocale: normalizeLocale,
+                applyVoice: applyVoice
+            };
+        }());
+    </script>
+    <script>
         (function () {
             if (window.__adapaThemeInitDone) {
                 return;

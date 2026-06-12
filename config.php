@@ -121,6 +121,7 @@ function app_supported_languages() {
         'ruso' => 'Ruso',
         'chino' => 'Chino',
         'japones' => 'Japones',
+        'coreano' => 'Coreano',
     ];
 }
 
@@ -143,14 +144,56 @@ function app_language_label($languageKey, $fallback = 'Sin definir') {
 function app_tts_language_map() {
     return [
         'espanol' => 'es-ES',
+        'español' => 'es-ES',
+        'spanish' => 'es-ES',
         'ingles' => 'en-US',
+        'inglés' => 'en-US',
+        'english' => 'en-US',
         'frances' => 'fr-FR',
+        'francés' => 'fr-FR',
+        'french' => 'fr-FR',
         'aleman' => 'de-DE',
+        'alemán' => 'de-DE',
+        'german' => 'de-DE',
         'italiano' => 'it-IT',
+        'italian' => 'it-IT',
         'portugues' => 'pt-BR',
+        'portugués' => 'pt-BR',
+        'portuguese' => 'pt-BR',
         'chino' => 'zh-CN',
+        'chinese' => 'zh-CN',
         'japones' => 'ja-JP',
+        'japonés' => 'ja-JP',
+        'japanese' => 'ja-JP',
+        'coreano' => 'ko-KR',
+        'korean' => 'ko-KR',
+        'ko' => 'ko-KR',
+        'ko-kr' => 'ko-KR',
     ];
+}
+
+function app_normalize_tts_locale($language, $fallback = 'es-ES') {
+    $language = trim((string) $language);
+    if ($language === '') {
+        return $fallback;
+    }
+
+    $normalized = function_exists('mb_strtolower')
+        ? mb_strtolower($language, 'UTF-8')
+        : strtolower($language);
+    $map = app_tts_language_map();
+
+    if (isset($map[$normalized])) {
+        return $map[$normalized];
+    }
+
+    foreach (array_unique(array_values($map)) as $locale) {
+        if (strcasecmp($language, $locale) === 0) {
+            return $locale;
+        }
+    }
+
+    return $fallback;
 }
 
 function sanitize_rich_html($html) {
