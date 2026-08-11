@@ -1,0 +1,1382 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u03",
+  "title": "Primer contacto",
+  "goal": "Saludar, agradecer, disculparse, presentarse y desenvolverse en un primer intercambio sencillo.",
+  "prerequisites": [
+    "u01",
+    "u02"
+  ],
+  "romanizationPolicy": {
+    "default": "hint_only",
+    "formal_informal_note": "La app prioriza formas educadas con desconocidos; las formas informales se presentan como contraste, no como respuesta universal."
+  },
+  "source": {
+    "primary": [
+      {
+        "title": "Coreano Básico — Aris Davis",
+        "pages": [
+          16,
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      {
+        "title": "Primer contacto",
+        "pages": [
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "validation_note": "Se cruzaron ambos materiales cuando la extracción perdió caracteres Hangul. Los elementos no confirmables se excluyeron del contenido evaluable y se registraron en source_audit."
+  },
+  "resourceRefs": {},
+  "lessons": [
+    {
+      "id": "u03l01",
+      "title": "Saludos y cortesía",
+      "objective": "Reconocer y usar saludos, agradecimientos, disculpas y respuestas básicas, distinguiendo formas educadas e informales.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        "Coreano Básico 16",
+        "Primer contacto 1–4"
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u03l01_t01",
+          "type": "explanation",
+          "title": "Empieza por las formas educadas",
+          "text": "Con desconocidos, el material recomienda priorizar formas educadas. Aprenderás primero esas formas y verás algunas alternativas informales para reconocerlas cuando aparezcan.",
+          "payload": {}
+        },
+        {
+          "id": "u03l01_t02",
+          "type": "phrase_table",
+          "title": "Expresiones esenciales",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "안녕하세요",
+                "meaning_es": "Hola",
+                "register": "educado",
+                "tts": "안녕하세요"
+              },
+              {
+                "hangul": "안녕",
+                "meaning_es": "Hola / adiós",
+                "register": "informal",
+                "tts": "안녕"
+              },
+              {
+                "hangul": "감사합니다",
+                "meaning_es": "Gracias",
+                "register": "educado",
+                "tts": "감사합니다"
+              },
+              {
+                "hangul": "고마워요",
+                "meaning_es": "Gracias",
+                "register": "educado",
+                "tts": "고마워요"
+              },
+              {
+                "hangul": "죄송합니다",
+                "meaning_es": "Lo siento / disculpe",
+                "register": "educado",
+                "tts": "죄송합니다"
+              },
+              {
+                "hangul": "괜찮아요",
+                "meaning_es": "Está bien",
+                "register": "educado",
+                "tts": "괜찮아요"
+              },
+              {
+                "hangul": "네",
+                "meaning_es": "Sí",
+                "register": "neutral_educado",
+                "tts": "네"
+              },
+              {
+                "hangul": "아니요",
+                "meaning_es": "No",
+                "register": "educado",
+                "tts": "아니요"
+              },
+              {
+                "hangul": "아니에요",
+                "meaning_es": "De nada / no es nada",
+                "register": "educado",
+                "tts": "아니에요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l01_t03",
+          "type": "comparison",
+          "title": "Educado e informal",
+          "text": null,
+          "payload": {
+            "pairs": [
+              {
+                "polite": "감사합니다",
+                "informal": "고마워",
+                "meaning_es": "Gracias"
+              },
+              {
+                "polite": "죄송해요",
+                "informal": "미안해",
+                "meaning_es": "Disculpa / lo siento"
+              },
+              {
+                "polite": "알았습니다",
+                "informal": "알았어",
+                "meaning_es": "De acuerdo"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u03l01_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer expresiones esenciales.",
+          "prompt": "Relaciona cada expresión con su significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Todas son expresiones de uso muy frecuente."
+          ],
+          "feedback": {
+            "correct": "Bien. Ya tienes el núcleo de cortesía.",
+            "wrong": {
+              "default": "Compara cada expresión con su uso y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "안녕하세요",
+                "right": "Hola"
+              },
+              {
+                "left": "감사합니다",
+                "right": "Gracias"
+              },
+              {
+                "left": "괜찮아요",
+                "right": "Está bien"
+              },
+              {
+                "left": "네",
+                "right": "Sí"
+              },
+              {
+                "left": "아니요",
+                "right": "No"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l01_a02",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar TTS con una expresión escrita.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha el ritmo completo antes de responder."
+          ],
+          "feedback": {
+            "correct": "Correcto: 감사합니다 = gracias.",
+            "wrong": {
+              "default": "Escucha otra vez; puedes usar la velocidad lenta."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "감사합니다",
+              "slow_available": true
+            },
+            "options": [
+              "안녕하세요",
+              "감사합니다",
+              "괜찮아요",
+              "아니요"
+            ],
+            "correct": [
+              "감사합니다"
+            ]
+          }
+        },
+        {
+          "id": "u03l01_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Elegir registro adecuado.",
+          "prompt": "Si hablas con una persona desconocida, ¿qué saludo prioriza el curso?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "El material recomienda las formas educadas con desconocidos."
+          ],
+          "feedback": {
+            "correct": "Correcto. 안녕하세요 es la opción segura y educada.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "안녕",
+              "안녕하세요"
+            ],
+            "correct": [
+              "안녕하세요"
+            ]
+          }
+        },
+        {
+          "id": "u03l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Distinguir registro.",
+          "prompt": "¿Cuál de estas formas es informal?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la alternativa informal de «gracias»."
+          ],
+          "feedback": {
+            "correct": "Correcto. 고마워 es informal.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "감사합니다",
+              "고마워",
+              "죄송합니다",
+              "괜찮아요"
+            ],
+            "correct": [
+              "고마워"
+            ]
+          }
+        },
+        {
+          "id": "u03l01_a05",
+          "type": "dialogue",
+          "family": "dialogue",
+          "objective": "Responder a un agradecimiento.",
+          "prompt": "Completa el intercambio.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Esta respuesta aparece en «Primer contacto»."
+          ],
+          "feedback": {
+            "correct": "Correcto. 아니에요 funciona aquí como «de nada / no es nada».",
+            "wrong": {
+              "default": "Prueba con la respuesta educada que empieza por 아니-."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "turns": [
+              {
+                "speaker": "A",
+                "ko": "감사합니다.",
+                "es": "Gracias."
+              },
+              {
+                "speaker": "user",
+                "prompt_es": "Responde «De nada».",
+                "accepted": [
+                  "아니에요"
+                ],
+                "normalization": {
+                  "trim": true,
+                  "unicode_normalization": "NFC",
+                  "collapse_spaces": true,
+                  "ignore_terminal_punctuation": true,
+                  "case_sensitive": false
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u03l01_a01",
+          "u03l01_a02",
+          "u03l01_a03",
+          "u03l01_a04",
+          "u03l01_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u03l02",
+      "title": "Preséntate",
+      "objective": "Decir quién eres y elegir correctamente 이에요 o 예요 después de un sustantivo.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        "Coreano Básico 17–18"
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u03l02_t01",
+          "type": "grammar_rule",
+          "title": "저는 ___예요/이에요",
+          "text": "Este patrón permite decir «Yo soy ___». La terminación depende de cómo termina el sustantivo.",
+          "payload": {}
+        },
+        {
+          "id": "u03l02_t02",
+          "type": "grammar_rule",
+          "title": "이에요 o 예요",
+          "text": null,
+          "payload": {
+            "rules": [
+              {
+                "condition_es": "El sustantivo termina en consonante",
+                "ending": "이에요",
+                "example": "학생이에요"
+              },
+              {
+                "condition_es": "El sustantivo termina en vocal",
+                "ending": "예요",
+                "example": "사라예요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l02_t03",
+          "type": "examples",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "parts": [
+                  "학생",
+                  "이에요"
+                ],
+                "result": "학생이에요"
+              },
+              {
+                "parts": [
+                  "사라",
+                  "예요"
+                ],
+                "result": "사라예요"
+              },
+              {
+                "parts": [
+                  "책",
+                  "이에요"
+                ],
+                "result": "책이에요"
+              },
+              {
+                "parts": [
+                  "마리아",
+                  "예요"
+                ],
+                "result": "마리아예요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l02_t04",
+          "type": "vocabulary",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "이름",
+                "meaning_es": "nombre",
+                "tts": "이름"
+              },
+              {
+                "hangul": "학생",
+                "meaning_es": "estudiante",
+                "tts": "학생"
+              },
+              {
+                "hangul": "선생님",
+                "meaning_es": "profesor/a",
+                "tts": "선생님"
+              },
+              {
+                "hangul": "친구",
+                "meaning_es": "amigo/a",
+                "tts": "친구"
+              },
+              {
+                "hangul": "반가워요",
+                "meaning_es": "encantado/a",
+                "tts": "반가워요"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u03l02_a01",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Aplicar 이에요 tras consonante.",
+          "prompt": "Completa: 저는 학생____.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "학생 termina en consonante."
+          ],
+          "feedback": {
+            "correct": "Correcto: 저는 학생이에요.",
+            "wrong": {
+              "예요": "학생 termina en consonante, por eso aquí corresponde 이에요.",
+              "default": "Observa cómo termina 학생."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "예요",
+              "이에요"
+            ],
+            "correct": [
+              "이에요"
+            ]
+          }
+        },
+        {
+          "id": "u03l02_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Aplicar 예요 tras vocal.",
+          "prompt": "Completa: 저는 아리스____.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "아리스 termina en vocal."
+          ],
+          "feedback": {
+            "correct": "Correcto: 저는 아리스예요.",
+            "wrong": {
+              "이에요": "아리스 termina en vocal, por eso aquí corresponde 예요.",
+              "default": "Observa el final de 아리스."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "예요",
+              "이에요"
+            ],
+            "correct": [
+              "예요"
+            ]
+          }
+        },
+        {
+          "id": "u03l02_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Elegir terminación según el sustantivo.",
+          "prompt": "Completa: 제 이름은 마리아____.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "마리아 termina en vocal."
+          ],
+          "feedback": {
+            "correct": "Correcto: 제 이름은 마리아예요.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "이에요",
+              "예요"
+            ],
+            "correct": [
+              "예요"
+            ]
+          }
+        },
+        {
+          "id": "u03l02_a04",
+          "type": "fill_blank",
+          "family": "text_input",
+          "objective": "Completar una presentación.",
+          "prompt": "Completa la frase para decir «Soy estudiante».",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "학생 termina en consonante."
+          ],
+          "feedback": {
+            "correct": "Correcto: 저는 학생이에요.",
+            "wrong": {
+              "default": "Necesitas 학생 + 이에요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "template": "저는 ________.",
+            "accepted_answers": [
+              "학생이에요"
+            ]
+          }
+        },
+        {
+          "id": "u03l02_a05",
+          "type": "free_practice",
+          "family": "text_input",
+          "objective": "Personalizar el patrón de presentación.",
+          "prompt": "Escribe tu nombre usando el patrón: 제 이름은 ___예요/이에요.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "non_empty",
+          "note": "No se califica automáticamente porque el nombre del usuario puede no estar en Hangul.",
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {}
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u03l02_a01",
+          "u03l02_a02",
+          "u03l02_a03",
+          "u03l02_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u03l03",
+      "title": "Pregunta el nombre",
+      "objective": "Preguntar y responder el nombre dentro de un diálogo muy breve.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        "Coreano Básico 19"
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u03l03_t01",
+          "type": "key_phrase",
+          "title": null,
+          "text": null,
+          "payload": {
+            "hangul": "이름이 뭐예요?",
+            "meaning_es": "¿Cómo te llamas? / ¿Cuál es tu nombre?",
+            "tts": "이름이 뭐예요?"
+          }
+        },
+        {
+          "id": "u03l03_t02",
+          "type": "dialogue_model",
+          "title": null,
+          "text": null,
+          "payload": {
+            "turns": [
+              {
+                "speaker": "A",
+                "ko": "안녕하세요. 이름이 뭐예요?"
+              },
+              {
+                "speaker": "B",
+                "ko": "저는 아리스예요."
+              },
+              {
+                "speaker": "A",
+                "ko": "만나서 반가워요."
+              },
+              {
+                "speaker": "B",
+                "ko": "저도 반가워요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u03l03_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Reconocer la pregunta por el nombre.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha la terminación 뭐예요."
+          ],
+          "feedback": {
+            "correct": "Correcto. Esa es la pregunta por el nombre.",
+            "wrong": {
+              "default": "Escucha otra vez; puedes usar la velocidad lenta."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "이름이 뭐예요?",
+              "slow_available": true
+            },
+            "options": [
+              "감사합니다.",
+              "이름이 뭐예요?",
+              "괜찮아요.",
+              "안녕."
+            ],
+            "correct": [
+              "이름이 뭐예요?"
+            ]
+          }
+        },
+        {
+          "id": "u03l03_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Elegir una respuesta coherente.",
+          "prompt": "Alguien te pregunta «이름이 뭐예요?». ¿Qué respuesta encaja mejor?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La pregunta pide tu nombre."
+          ],
+          "feedback": {
+            "correct": "Correcto. 저 는 아리스예요 responde con una presentación.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "감사합니다.",
+              "저는 아리스예요.",
+              "괜찮아요.",
+              "아니요."
+            ],
+            "correct": [
+              "저는 아리스예요."
+            ]
+          }
+        },
+        {
+          "id": "u03l03_a03",
+          "type": "dialogue",
+          "family": "dialogue",
+          "objective": "Completar el diálogo modelo.",
+          "prompt": "Responde como B.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "El modelo completo aparece en la lección."
+          ],
+          "feedback": {
+            "correct": "Muy bien. Ya puedes completar tu primer intercambio de presentación.",
+            "wrong": {
+              "default": "Vuelve al diálogo modelo y fíjate en la respuesta de B."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "turns": [
+              {
+                "speaker": "A",
+                "ko": "안녕하세요. 이름이 뭐예요?"
+              },
+              {
+                "speaker": "user",
+                "prompt_es": "Responde: «Soy Aris».",
+                "accepted": [
+                  "저는 아리스예요"
+                ],
+                "normalization": {
+                  "trim": true,
+                  "unicode_normalization": "NFC",
+                  "collapse_spaces": true,
+                  "ignore_terminal_punctuation": true,
+                  "case_sensitive": false
+                }
+              },
+              {
+                "speaker": "A",
+                "ko": "만나서 반가워요."
+              },
+              {
+                "speaker": "user",
+                "prompt_es": "Responde: «Igualmente / también encantado».",
+                "accepted": [
+                  "저도 반가워요"
+                ],
+                "normalization": {
+                  "trim": true,
+                  "unicode_normalization": "NFC",
+                  "collapse_spaces": true,
+                  "ignore_terminal_punctuation": true,
+                  "case_sensitive": false
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l03_a04",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Reconstruir la pregunta del nombre.",
+          "prompt": "Ordena los bloques para formar la pregunta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Primero aparece «nombre» y luego «qué es»."
+          ],
+          "feedback": {
+            "correct": "Correcto: 이름이 뭐예요?",
+            "wrong": {
+              "default": "Empieza por 이름이."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "이름이",
+              "뭐예요?"
+            ],
+            "correct_order": [
+              "이름이",
+              "뭐예요?"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u03l03_a01",
+          "u03l03_a02",
+          "u03l03_a03",
+          "u03l03_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u03l04",
+      "title": "Coreano en el aula",
+      "objective": "Reconocer vocabulario y frases elementales que aparecen en una clase de coreano.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        "Coreano Básico 20"
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u03l04_t01",
+          "type": "vocabulary",
+          "title": "Palabras del aula",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "한국어",
+                "meaning_es": "idioma coreano",
+                "tts": "한국어"
+              },
+              {
+                "hangul": "교실",
+                "meaning_es": "aula",
+                "tts": "교실"
+              },
+              {
+                "hangul": "공책",
+                "meaning_es": "cuaderno",
+                "tts": "공책"
+              },
+              {
+                "hangul": "연필",
+                "meaning_es": "lápiz",
+                "tts": "연필"
+              },
+              {
+                "hangul": "학생",
+                "meaning_es": "estudiante",
+                "tts": "학생"
+              },
+              {
+                "hangul": "선생님",
+                "meaning_es": "profesor/a",
+                "tts": "선생님"
+              },
+              {
+                "hangul": "읽다",
+                "meaning_es": "leer",
+                "tts": "읽다"
+              },
+              {
+                "hangul": "쓰다",
+                "meaning_es": "escribir",
+                "tts": "쓰다"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l04_t02",
+          "type": "phrase_table",
+          "title": "Frases del aula",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "한국어를 공부해요.",
+                "meaning_es": "Estudio coreano.",
+                "tts": "한국어를 공부해요."
+              },
+              {
+                "hangul": "한글을 써요.",
+                "meaning_es": "Escribo Hangul.",
+                "tts": "한글을 써요."
+              },
+              {
+                "hangul": "읽어요.",
+                "meaning_es": "Leo.",
+                "tts": "읽어요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u03l04_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer vocabulario.",
+          "prompt": "Relaciona el vocabulario del aula.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Varias palabras ya aparecieron en unidades anteriores."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya reconoces el vocabulario esencial del aula.",
+            "wrong": {
+              "default": "Compara cada expresión con su uso y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "한국어",
+                "right": "idioma coreano"
+              },
+              {
+                "left": "교실",
+                "right": "aula"
+              },
+              {
+                "left": "공책",
+                "right": "cuaderno"
+              },
+              {
+                "left": "연필",
+                "right": "lápiz"
+              },
+              {
+                "left": "학생",
+                "right": "estudiante"
+              },
+              {
+                "left": "선생님",
+                "right": "profesor/a"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u03l04_a02",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar audio y palabra.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha otra vez y compara los dos bloques."
+          ],
+          "feedback": {
+            "correct": "Correcto: 연필 = lápiz.",
+            "wrong": {
+              "default": "Escucha otra vez; puedes usar la velocidad lenta."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "연필",
+              "slow_available": true
+            },
+            "options": [
+              "공책",
+              "연필",
+              "교실",
+              "한국어"
+            ],
+            "correct": [
+              "연필"
+            ]
+          }
+        },
+        {
+          "id": "u03l04_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender una frase del aula.",
+          "prompt": "¿Qué frase significa «Estudio coreano»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca 한국어 al inicio."
+          ],
+          "feedback": {
+            "correct": "Correcto: 한국어를 공부해요.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "읽어요.",
+              "한글을 써요.",
+              "한국어를 공부해요."
+            ],
+            "correct": [
+              "한국어를 공부해요."
+            ]
+          }
+        },
+        {
+          "id": "u03l04_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Relacionar verbo y frase.",
+          "prompt": "¿Qué significa «한글을 써요.»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "써요 viene de 쓰다, «escribir»."
+          ],
+          "feedback": {
+            "correct": "Correcto. 한글을 써요 = Escribo Hangul.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "Leo.",
+              "Escribo Hangul.",
+              "Estudio coreano."
+            ],
+            "correct": [
+              "Escribo Hangul."
+            ]
+          }
+        },
+        {
+          "id": "u03l04_a05",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender una frase completa por TTS.",
+          "prompt": "Escucha la frase y elige su significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La forma de diccionario trabajada es 읽다."
+          ],
+          "feedback": {
+            "correct": "Correcto: 읽어요 = Leo.",
+            "wrong": {
+              "default": "Relaciona 읽어요 con 읽다."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "읽어요.",
+              "slow_available": true
+            },
+            "options": [
+              "Leo.",
+              "Escribo.",
+              "Estudio."
+            ],
+            "correct": [
+              "Leo."
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u03l04_a01",
+          "u03l04_a02",
+          "u03l04_a03",
+          "u03l04_a04",
+          "u03l04_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u03l01",
+      "u03l02",
+      "u03l03",
+      "u03l04"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "mastery_items": [
+      "안녕하세요",
+      "안녕",
+      "감사합니다",
+      "고마워요",
+      "죄송합니다",
+      "괜찮아요",
+      "네",
+      "아니요",
+      "아니에요",
+      "학생이에요",
+      "사라예요",
+      "이름이 뭐예요?",
+      "반가워요",
+      "저도 반가워요",
+      "한국어",
+      "교실",
+      "공책",
+      "연필",
+      "학생",
+      "선생님",
+      "읽다",
+      "쓰다"
+    ]
+  }
+}

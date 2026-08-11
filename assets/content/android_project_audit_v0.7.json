@@ -1,0 +1,135 @@
+{
+  "version": "0.7",
+  "project": "ADAPA",
+  "package": "com.enmanuelapps.adapa",
+  "android_baseline": {
+    "flutter": "3.44.x",
+    "minSdk": 24,
+    "compileSdk": "flutter.compileSdkVersion (36 in Flutter 3.44.7)",
+    "targetSdk": "flutter.targetSdkVersion (36 in Flutter 3.44.7)",
+    "gradle": "9.1.0",
+    "agp": "9.0.1",
+    "kgp": "2.3.20",
+    "java": 17
+  },
+  "checks": [
+    {
+      "check": "file:android/settings.gradle.kts",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/build.gradle.kts",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/gradle.properties",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/gradle/wrapper/gradle-wrapper.properties",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/app/build.gradle.kts",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/app/src/main/AndroidManifest.xml",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "file:android/app/src/main/kotlin/com/enmanuelapps/adapa/MainActivity.kt",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "android_xml_parses",
+      "ok": true,
+      "detail": "10 XML files checked"
+    },
+    {
+      "check": "application_id",
+      "ok": true,
+      "detail": "com.enmanuelapps.adapa"
+    },
+    {
+      "check": "namespace",
+      "ok": true,
+      "detail": "com.enmanuelapps.adapa"
+    },
+    {
+      "check": "min_sdk_24",
+      "ok": true,
+      "detail": "explicit Android supported baseline"
+    },
+    {
+      "check": "java_17",
+      "ok": true,
+      "detail": "source/target 17"
+    },
+    {
+      "check": "gradle_9_1_0",
+      "ok": true,
+      "detail": "Flutter 3.44.7 template default"
+    },
+    {
+      "check": "agp_9_0_1",
+      "ok": true,
+      "detail": "Flutter 3.44.7 template default"
+    },
+    {
+      "check": "kgp_2_3_20",
+      "ok": true,
+      "detail": "Flutter 3.44.7 template default"
+    },
+    {
+      "check": "tts_query",
+      "ok": true,
+      "detail": "Android 11+ TTS visibility"
+    },
+    {
+      "check": "no_release_internet_permission",
+      "ok": true,
+      "detail": "offline-first release manifest"
+    },
+    {
+      "check": "debug_internet_permission",
+      "ok": true,
+      "detail": "Flutter debug tooling"
+    },
+    {
+      "check": "shared_preferences_current",
+      "ok": true,
+      "detail": "SDK 24+ current maintained package"
+    },
+    {
+      "check": "old_android_pin_removed",
+      "ok": true,
+      "detail": "legacy API21 pin removed"
+    },
+    {
+      "check": "flutter_baseline",
+      "ok": true,
+      "detail": "declared in pubspec"
+    },
+    {
+      "check": "launcher_icon_legacy",
+      "ok": true,
+      "detail": "5 density PNGs"
+    },
+    {
+      "check": "launcher_icon_adaptive",
+      "ok": true,
+      "detail": "adaptive icon XML"
+    }
+  ],
+  "xml_errors": [],
+  "passed": 23,
+  "failed": 0
+}

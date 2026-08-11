@@ -1,0 +1,32 @@
+ADAPA — Coreano desde cero A0–A1
+v0.14 — corrección posterior al primer build real
+
+ESTE ZIP ES EL PROYECTO COMPLETO.
+No necesitas aplicar v0.13 primero.
+
+EL PRIMER flutter run --release REAL YA LLEGÓ A LA COMPILACIÓN DART.
+Se corrigieron los errores encontrados:
+- ActivityFamily.label no resolvía desde algunas pantallas.
+- _DialogueVariantActivityState usaba _sessionStore sin declararlo.
+- además se corrigió la inicialización de _sessionStore en la conversación final para que el autosave v0.13 funcione realmente.
+
+SIGUIENTE PASO EN WINDOWS / POWERSHELL
+
+1. Extrae/reemplaza el proyecto con este ZIP.
+2. Dentro de la carpeta del proyecto ejecuta:
+
+   flutter clean
+   flutter pub get
+   flutter analyze
+   flutter test
+   flutter run --release
+
+También puedes usar:
+
+   powershell -ExecutionPolicy Bypass -File .\tools\preflight.ps1
+
+IMPORTANTE
+Los warnings de Built-In Kotlin/KGP vistos con Flutter 3.44.4 no fueron la causa del fallo actual.
+El build alcanzó :app:compileFlutterBuildRelease y falló por errores Dart que esta versión corrige.
+
+Si el siguiente run encuentra otro error, conserva el log completo: ya estamos en el ciclo de corrección de compilador real.

@@ -1,0 +1,62 @@
+{
+  "schema_version": "0.6",
+  "course_id": "ko_a0_a1",
+  "progress_engine": {
+    "activity_attempts": true,
+    "best_score": true,
+    "activity_completion": true,
+    "lesson_completion_from_content_rules": true,
+    "unit_unlock_from_prerequisites": true,
+    "resume_pointer": true,
+    "session_state_persisted": true,
+    "free_writing_persisted_after_save_and_autosave_when_requested": true,
+    "review_state_persisted": true,
+    "manual_reset": true,
+    "content_version_sanitization": true
+  },
+  "persistence": {
+    "adapter": "SharedPreferencesProgressStore",
+    "shared_preferences": "2.2.3",
+    "shared_preferences_android": "2.2.2",
+    "storage_shape": "single versioned JSON document per course"
+  },
+  "content": {
+    "units": 8,
+    "lessons": 36,
+    "activities": 171,
+    "required_activity_references": 151,
+    "missing_required_activity_references": [],
+    "score_modes": {
+      "auto": 142,
+      "none": 25,
+      "accepted_variants": 1,
+      "structural": 3
+    },
+    "special_completion_rules": {
+      "complete_required_open_activity": 1,
+      "complete_required_review": 1,
+      "complete_final_challenge": 1
+    },
+    "minimum_score_thresholds": {
+      "0.75": 32,
+      "0.8": 1
+    },
+    "families": {
+      "choice": 64,
+      "matching": 20,
+      "visual_reference": 3,
+      "hangul_structure": 11,
+      "reading_speaking": 7,
+      "text_input": 32,
+      "dialogue": 16,
+      "ordering": 10,
+      "review": 8
+    },
+    "unique_activity_types": 39
+  },
+  "static_audit": {
+    "missing_local_imports": [],
+    "balance_issues": [],
+    "flutter_sdk_available_in_generation_environment": false
+  }
+}

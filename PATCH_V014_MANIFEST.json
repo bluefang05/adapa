@@ -1,0 +1,19 @@
+{
+  "version": "0.14",
+  "base": "0.13",
+  "purpose": "Fix source errors proven by first real Flutter release build",
+  "changed_files": [
+    "pubspec.yaml",
+    "CHANGELOG.md",
+    "COMPILER_FIX_V014.md",
+    "lib/core/models/activity_family.dart",
+    "lib/features/activity/renderers/dialogue_activity_renderer.dart",
+    "test/activity_family_test.dart",
+    "tools/compiler_regression_audit.py",
+    "tools/preflight.ps1",
+    "tools/preflight.sh",
+    "tools/release_gate.ps1",
+    "assets/content/compiler_fix_audit_v0.14.json"
+  ],
+  "pedagogical_content_changed": false
+}

@@ -1,0 +1,1635 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u04",
+  "title": "Necesidades cotidianas",
+  "goal": "Contar de forma básica, reconocer comida y bebida, pedir algo y ubicar lugares frecuentes.",
+  "prerequisites": [
+    "u01",
+    "u02",
+    "u03"
+  ],
+  "romanizationPolicy": {
+    "default": "hint_only"
+  },
+  "source": {
+    "primary": [
+      {
+        "title": "Coreano Básico — Aris Davis",
+        "pages": [
+          21,
+          22,
+          23,
+          24,
+          25
+        ]
+      },
+      {
+        "title": "Primer contacto",
+        "items": [
+          23,
+          33,
+          58,
+          59,
+          60
+        ]
+      }
+    ],
+    "visual_validation": "Páginas 21, 22 y 25 renderizadas e inspeccionadas para recuperar Hangul perdido por la extracción."
+  },
+  "resourceRefs": {
+    "visualAssetCatalog": "unit_04_visual_asset_catalog_v1.0.json"
+  },
+  "lessons": [
+    {
+      "id": "u04l01",
+      "title": "Números nativos 1–10",
+      "objective": "Reconocer y decir los números nativos del 1 al 10.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        21
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u04l01_t01",
+          "type": "explanation",
+          "title": "Primer sistema de números",
+          "text": "El coreano usa más de un sistema numérico según el contexto. Aquí empezamos únicamente con los números nativos del 1 al 10.",
+          "payload": {}
+        },
+        {
+          "id": "u04l01_t02",
+          "type": "number_table",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "number": 1,
+                "hangul": "하나",
+                "romanization": "hana"
+              },
+              {
+                "number": 2,
+                "hangul": "둘",
+                "romanization": "dul"
+              },
+              {
+                "number": 3,
+                "hangul": "셋",
+                "romanization": "set"
+              },
+              {
+                "number": 4,
+                "hangul": "넷",
+                "romanization": "net"
+              },
+              {
+                "number": 5,
+                "hangul": "다섯",
+                "romanization": "daseot"
+              },
+              {
+                "number": 6,
+                "hangul": "여섯",
+                "romanization": "yeoseot"
+              },
+              {
+                "number": 7,
+                "hangul": "일곱",
+                "romanization": "ilgop"
+              },
+              {
+                "number": 8,
+                "hangul": "여덟",
+                "romanization": "yeodeol"
+              },
+              {
+                "number": 9,
+                "hangul": "아홉",
+                "romanization": "ahop"
+              },
+              {
+                "number": 10,
+                "hangul": "열",
+                "romanization": "yeol"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u04l01_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer números 1–5.",
+          "prompt": "Relaciona número y Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Empieza por los cinco primeros."
+          ],
+          "feedback": {
+            "correct": "Bien. Ya reconoces 1–5.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "1",
+                "right": "하나"
+              },
+              {
+                "left": "2",
+                "right": "둘"
+              },
+              {
+                "left": "3",
+                "right": "셋"
+              },
+              {
+                "left": "4",
+                "right": "넷"
+              },
+              {
+                "left": "5",
+                "right": "다섯"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l01_a02",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer números 6–10.",
+          "prompt": "Relaciona número y Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Trabaja ahora 6–10."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya tienes el conjunto 1–10.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "6",
+                "right": "여섯"
+              },
+              {
+                "left": "7",
+                "right": "일곱"
+              },
+              {
+                "left": "8",
+                "right": "여덟"
+              },
+              {
+                "left": "9",
+                "right": "아홉"
+              },
+              {
+                "left": "10",
+                "right": "열"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l01_a03",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar audio y número.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es uno de los cuatro primeros."
+          ],
+          "feedback": {
+            "correct": "Correcto: 셋 = 3.",
+            "wrong": {
+              "default": "Escucha otra vez; usa la velocidad lenta si lo necesitas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "셋",
+              "slow_available": true
+            },
+            "options": [
+              "둘",
+              "셋",
+              "넷",
+              "열"
+            ],
+            "correct": [
+              "셋"
+            ]
+          }
+        },
+        {
+          "id": "u04l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Recordar 10.",
+          "prompt": "¿Cómo se escribe 10?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es la última entrada de la tabla."
+          ],
+          "feedback": {
+            "correct": "Correcto: 열 = 10.",
+            "wrong": {
+              "default": "Revisa el contenido y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "아홉",
+              "열",
+              "여덟",
+              "하나"
+            ],
+            "correct": [
+              "열"
+            ]
+          }
+        },
+        {
+          "id": "u04l01_a05",
+          "type": "sequence_order",
+          "family": "ordering",
+          "objective": "Ordenar 1–5.",
+          "prompt": "Ordena de 1 a 5.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Empieza por 하나."
+          ],
+          "feedback": {
+            "correct": "Perfecto: 하나, 둘, 셋, 넷, 다섯.",
+            "wrong": {
+              "default": "Repasa el orden 1–5."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "셋",
+              "하나",
+              "다섯",
+              "둘",
+              "넷"
+            ],
+            "correct_order": [
+              "하나",
+              "둘",
+              "셋",
+              "넷",
+              "다섯"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u04l01_a01",
+          "u04l01_a02",
+          "u04l01_a03",
+          "u04l01_a04",
+          "u04l01_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u04l02",
+      "title": "Comida y bebida",
+      "objective": "Reconocer diez palabras frecuentes de comida y bebida mediante texto, audio e imagen.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        22
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u04l02_t01",
+          "type": "visual_vocabulary",
+          "title": "Comida y bebida",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "밥",
+                "meaning_es": "arroz / comida",
+                "tts": "밥",
+                "image_asset": "food_rice"
+              },
+              {
+                "hangul": "물",
+                "meaning_es": "agua",
+                "tts": "물",
+                "image_asset": "food_water"
+              },
+              {
+                "hangul": "고기",
+                "meaning_es": "carne",
+                "tts": "고기",
+                "image_asset": "food_meat"
+              },
+              {
+                "hangul": "생선",
+                "meaning_es": "pescado",
+                "tts": "생선",
+                "image_asset": "food_fish"
+              },
+              {
+                "hangul": "김치",
+                "meaning_es": "kimchi",
+                "tts": "김치",
+                "image_asset": "food_kimchi"
+              },
+              {
+                "hangul": "라면",
+                "meaning_es": "ramen coreano",
+                "tts": "라면",
+                "image_asset": "food_ramen"
+              },
+              {
+                "hangul": "커피",
+                "meaning_es": "café",
+                "tts": "커피",
+                "image_asset": "food_coffee"
+              },
+              {
+                "hangul": "차",
+                "meaning_es": "té",
+                "tts": "차",
+                "image_asset": "food_tea"
+              },
+              {
+                "hangul": "우유",
+                "meaning_es": "leche",
+                "tts": "우유",
+                "image_asset": "food_milk"
+              },
+              {
+                "hangul": "빵",
+                "meaning_es": "pan",
+                "tts": "빵",
+                "image_asset": "food_bread"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u04l02_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer vocabulario.",
+          "prompt": "Relaciona palabra y significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Las imágenes están disponibles como apoyo."
+          ],
+          "feedback": {
+            "correct": "Bien. Primera mitad dominada.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "밥",
+                "right": "arroz / comida"
+              },
+              {
+                "left": "물",
+                "right": "agua"
+              },
+              {
+                "left": "고기",
+                "right": "carne"
+              },
+              {
+                "left": "생선",
+                "right": "pescado"
+              },
+              {
+                "left": "김치",
+                "right": "kimchi"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l02_a02",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer vocabulario.",
+          "prompt": "Relaciona palabra y significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Usa el audio si una palabra todavía no te resulta familiar."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya reconoces las diez.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "라면",
+                "right": "ramen coreano"
+              },
+              {
+                "left": "커피",
+                "right": "café"
+              },
+              {
+                "left": "차",
+                "right": "té"
+              },
+              {
+                "left": "우유",
+                "right": "leche"
+              },
+              {
+                "left": "빵",
+                "right": "pan"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l02_a03",
+          "type": "image_choice",
+          "family": "choice",
+          "objective": "Reconocer 물 por imagen.",
+          "prompt": "¿Cuál imagen representa 물?",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "물 apareció antes como «agua»."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물 = agua.",
+            "wrong": {
+              "default": "Busca el vaso de agua."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "food_water",
+              "food_milk",
+              "food_coffee",
+              "food_tea"
+            ],
+            "correct": [
+              "food_water"
+            ]
+          }
+        },
+        {
+          "id": "u04l02_a04",
+          "type": "image_choice",
+          "family": "choice",
+          "objective": "Reconocer 빵 por imagen.",
+          "prompt": "Toca la imagen de 빵.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Es un alimento horneado."
+          ],
+          "feedback": {
+            "correct": "Correcto: 빵 = pan.",
+            "wrong": {
+              "default": "Busca el pan."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "food_ramen",
+              "food_bread",
+              "food_rice",
+              "food_kimchi"
+            ],
+            "correct": [
+              "food_bread"
+            ]
+          }
+        },
+        {
+          "id": "u04l02_a05",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar audio y bebida.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha los dos bloques."
+          ],
+          "feedback": {
+            "correct": "Correcto: 우유 = leche.",
+            "wrong": {
+              "default": "Escucha otra vez; usa la velocidad lenta si lo necesitas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "우유",
+              "slow_available": true
+            },
+            "options": [
+              "물",
+              "우유",
+              "차",
+              "커피"
+            ],
+            "correct": [
+              "우유"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u04l02_a01",
+          "u04l02_a02",
+          "u04l02_a03",
+          "u04l02_a04",
+          "u04l02_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u04l03",
+      "title": "Pide con 주세요",
+      "objective": "Pedir una comida, bebida u objeto usando ___ 주세요.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        23
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u04l03_t01",
+          "type": "grammar_rule",
+          "title": "___ 주세요",
+          "text": "La estructura ___ 주세요 se usa aquí como una forma práctica de pedir: «___, por favor» / «deme ___».",
+          "payload": {}
+        },
+        {
+          "id": "u04l03_t02",
+          "type": "examples",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "물 주세요.",
+                "es": "Agua, por favor.",
+                "tts": "물 주세요."
+              },
+              {
+                "ko": "커피 주세요.",
+                "es": "Café, por favor.",
+                "tts": "커피 주세요."
+              },
+              {
+                "ko": "빵 주세요.",
+                "es": "Pan, por favor.",
+                "tts": "빵 주세요."
+              },
+              {
+                "ko": "메뉴 주세요.",
+                "es": "El menú, por favor.",
+                "tts": "메뉴 주세요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u04l03_a01",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Pedir agua.",
+          "prompt": "Quieres agua. ¿Qué dices?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Empieza por 물."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물 주세요.",
+            "wrong": {
+              "default": "Revisa el contenido y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "물 주세요.",
+              "커피 주세요.",
+              "빵 주세요."
+            ],
+            "correct": [
+              "물 주세요."
+            ]
+          }
+        },
+        {
+          "id": "u04l03_a02",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Construir un pedido.",
+          "prompt": "Ordena para pedir café.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Primero el objeto, luego 주세요."
+          ],
+          "feedback": {
+            "correct": "Correcto: 커피 주세요.",
+            "wrong": {
+              "default": "El objeto va antes de 주세요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "주세요.",
+              "커피"
+            ],
+            "correct_order": [
+              "커피",
+              "주세요."
+            ]
+          }
+        },
+        {
+          "id": "u04l03_a03",
+          "type": "fill_blank",
+          "family": "text_input",
+          "objective": "Completar un pedido.",
+          "prompt": "Completa: ______ 주세요. = Pan, por favor.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La palabra para pan aparece en la lección anterior."
+          ],
+          "feedback": {
+            "correct": "Correcto: 빵 주세요.",
+            "wrong": {
+              "default": "Busca la palabra para pan."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "template": "______ 주세요.",
+            "accepted_answers": [
+              "빵"
+            ]
+          }
+        },
+        {
+          "id": "u04l03_a04",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender pedido por audio.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha la primera palabra."
+          ],
+          "feedback": {
+            "correct": "Correcto: 메뉴 주세요. = El menú, por favor.",
+            "wrong": {
+              "default": "Escucha otra vez; usa la velocidad lenta si lo necesitas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "메뉴 주세요.",
+              "slow_available": true
+            },
+            "options": [
+              "물 주세요.",
+              "메뉴 주세요.",
+              "커피 주세요.",
+              "빵 주세요."
+            ],
+            "correct": [
+              "메뉴 주세요."
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u04l03_a01",
+          "u04l03_a02",
+          "u04l03_a03",
+          "u04l03_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u04l04",
+      "title": "En una cafetería",
+      "objective": "Participar en un pedido básico siguiendo el diálogo modelo del material.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        24
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u04l04_t01",
+          "type": "dialogue_model",
+          "title": null,
+          "text": null,
+          "payload": {
+            "turns": [
+              {
+                "speaker": "바리스타",
+                "ko": "안녕하세요. 주문하시겠어요?"
+              },
+              {
+                "speaker": "Cliente",
+                "ko": "네. 아이스 아메리카노 하나 주세요."
+              },
+              {
+                "speaker": "바리스타",
+                "ko": "사이즈는요?"
+              },
+              {
+                "speaker": "Cliente",
+                "ko": "작은 사이즈로 주세요."
+              },
+              {
+                "speaker": "바리스타",
+                "ko": "포장해 드릴까요?"
+              },
+              {
+                "speaker": "Cliente",
+                "ko": "네, 포장해 주세요."
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l04_t02",
+          "type": "tip",
+          "title": null,
+          "text": "No necesitas memorizar todas las palabras del diálogo de una vez. Concéntrate primero en reconocer el saludo, 하나, 주세요 y la estructura de pedido.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u04l04_a01",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reutilizar números en contexto.",
+          "prompt": "En «아이스 아메리카노 하나 주세요», ¿qué palabra aprendiste como «uno»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Viene de la lección de números."
+          ],
+          "feedback": {
+            "correct": "Correcto: 하나 = uno.",
+            "wrong": {
+              "default": "Revisa el contenido y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "네",
+              "하나",
+              "주세요",
+              "사이즈"
+            ],
+            "correct": [
+              "하나"
+            ]
+          }
+        },
+        {
+          "id": "u04l04_a02",
+          "type": "dialogue",
+          "family": "dialogue",
+          "objective": "Hacer un pedido simple.",
+          "prompt": "Responde al barista.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "커피 + 하나 + 주세요"
+          ],
+          "feedback": {
+            "correct": "Muy bien: 커피 하나 주세요.",
+            "wrong": {
+              "default": "Usa 커피, 하나 y 주세요 en ese orden."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "turns": [
+              {
+                "speaker": "바리스타",
+                "ko": "안녕하세요. 주문하시겠어요?"
+              },
+              {
+                "speaker": "user",
+                "prompt_es": "Pide un café: «Un café, por favor».",
+                "accepted": [
+                  "커피 하나 주세요",
+                  "커피 하나 주세요."
+                ],
+                "normalization": {
+                  "trim": true,
+                  "unicode_normalization": "NFC",
+                  "collapse_spaces": true,
+                  "ignore_terminal_punctuation": true,
+                  "case_sensitive": false
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l04_a03",
+          "type": "dialogue_variant",
+          "family": "dialogue",
+          "objective": "Cambiar la bebida del modelo.",
+          "prompt": "Elige una bebida y completa el pedido.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "choose_and_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "choices": [
+              {
+                "label_es": "agua",
+                "ko": "물 하나 주세요."
+              },
+              {
+                "label_es": "té",
+                "ko": "차 하나 주세요."
+              },
+              {
+                "label_es": "leche",
+                "ko": "우유 하나 주세요."
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l04_a04",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Reconocer frase del diálogo.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es la última respuesta del diálogo."
+          ],
+          "feedback": {
+            "correct": "Correcto. Es la respuesta final del cliente.",
+            "wrong": {
+              "default": "Escucha otra vez; usa la velocidad lenta si lo necesitas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "포장해 주세요.",
+              "slow_available": true
+            },
+            "options": [
+              "작은 사이즈로 주세요.",
+              "포장해 주세요.",
+              "커피 하나 주세요."
+            ],
+            "correct": [
+              "포장해 주세요."
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u04l04_a01",
+          "u04l04_a02",
+          "u04l04_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u04l05",
+      "title": "Lugares y transporte",
+      "objective": "Reconocer diez lugares frecuentes y conectar este vocabulario con preguntas funcionales básicas.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        25,
+        "Primer contacto: 33, 58–60"
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u04l05_t01",
+          "type": "visual_vocabulary",
+          "title": "Lugares",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "학교",
+                "meaning_es": "escuela",
+                "tts": "학교",
+                "image_asset": "place_school"
+              },
+              {
+                "hangul": "병원",
+                "meaning_es": "hospital",
+                "tts": "병원",
+                "image_asset": "place_hospital"
+              },
+              {
+                "hangul": "약국",
+                "meaning_es": "farmacia",
+                "tts": "약국",
+                "image_asset": "place_pharmacy"
+              },
+              {
+                "hangul": "은행",
+                "meaning_es": "banco",
+                "tts": "은행",
+                "image_asset": "place_bank"
+              },
+              {
+                "hangul": "지하철",
+                "meaning_es": "metro",
+                "tts": "지하철",
+                "image_asset": "place_metro"
+              },
+              {
+                "hangul": "역",
+                "meaning_es": "estación",
+                "tts": "역",
+                "image_asset": "place_station"
+              },
+              {
+                "hangul": "공항",
+                "meaning_es": "aeropuerto",
+                "tts": "공항",
+                "image_asset": "place_airport"
+              },
+              {
+                "hangul": "호텔",
+                "meaning_es": "hotel",
+                "tts": "호텔",
+                "image_asset": "place_hotel"
+              },
+              {
+                "hangul": "식당",
+                "meaning_es": "restaurante",
+                "tts": "식당",
+                "image_asset": "place_restaurant"
+              },
+              {
+                "hangul": "카페",
+                "meaning_es": "cafetería",
+                "tts": "카페",
+                "image_asset": "place_cafe"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l05_t02",
+          "type": "functional_phrases",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "화장실이 어디에 있어요?",
+                "es": "¿Dónde están los baños?",
+                "tts": "화장실이 어디에 있어요?",
+                "source": "Primer contacto"
+              },
+              {
+                "ko": "맛있는 식당을 아세요?",
+                "es": "¿Conoce algún buen lugar para comer?",
+                "tts": "맛있는 식당을 아세요?",
+                "source": "Primer contacto"
+              },
+              {
+                "ko": "이 근처에 박물관이 있나요?",
+                "es": "¿Hay algún museo por aquí?",
+                "tts": "이 근처에 박물관이 있나요?",
+                "source": "Primer contacto"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u04l05_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer lugares.",
+          "prompt": "Relaciona lugares y significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Puedes apoyarte en las imágenes."
+          ],
+          "feedback": {
+            "correct": "Bien. Primera mitad de lugares dominada.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "학교",
+                "right": "escuela"
+              },
+              {
+                "left": "병원",
+                "right": "hospital"
+              },
+              {
+                "left": "약국",
+                "right": "farmacia"
+              },
+              {
+                "left": "은행",
+                "right": "banco"
+              },
+              {
+                "left": "지하철",
+                "right": "metro"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l05_a02",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer lugares.",
+          "prompt": "Relaciona lugares y significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca palabras que ya reconoces, como 카페."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya tienes diez lugares.",
+            "wrong": {
+              "default": "Compara cada palabra con su significado y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "역",
+                "right": "estación"
+              },
+              {
+                "left": "공항",
+                "right": "aeropuerto"
+              },
+              {
+                "left": "호텔",
+                "right": "hotel"
+              },
+              {
+                "left": "식당",
+                "right": "restaurante"
+              },
+              {
+                "left": "카페",
+                "right": "cafetería"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l05_a03",
+          "type": "image_choice",
+          "family": "choice",
+          "objective": "Reconocer 병원.",
+          "prompt": "¿Cuál imagen representa 병원?",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "병원 significa hospital."
+          ],
+          "feedback": {
+            "correct": "Correcto: 병원 = hospital.",
+            "wrong": {
+              "default": "Busca el edificio con símbolo médico."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "place_hospital",
+              "place_bank",
+              "place_school",
+              "place_hotel"
+            ],
+            "correct": [
+              "place_hospital"
+            ]
+          }
+        },
+        {
+          "id": "u04l05_a04",
+          "type": "image_choice",
+          "family": "choice",
+          "objective": "Reconocer 공항.",
+          "prompt": "Toca la imagen de 공항.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "공항 = aeropuerto."
+          ],
+          "feedback": {
+            "correct": "Correcto: 공항 = aeropuerto.",
+            "wrong": {
+              "default": "Busca el avión."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "place_station",
+              "place_airport",
+              "place_metro",
+              "place_bank"
+            ],
+            "correct": [
+              "place_airport"
+            ]
+          }
+        },
+        {
+          "id": "u04l05_a05",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender frase funcional.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 어디에 있어요?"
+          ],
+          "feedback": {
+            "correct": "Correcto. Es una pregunta de ubicación.",
+            "wrong": {
+              "default": "Escucha otra vez; usa la velocidad lenta si lo necesitas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "화장실이 어디에 있어요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Cuánto cuesta?",
+              "¿Dónde están los baños?",
+              "¿Hay un museo por aquí?"
+            ],
+            "correct": [
+              "¿Dónde están los baños?"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u04l05_a01",
+          "u04l05_a02",
+          "u04l05_a03",
+          "u04l05_a04",
+          "u04l05_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u04l01",
+      "u04l02",
+      "u04l03",
+      "u04l04",
+      "u04l05"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "mastery_items": [
+      "하나",
+      "둘",
+      "셋",
+      "넷",
+      "다섯",
+      "여섯",
+      "일곱",
+      "여덟",
+      "아홉",
+      "열",
+      "밥",
+      "물",
+      "고기",
+      "생선",
+      "김치",
+      "라면",
+      "커피",
+      "차",
+      "우유",
+      "빵",
+      "주세요",
+      "물 주세요.",
+      "커피 주세요.",
+      "빵 주세요.",
+      "메뉴 주세요.",
+      "학교",
+      "병원",
+      "약국",
+      "은행",
+      "지하철",
+      "역",
+      "공항",
+      "호텔",
+      "식당",
+      "카페",
+      "화장실이 어디에 있어요?"
+    ]
+  }
+}

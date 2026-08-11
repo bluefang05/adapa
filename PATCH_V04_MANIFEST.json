@@ -1,0 +1,25 @@
+{
+  "from": "0.3.0+3",
+  "to": "0.4.0+4",
+  "changed_or_added_files": [
+    "IMPLEMENTATION_V04.md",
+    "README.md",
+    "pubspec.yaml",
+    "lib/app.dart",
+    "test/dialogue_evaluator_test.dart",
+    "test/dialogue_variant_builder_test.dart",
+    "assets/content/renderer_coverage_report_v0.4.json",
+    "lib/features/activity/activity_renderer_host.dart",
+    "lib/features/activity/renderers/dialogue_activity_renderer.dart",
+    "lib/core/session/activity_session_store.dart",
+    "lib/core/evaluation/dialogue_evaluator.dart",
+    "lib/core/dialogue/dialogue_variant_builder.dart",
+    "lib/core/dialogue/dialogue_scene.dart",
+    "lib/core/dialogue/korean_particle_helper.dart",
+    "lib/core/runtime/adapa_runtime.dart",
+    "lib/core/content/asset_resolver.dart"
+  ],
+  "removed_files": [],
+  "changed_count": 16,
+  "removed_count": 0
+}

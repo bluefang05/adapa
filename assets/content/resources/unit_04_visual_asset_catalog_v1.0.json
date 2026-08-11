@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "u04",
+  "assets": [
+    {
+      "id": "food_rice",
+      "hangul": "밥",
+      "meaning_es": "arroz / comida",
+      "asset": "assets/vocabulary/u04/food_rice.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_water",
+      "hangul": "물",
+      "meaning_es": "agua",
+      "asset": "assets/vocabulary/u04/food_water.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_meat",
+      "hangul": "고기",
+      "meaning_es": "carne",
+      "asset": "assets/vocabulary/u04/food_meat.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_fish",
+      "hangul": "생선",
+      "meaning_es": "pescado",
+      "asset": "assets/vocabulary/u04/food_fish.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_kimchi",
+      "hangul": "김치",
+      "meaning_es": "kimchi",
+      "asset": "assets/vocabulary/u04/food_kimchi.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_ramen",
+      "hangul": "라면",
+      "meaning_es": "ramen coreano",
+      "asset": "assets/vocabulary/u04/food_ramen.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_coffee",
+      "hangul": "커피",
+      "meaning_es": "café",
+      "asset": "assets/vocabulary/u04/food_coffee.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_tea",
+      "hangul": "차",
+      "meaning_es": "té",
+      "asset": "assets/vocabulary/u04/food_tea.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_milk",
+      "hangul": "우유",
+      "meaning_es": "leche",
+      "asset": "assets/vocabulary/u04/food_milk.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "food_bread",
+      "hangul": "빵",
+      "meaning_es": "pan",
+      "asset": "assets/vocabulary/u04/food_bread.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_school",
+      "hangul": "학교",
+      "meaning_es": "escuela",
+      "asset": "assets/vocabulary/u04/place_school.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_hospital",
+      "hangul": "병원",
+      "meaning_es": "hospital",
+      "asset": "assets/vocabulary/u04/place_hospital.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_pharmacy",
+      "hangul": "약국",
+      "meaning_es": "farmacia",
+      "asset": "assets/vocabulary/u04/place_pharmacy.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_bank",
+      "hangul": "은행",
+      "meaning_es": "banco",
+      "asset": "assets/vocabulary/u04/place_bank.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_metro",
+      "hangul": "지하철",
+      "meaning_es": "metro",
+      "asset": "assets/vocabulary/u04/place_metro.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_station",
+      "hangul": "역",
+      "meaning_es": "estación",
+      "asset": "assets/vocabulary/u04/place_station.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_airport",
+      "hangul": "공항",
+      "meaning_es": "aeropuerto",
+      "asset": "assets/vocabulary/u04/place_airport.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_hotel",
+      "hangul": "호텔",
+      "meaning_es": "hotel",
+      "asset": "assets/vocabulary/u04/place_hotel.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_restaurant",
+      "hangul": "식당",
+      "meaning_es": "restaurante",
+      "asset": "assets/vocabulary/u04/place_restaurant.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "place_cafe",
+      "hangul": "카페",
+      "meaning_es": "cafetería",
+      "asset": "assets/vocabulary/u04/place_cafe.png",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    }
+  ]
+}

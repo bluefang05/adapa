@@ -1,0 +1,942 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u07",
+  "title": "Lee y escribe con más libertad",
+  "goal": "Comprender textos breves en Hangul y producir frases propias con cada vez menos apoyo.",
+  "prerequisites": [
+    "u01",
+    "u02",
+    "u03",
+    "u04",
+    "u05",
+    "u06"
+  ],
+  "romanizationPolicy": {
+    "default": "disabled",
+    "note_es": "Desde esta unidad la romanización deja de formar parte del flujo normal. El estudiante puede usar TTS y vocabulario ya aprendido, pero la lectura principal permanece en Hangul."
+  },
+  "source": {
+    "primary": {
+      "title": "Coreano Básico — Aris Davis",
+      "pages": [
+        37,
+        38,
+        39,
+        40
+      ]
+    },
+    "scope_note": "Las lecturas, preguntas y banco de palabras se conservan tal como aparecen en el material. Las respuestas abiertas no se convierten en supuestas respuestas únicas."
+  },
+  "resourceRefs": {
+    "readingCatalog": "unit_07_reading_catalog_v1.0.json"
+  },
+  "lessons": [
+    {
+      "id": "u07l01",
+      "title": "Lectura: mi presentación",
+      "objective": "Comprender una presentación breve y localizar nombre, ocupación y objeto de estudio.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        37
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u07l01_t01",
+          "type": "reading_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "reading_intro"
+          }
+        },
+        {
+          "id": "u07l01_t02",
+          "type": "reading_strategy",
+          "title": "Busca palabras que ya conoces",
+          "text": "No traduzcas palabra por palabra. Primero identifica expresiones conocidas como 저는, 선생님, 한국어, 공부해요 y 반가워요.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u07l01_a01",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar el nombre.",
+          "prompt": "이름이 뭐예요?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "El nombre aparece en la segunda frase."
+          ],
+          "feedback": {
+            "correct": "Correcto. 이름은 아리스예요.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "아리스예요",
+              "아리스"
+            ]
+          }
+        },
+        {
+          "id": "u07l01_a02",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar ocupación.",
+          "prompt": "무슨 일을 해요?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca 저는 선생님이에요."
+          ],
+          "feedback": {
+            "correct": "Correcto. 선생님이에요.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "선생님이에요",
+              "선생님"
+            ]
+          }
+        },
+        {
+          "id": "u07l01_a03",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar objeto de estudio.",
+          "prompt": "무엇을 공부해요?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la frase con 공부해요."
+          ],
+          "feedback": {
+            "correct": "Correcto. 한국어를 공부해요.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "한국어를 공부해요",
+              "한국어"
+            ]
+          }
+        },
+        {
+          "id": "u07l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender una información adicional.",
+          "prompt": "Según el texto, ¿qué le gusta a Aris?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca 좋아해요."
+          ],
+          "feedback": {
+            "correct": "Correcto. 한글을 좋아해요.",
+            "wrong": {
+              "default": "Vuelve al texto y localiza la información antes de responder."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "커피",
+              "한글",
+              "학교"
+            ],
+            "correct": [
+              "한글"
+            ]
+          }
+        },
+        {
+          "id": "u07l01_a05",
+          "type": "copy_practice",
+          "family": "text_input",
+          "objective": "Copiar la lectura completa una vez.",
+          "prompt": "Copia el texto una vez en Hangul.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "non_empty",
+          "note": "El libro pide copiar el texto. ADAPA registra la práctica, pero no pretende calificar caligrafía digital.",
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "source_text_ref": "reading_intro"
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u07l01_a01",
+          "u07l01_a02",
+          "u07l01_a03",
+          "u07l01_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u07l02",
+      "title": "Lectura: en la cafetería",
+      "objective": "Comprender un texto cotidiano breve y modificar una frase manteniendo su estructura.",
+      "estimatedMinutes": 13,
+      "sourcePages": [
+        38
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u07l02_t01",
+          "type": "reading_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "reading_cafe"
+          }
+        },
+        {
+          "id": "u07l02_t02",
+          "type": "vocabulary_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "reading_ref": "reading_cafe",
+            "display": "key_words"
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u07l02_a01",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Extraer una frase literal.",
+          "prompt": "Escribe la frase del texto que significa «Café, por favor».",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Copia la frase tal como aparece en la lectura."
+          ],
+          "feedback": {
+            "correct": "Correcto: 커피를 하나 주세요.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "커피를 하나 주세요"
+            ]
+          }
+        },
+        {
+          "id": "u07l02_a02",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Modificar una frase manteniendo el patrón.",
+          "prompt": "Ahora cambia café por agua conservando la estructura de la frase.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Sustituye 커피를 por 물을."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물을 하나 주세요.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "물을 하나 주세요"
+            ]
+          }
+        },
+        {
+          "id": "u07l02_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender información del texto.",
+          "prompt": "¿Qué pide además del café?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca 도 주세요."
+          ],
+          "feedback": {
+            "correct": "Correcto. También pide 빵.",
+            "wrong": {
+              "default": "Vuelve al texto y localiza la información antes de responder."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "물",
+              "빵",
+              "우유"
+            ],
+            "correct": [
+              "빵"
+            ]
+          }
+        },
+        {
+          "id": "u07l02_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender destino.",
+          "prompt": "¿Adónde va la persona?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Está en la segunda frase."
+          ],
+          "feedback": {
+            "correct": "Correcto. 카페에 가요.",
+            "wrong": {
+              "default": "Vuelve al texto y localiza la información antes de responder."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "학교",
+              "카페",
+              "은행"
+            ],
+            "correct": [
+              "카페"
+            ]
+          }
+        },
+        {
+          "id": "u07l02_a05",
+          "type": "reading_aloud",
+          "family": "reading_speaking",
+          "objective": "Leer el texto completo antes de escuchar TTS.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_then_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "reading_ref": "reading_cafe"
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u07l02_a01",
+          "u07l02_a02",
+          "u07l02_a03",
+          "u07l02_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u07l03",
+      "title": "Lectura: mi día",
+      "objective": "Extraer cuatro datos de una rutina cotidiana escrita en Hangul.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        39
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u07l03_t01",
+          "type": "reading_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "reading_day"
+          }
+        },
+        {
+          "id": "u07l03_t02",
+          "type": "reading_strategy",
+          "title": "Sigue los verbos",
+          "text": "Cada oración describe una acción. Localiza primero 마셔요, 가요, 공부해요, 만나요 y 와요; después identifica qué palabra acompaña a cada verbo.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u07l03_a01",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar objeto.",
+          "prompt": "¿Qué bebe?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la oración con 마셔요."
+          ],
+          "feedback": {
+            "correct": "Correcto. Bebe 물.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "물",
+              "물을"
+            ]
+          }
+        },
+        {
+          "id": "u07l03_a02",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar destino.",
+          "prompt": "¿Adónde va?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la oración con 가요."
+          ],
+          "feedback": {
+            "correct": "Correcto. Va a 학교.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "학교",
+              "학교에"
+            ]
+          }
+        },
+        {
+          "id": "u07l03_a03",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar objeto de estudio.",
+          "prompt": "¿Qué estudia?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la oración con 공부해요."
+          ],
+          "feedback": {
+            "correct": "Correcto. Estudia 한국어.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "한국어",
+              "한국어를"
+            ]
+          }
+        },
+        {
+          "id": "u07l03_a04",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Localizar persona.",
+          "prompt": "¿A quién encuentra?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la oración con 만나요."
+          ],
+          "feedback": {
+            "correct": "Correcto. Encuentra a 친구.",
+            "wrong": {
+              "default": "Busca la respuesta directamente en la lectura y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "친구",
+              "친구를"
+            ]
+          }
+        },
+        {
+          "id": "u07l03_a05",
+          "type": "sentence_sequence",
+          "family": "ordering",
+          "objective": "Ordenar acciones de la rutina según el texto.",
+          "prompt": "Ordena estas acciones según aparecen en la lectura.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Primero bebe agua; al final vuelve a casa."
+          ],
+          "feedback": {
+            "correct": "Correcto. Seguiste la secuencia de la rutina.",
+            "wrong": {
+              "default": "Vuelve al texto y sigue las oraciones de izquierda a derecha."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "친구를 만나요.",
+              "학교에 가요.",
+              "물을 마셔요.",
+              "집에 와요."
+            ],
+            "correct_order": [
+              "물을 마셔요.",
+              "학교에 가요.",
+              "친구를 만나요.",
+              "집에 와요."
+            ]
+          }
+        },
+        {
+          "id": "u07l03_a06",
+          "type": "known_block_marking",
+          "family": "review",
+          "objective": "Reconocer bloques que ya puede leer sin romanización.",
+          "prompt": "Marca las palabras o bloques que ya puedes leer directamente.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "user_marks_any",
+          "note": "Equivale al ejercicio del libro de subrayar bloques ya reconocibles; es autorreflexión, no una prueba.",
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "reading_ref": "reading_day"
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u07l03_a01",
+          "u07l03_a02",
+          "u07l03_a03",
+          "u07l03_a04",
+          "u07l03_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u07l04",
+      "title": "Escritura libre",
+      "objective": "Producir cinco frases sencillas usando patrones y vocabulario ya trabajados.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        40
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u07l04_t01",
+          "type": "word_bank",
+          "title": "Banco de palabras del libro",
+          "text": null,
+          "payload": {
+            "items": [
+              "저는",
+              "학생",
+              "선생님",
+              "한국어",
+              "공부해요",
+              "커피",
+              "물",
+              "학교",
+              "친구",
+              "좋아요"
+            ]
+          }
+        },
+        {
+          "id": "u07l04_t02",
+          "type": "instruction",
+          "title": null,
+          "text": "Escribe cinco frases sencillas. No hay una única respuesta correcta: el objetivo es producir Hangul utilizando patrones que ya conoces.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u07l04_a01",
+          "type": "free_writing",
+          "family": "text_input",
+          "objective": "Escribir cinco frases.",
+          "prompt": "Escribe 5 frases sencillas.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "five_non_empty_lines",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": true,
+            "romanization": null
+          },
+          "payload": {
+            "required_lines": 5,
+            "word_bank": [
+              "저는",
+              "학생",
+              "선생님",
+              "한국어",
+              "공부해요",
+              "커피",
+              "물",
+              "학교",
+              "친구",
+              "좋아요"
+            ]
+          }
+        },
+        {
+          "id": "u07l04_a02",
+          "type": "self_review",
+          "family": "review",
+          "objective": "Revisar la propia producción sin inventar una corrección automática.",
+          "prompt": "Revisa tus cinco frases.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "all_checks_seen",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "checks": [
+              "¿Puedo leer lo que escribí?",
+              "¿Reconozco las palabras que utilicé?",
+              "¿El verbo o terminación principal está al final cuando corresponde al patrón practicado?"
+            ]
+          }
+        },
+        {
+          "id": "u07l04_a03",
+          "type": "tts_readback",
+          "family": "reading_speaking",
+          "objective": "Escuchar la propia escritura mediante TTS.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "optional",
+          "note": "El TTS ayuda a detectar visualmente frases que el usuario quizá escribió de manera distinta a lo esperado, pero no sustituye corrección humana.",
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "source_activity": "u07l04_a01"
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u07l04_a01"
+        ],
+        "minimum_score": null,
+        "rule": "complete_required_open_activity"
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u07l01",
+      "u07l02",
+      "u07l03",
+      "u07l04"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "mastery_items": [
+      "안녕하세요. 저는 아리스예요.",
+      "한국어를 공부해요.",
+      "한글을 좋아해요.",
+      "커피를 하나 주세요.",
+      "물을 하나 주세요.",
+      "아침에 일어나요.",
+      "물을 마셔요.",
+      "학교에 가요.",
+      "친구를 만나요.",
+      "집에 와요."
+    ],
+    "open_work_saved_locally": true
+  }
+}

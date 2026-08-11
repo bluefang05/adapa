@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "0.5",
+  "projectVersion": "0.5.0+5",
+  "courseActivities": 171,
+  "interactiveActivities": 171,
+  "coveragePercent": 100.0,
+  "familiesImplemented": [
+    "choice",
+    "dialogue",
+    "hangul_structure",
+    "matching",
+    "ordering",
+    "reading_speaking",
+    "review",
+    "text_input",
+    "visual_reference"
+  ],
+  "familyCounts": {
+    "choice": 64,
+    "matching": 20,
+    "visual_reference": 3,
+    "hangul_structure": 11,
+    "reading_speaking": 7,
+    "text_input": 32,
+    "dialogue": 16,
+    "ordering": 10,
+    "review": 8
+  },
+  "readingSpeakingCount": 7,
+  "reviewCount": 8,
+  "readingCatalogRefs": 3,
+  "payloadErrors": [],
+  "missingLocalImports": [],
+  "delimiterBalanceWarnings": [],
+  "note": "Static/content audit only; Flutter SDK is not installed in this environment."
+}

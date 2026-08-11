@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "project_version": "0.3.0+3",
+  "total_activities": 171,
+  "interactive_families_implemented": [
+    "choice",
+    "hangul_structure",
+    "matching",
+    "ordering",
+    "text_input",
+    "visual_reference"
+  ],
+  "interactive_activity_count": 140,
+  "interactive_coverage_percent": 81.9,
+  "family_counts": {
+    "choice": 64,
+    "dialogue": 16,
+    "hangul_structure": 11,
+    "matching": 20,
+    "ordering": 10,
+    "reading_speaking": 7,
+    "review": 8,
+    "text_input": 32,
+    "visual_reference": 3
+  },
+  "new_in_v0_3": {
+    "hangul_structure_activities": 11,
+    "visual_reference_activities": 3,
+    "unique_stroke_sets_referenced": 29,
+    "unique_stroke_pngs_referenced": 111,
+    "unit_01_vowel_viewer_correction": {
+      "added": [
+        "ㅑ",
+        "ㅕ",
+        "ㅛ",
+        "ㅠ"
+      ],
+      "result": "10/10 vowels referenced"
+    }
+  },
+  "validation_errors": [],
+  "warnings": [],
+  "payload_validation_passed": true,
+  "flutter_sdk_available_in_build_environment": false,
+  "note": "Structural checks passed for v0.3. Flutter/Dart compilation still requires a Flutter SDK."
+}

@@ -1,0 +1,60 @@
+name: adapa
+description: ADAPA offline-first language learning app.
+publish_to: 'none'
+version: 0.14.0+14
+
+environment:
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: '>=3.44.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_tts: 4.2.5
+  unorm_dart: 0.3.2
+  shared_preferences: 2.5.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: 6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/content/
+    - assets/content/units/
+    - assets/content/resources/
+    - assets/content/schema/
+    - assets/vocabulary/u04/
+    - assets/strokes/consonants/u3131/
+    - assets/strokes/consonants/u3134/
+    - assets/strokes/consonants/u3137/
+    - assets/strokes/consonants/u3139/
+    - assets/strokes/consonants/u3141/
+    - assets/strokes/consonants/u3142/
+    - assets/strokes/consonants/u3145/
+    - assets/strokes/consonants/u3147/
+    - assets/strokes/consonants/u3148/
+    - assets/strokes/consonants/u314a/
+    - assets/strokes/consonants/u314b/
+    - assets/strokes/consonants/u314c/
+    - assets/strokes/consonants/u314d/
+    - assets/strokes/consonants/u314e/
+    - assets/strokes/double_consonants/u3132/
+    - assets/strokes/double_consonants/u3138/
+    - assets/strokes/double_consonants/u3143/
+    - assets/strokes/double_consonants/u3146/
+    - assets/strokes/double_consonants/u3149/
+    - assets/strokes/vowels/u314f/
+    - assets/strokes/vowels/u3151/
+    - assets/strokes/vowels/u3153/
+    - assets/strokes/vowels/u3155/
+    - assets/strokes/vowels/u3157/
+    - assets/strokes/vowels/u315b/
+    - assets/strokes/vowels/u315c/
+    - assets/strokes/vowels/u3160/
+    - assets/strokes/vowels/u3161/
+    - assets/strokes/vowels/u3163/

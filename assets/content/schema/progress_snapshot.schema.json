@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ADAPA local progress snapshot v1",
+  "type": "object",
+  "required": [
+    "courseId",
+    "contentVersion",
+    "activities",
+    "sessionData"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer"
+    },
+    "courseId": {
+      "type": "string"
+    },
+    "contentVersion": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "resume": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "activities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "activityId",
+          "attempts",
+          "completed"
+        ],
+        "properties": {
+          "activityId": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "bestScore": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "lastAttemptAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "firstCompletedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "sessionData": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  }
+}

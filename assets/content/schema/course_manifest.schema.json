@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adapa.local/schema/course_manifest.schema.json",
+  "title": "ADAPA CourseManifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "slug",
+    "title",
+    "subtitle",
+    "level",
+    "interfaceLanguage",
+    "targetLanguage",
+    "ttsLocale",
+    "offlineFirst",
+    "contentVersion",
+    "units",
+    "resources",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "interfaceLanguage": {
+      "type": "string"
+    },
+    "targetLanguage": {
+      "type": "string"
+    },
+    "ttsLocale": {
+      "type": "string"
+    },
+    "offlineFirst": {
+      "type": "boolean"
+    },
+    "contentVersion": {
+      "type": "string"
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "lessonCount",
+          "activityCount",
+          "asset",
+          "prerequisites"
+        ]
+      }
+    },
+    "resources": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object"
+    }
+  }
+}

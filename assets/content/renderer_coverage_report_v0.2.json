@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "project_version": "0.2.0+2",
+  "total_activities": 171,
+  "interactive_families_implemented": [
+    "choice",
+    "matching",
+    "ordering",
+    "text_input"
+  ],
+  "interactive_activity_count": 126,
+  "interactive_coverage_percent": 73.7,
+  "family_counts": {
+    "choice": 64,
+    "dialogue": 16,
+    "hangul_structure": 11,
+    "matching": 20,
+    "ordering": 10,
+    "reading_speaking": 7,
+    "review": 8,
+    "text_input": 32,
+    "visual_reference": 3
+  },
+  "implemented_type_counts": {
+    "conversation_shuffle": 1,
+    "copy_practice": 1,
+    "fill_blank": 4,
+    "free_practice": 1,
+    "free_writing": 1,
+    "image_choice": 4,
+    "listen_and_choose": 20,
+    "listen_and_type": 8,
+    "matching": 20,
+    "multiple_choice": 39,
+    "pattern_response": 3,
+    "scenario_choice": 1,
+    "sentence_sequence": 1,
+    "sequence_order": 1,
+    "short_answer": 14,
+    "word_order": 7
+  },
+  "validation_errors": [],
+  "warnings": [],
+  "payload_validation_passed": true,
+  "flutter_sdk_available_in_build_environment": false,
+  "note": "Payloads for the four implemented families were validated structurally with Python. Dart/Flutter compilation still requires a Flutter SDK."
+}

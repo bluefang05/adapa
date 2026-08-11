@@ -1,0 +1,2069 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u06",
+  "title": "Habla en situaciones reales",
+  "goal": "Responder en conversaciones breves y previsibles usando expresiones ya aprendidas y nuevas frases funcionales.",
+  "prerequisites": [
+    "u01",
+    "u02",
+    "u03",
+    "u04",
+    "u05"
+  ],
+  "romanizationPolicy": {
+    "default": "hidden",
+    "available_as_hint": true
+  },
+  "source": {
+    "primary": [
+      {
+        "title": "Coreano Básico — Aris Davis",
+        "pages": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36
+        ]
+      },
+      {
+        "title": "Primer contacto",
+        "items": [
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78
+        ]
+      }
+    ],
+    "scope_note": "La unidad usa los diálogos del libro como columna vertebral y las expresiones de Primer contacto como apoyo funcional, especialmente para pedir repetición o aclaración."
+  },
+  "resourceRefs": {
+    "dialogueCatalog": "unit_06_dialogue_catalog_v1.0.json"
+  },
+  "lessons": [
+    {
+      "id": "u06l01",
+      "title": "Primer día de clase",
+      "objective": "Saludar, presentarse, preguntar el nombre y decir si eres estudiante o profesor/a.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        29
+      ],
+      "dialogueRef": "dlg_first_class",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l01_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_first_class"
+          }
+        },
+        {
+          "id": "u06l01_t02",
+          "type": "key_phrases",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "학생이에요?",
+                "es": "¿Eres estudiante?",
+                "tts": "학생이에요?"
+              },
+              {
+                "ko": "네, 학생이에요.",
+                "es": "Sí, soy estudiante.",
+                "tts": "네, 학생이에요."
+              },
+              {
+                "ko": "저는 선생님이에요.",
+                "es": "Soy profesor/a.",
+                "tts": "저는 선생님이에요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l01_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender pregunta.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 학생."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "학생이에요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Eres estudiante?",
+              "¿Cómo te llamas?",
+              "¿Eres profesor/a?"
+            ],
+            "correct": [
+              "¿Eres estudiante?"
+            ]
+          }
+        },
+        {
+          "id": "u06l01_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Responder pregunta.",
+          "prompt": "¿Qué respuesta encaja con «학생이에요?»",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La pregunta es si eres estudiante."
+          ],
+          "feedback": {
+            "correct": "Correcto: 네, 학생이에요.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "네, 학생이에요.",
+              "감사합니다.",
+              "메뉴 주세요."
+            ],
+            "correct": [
+              "네, 학생이에요."
+            ]
+          }
+        },
+        {
+          "id": "u06l01_a03",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Construir respuesta.",
+          "prompt": "Ordena «Soy profesor/a».",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "El patrón de presentación empieza por 저는."
+          ],
+          "feedback": {
+            "correct": "Correcto: 저는 선생님이에요.",
+            "wrong": {
+              "default": "Reordena las partes siguiendo el modelo de la lección."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "선생님이에요.",
+              "저는"
+            ],
+            "correct_order": [
+              "저는",
+              "선생님이에요."
+            ]
+          }
+        },
+        {
+          "id": "u06l01_a04",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Completar el diálogo como B.",
+          "prompt": null,
+          "scoreMode": "accepted_variants",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha el turno A y responde como en el modelo."
+          ],
+          "feedback": {
+            "correct": "Completaste el primer encuentro.",
+            "wrong": {
+              "default": "Vuelve a escuchar el turno anterior y usa el modelo como pista."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_first_class",
+            "user_role": "B",
+            "required_turns": [
+              1,
+              3,
+              5
+            ],
+            "accepted_by_turn": {
+              "1": [
+                "안녕하세요"
+              ],
+              "3": [
+                "저는 마리아예요"
+              ],
+              "5": [
+                "네, 학생이에요. 아리스 씨는요?"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l01_a01",
+          "u06l01_a02",
+          "u06l01_a03",
+          "u06l01_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l02",
+      "title": "Cafetería y restaurante",
+      "objective": "Pedir algo, preguntar qué es un plato y preguntar si está rico.",
+      "estimatedMinutes": 18,
+      "sourcePages": [
+        30,
+        31
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [
+        "dlg_cafe_short",
+        "dlg_restaurant"
+      ],
+      "theory": [
+        {
+          "id": "u06l02_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_cafe_short"
+          }
+        },
+        {
+          "id": "u06l02_t02",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_restaurant"
+          }
+        },
+        {
+          "id": "u06l02_t03",
+          "type": "key_phrases",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "이거 뭐예요?",
+                "es": "¿Qué es esto?",
+                "tts": "이거 뭐예요?"
+              },
+              {
+                "ko": "맛있어요?",
+                "es": "¿Está rico?",
+                "tts": "맛있어요?"
+              },
+              {
+                "ko": "네, 맛있어요.",
+                "es": "Sí, está rico.",
+                "tts": "네, 맛있어요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l02_a01",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender pregunta.",
+          "prompt": "¿Qué significa «이거 뭐예요?»",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 뭐예요?"
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "¿Cuánto cuesta?",
+              "¿Qué es esto?",
+              "¿Está rico?"
+            ],
+            "correct": [
+              "¿Qué es esto?"
+            ]
+          }
+        },
+        {
+          "id": "u06l02_a02",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender audio.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha la terminación interrogativa."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "맛있어요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Está rico?",
+              "¿Necesita algo más?",
+              "¿Qué es esto?"
+            ],
+            "correct": [
+              "¿Está rico?"
+            ]
+          }
+        },
+        {
+          "id": "u06l02_a03",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Pedir en la cafetería.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Puedes sustituir 커피 por 물, 차 o 우유 en la práctica libre posterior."
+          ],
+          "feedback": {
+            "correct": "Pedido completado.",
+            "wrong": {
+              "default": "Usa el modelo de la cafetería."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_cafe_short",
+            "user_role": "B",
+            "required_turns": [
+              1,
+              3,
+              5
+            ],
+            "accepted_by_turn": {
+              "1": [
+                "네. 커피 하나 주세요",
+                "네, 커피 하나 주세요"
+              ],
+              "3": [
+                "아니요, 괜찮아요",
+                "아니요 괜찮아요"
+              ],
+              "5": [
+                "감사합니다"
+              ]
+            }
+          }
+        },
+        {
+          "id": "u06l02_a04",
+          "type": "dialogue_variant",
+          "family": "dialogue",
+          "objective": "Cambiar la bebida.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "complete_one_variant",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_cafe_short",
+            "slot": "drink",
+            "choices": [
+              "물",
+              "차",
+              "우유"
+            ]
+          }
+        },
+        {
+          "id": "u06l02_a05",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Preguntar por un plato.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pide el menú, pregunta qué es y luego si está rico."
+          ],
+          "feedback": {
+            "correct": "Completaste la interacción del restaurante.",
+            "wrong": {
+              "default": "Revisa las tres frases clave."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_restaurant",
+            "user_role": "B",
+            "required_turns": [
+              1,
+              3,
+              5
+            ],
+            "accepted_by_turn": {
+              "1": [
+                "메뉴 주세요"
+              ],
+              "3": [
+                "이거 뭐예요?"
+              ],
+              "5": [
+                "맛있어요?"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l02_a01",
+          "u06l02_a02",
+          "u06l02_a03",
+          "u06l02_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l03",
+      "title": "Compras",
+      "objective": "Preguntar el precio y aceptar una compra básica.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        32
+      ],
+      "dialogueRef": "dlg_shopping",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l03_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_shopping"
+          }
+        },
+        {
+          "id": "u06l03_t02",
+          "type": "key_phrases",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "이거 얼마예요?",
+                "es": "¿Cuánto cuesta esto?",
+                "tts": "이거 얼마예요?"
+              },
+              {
+                "ko": "만 원이에요.",
+                "es": "Son diez mil won.",
+                "tts": "만 원이에요."
+              },
+              {
+                "ko": "네, 주세요.",
+                "es": "Sí, deme esto, por favor.",
+                "tts": "네, 주세요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l03_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender precio.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Escucha 얼마예요."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "이거 얼마예요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Qué es esto?",
+              "¿Cuánto cuesta esto?",
+              "¿Dónde está?"
+            ],
+            "correct": [
+              "¿Cuánto cuesta esto?"
+            ]
+          }
+        },
+        {
+          "id": "u06l03_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Recordar diálogo.",
+          "prompt": "En el diálogo, ¿cuál es el precio?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "No necesitas aprender todos los precios; responde según el modelo."
+          ],
+          "feedback": {
+            "correct": "Correcto: 만 원.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "천 원",
+              "만 원",
+              "오천 원"
+            ],
+            "correct": [
+              "만 원"
+            ]
+          }
+        },
+        {
+          "id": "u06l03_a03",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Construir pregunta.",
+          "prompt": "Ordena la pregunta del precio.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Primero «esto»."
+          ],
+          "feedback": {
+            "correct": "Correcto: 이거 얼마예요?",
+            "wrong": {
+              "default": "Reordena las partes siguiendo el modelo de la lección."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "얼마예요?",
+              "이거"
+            ],
+            "correct_order": [
+              "이거",
+              "얼마예요?"
+            ]
+          }
+        },
+        {
+          "id": "u06l03_a04",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Comprar un objeto.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pregunta el precio y luego acepta."
+          ],
+          "feedback": {
+            "correct": "Compra completada.",
+            "wrong": {
+              "default": "Usa las dos frases del modelo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_shopping",
+            "user_role": "A",
+            "required_turns": [
+              0,
+              2
+            ],
+            "accepted_by_turn": {
+              "0": [
+                "이거 얼마예요?"
+              ],
+              "2": [
+                "네, 주세요"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l03_a01",
+          "u06l03_a02",
+          "u06l03_a03",
+          "u06l03_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l04",
+      "title": "Pregunta dónde está",
+      "objective": "Preguntar por una ubicación y reutilizar la estructura con distintos lugares.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        33,
+        "Primer contacto 33"
+      ],
+      "dialogueRef": "dlg_location",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l04_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_location"
+          }
+        },
+        {
+          "id": "u06l04_t02",
+          "type": "grammar_pattern",
+          "title": null,
+          "text": null,
+          "payload": {
+            "pattern": "___이/가 어디에 있어요?",
+            "meaning_es": "¿Dónde está ___?",
+            "examples": [
+              "화장실이 어디에 있어요?",
+              "학교가 어디에 있어요?",
+              "카페가 어디에 있어요?",
+              "은행이 어디에 있어요?"
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l04_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender ubicación.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 어디에 있어요?"
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "화장실이 어디에 있어요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Dónde está el baño?",
+              "¿Cuánto cuesta?",
+              "¿Qué es esto?"
+            ],
+            "correct": [
+              "¿Dónde está el baño?"
+            ]
+          }
+        },
+        {
+          "id": "u06l04_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Recordar respuesta.",
+          "prompt": "¿Qué responde B en el diálogo?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Significa «está allí»."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "저기 있어요.",
+              "맛있어요.",
+              "만 원이에요."
+            ],
+            "correct": [
+              "저기 있어요."
+            ]
+          }
+        },
+        {
+          "id": "u06l04_a03",
+          "type": "dialogue_variant",
+          "family": "dialogue",
+          "objective": "Cambiar el lugar de la pregunta.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "complete_all_variants",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_location",
+            "slot": "place",
+            "choices": [
+              "학교",
+              "카페",
+              "은행"
+            ]
+          }
+        },
+        {
+          "id": "u06l04_a04",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Preguntar por el baño.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Puedes omitir 실례합니다 en la respuesta aceptada, pero conviene usarlo."
+          ],
+          "feedback": {
+            "correct": "Ubicación preguntada correctamente.",
+            "wrong": {
+              "default": "Usa 어디에 있어요? al final."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_location",
+            "user_role": "A",
+            "required_turns": [
+              0,
+              2
+            ],
+            "accepted_by_turn": {
+              "0": [
+                "실례합니다. 화장실이 어디에 있어요?",
+                "화장실이 어디에 있어요?"
+              ],
+              "2": [
+                "감사합니다"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l04_a01",
+          "u06l04_a02",
+          "u06l04_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l05",
+      "title": "Hotel",
+      "objective": "Saludar, indicar que tienes una reserva y dar tu nombre.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        34
+      ],
+      "dialogueRef": "dlg_hotel",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l05_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_hotel"
+          }
+        },
+        {
+          "id": "u06l05_t02",
+          "type": "key_phrases",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "예약했어요.",
+                "es": "Tengo una reserva.",
+                "tts": "예약했어요."
+              },
+              {
+                "ko": "성함이 어떻게 되세요?",
+                "es": "¿Cuál es su nombre?",
+                "tts": "성함이 어떻게 되세요?"
+              },
+              {
+                "ko": "확인해 드리겠습니다.",
+                "es": "Lo comprobaré.",
+                "tts": "확인해 드리겠습니다."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l05_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender hotel.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es la primera frase útil de esta situación."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "예약했어요.",
+              "slow_available": true
+            },
+            "options": [
+              "Tengo una reserva.",
+              "¿Dónde está?",
+              "Está rico."
+            ],
+            "correct": [
+              "Tengo una reserva."
+            ]
+          }
+        },
+        {
+          "id": "u06l05_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer pregunta.",
+          "prompt": "¿Qué pregunta la recepción?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La recepción necesita tu nombre."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "성함이 어떻게 되세요?",
+              "이거 뭐예요?",
+              "맛있어요?"
+            ],
+            "correct": [
+              "성함이 어떻게 되세요?"
+            ]
+          }
+        },
+        {
+          "id": "u06l05_a03",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Completar la llegada al hotel.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Saludo + reserva; nombre; agradecimiento."
+          ],
+          "feedback": {
+            "correct": "Registro de hotel completado.",
+            "wrong": {
+              "default": "Revisa el orden de las tres respuestas del huésped."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_hotel",
+            "user_role": "A",
+            "required_turns": [
+              0,
+              2,
+              4
+            ],
+            "accepted_by_turn": {
+              "0": [
+                "안녕하세요. 예약했어요",
+                "안녕하세요, 예약했어요",
+                "예약했어요"
+              ],
+              "2": [
+                "아리스 데이비스예요"
+              ],
+              "4": [
+                "감사합니다"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l05_a01",
+          "u06l05_a02",
+          "u06l05_a03"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l06",
+      "title": "En clase",
+      "objective": "Comprender expresiones e instrucciones simples dentro del aula.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        35
+      ],
+      "dialogueRef": "dlg_classroom",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l06_t01",
+          "type": "dialogue_ref",
+          "title": null,
+          "text": null,
+          "payload": {
+            "ref": "dlg_classroom"
+          }
+        },
+        {
+          "id": "u06l06_t02",
+          "type": "vocabulary",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "오늘",
+                "es": "hoy",
+                "tts": "오늘"
+              },
+              {
+                "ko": "여러분",
+                "es": "todos / ustedes",
+                "tts": "여러분"
+              },
+              {
+                "ko": "공부해요",
+                "es": "estudiamos / estudio",
+                "tts": "공부해요"
+              },
+              {
+                "ko": "써 보세요",
+                "es": "inténtalo / escriba",
+                "tts": "써 보세요"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l06_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender frase de aula.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 한국어 y 공부해요."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "오늘 한국어를 공부해요.",
+              "slow_available": true
+            },
+            "options": [
+              "Hoy estudiamos coreano.",
+              "Hoy comemos.",
+              "Escriba su nombre."
+            ],
+            "correct": [
+              "Hoy estudiamos coreano."
+            ]
+          }
+        },
+        {
+          "id": "u06l06_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer vocabulario.",
+          "prompt": "¿Qué significa «오늘»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Está en el vocabulario de la conversación."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "hoy",
+              "mañana",
+              "todos"
+            ],
+            "correct": [
+              "hoy"
+            ]
+          }
+        },
+        {
+          "id": "u06l06_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Comprender instrucción.",
+          "prompt": "¿Qué pide el profesor con «한글을 써 보세요.»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Reconoce 써 보세요."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "Que intentes escribir Hangul.",
+              "Que bebas agua.",
+              "Que salgas del aula."
+            ],
+            "correct": [
+              "Que intentes escribir Hangul."
+            ]
+          }
+        },
+        {
+          "id": "u06l06_a04",
+          "type": "dialogue_roleplay",
+          "family": "dialogue",
+          "objective": "Responder como estudiante.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Las respuestas del estudiante son breves."
+          ],
+          "feedback": {
+            "correct": "Completaste la escena de aula.",
+            "wrong": {
+              "default": "Escucha al profesor y responde como en el modelo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_classroom",
+            "user_role": "학생",
+            "required_turns": [
+              1,
+              3,
+              5
+            ],
+            "accepted_by_turn": {
+              "1": [
+                "안녕하세요, 선생님",
+                "안녕하세요 선생님"
+              ],
+              "3": [
+                "네"
+              ],
+              "5": [
+                "네, 선생님",
+                "네 선생님"
+              ]
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l06_a01",
+          "u06l06_a02",
+          "u06l06_a03",
+          "u06l06_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l07",
+      "title": "Cuando no entiendes",
+      "objective": "Pedir repetición, menor velocidad o escritura cuando no comprendes.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        "Primer contacto 69–76"
+      ],
+      "dialogueRef": "dlg_dont_understand",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l07_t01",
+          "type": "explanation",
+          "title": "Estas frases te mantienen en la conversación",
+          "text": "No entender no termina una conversación. Estas expresiones sirven para pedir ayuda sin abandonar el intercambio.",
+          "payload": {}
+        },
+        {
+          "id": "u06l07_t02",
+          "type": "phrase_table",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "ko": "이해를 못 했어요",
+                "es": "No entiendo.",
+                "tts": "이해를 못 했어요"
+              },
+              {
+                "ko": "이해가 안 돼",
+                "es": "No entiendo.",
+                "register": "informal",
+                "tts": "이해가 안 돼"
+              },
+              {
+                "ko": "한 번 더 말해 주실래요?",
+                "es": "¿Puede repetir, por favor?",
+                "tts": "한 번 더 말해 주실래요?"
+              },
+              {
+                "ko": "한 번 더 말해줄래?",
+                "es": "¿Puedes repetir?",
+                "register": "informal",
+                "tts": "한 번 더 말해줄래?"
+              },
+              {
+                "ko": "좀 더 천천히 말해 줄래요?",
+                "es": "¿Podría hablar más despacio, por favor?",
+                "tts": "좀 더 천천히 말해 줄래요?"
+              },
+              {
+                "ko": "그것을 좀 써줄래요?",
+                "es": "¿Podría escribirlo, por favor?",
+                "tts": "그것을 좀 써줄래요?"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l07_a01",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender petición.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la idea de «otra vez»."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "한 번 더 말해 주실래요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Puede repetir, por favor?",
+              "¿Cuánto cuesta?",
+              "¿Dónde está?"
+            ],
+            "correct": [
+              "¿Puede repetir, por favor?"
+            ]
+          }
+        },
+        {
+          "id": "u06l07_a02",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Comprender petición.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "천천히 se asocia aquí con hablar más despacio."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Escucha otra vez y fíjate en la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "좀 더 천천히 말해 줄래요?",
+              "slow_available": true
+            },
+            "options": [
+              "¿Puede escribirlo?",
+              "¿Puede hablar más despacio?",
+              "¿Puede repetir?"
+            ],
+            "correct": [
+              "¿Puede hablar más despacio?"
+            ]
+          }
+        },
+        {
+          "id": "u06l07_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Elegir frase funcional.",
+          "prompt": "Si quieres que lo escriban, ¿qué frase del material corresponde?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca 써-, relacionado con escribir."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "그것을 좀 써줄래요?",
+              "한 번 더 말해 주실래요?",
+              "이해를 못 했어요"
+            ],
+            "correct": [
+              "그것을 좀 써줄래요?"
+            ]
+          }
+        },
+        {
+          "id": "u06l07_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Distinguir registro.",
+          "prompt": "¿Cuál es la forma informal de «¿puedes repetir?» incluida en el material?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La forma informal no lleva el tratamiento más educado 주실래요."
+          ],
+          "feedback": {
+            "correct": "Correcto.",
+            "wrong": {
+              "default": "Revisa el diálogo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "한 번 더 말해줄래?",
+              "한 번 더 말해 주실래요?",
+              "좀 더 천천히 말해 줄래요?"
+            ],
+            "correct": [
+              "한 번 더 말해줄래?"
+            ]
+          }
+        },
+        {
+          "id": "u06l07_a05",
+          "type": "scenario_choice",
+          "family": "choice",
+          "objective": "Elegir una estrategia cuando no entiendes.",
+          "prompt": "La otra persona habla demasiado rápido. ¿Qué dices?",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "El problema es la velocidad del habla."
+          ],
+          "feedback": {
+            "correct": "Exacto. Esa frase mantiene la conversación y pide menor velocidad.",
+            "wrong": {
+              "default": "Elige la frase que pide hablar más despacio."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              {
+                "ko": "좀 더 천천히 말해 줄래요?",
+                "es": "¿Podría hablar más despacio?"
+              },
+              {
+                "ko": "메뉴 주세요.",
+                "es": "El menú, por favor."
+              },
+              {
+                "ko": "이거 얼마예요?",
+                "es": "¿Cuánto cuesta esto?"
+              }
+            ],
+            "correct": [
+              "좀 더 천천히 말해 줄래요?"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l07_a01",
+          "u06l07_a02",
+          "u06l07_a03",
+          "u06l07_a04",
+          "u06l07_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u06l08",
+      "title": "Repaso oral guiado",
+      "objective": "Completar una conversación corta combinando presentación, nombre, cortesía y una preferencia.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        36
+      ],
+      "dialogueRef": "dlg_oral_review",
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u06l08_t01",
+          "type": "instruction",
+          "title": "Ahora unes lo aprendido",
+          "text": "El material propone completar un diálogo con tus propias palabras. ADAPA lo convierte en una práctica guiada: algunas respuestas tienen modelo y otras se guardan como producción libre.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u06l08_a01",
+          "type": "guided_dialogue_fill",
+          "family": "dialogue",
+          "objective": "Completar el diálogo de repaso.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [],
+          "feedback": {
+            "correct": "Diálogo completado.",
+            "wrong": {
+              "default": "La respuesta modelada a 반가워요 es 저도 반가워요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "dialogue_ref": "dlg_oral_review",
+            "fields": [
+              {
+                "id": "name_a",
+                "prompt_es": "Nombre de A",
+                "example": "아리스",
+                "scored": false
+              },
+              {
+                "id": "name_b",
+                "prompt_es": "Nombre de B",
+                "example": "마리아",
+                "scored": false
+              },
+              {
+                "id": "answer_glad",
+                "prompt_es": "Responde a 반가워요.",
+                "accepted": [
+                  "저도 반가워요"
+                ],
+                "scored": true
+              },
+              {
+                "id": "coffee_reply",
+                "prompt_es": "Responde a 커피 좋아해요?",
+                "examples": [
+                  "네, 좋아해요.",
+                  "아니요, 안 좋아해요."
+                ],
+                "scored": false
+              }
+            ],
+            "tts_preview": true
+          }
+        },
+        {
+          "id": "u06l08_a02",
+          "type": "speaking_practice",
+          "family": "reading_speaking",
+          "objective": "Escuchar y repetir frases del repaso.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "listen_and_repeat_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              "안녕하세요.",
+              "이름이 뭐예요?",
+              "반가워요.",
+              "저도 반가워요.",
+              "커피 좋아해요?"
+            ]
+          }
+        },
+        {
+          "id": "u06l08_a03",
+          "type": "conversation_shuffle",
+          "family": "ordering",
+          "objective": "Ordenar un mini diálogo coherente.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Saluda antes de preguntar el nombre."
+          ],
+          "feedback": {
+            "correct": "Correcto. El intercambio tiene un orden natural.",
+            "wrong": {
+              "default": "Empieza por el saludo y termina con la respuesta a 반가워요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "turns": [
+              "안녕하세요.",
+              "이름이 뭐예요?",
+              "저는 마리아예요.",
+              "반가워요.",
+              "저도 반가워요."
+            ],
+            "correct_order": [
+              "안녕하세요.",
+              "이름이 뭐예요?",
+              "저는 마리아예요.",
+              "반가워요.",
+              "저도 반가워요."
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u06l08_a01",
+          "u06l08_a03"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u06l01",
+      "u06l02",
+      "u06l03",
+      "u06l04",
+      "u06l05",
+      "u06l06",
+      "u06l07",
+      "u06l08"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "dialogue_mastery": [
+      "dlg_first_class",
+      "dlg_cafe_short",
+      "dlg_restaurant",
+      "dlg_shopping",
+      "dlg_location",
+      "dlg_hotel",
+      "dlg_classroom",
+      "dlg_dont_understand"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "version": "0.11",
+  "base": "flutter_adapa_v0_10",
+  "purpose": "Release signing, privacy hardening and Google Play preparation",
+  "changed_files": [
+    "pubspec.yaml",
+    "android/app/build.gradle.kts",
+    "android/app/src/main/AndroidManifest.xml",
+    "lib/features/settings/settings_screen.dart",
+    "lib/features/settings/privacy_screen.dart",
+    "test/android_contract_test.dart",
+    "test/privacy_screen_test.dart",
+    "tools/generate_upload_key.ps1",
+    "tools/configure_signing.ps1",
+    "tools/release_gate.ps1",
+    "tools/release_static_audit.py",
+    "release/privacy_policy_es.md",
+    "release/privacy_policy_es.html",
+    "release/play_store/listing_es.md",
+    "release/play_store/data_safety_draft_es.md",
+    "release/play_store/icon_512.png",
+    "release/play_store/feature_graphic_1024x500.png",
+    "release/release_checklist.md",
+    "RELEASE_HARDENING_V011.md",
+    "PATCH_V011_MANIFEST.json",
+    "assets/content/release_readiness_audit_v0.11.json"
+  ],
+  "external_placeholders_remaining": [
+    "support email",
+    "public privacy-policy URL",
+    "real device screenshots"
+  ]
+}

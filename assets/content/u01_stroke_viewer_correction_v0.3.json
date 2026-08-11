@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "issue_id": "u01_stroke_viewer_missing_four_vowels",
+  "detected_during": "flutter_v0.3_visual_reference_implementation",
+  "problem": "El visor u01l01_a05 referenciaba 6 vocales aunque la lección enseña 10 y existen assets para las 10.",
+  "missing_before": [
+    "ㅑ",
+    "ㅕ",
+    "ㅛ",
+    "ㅠ"
+  ],
+  "resolution": "El visor ahora referencia las 10 vocales en el orden del curso.",
+  "asset_sets": [
+    "stroke_v_ㅏ",
+    "stroke_v_ㅑ",
+    "stroke_v_ㅓ",
+    "stroke_v_ㅕ",
+    "stroke_v_ㅗ",
+    "stroke_v_ㅛ",
+    "stroke_v_ㅜ",
+    "stroke_v_ㅠ",
+    "stroke_v_ㅡ",
+    "stroke_v_ㅣ"
+  ],
+  "source_file_corrected": "unit_01_hangul_content_v0.4.json",
+  "flutter_file_corrected": "assets/content/units/u01.json"
+}

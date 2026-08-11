@@ -1,0 +1,113 @@
+{
+  "version": "0.8",
+  "phase": "ui_ux",
+  "theory": {
+    "blocks_total": 74,
+    "unique_block_types": 34,
+    "by_type": {
+      "batchim_examples": 1,
+      "comparison": 2,
+      "dialogue_model": 2,
+      "dialogue_ref": 7,
+      "examples": 2,
+      "explanation": 10,
+      "final_instruction": 1,
+      "functional_phrases": 1,
+      "grammar_pattern": 1,
+      "grammar_rule": 4,
+      "grammar_table": 1,
+      "hangul_table": 2,
+      "instruction": 5,
+      "key_phrase": 1,
+      "key_phrases": 4,
+      "number_table": 1,
+      "phrase_table": 3,
+      "reading_list": 2,
+      "reading_ref": 3,
+      "reading_strategy": 2,
+      "reflection": 1,
+      "rule": 1,
+      "scenario_table": 1,
+      "self_correction_rule": 1,
+      "sentence_breakdown": 1,
+      "source_answer_key": 1,
+      "syllable_examples": 1,
+      "tip": 3,
+      "verb_table": 1,
+      "visual_vocabulary": 2,
+      "vocabulary": 3,
+      "vocabulary_ref": 1,
+      "word_bank": 1,
+      "word_breakdown": 1
+    },
+    "rendering_strategy": "specialized common renderers + human-readable generic fallback"
+  },
+  "study_flow": {
+    "home_course_hero": true,
+    "unit_learning_path": true,
+    "unit_progress_header": true,
+    "lesson_progress_header": true,
+    "rich_theory_blocks": true,
+    "activity_position_header": true,
+    "previous_next_navigation": true,
+    "tts_settings": true,
+    "romanization_policy_ui": true,
+    "accessible_feedback": true
+  },
+  "checks": [
+    {
+      "check": "34_theory_types_seen",
+      "ok": true,
+      "detail": "34 source theory types / 74 blocks"
+    },
+    {
+      "check": "no_internal_block_placeholder",
+      "ok": true,
+      "detail": "No internal block placeholder in lesson screen"
+    },
+    {
+      "check": "romanization_policy",
+      "ok": true,
+      "detail": "Progressive romanization wired to unit data"
+    },
+    {
+      "check": "tts_settings",
+      "ok": true,
+      "detail": "Normal/slow TTS rates wired"
+    },
+    {
+      "check": "tts_ko_diagnostic",
+      "ok": true,
+      "detail": "ko-KR diagnostic available"
+    },
+    {
+      "check": "activity_previous_next",
+      "ok": true,
+      "detail": "Lesson activity navigation helpers present"
+    },
+    {
+      "check": "feedback_live_region",
+      "ok": true,
+      "detail": "Accessible live feedback"
+    },
+    {
+      "check": "no_broken_local_imports",
+      "ok": true,
+      "detail": "0 broken local imports"
+    },
+    {
+      "check": "delimiter_nesting",
+      "ok": true,
+      "detail": "0 delimiter nesting warnings"
+    },
+    {
+      "check": "ui_tests_added",
+      "ok": true,
+      "detail": "Romanization and settings tests added"
+    }
+  ],
+  "broken_imports": [],
+  "delimiter_warnings": [],
+  "passed": 10,
+  "failed": 0
+}

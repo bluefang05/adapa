@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adapa.local/schema/unit.schema.json",
+  "title": "ADAPA UnitContent v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "courseId",
+    "id",
+    "title",
+    "goal",
+    "prerequisites",
+    "romanizationPolicy",
+    "source",
+    "resourceRefs",
+    "lessons",
+    "completion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "courseId": {
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^u\\d{2}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "goal": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "romanizationPolicy": {},
+    "source": {
+      "type": "object"
+    },
+    "resourceRefs": {
+      "type": "object"
+    },
+    "lessons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "objective",
+          "estimatedMinutes",
+          "sourcePages",
+          "dialogueRef",
+          "dialogueRefs",
+          "theory",
+          "activities",
+          "completion"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "objective": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "estimatedMinutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "sourcePages": {
+            "type": "array"
+          },
+          "dialogueRef": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dialogueRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "theory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "type",
+                "title",
+                "text",
+                "payload"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "text": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "payload": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "activities": {
+            "type": "array",
+            "items": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "$id": "https://adapa.local/schema/activity.schema.json",
+              "title": "ADAPA ActivityContent v1",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "type",
+                "family",
+                "scoreMode",
+                "normalization",
+                "hints",
+                "feedback",
+                "capabilities",
+                "payload"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "family": {
+                  "enum": [
+                    "choice",
+                    "matching",
+                    "text_input",
+                    "ordering",
+                    "hangul_structure",
+                    "dialogue",
+                    "reading_speaking",
+                    "review",
+                    "visual_reference"
+                  ]
+                },
+                "objective": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "prompt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "scoreMode": {
+                  "type": "string"
+                },
+                "normalization": {
+                  "type": "object"
+                },
+                "hints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "feedback": {
+                  "type": "object"
+                },
+                "completionRule": {},
+                "note": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "capabilities": {
+                  "type": "object",
+                  "required": [
+                    "hasTts",
+                    "usesKeyboard",
+                    "usesImages",
+                    "usesSpeechRecognition",
+                    "autosave",
+                    "romanization"
+                  ]
+                },
+                "payload": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "completion": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "completion": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adapa.local/schema/activity.schema.json",
+  "title": "ADAPA ActivityContent v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "family",
+    "scoreMode",
+    "normalization",
+    "hints",
+    "feedback",
+    "capabilities",
+    "payload"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "family": {
+      "enum": [
+        "choice",
+        "matching",
+        "text_input",
+        "ordering",
+        "hangul_structure",
+        "dialogue",
+        "reading_speaking",
+        "review",
+        "visual_reference"
+      ]
+    },
+    "objective": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prompt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scoreMode": {
+      "type": "string"
+    },
+    "normalization": {
+      "type": "object"
+    },
+    "hints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "feedback": {
+      "type": "object"
+    },
+    "completionRule": {},
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "capabilities": {
+      "type": "object",
+      "required": [
+        "hasTts",
+        "usesKeyboard",
+        "usesImages",
+        "usesSpeechRecognition",
+        "autosave",
+        "romanization"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

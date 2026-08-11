@@ -1,0 +1,68 @@
+{
+  "schema_version": "0.1",
+  "unit_id": "u05",
+  "rules": [
+    {
+      "id": "gf_particle_theme",
+      "concept": "은/는",
+      "source_page": 26,
+      "explanation_es": "En esta unidad, 은/는 se presenta como partícula de tema.",
+      "example": "저는 학생이에요."
+    },
+    {
+      "id": "gf_particle_subject",
+      "concept": "이/가",
+      "source_page": 26,
+      "explanation_es": "En esta unidad, 이/가 se presenta como partícula de sujeto.",
+      "example": "고양이가 있어요."
+    },
+    {
+      "id": "gf_particle_object",
+      "concept": "을/를",
+      "source_page": 26,
+      "explanation_es": "En esta unidad, 을/를 se presenta como partícula de objeto.",
+      "example": "물을 마셔요."
+    },
+    {
+      "id": "gf_particle_destination",
+      "concept": "에",
+      "source_page": 26,
+      "explanation_es": "En esta unidad, 에 se presenta como lugar o destino.",
+      "example": "학교에 가요."
+    },
+    {
+      "id": "gf_particle_action_place",
+      "concept": "에서",
+      "source_page": 26,
+      "explanation_es": "En esta unidad, 에서 se presenta como lugar de acción.",
+      "example": "한국에서 살아요."
+    },
+    {
+      "id": "gf_verb_final",
+      "concept": "verb_final",
+      "source_page": 27,
+      "explanation_es": "El patrón inicial del material coloca el verbo al final.",
+      "examples": [
+        "물을 마셔요.",
+        "학교에 가요.",
+        "한국어를 공부해요."
+      ]
+    },
+    {
+      "id": "gf_verbs_polite",
+      "concept": "polite_verbs",
+      "source_page": 28,
+      "explanation_es": "Para esta etapa, ADAPA evalúa las formas educadas exactamente como aparecen en la tabla del libro; no exige deducir toda la conjugación.",
+      "examples": {
+        "가다": "가요",
+        "오다": "와요",
+        "먹다": "먹어요",
+        "마시다": "마셔요",
+        "공부하다": "공부해요",
+        "읽다": "읽어요",
+        "쓰다": "써요",
+        "자다": "자요"
+      }
+    }
+  ]
+}

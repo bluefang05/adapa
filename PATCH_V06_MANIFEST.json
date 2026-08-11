@@ -1,0 +1,37 @@
+{
+  "version": "0.6.0+6",
+  "base": "0.5.0+5",
+  "changed_files": [
+    "README.md",
+    "lib/app.dart",
+    "lib/core/runtime/adapa_runtime.dart",
+    "lib/core/session/activity_session_store.dart",
+    "lib/features/activity/activity_screen.dart",
+    "lib/features/activity/renderers/choice_activity_renderer.dart",
+    "lib/features/activity/renderers/dialogue_activity_renderer.dart",
+    "lib/features/activity/renderers/hangul_structure_activity_renderer.dart",
+    "lib/features/activity/renderers/matching_activity_renderer.dart",
+    "lib/features/activity/renderers/ordering_activity_renderer.dart",
+    "lib/features/activity/renderers/text_input_activity_renderer.dart",
+    "lib/features/activity/renderers/visual_reference_activity_renderer.dart",
+    "lib/features/course/course_home_screen.dart",
+    "lib/features/lesson/lesson_screen.dart",
+    "lib/features/unit/unit_screen.dart",
+    "pubspec.yaml"
+  ],
+  "new_files": [
+    "IMPLEMENTATION_V06.md",
+    "PATCH_V06_MANIFEST.json",
+    "assets/content/progress_audit_v0.6.json",
+    "assets/content/schema/progress_snapshot.schema.json",
+    "lib/core/persistence/progress_store.dart",
+    "lib/core/persistence/shared_preferences_progress_store.dart",
+    "lib/core/progress/activity_progress.dart",
+    "lib/core/progress/progress_controller.dart",
+    "lib/core/progress/progress_snapshot.dart",
+    "lib/core/progress/resume_pointer.dart",
+    "test/progress_controller_test.dart",
+    "test/shared_preferences_progress_store_test.dart"
+  ],
+  "removed_files": []
+}

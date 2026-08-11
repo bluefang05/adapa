@@ -1,0 +1,47 @@
+import '../../core/models/activity_family.dart';
+
+class ActivityRendererRegistry {
+  const ActivityRendererRegistry._();
+
+  static const Map<String, ActivityFamily> typeToFamily = {
+    'multiple_choice': ActivityFamily.choice,
+    'listen_and_choose': ActivityFamily.choice,
+    'image_choice': ActivityFamily.choice,
+    'scenario_choice': ActivityFamily.choice,
+    'matching': ActivityFamily.matching,
+    'short_answer': ActivityFamily.textInput,
+    'listen_and_type': ActivityFamily.textInput,
+    'fill_blank': ActivityFamily.textInput,
+    'free_practice': ActivityFamily.textInput,
+    'free_writing': ActivityFamily.textInput,
+    'copy_practice': ActivityFamily.textInput,
+    'pattern_response': ActivityFamily.textInput,
+    'word_order': ActivityFamily.ordering,
+    'sequence_order': ActivityFamily.ordering,
+    'sentence_sequence': ActivityFamily.ordering,
+    'conversation_shuffle': ActivityFamily.ordering,
+    'syllable_builder': ActivityFamily.hangulStructure,
+    'batchim_finder': ActivityFamily.hangulStructure,
+    'batchim_finder_multi': ActivityFamily.hangulStructure,
+    'hangul_recall_grid': ActivityFamily.hangulStructure,
+    'highlight_token': ActivityFamily.hangulStructure,
+    'dialogue': ActivityFamily.dialogue,
+    'dialogue_variant': ActivityFamily.dialogue,
+    'dialogue_roleplay': ActivityFamily.dialogue,
+    'guided_dialogue_fill': ActivityFamily.dialogue,
+    'final_guided_conversation': ActivityFamily.dialogue,
+    'tts_dialogue_playback': ActivityFamily.dialogue,
+    'reading_challenge': ActivityFamily.readingSpeaking,
+    'reading_aloud': ActivityFamily.readingSpeaking,
+    'speaking_practice': ActivityFamily.readingSpeaking,
+    'tts_readback': ActivityFamily.readingSpeaking,
+    'self_review': ActivityFamily.review,
+    'self_check': ActivityFamily.review,
+    'progress_reflection': ActivityFamily.review,
+    'final_self_review': ActivityFamily.review,
+    'answer_key_review': ActivityFamily.review,
+    'scenario_recall': ActivityFamily.review,
+    'known_block_marking': ActivityFamily.review,
+    'stroke_viewer': ActivityFamily.visualReference,
+  };
+}

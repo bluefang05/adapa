@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.2",
+  "project_version": "0.4.0+4",
+  "total_activities": 171,
+  "interactive_families_implemented": [
+    "choice",
+    "dialogue",
+    "hangul_structure",
+    "matching",
+    "ordering",
+    "text_input",
+    "visual_reference"
+  ],
+  "interactive_activity_count": 156,
+  "interactive_coverage_percent": 91.2,
+  "family_counts": {
+    "choice": 64,
+    "dialogue": 16,
+    "hangul_structure": 11,
+    "matching": 20,
+    "ordering": 10,
+    "reading_speaking": 7,
+    "review": 8,
+    "text_input": 32,
+    "visual_reference": 3
+  },
+  "new_in_v0_4": {
+    "dialogue_activities": 16,
+    "dialogue_types": [
+      "dialogue",
+      "dialogue_roleplay",
+      "dialogue_variant",
+      "final_guided_conversation",
+      "guided_dialogue_fill",
+      "tts_dialogue_playback"
+    ],
+    "dialogue_catalog_scenes": 9,
+    "session_store": "in_memory_draft_and_playback",
+    "particle_aware_dialogue_variants": true,
+    "final_challenge_autosave_session": true,
+    "final_challenge_romanization_rejected": true
+  },
+  "validation_errors": [],
+  "warnings": [],
+  "payload_validation_passed": true,
+  "flutter_sdk_available_in_build_environment": false,
+  "note": "Dialogue payload/reference checks passed. Compilation still requires a Flutter SDK."
+}

@@ -1,0 +1,30 @@
+{
+  "version": "0.8",
+  "base": "flutter_adapa_v0_7",
+  "purpose": "UI/UX study flow, rich theory rendering, TTS settings",
+  "added_or_replaced": [
+    "lib/app.dart",
+    "lib/core/theme/adapa_theme.dart",
+    "lib/core/models/romanization_policy.dart",
+    "lib/core/settings/app_settings_controller.dart",
+    "lib/core/services/tts_service.dart",
+    "lib/core/runtime/adapa_runtime.dart",
+    "lib/core/progress/progress_controller.dart",
+    "lib/features/course/course_home_screen.dart",
+    "lib/features/unit/unit_screen.dart",
+    "lib/features/lesson/lesson_screen.dart",
+    "lib/features/lesson/widgets/lesson_content_block.dart",
+    "lib/features/activity/activity_screen.dart",
+    "lib/features/activity/widgets/activity_feedback.dart",
+    "lib/features/activity/widgets/tts_controls.dart",
+    "lib/features/activity/renderers/dialogue_activity_renderer.dart",
+    "lib/features/settings/settings_screen.dart",
+    "lib/features/shared/progress_header_card.dart",
+    "pubspec.yaml",
+    "README.md",
+    "IMPLEMENTATION_V08.md",
+    "assets/content/ui_ux_audit_v0.8.json",
+    "test/romanization_policy_test.dart",
+    "test/app_settings_controller_test.dart"
+  ]
+}

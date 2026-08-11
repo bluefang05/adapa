@@ -1,0 +1,31 @@
+{
+  "patchVersion": "0.5",
+  "from": "0.4.0+4",
+  "to": "0.5.0+5",
+  "added": [
+    "IMPLEMENTATION_V05.md",
+    "assets/content/renderer_coverage_report_v0.5.json",
+    "lib/core/reading/reading_practice_logic.dart",
+    "lib/core/review/review_logic.dart",
+    "lib/features/activity/renderers/reading_speaking_activity_renderer.dart",
+    "lib/features/activity/renderers/review_activity_renderer.dart",
+    "test/reading_practice_logic_test.dart",
+    "test/review_logic_test.dart"
+  ],
+  "modified": [
+    "lib/core/content/asset_resolver.dart",
+    "lib/features/activity/activity_renderer_host.dart",
+    "lib/features/activity/renderers/text_input_activity_renderer.dart",
+    "lib/features/activity/widgets/tts_controls.dart",
+    "pubspec.yaml"
+  ],
+  "removed": [],
+  "summary": {
+    "addedFiles": 8,
+    "modifiedFiles": 5,
+    "removedFiles": 0,
+    "interactiveActivities": 171,
+    "courseActivities": 171,
+    "coveragePercent": 100.0
+  }
+}

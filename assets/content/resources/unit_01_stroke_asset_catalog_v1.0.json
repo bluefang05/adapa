@@ -1,0 +1,320 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "u01",
+  "sets": {
+    "stroke_v_ㅏ": {
+      "character": "ㅏ",
+      "category": "vowel",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/vowels/u314f/step_01.png",
+        "assets/strokes/vowels/u314f/step_02.png"
+      ],
+      "final": "assets/strokes/vowels/u314f/final.png"
+    },
+    "stroke_v_ㅑ": {
+      "character": "ㅑ",
+      "category": "vowel",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/vowels/u3151/step_01.png",
+        "assets/strokes/vowels/u3151/step_02.png",
+        "assets/strokes/vowels/u3151/step_03.png"
+      ],
+      "final": "assets/strokes/vowels/u3151/final.png"
+    },
+    "stroke_v_ㅓ": {
+      "character": "ㅓ",
+      "category": "vowel",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/vowels/u3153/step_01.png",
+        "assets/strokes/vowels/u3153/step_02.png"
+      ],
+      "final": "assets/strokes/vowels/u3153/final.png"
+    },
+    "stroke_v_ㅕ": {
+      "character": "ㅕ",
+      "category": "vowel",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/vowels/u3155/step_01.png",
+        "assets/strokes/vowels/u3155/step_02.png",
+        "assets/strokes/vowels/u3155/step_03.png"
+      ],
+      "final": "assets/strokes/vowels/u3155/final.png"
+    },
+    "stroke_v_ㅗ": {
+      "character": "ㅗ",
+      "category": "vowel",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/vowels/u3157/step_01.png",
+        "assets/strokes/vowels/u3157/step_02.png"
+      ],
+      "final": "assets/strokes/vowels/u3157/final.png"
+    },
+    "stroke_v_ㅛ": {
+      "character": "ㅛ",
+      "category": "vowel",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/vowels/u315b/step_01.png",
+        "assets/strokes/vowels/u315b/step_02.png",
+        "assets/strokes/vowels/u315b/step_03.png"
+      ],
+      "final": "assets/strokes/vowels/u315b/final.png"
+    },
+    "stroke_v_ㅜ": {
+      "character": "ㅜ",
+      "category": "vowel",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/vowels/u315c/step_01.png",
+        "assets/strokes/vowels/u315c/step_02.png"
+      ],
+      "final": "assets/strokes/vowels/u315c/final.png"
+    },
+    "stroke_v_ㅠ": {
+      "character": "ㅠ",
+      "category": "vowel",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/vowels/u3160/step_01.png",
+        "assets/strokes/vowels/u3160/step_02.png",
+        "assets/strokes/vowels/u3160/step_03.png"
+      ],
+      "final": "assets/strokes/vowels/u3160/final.png"
+    },
+    "stroke_v_ㅡ": {
+      "character": "ㅡ",
+      "category": "vowel",
+      "stroke_count": 1,
+      "steps": [
+        "assets/strokes/vowels/u3161/step_01.png"
+      ],
+      "final": "assets/strokes/vowels/u3161/final.png"
+    },
+    "stroke_v_ㅣ": {
+      "character": "ㅣ",
+      "category": "vowel",
+      "stroke_count": 1,
+      "steps": [
+        "assets/strokes/vowels/u3163/step_01.png"
+      ],
+      "final": "assets/strokes/vowels/u3163/final.png"
+    },
+    "stroke_c_ㄱ": {
+      "character": "ㄱ",
+      "category": "consonant",
+      "stroke_count": 1,
+      "steps": [
+        "assets/strokes/consonants/u3131/step_01.png"
+      ],
+      "final": "assets/strokes/consonants/u3131/final.png"
+    },
+    "stroke_c_ㄴ": {
+      "character": "ㄴ",
+      "category": "consonant",
+      "stroke_count": 1,
+      "steps": [
+        "assets/strokes/consonants/u3134/step_01.png"
+      ],
+      "final": "assets/strokes/consonants/u3134/final.png"
+    },
+    "stroke_c_ㄷ": {
+      "character": "ㄷ",
+      "category": "consonant",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/consonants/u3137/step_01.png",
+        "assets/strokes/consonants/u3137/step_02.png"
+      ],
+      "final": "assets/strokes/consonants/u3137/final.png"
+    },
+    "stroke_c_ㄹ": {
+      "character": "ㄹ",
+      "category": "consonant",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/consonants/u3139/step_01.png",
+        "assets/strokes/consonants/u3139/step_02.png",
+        "assets/strokes/consonants/u3139/step_03.png"
+      ],
+      "final": "assets/strokes/consonants/u3139/final.png"
+    },
+    "stroke_c_ㅁ": {
+      "character": "ㅁ",
+      "category": "consonant",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/consonants/u3141/step_01.png",
+        "assets/strokes/consonants/u3141/step_02.png",
+        "assets/strokes/consonants/u3141/step_03.png"
+      ],
+      "final": "assets/strokes/consonants/u3141/final.png"
+    },
+    "stroke_c_ㅂ": {
+      "character": "ㅂ",
+      "category": "consonant",
+      "stroke_count": 4,
+      "steps": [
+        "assets/strokes/consonants/u3142/step_01.png",
+        "assets/strokes/consonants/u3142/step_02.png",
+        "assets/strokes/consonants/u3142/step_03.png",
+        "assets/strokes/consonants/u3142/step_04.png"
+      ],
+      "final": "assets/strokes/consonants/u3142/final.png"
+    },
+    "stroke_c_ㅅ": {
+      "character": "ㅅ",
+      "category": "consonant",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/consonants/u3145/step_01.png",
+        "assets/strokes/consonants/u3145/step_02.png"
+      ],
+      "final": "assets/strokes/consonants/u3145/final.png"
+    },
+    "stroke_c_ㅇ": {
+      "character": "ㅇ",
+      "category": "consonant",
+      "stroke_count": 1,
+      "steps": [
+        "assets/strokes/consonants/u3147/step_01.png"
+      ],
+      "final": "assets/strokes/consonants/u3147/final.png"
+    },
+    "stroke_c_ㅈ": {
+      "character": "ㅈ",
+      "category": "consonant",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/consonants/u3148/step_01.png",
+        "assets/strokes/consonants/u3148/step_02.png",
+        "assets/strokes/consonants/u3148/step_03.png"
+      ],
+      "final": "assets/strokes/consonants/u3148/final.png"
+    },
+    "stroke_c_ㅊ": {
+      "character": "ㅊ",
+      "category": "consonant",
+      "stroke_count": 4,
+      "steps": [
+        "assets/strokes/consonants/u314a/step_01.png",
+        "assets/strokes/consonants/u314a/step_02.png",
+        "assets/strokes/consonants/u314a/step_03.png",
+        "assets/strokes/consonants/u314a/step_04.png"
+      ],
+      "final": "assets/strokes/consonants/u314a/final.png"
+    },
+    "stroke_c_ㅋ": {
+      "character": "ㅋ",
+      "category": "consonant",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/consonants/u314b/step_01.png",
+        "assets/strokes/consonants/u314b/step_02.png"
+      ],
+      "final": "assets/strokes/consonants/u314b/final.png"
+    },
+    "stroke_c_ㅌ": {
+      "character": "ㅌ",
+      "category": "consonant",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/consonants/u314c/step_01.png",
+        "assets/strokes/consonants/u314c/step_02.png",
+        "assets/strokes/consonants/u314c/step_03.png"
+      ],
+      "final": "assets/strokes/consonants/u314c/final.png"
+    },
+    "stroke_c_ㅍ": {
+      "character": "ㅍ",
+      "category": "consonant",
+      "stroke_count": 4,
+      "steps": [
+        "assets/strokes/consonants/u314d/step_01.png",
+        "assets/strokes/consonants/u314d/step_02.png",
+        "assets/strokes/consonants/u314d/step_03.png",
+        "assets/strokes/consonants/u314d/step_04.png"
+      ],
+      "final": "assets/strokes/consonants/u314d/final.png"
+    },
+    "stroke_c_ㅎ": {
+      "character": "ㅎ",
+      "category": "consonant",
+      "stroke_count": 3,
+      "steps": [
+        "assets/strokes/consonants/u314e/step_01.png",
+        "assets/strokes/consonants/u314e/step_02.png",
+        "assets/strokes/consonants/u314e/step_03.png"
+      ],
+      "final": "assets/strokes/consonants/u314e/final.png"
+    },
+    "stroke_d_ㄲ": {
+      "character": "ㄲ",
+      "category": "double_consonant",
+      "stroke_count": 2,
+      "steps": [
+        "assets/strokes/double_consonants/u3132/step_01.png",
+        "assets/strokes/double_consonants/u3132/step_02.png"
+      ],
+      "final": "assets/strokes/double_consonants/u3132/final.png"
+    },
+    "stroke_d_ㄸ": {
+      "character": "ㄸ",
+      "category": "double_consonant",
+      "stroke_count": 4,
+      "steps": [
+        "assets/strokes/double_consonants/u3138/step_01.png",
+        "assets/strokes/double_consonants/u3138/step_02.png",
+        "assets/strokes/double_consonants/u3138/step_03.png",
+        "assets/strokes/double_consonants/u3138/step_04.png"
+      ],
+      "final": "assets/strokes/double_consonants/u3138/final.png"
+    },
+    "stroke_d_ㅃ": {
+      "character": "ㅃ",
+      "category": "double_consonant",
+      "stroke_count": 8,
+      "steps": [
+        "assets/strokes/double_consonants/u3143/step_01.png",
+        "assets/strokes/double_consonants/u3143/step_02.png",
+        "assets/strokes/double_consonants/u3143/step_03.png",
+        "assets/strokes/double_consonants/u3143/step_04.png",
+        "assets/strokes/double_consonants/u3143/step_05.png",
+        "assets/strokes/double_consonants/u3143/step_06.png",
+        "assets/strokes/double_consonants/u3143/step_07.png",
+        "assets/strokes/double_consonants/u3143/step_08.png"
+      ],
+      "final": "assets/strokes/double_consonants/u3143/final.png"
+    },
+    "stroke_d_ㅆ": {
+      "character": "ㅆ",
+      "category": "double_consonant",
+      "stroke_count": 4,
+      "steps": [
+        "assets/strokes/double_consonants/u3146/step_01.png",
+        "assets/strokes/double_consonants/u3146/step_02.png",
+        "assets/strokes/double_consonants/u3146/step_03.png",
+        "assets/strokes/double_consonants/u3146/step_04.png"
+      ],
+      "final": "assets/strokes/double_consonants/u3146/final.png"
+    },
+    "stroke_d_ㅉ": {
+      "character": "ㅉ",
+      "category": "double_consonant",
+      "stroke_count": 6,
+      "steps": [
+        "assets/strokes/double_consonants/u3149/step_01.png",
+        "assets/strokes/double_consonants/u3149/step_02.png",
+        "assets/strokes/double_consonants/u3149/step_03.png",
+        "assets/strokes/double_consonants/u3149/step_04.png",
+        "assets/strokes/double_consonants/u3149/step_05.png",
+        "assets/strokes/double_consonants/u3149/step_06.png"
+      ],
+      "final": "assets/strokes/double_consonants/u3149/final.png"
+    }
+  }
+}

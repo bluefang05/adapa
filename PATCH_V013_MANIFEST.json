@@ -1,0 +1,39 @@
+{
+  "version": "0.13",
+  "base": "flutter_adapa_v0_12",
+  "purpose": "Apply validated external audit findings without speculative changes",
+  "changed_files": [
+    "pubspec.yaml",
+    "CHANGELOG.md",
+    "README.md",
+    "AUDIT_HARDENING_V013.md",
+    "lib/features/activity/renderers/text_input_activity_renderer.dart",
+    "lib/features/activity/renderers/dialogue_activity_renderer.dart",
+    "lib/core/progress/progress_controller.dart",
+    "lib/features/shared/persistence_error_card.dart",
+    "lib/features/activity/activity_screen.dart",
+    "lib/features/lesson/widgets/lesson_content_block.dart",
+    "lib/features/course/course_home_screen.dart",
+    "lib/features/settings/privacy_screen.dart",
+    "lib/features/lesson/lesson_screen.dart",
+    "lib/features/unit/unit_screen.dart",
+    "lib/features/settings/settings_screen.dart",
+    "test/content_grading_contract_test.dart",
+    "tools/utf8_hangul_audit.py",
+    "tools/preflight.ps1",
+    "tools/preflight.sh",
+    "tools/release_gate.ps1",
+    "tools/static_preflight.py",
+    "test/progress_controller_test.dart",
+    "lib/features/activity/renderers/ordering_activity_renderer.dart",
+    "release/privacy_policy_es.md",
+    "release/privacy_policy_es.html",
+    "assets/content/audit_hardening_v0.13.json"
+  ],
+  "not_applied": [
+    "guided_dialogue_fill playback patch",
+    "global romanization override"
+  ],
+  "pedagogical_content_changed": false,
+  "applied_api_migration": "ReorderableListView.builder: onReorder -> onReorderItem"
+}

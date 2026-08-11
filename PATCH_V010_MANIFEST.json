@@ -1,0 +1,30 @@
+{
+  "version": "0.10",
+  "base": "flutter_adapa_v0_9",
+  "purpose": "Executable runtime QA harness and removal of false Gradle-wrapper blocker",
+  "changes": [
+    "pubspec.yaml",
+    "README.md",
+    "QA_RUNTIME_V010.md",
+    "DEVICE_QA_CHECKLIST_V010.md",
+    "QA_PREFLIGHT_V09.md",
+    "ANDROID_BUILD_V07.md",
+    "tools/static_preflight.py",
+    "tools/preflight.ps1",
+    "tools/preflight.sh",
+    "tools/device_qa.ps1",
+    "test/support/runtime_harness.dart",
+    "test/all_activity_renderers_smoke_test.dart",
+    "test/mobile_navigation_smoke_test.dart",
+    "integration_test/app_navigation_test.dart",
+    "PATCH_V010_MANIFEST.json",
+    "assets/content/runtime_qa_audit_v0.10.json"
+  ],
+  "qa_scope": {
+    "production_activities": 171,
+    "renderer_families": 9,
+    "narrow_widget_surface": "320x568",
+    "standard_widget_surface": "412x915",
+    "integration_path": "home -> unit 1 -> lesson 1 -> activity 1 -> settings"
+  }
+}

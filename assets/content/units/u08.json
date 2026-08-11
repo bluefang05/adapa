@@ -1,0 +1,1124 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u08",
+  "title": "Repaso y primera conversación",
+  "goal": "Consolidar lectura, escritura y frases funcionales, y completar una primera conversación breve enteramente en Hangul.",
+  "prerequisites": [
+    "u01",
+    "u02",
+    "u03",
+    "u04",
+    "u05",
+    "u06",
+    "u07"
+  ],
+  "romanizationPolicy": {
+    "default": "disabled",
+    "available_as_hint": false,
+    "final_challenge": "forbidden"
+  },
+  "source": {
+    "primary": {
+      "title": "Coreano Básico — Aris Davis",
+      "pages": [
+        41,
+        42,
+        43,
+        44
+      ]
+    },
+    "visual_validation": "Las páginas 41–44 fueron revisadas directamente para preservar el contenido final, incluidos los ocho escenarios de la página 42 y el reto sin romanización de la página 44."
+  },
+  "resourceRefs": {},
+  "lessons": [
+    {
+      "id": "u08l01",
+      "title": "Gran repaso de Hangul",
+      "objective": "Escribir de memoria diez sílabas/palabras y leer cinco expresiones en Hangul.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        41
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u08l01_t01",
+          "type": "instruction",
+          "title": "Escribe sin mirar una tabla",
+          "text": "La página 41 vuelve a comprobar si puedes pasar de una ayuda sonora inicial al Hangul correspondiente.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u08l01_a01",
+          "type": "hangul_recall_grid",
+          "family": "hangul_structure",
+          "objective": "Escribir ga, na, da, ma y ba en Hangul.",
+          "prompt": "Escribe el Hangul correspondiente.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Piensa primero en consonante + ㅏ."
+          ],
+          "feedback": {
+            "correct": "Primera mitad completada.",
+            "wrong": {
+              "default": "Reconstruye cada bloque a partir de sus jamo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              {
+                "cue": "ga",
+                "answer": "가"
+              },
+              {
+                "cue": "na",
+                "answer": "나"
+              },
+              {
+                "cue": "da",
+                "answer": "다"
+              },
+              {
+                "cue": "ma",
+                "answer": "마"
+              },
+              {
+                "cue": "ba",
+                "answer": "바"
+              }
+            ],
+            "per_item_feedback": true
+          }
+        },
+        {
+          "id": "u08l01_a02",
+          "type": "hangul_recall_grid",
+          "family": "hangul_structure",
+          "objective": "Escribir sa y ha.",
+          "prompt": "Escribe el Hangul correspondiente.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Ambas usan ㅏ."
+          ],
+          "feedback": {
+            "correct": "Correcto: 사, 하.",
+            "wrong": {
+              "default": "Recuerda las consonantes ㅅ y ㅎ."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              {
+                "cue": "sa",
+                "answer": "사"
+              },
+              {
+                "cue": "ha",
+                "answer": "하"
+              }
+            ],
+            "per_item_feedback": true
+          }
+        },
+        {
+          "id": "u08l01_a03",
+          "type": "hangul_recall_grid",
+          "family": "hangul_structure",
+          "objective": "Escribir palabras con 받침.",
+          "prompt": "Escribe el Hangul correspondiente.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Estas tres palabras ya aparecieron al estudiar 받침."
+          ],
+          "feedback": {
+            "correct": "Correcto. Reconociste también las consonantes finales.",
+            "wrong": {
+              "default": "No olvides la consonante final dentro del bloque."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              {
+                "cue": "mul",
+                "answer": "물"
+              },
+              {
+                "cue": "san",
+                "answer": "산"
+              },
+              {
+                "cue": "son",
+                "answer": "손"
+              }
+            ],
+            "per_item_feedback": true
+          }
+        },
+        {
+          "id": "u08l01_a04",
+          "type": "reading_aloud",
+          "family": "reading_speaking",
+          "objective": "Leer cinco expresiones sin romanización.",
+          "prompt": "Lee las cinco expresiones. Escucha el TTS solo después de intentarlo.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_then_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": "disabled"
+          },
+          "payload": {
+            "items": [
+              "한국어",
+              "친구",
+              "학교",
+              "선생님",
+              "감사합니다"
+            ],
+            "tts": {
+              "locale": "ko-KR",
+              "text": "한국어. 친구. 학교. 선생님. 감사합니다.",
+              "slow_available": true
+            }
+          }
+        },
+        {
+          "id": "u08l01_a05",
+          "type": "self_check",
+          "family": "review",
+          "objective": "Comprobar lectura directa.",
+          "prompt": "Marca qué expresiones pudiste leer antes de usar el audio.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "review_all",
+          "note": "Autorreflexión; no se convierte en una puntuación falsa de pronunciación.",
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              "한국어",
+              "친구",
+              "학교",
+              "선생님",
+              "감사합니다"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u08l01_a01",
+          "u08l01_a02",
+          "u08l01_a03"
+        ],
+        "minimum_score": 0.8
+      }
+    },
+    {
+      "id": "u08l02",
+      "title": "Gran repaso de conversación",
+      "objective": "Recordar ocho frases/patrones funcionales sin leer un diálogo completo.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        42
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u08l02_t01",
+          "type": "scenario_table",
+          "title": "Ocho situaciones que ya debes poder manejar",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "situation_es": "Saludar",
+                "pattern": "안녕하세요."
+              },
+              {
+                "situation_es": "Presentarte",
+                "pattern": "저는 ____예요/이에요."
+              },
+              {
+                "situation_es": "Preguntar nombre",
+                "pattern": "이름이 뭐예요?"
+              },
+              {
+                "situation_es": "Pedir algo",
+                "pattern": "____ 주세요."
+              },
+              {
+                "situation_es": "Preguntar precio",
+                "pattern": "이거 얼마예요?"
+              },
+              {
+                "situation_es": "Preguntar ubicación",
+                "pattern": "____이/가 어디에 있어요?"
+              },
+              {
+                "situation_es": "Dar las gracias",
+                "pattern": "감사합니다."
+              },
+              {
+                "situation_es": "Decir que está bien",
+                "pattern": "괜찮아요."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u08l02_a01",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Recordar saludo.",
+          "prompt": "Escribe un saludo educado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es la primera situación de la tabla."
+          ],
+          "feedback": {
+            "correct": "Correcto: 안녕하세요.",
+            "wrong": {
+              "default": "Revisa el repaso y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "안녕하세요"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a02",
+          "type": "pattern_response",
+          "family": "text_input",
+          "objective": "Presentarse con el patrón final.",
+          "prompt": "Preséntate usando 저는 ___예요/이에요.",
+          "scoreMode": "structural",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La parte central puede ser un nombre o rol que sepas expresar."
+          ],
+          "feedback": {
+            "correct": "La respuesta conserva la estructura de presentación.",
+            "wrong": {
+              "default": "Empieza con 저는 y termina con 예요 o 이에요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pattern": "저는 {value}예요/이에요.",
+            "validation": {
+              "must_start_with": "저는 ",
+              "must_end_with_one_of": [
+                "예요",
+                "이에요"
+              ],
+              "must_contain_hangul": true
+            }
+          }
+        },
+        {
+          "id": "u08l02_a03",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Recordar pregunta de nombre.",
+          "prompt": "Pregunta el nombre.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Ya la has usado en varias conversaciones."
+          ],
+          "feedback": {
+            "correct": "Correcto: 이름이 뭐예요?",
+            "wrong": {
+              "default": "Revisa el repaso y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "이름이 뭐예요"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a04",
+          "type": "pattern_response",
+          "family": "text_input",
+          "objective": "Pedir algo con 주세요.",
+          "prompt": "Pide cualquier objeto, comida o bebida que hayas aprendido.",
+          "scoreMode": "structural",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La página 42 deja el objeto en blanco: la elección es tuya."
+          ],
+          "feedback": {
+            "correct": "Pedido bien formado con 주세요.",
+            "wrong": {
+              "default": "Escribe primero el objeto y termina con 주세요."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pattern": "{item} 주세요.",
+            "validation": {
+              "must_end_with": "주세요",
+              "must_contain_hangul": true,
+              "minimum_content_before_pattern": 1
+            },
+            "examples": [
+              "물 주세요.",
+              "커피 주세요.",
+              "빵 주세요.",
+              "메뉴 주세요."
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a05",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Recordar pregunta de precio.",
+          "prompt": "Pregunta cuánto cuesta esto.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Empieza por 이거."
+          ],
+          "feedback": {
+            "correct": "Correcto: 이거 얼마예요?",
+            "wrong": {
+              "default": "Revisa el repaso y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "이거 얼마예요"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a06",
+          "type": "pattern_response",
+          "family": "text_input",
+          "objective": "Preguntar ubicación.",
+          "prompt": "Pregunta dónde está un lugar que conozcas.",
+          "scoreMode": "structural",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Usa un lugar + 이/가 어디에 있어요?"
+          ],
+          "feedback": {
+            "correct": "La pregunta conserva el patrón de ubicación.",
+            "wrong": {
+              "default": "La pregunta debe terminar con 어디에 있어요?."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pattern": "{place}이/가 어디에 있어요?",
+            "validation": {
+              "must_end_with": "어디에 있어요",
+              "must_contain_hangul": true
+            },
+            "examples": [
+              "화장실이 어디에 있어요?",
+              "학교가 어디에 있어요?",
+              "카페가 어디에 있어요?",
+              "은행이 어디에 있어요?"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a07",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Recordar agradecimiento.",
+          "prompt": "Da las gracias.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es una expresión trabajada desde el inicio."
+          ],
+          "feedback": {
+            "correct": "Correcto: 감사합니다.",
+            "wrong": {
+              "default": "Revisa el repaso y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "감사합니다"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a08",
+          "type": "short_answer",
+          "family": "text_input",
+          "objective": "Recordar expresión funcional.",
+          "prompt": "Di «Está bien».",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Aparece también en el diálogo de cafetería."
+          ],
+          "feedback": {
+            "correct": "Correcto: 괜찮아요.",
+            "wrong": {
+              "default": "Revisa el repaso y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "accepted_answers": [
+              "괜찮아요"
+            ]
+          }
+        },
+        {
+          "id": "u08l02_a09",
+          "type": "scenario_recall",
+          "family": "review",
+          "objective": "Representar las ocho situaciones sin leer.",
+          "prompt": "Reto: representa las 8 situaciones sin abrir la tabla.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "scenario_activity_refs": [
+              "u08l02_a01",
+              "u08l02_a02",
+              "u08l02_a03",
+              "u08l02_a04",
+              "u08l02_a05",
+              "u08l02_a06",
+              "u08l02_a07",
+              "u08l02_a08"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u08l02_a01",
+          "u08l02_a02",
+          "u08l02_a03",
+          "u08l02_a04",
+          "u08l02_a05",
+          "u08l02_a06",
+          "u08l02_a07",
+          "u08l02_a08"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u08l03",
+      "title": "Autocorrección",
+      "objective": "Revisar respuestas y aplicar una lista de control a actividades abiertas.",
+      "estimatedMinutes": 10,
+      "sourcePages": [
+        43
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u08l03_t01",
+          "type": "source_answer_key",
+          "title": "Respuestas impresas en el libro",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "page": 5,
+                "answers": [
+                  "아",
+                  "어",
+                  "오",
+                  "우",
+                  "이"
+                ]
+              },
+              {
+                "page": 10,
+                "answers": [
+                  "가",
+                  "나",
+                  "다",
+                  "무",
+                  "보",
+                  "사",
+                  "하"
+                ],
+                "source_warning_ref": "u08_audit_p10_key"
+              },
+              {
+                "page": 15,
+                "answers": [
+                  "1-b",
+                  "2-a",
+                  "3-c",
+                  "4-d",
+                  "5-e"
+                ]
+              },
+              {
+                "page": 18,
+                "answers": [
+                  "1 이에요",
+                  "2 예요",
+                  "3 예요",
+                  "4 이에요"
+                ]
+              }
+            ],
+            "note_es": "La clave se registra como aparece impresa. Una inconsistencia de la página 10 se documenta aparte y no se propaga silenciosamente como verdad."
+          }
+        },
+        {
+          "id": "u08l03_t02",
+          "type": "self_correction_rule",
+          "title": "Tres cosas que debes comprobar",
+          "text": null,
+          "payload": {
+            "checks": [
+              "Hangul correcto",
+              "bloque silábico correcto",
+              "terminación educada"
+            ]
+          }
+        },
+        {
+          "id": "u08l03_t03",
+          "type": "reflection",
+          "title": null,
+          "text": "El cierre del libro propone medir el progreso por lo que puedes leer, escribir y usar en una situación real, no solo por la cantidad de palabras memorizadas.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u08l03_a01",
+          "type": "answer_key_review",
+          "family": "review",
+          "objective": "Comparar ejercicios cerrados con la clave del material.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "review_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "theory_ref": "u08l03_t01"
+          }
+        },
+        {
+          "id": "u08l03_a02",
+          "type": "self_review",
+          "family": "review",
+          "objective": "Aplicar los tres criterios del libro.",
+          "prompt": "Elige una respuesta abierta anterior y revísala.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "all_checks_seen",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "checks": [
+              "Hangul correcto",
+              "bloque silábico correcto",
+              "terminación educada cuando corresponde"
+            ]
+          }
+        },
+        {
+          "id": "u08l03_a03",
+          "type": "progress_reflection",
+          "family": "review",
+          "objective": "Distinguir memoria de uso real.",
+          "prompt": "Marca qué puedes hacer ya sin romanización.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "review_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              "Leer palabras conocidas",
+              "Escribir bloques sencillos",
+              "Presentarme",
+              "Pedir algo",
+              "Preguntar un precio",
+              "Preguntar una ubicación",
+              "Pedir repetición cuando no entiendo"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u08l03_a01",
+          "u08l03_a02"
+        ],
+        "minimum_score": null,
+        "rule": "complete_required_review"
+      }
+    },
+    {
+      "id": "u08l04",
+      "title": "Reto final: 첫 한국어 대화",
+      "objective": "Completar una primera conversación breve usando Hangul, sin romanización.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        44
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u08l04_t01",
+          "type": "final_instruction",
+          "title": "Tu primera conversación en coreano",
+          "text": "Sin romanización. Sin traducir palabra por palabra. Usa Hangul.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u08l04_a01",
+          "type": "final_guided_conversation",
+          "family": "dialogue",
+          "objective": "Completar el reto final del libro.",
+          "prompt": null,
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [],
+          "feedback": {
+            "correct": "첫 한국어 대화 완료! Completaste tu primera conversación en Hangul.",
+            "wrong": {
+              "controlled_b_glad_response": "Después de 반가워요, el modelo ya trabajado es 저도 반가워요.",
+              "default": "Completa todos los espacios en Hangul. Los campos abiertos no tienen una única frase correcta."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": true,
+            "romanization": "disabled"
+          },
+          "payload": {
+            "translation_during_attempt": "disabled",
+            "turns": [
+              {
+                "speaker": "A",
+                "fixed": "안녕하세요.",
+                "field_id": "a_greeting_extension",
+                "field_type": "open_hangul",
+                "required": true
+              },
+              {
+                "speaker": "B",
+                "fixed": "안녕하세요.",
+                "field_id": "b_greeting_extension",
+                "field_type": "open_hangul",
+                "required": true
+              },
+              {
+                "speaker": "A",
+                "fixed": "이름이 뭐예요?"
+              },
+              {
+                "speaker": "B",
+                "field_id": "b_name_response",
+                "field_type": "open_hangul",
+                "required": true
+              },
+              {
+                "speaker": "A",
+                "fixed": "반가워요."
+              },
+              {
+                "speaker": "B",
+                "field_id": "b_glad_response",
+                "field_type": "controlled",
+                "accepted": [
+                  "저도 반가워요"
+                ],
+                "required": true
+              },
+              {
+                "speaker": "A",
+                "field_id": "a_request_item",
+                "field_type": "request_prefix",
+                "suffix": "주세요.",
+                "required": true
+              },
+              {
+                "speaker": "B",
+                "fixed": "네.",
+                "field_id": "b_final_response",
+                "field_type": "open_hangul",
+                "required": true
+              }
+            ],
+            "validation": {
+              "all_required_fields_non_empty": true,
+              "must_contain_hangul": true,
+              "romanization_not_accepted": true,
+              "auto_grade_only_controlled_fields": true
+            }
+          }
+        },
+        {
+          "id": "u08l04_a02",
+          "type": "tts_dialogue_playback",
+          "family": "dialogue",
+          "objective": "Escuchar la conversación propia.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "play_once",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "source_activity": "u08l04_a01"
+          }
+        },
+        {
+          "id": "u08l04_a03",
+          "type": "final_self_review",
+          "family": "review",
+          "objective": "Cerrar el curso con criterios coherentes con el libro.",
+          "prompt": null,
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "all_checks_seen",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "checks": [
+              "Usé Hangul.",
+              "No dependí de romanización.",
+              "Pude preguntar el nombre.",
+              "Pude responder al saludo y a 반가워요.",
+              "Pude pedir algo con 주세요."
+            ],
+            "success_message_ko": "잘했어요!",
+            "success_message_es": "¡Lo hiciste muy bien!"
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u08l04_a01",
+          "u08l04_a02",
+          "u08l04_a03"
+        ],
+        "minimum_score": null,
+        "rule": "complete_final_challenge"
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u08l01",
+      "u08l02",
+      "u08l03",
+      "u08l04"
+    ],
+    "course_completion": true,
+    "final_message_ko": "잘했어요!",
+    "final_message_es": "¡Lo hiciste muy bien!",
+    "next_step_es": "Seguir escribiendo Hangul todos los días y mantener reducida la dependencia de la romanización."
+  }
+}

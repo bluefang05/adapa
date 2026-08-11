@@ -1,0 +1,1010 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u01",
+  "title": "Descubre el Hangul",
+  "goal": "Reconocer las letras fundamentales del Hangul y comprender cómo se escriben.",
+  "prerequisites": [],
+  "romanizationPolicy": "visible_por_defecto",
+  "source": {
+    "primary": "Coreano Básico — Aris Davis",
+    "pages": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "notes": "Los caracteres Hangul se validaron contra las páginas visuales del PDF porque la extracción textual pierde algunos glifos."
+  },
+  "resourceRefs": {
+    "assetCatalog": "unit_01_stroke_asset_catalog_v1.0.json"
+  },
+  "lessons": [
+    {
+      "id": "u01l01",
+      "title": "Vocales básicas",
+      "objective": "Reconocer las 10 vocales básicas y relacionarlas con una ayuda de pronunciación inicial.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        4,
+        5
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u01l01_t01",
+          "type": "explanation",
+          "title": "Diez vocales para empezar",
+          "text": "El Hangul organiza sus letras dentro de bloques silábicos. Primero aprenderás a reconocer las 10 vocales básicas. La romanización es solo una ayuda inicial: la meta es mirar la letra y reconocerla directamente.",
+          "payload": {}
+        },
+        {
+          "id": "u01l01_t02",
+          "type": "hangul_table",
+          "title": "Vocales básicas",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "ㅏ",
+                "romanization": "a",
+                "help_es": "a de casa",
+                "tts_text": "아"
+              },
+              {
+                "hangul": "ㅑ",
+                "romanization": "ya",
+                "help_es": "ya",
+                "tts_text": "야"
+              },
+              {
+                "hangul": "ㅓ",
+                "romanization": "eo",
+                "help_es": "sonido entre o/e",
+                "tts_text": "어"
+              },
+              {
+                "hangul": "ㅕ",
+                "romanization": "yeo",
+                "help_es": "entre yo/yeo",
+                "tts_text": "여"
+              },
+              {
+                "hangul": "ㅗ",
+                "romanization": "o",
+                "help_es": "o",
+                "tts_text": "오"
+              },
+              {
+                "hangul": "ㅛ",
+                "romanization": "yo",
+                "help_es": "yo",
+                "tts_text": "요"
+              },
+              {
+                "hangul": "ㅜ",
+                "romanization": "u",
+                "help_es": "u",
+                "tts_text": "우"
+              },
+              {
+                "hangul": "ㅠ",
+                "romanization": "yu",
+                "help_es": "yu",
+                "tts_text": "유"
+              },
+              {
+                "hangul": "ㅡ",
+                "romanization": "eu",
+                "help_es": "sin equivalente exacto",
+                "tts_text": "으"
+              },
+              {
+                "hangul": "ㅣ",
+                "romanization": "i",
+                "help_es": "i",
+                "tts_text": "이"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l01_t03",
+          "type": "tip",
+          "title": "Cómo practicar",
+          "text": "Mira la letra, escucha el ejemplo, observa sus trazos y luego intenta reconocerla sin mirar la romanización.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u01l01_a01",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer ㅏ.",
+          "prompt": "¿Cuál de estas vocales corresponde a «a»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Busca la vocal que el material presenta como «a de casa»."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅏ corresponde a «a».",
+            "wrong": {
+              "ㅓ": "ㅓ se presenta como «eo». Compárala visualmente con ㅏ.",
+              "ㅗ": "ㅗ corresponde a «o».",
+              "ㅜ": "ㅜ corresponde a «u».",
+              "default": "Revisa la tabla de vocales y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㅏ",
+              "ㅓ",
+              "ㅗ",
+              "ㅜ"
+            ],
+            "correct": [
+              "ㅏ"
+            ]
+          }
+        },
+        {
+          "id": "u01l01_a02",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Relacionar Hangul y romanización inicial.",
+          "prompt": "Relaciona cada vocal con su ayuda de lectura.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Las vocales con el trazo adicional introducen el sonido con y en esta ayuda inicial."
+          ],
+          "feedback": {
+            "correct": "Bien. Ya distingues cuatro vocales visualmente parecidas.",
+            "wrong": {
+              "default": "Compara ㅑ/ㅏ, ㅕ/ㅓ, ㅛ/ㅗ y ㅠ/ㅜ."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "ㅑ",
+                "right": "ya"
+              },
+              {
+                "left": "ㅕ",
+                "right": "yeo"
+              },
+              {
+                "left": "ㅛ",
+                "right": "yo"
+              },
+              {
+                "left": "ㅠ",
+                "right": "yu"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l01_a03",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar sonido TTS y vocal.",
+          "prompt": "Escucha y elige la vocal.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Puedes reproducir el audio lentamente."
+          ],
+          "feedback": {
+            "correct": "Correcto. 우 contiene la vocal ㅜ.",
+            "wrong": {
+              "default": "Escucha otra vez y compara ㅗ con ㅜ."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "우",
+              "slow_available": true
+            },
+            "options": [
+              "ㅗ",
+              "ㅜ",
+              "ㅡ",
+              "ㅣ"
+            ],
+            "correct": [
+              "ㅜ"
+            ]
+          }
+        },
+        {
+          "id": "u01l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Distinguir ㅡ de ㅣ.",
+          "prompt": "¿Cuál es la vocal romanizada como «eu»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Es la vocal para la que el libro advierte que no hay equivalente exacto."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅡ se representa inicialmente como «eu».",
+            "wrong": {
+              "default": "No la confundas con ㅣ, que corresponde a «i»."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㅣ",
+              "ㅡ",
+              "ㅜ",
+              "ㅓ"
+            ],
+            "correct": [
+              "ㅡ"
+            ]
+          }
+        },
+        {
+          "id": "u01l01_a05",
+          "type": "stroke_viewer",
+          "family": "visual_reference",
+          "objective": "Observar el orden visual de escritura.",
+          "prompt": "Reproduce la secuencia de trazos y compara la forma final.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "view_all",
+          "note": "Corregido en v0.3 del motor: se muestran las 10 vocales básicas.",
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "asset_sets": [
+              "stroke_v_ㅏ",
+              "stroke_v_ㅑ",
+              "stroke_v_ㅓ",
+              "stroke_v_ㅕ",
+              "stroke_v_ㅗ",
+              "stroke_v_ㅛ",
+              "stroke_v_ㅜ",
+              "stroke_v_ㅠ",
+              "stroke_v_ㅡ",
+              "stroke_v_ㅣ"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u01l01_a01",
+          "u01l01_a02",
+          "u01l01_a03",
+          "u01l01_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u01l02",
+      "title": "Consonantes básicas",
+      "objective": "Reconocer las 14 consonantes básicas y asociarlas con una ayuda sonora inicial.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        6,
+        7
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u01l02_t01",
+          "type": "explanation",
+          "title": "Las consonantes básicas",
+          "text": "La romanización aproxima el sonido, pero no sustituye la escucha. Algunas consonantes pueden representar sonidos distintos según su posición; en esta primera lección basta con reconocer su forma.",
+          "payload": {}
+        },
+        {
+          "id": "u01l02_t02",
+          "type": "hangul_table",
+          "title": "14 consonantes básicas",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "hangul": "ㄱ",
+                "romanization": "g/k",
+                "help_es": "g/k"
+              },
+              {
+                "hangul": "ㄴ",
+                "romanization": "n",
+                "help_es": "n"
+              },
+              {
+                "hangul": "ㄷ",
+                "romanization": "d/t",
+                "help_es": "d/t"
+              },
+              {
+                "hangul": "ㄹ",
+                "romanization": "r/l",
+                "help_es": "r suave / l"
+              },
+              {
+                "hangul": "ㅁ",
+                "romanization": "m",
+                "help_es": "m"
+              },
+              {
+                "hangul": "ㅂ",
+                "romanization": "b/p",
+                "help_es": "b/p"
+              },
+              {
+                "hangul": "ㅅ",
+                "romanization": "s",
+                "help_es": "s"
+              },
+              {
+                "hangul": "ㅇ",
+                "romanization": "— / ng",
+                "help_es": "silenciosa al inicio; ng al final"
+              },
+              {
+                "hangul": "ㅈ",
+                "romanization": "j",
+                "help_es": "sonido cercano a j/y"
+              },
+              {
+                "hangul": "ㅊ",
+                "romanization": "ch",
+                "help_es": "ch"
+              },
+              {
+                "hangul": "ㅋ",
+                "romanization": "k",
+                "help_es": "k aspirada"
+              },
+              {
+                "hangul": "ㅌ",
+                "romanization": "t",
+                "help_es": "t aspirada"
+              },
+              {
+                "hangul": "ㅍ",
+                "romanization": "p",
+                "help_es": "p aspirada"
+              },
+              {
+                "hangul": "ㅎ",
+                "romanization": "h",
+                "help_es": "h"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l02_t03",
+          "type": "tip",
+          "title": "No memorices todo de golpe",
+          "text": "Primero distingue las formas. Después las usarás dentro de sílabas, donde el sonido será más fácil de fijar.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u01l02_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer consonantes muy frecuentes.",
+          "prompt": "Relaciona cada consonante con la ayuda inicial.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Busca primero las formas que ya puedas distinguir sin romanización."
+          ],
+          "feedback": {
+            "correct": "Correcto. Estas cuatro formas ya deberían empezar a resultarte familiares.",
+            "wrong": {
+              "default": "Vuelve a mirar las cuatro letras y compara sus formas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "ㄴ",
+                "right": "n"
+              },
+              {
+                "left": "ㅁ",
+                "right": "m"
+              },
+              {
+                "left": "ㅅ",
+                "right": "s"
+              },
+              {
+                "left": "ㅎ",
+                "right": "h"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l02_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer ㅇ.",
+          "prompt": "¿Qué consonante puede ser silenciosa al inicio y sonar «ng» al final?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Es la consonante circular."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅇ es silenciosa al inicio de una sílaba y puede sonar ng al final.",
+            "wrong": {
+              "default": "Busca la consonante de forma circular."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㅎ",
+              "ㅇ",
+              "ㅁ",
+              "ㄴ"
+            ],
+            "correct": [
+              "ㅇ"
+            ]
+          }
+        },
+        {
+          "id": "u01l02_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Distinguir consonantes aspiradas.",
+          "prompt": "¿Cuál aparece en el material como «ch»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Compárala con ㅈ."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅊ se presenta con la ayuda «ch».",
+            "wrong": {
+              "ㅈ": "ㅈ se presenta como un sonido cercano a j/y.",
+              "default": "Revisa ㅈ y ㅊ juntas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㅈ",
+              "ㅊ",
+              "ㅋ",
+              "ㅎ"
+            ],
+            "correct": [
+              "ㅊ"
+            ]
+          }
+        },
+        {
+          "id": "u01l02_a04",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Distinguir pares de ayuda sonora.",
+          "prompt": "Relaciona las consonantes con la ayuda inicial del libro.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Estas consonantes no se reducen a un único sonido español."
+          ],
+          "feedback": {
+            "correct": "Bien. Más adelante verás cómo su posición afecta la pronunciación.",
+            "wrong": {
+              "default": "No intentes forzar un único sonido español todavía."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "ㄱ",
+                "right": "g/k"
+              },
+              {
+                "left": "ㄷ",
+                "right": "d/t"
+              },
+              {
+                "left": "ㄹ",
+                "right": "r/l"
+              },
+              {
+                "left": "ㅂ",
+                "right": "b/p"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l02_a05",
+          "type": "stroke_viewer",
+          "family": "visual_reference",
+          "objective": "Observar los trazos de las consonantes.",
+          "prompt": "Revisa las secuencias de escritura antes de continuar.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "view_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "asset_sets": [
+              "stroke_c_ㄱ",
+              "stroke_c_ㄴ",
+              "stroke_c_ㄷ",
+              "stroke_c_ㄹ",
+              "stroke_c_ㅁ",
+              "stroke_c_ㅂ",
+              "stroke_c_ㅅ",
+              "stroke_c_ㅇ",
+              "stroke_c_ㅈ",
+              "stroke_c_ㅊ",
+              "stroke_c_ㅋ",
+              "stroke_c_ㅌ",
+              "stroke_c_ㅍ",
+              "stroke_c_ㅎ"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u01l02_a01",
+          "u01l02_a02",
+          "u01l02_a03",
+          "u01l02_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u01l03",
+      "title": "Consonantes dobles",
+      "objective": "Distinguir las cinco consonantes dobles de sus formas simples.",
+      "estimatedMinutes": 10,
+      "sourcePages": [
+        8
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u01l03_t01",
+          "type": "explanation",
+          "title": "Consonantes dobles (된소리)",
+          "text": "El material presenta ㄲ, ㄸ, ㅃ, ㅆ y ㅉ como consonantes dobles o tensas. Por ahora el objetivo no es dominar su pronunciación: concéntrate en reconocer su forma y diferenciarlas de ㄱ, ㄷ, ㅂ, ㅅ y ㅈ.",
+          "payload": {}
+        },
+        {
+          "id": "u01l03_t02",
+          "type": "comparison",
+          "title": "Simple y doble",
+          "text": null,
+          "payload": {
+            "pairs": [
+              {
+                "simple": "ㄱ",
+                "double": "ㄲ"
+              },
+              {
+                "simple": "ㄷ",
+                "double": "ㄸ"
+              },
+              {
+                "simple": "ㅂ",
+                "double": "ㅃ"
+              },
+              {
+                "simple": "ㅅ",
+                "double": "ㅆ"
+              },
+              {
+                "simple": "ㅈ",
+                "double": "ㅉ"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u01l03_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Relacionar consonante simple y doble.",
+          "prompt": "Relaciona cada consonante simple con su forma doble.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "La forma doble repite visualmente la consonante correspondiente."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya distingues las cinco parejas simples/dobles.",
+            "wrong": {
+              "default": "Compara cada letra simple con la forma repetida que aparece en el material."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "ㄱ",
+                "right": "ㄲ"
+              },
+              {
+                "left": "ㄷ",
+                "right": "ㄸ"
+              },
+              {
+                "left": "ㅂ",
+                "right": "ㅃ"
+              },
+              {
+                "left": "ㅅ",
+                "right": "ㅆ"
+              },
+              {
+                "left": "ㅈ",
+                "right": "ㅉ"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u01l03_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer ㅆ.",
+          "prompt": "¿Cuál es la forma doble de ㅅ?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Busca la forma que repite visualmente ㅅ."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅅ → ㅆ.",
+            "wrong": {
+              "default": "La consonante doble conserva claramente la forma de la simple."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㅉ",
+              "ㅆ",
+              "ㅃ",
+              "ㄲ"
+            ],
+            "correct": [
+              "ㅆ"
+            ]
+          }
+        },
+        {
+          "id": "u01l03_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer ㄲ.",
+          "prompt": "Selecciona la consonante doble correspondiente a ㄱ.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "case_sensitive": false,
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true
+          },
+          "hints": [
+            "Es la pareja visual de ㄱ."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㄱ → ㄲ.",
+            "wrong": {
+              "default": "Busca la forma duplicada de ㄱ."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "ㄸ",
+              "ㄲ",
+              "ㅉ",
+              "ㅃ"
+            ],
+            "correct": [
+              "ㄲ"
+            ]
+          }
+        },
+        {
+          "id": "u01l03_a04",
+          "type": "stroke_viewer",
+          "family": "visual_reference",
+          "objective": "Observar la escritura de las consonantes dobles.",
+          "prompt": "Observa cómo se construyen visualmente las cinco consonantes dobles.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "view_all",
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": true,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "asset_sets": [
+              "stroke_d_ㄲ",
+              "stroke_d_ㄸ",
+              "stroke_d_ㅃ",
+              "stroke_d_ㅆ",
+              "stroke_d_ㅉ"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u01l03_a01",
+          "u01l03_a02",
+          "u01l03_a03"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u01l01",
+      "u01l02",
+      "u01l03"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "review_items": [
+      "ㅏ",
+      "ㅑ",
+      "ㅓ",
+      "ㅕ",
+      "ㅗ",
+      "ㅛ",
+      "ㅜ",
+      "ㅠ",
+      "ㅡ",
+      "ㅣ",
+      "ㄱ",
+      "ㄴ",
+      "ㄷ",
+      "ㄹ",
+      "ㅁ",
+      "ㅂ",
+      "ㅅ",
+      "ㅇ",
+      "ㅈ",
+      "ㅊ",
+      "ㅋ",
+      "ㅌ",
+      "ㅍ",
+      "ㅎ",
+      "ㄲ",
+      "ㄸ",
+      "ㅃ",
+      "ㅆ",
+      "ㅉ"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "version": "0.12",
+  "base": "flutter_adapa_v0_11",
+  "purpose": "Modern async persistence and dependency/toolchain freeze",
+  "changed_files": [
+    "pubspec.yaml",
+    "README.md",
+    "CHANGELOG.md",
+    "TECHNICAL_RC_V012.md",
+    "lib/app.dart",
+    "lib/core/persistence/key_value_store.dart",
+    "lib/core/persistence/shared_preferences_progress_store.dart",
+    "lib/core/settings/app_settings_controller.dart",
+    "test/shared_preferences_progress_store_test.dart",
+    "test/app_settings_controller_test.dart",
+    "test/support/runtime_harness.dart",
+    "test/mobile_navigation_smoke_test.dart",
+    "integration_test/app_navigation_test.dart",
+    "tools/dependency_contract_audit.py",
+    "tools/preflight.ps1",
+    "tools/preflight.sh",
+    "tools/release_gate.ps1",
+    "release/privacy_policy_es.md",
+    "release/privacy_policy_es.html",
+    "release/play_store/data_safety_draft_es.md",
+    "assets/content/technical_rc_audit_v0.12.json",
+    "PATCH_V012_MANIFEST.json"
+  ],
+  "pedagogical_content_changed": false,
+  "activity_count": 171
+}

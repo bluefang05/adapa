@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "id": "ko_a0_a1",
+  "slug": "coreano-desde-cero",
+  "title": "Coreano desde cero",
+  "subtitle": "Hangul, vocabulario y conversaciones cotidianas",
+  "level": "A0–A1",
+  "interfaceLanguage": "es",
+  "targetLanguage": "ko",
+  "ttsLocale": "ko-KR",
+  "offlineFirst": true,
+  "contentVersion": "1.0.0",
+  "units": [
+    {
+      "id": "u01",
+      "title": "Descubre el Hangul",
+      "lessonCount": 3,
+      "activityCount": 14,
+      "asset": "assets/content/units/u01.json",
+      "prerequisites": []
+    },
+    {
+      "id": "u02",
+      "title": "Construye y lee sílabas",
+      "lessonCount": 5,
+      "activityCount": 26,
+      "asset": "assets/content/units/u02.json",
+      "prerequisites": [
+        "u01"
+      ]
+    },
+    {
+      "id": "u03",
+      "title": "Primer contacto",
+      "lessonCount": 4,
+      "activityCount": 19,
+      "asset": "assets/content/units/u03.json",
+      "prerequisites": [
+        "u01",
+        "u02"
+      ]
+    },
+    {
+      "id": "u04",
+      "title": "Necesidades cotidianas",
+      "lessonCount": 5,
+      "activityCount": 23,
+      "asset": "assets/content/units/u04.json",
+      "prerequisites": [
+        "u01",
+        "u02",
+        "u03"
+      ]
+    },
+    {
+      "id": "u05",
+      "title": "Construye frases",
+      "lessonCount": 3,
+      "activityCount": 18,
+      "asset": "assets/content/units/u05.json",
+      "prerequisites": [
+        "u01",
+        "u02",
+        "u03",
+        "u04"
+      ]
+    },
+    {
+      "id": "u06",
+      "title": "Habla en situaciones reales",
+      "lessonCount": 8,
+      "activityCount": 32,
+      "asset": "assets/content/units/u06.json",
+      "prerequisites": [
+        "u01",
+        "u02",
+        "u03",
+        "u04",
+        "u05"
+      ]
+    },
+    {
+      "id": "u07",
+      "title": "Lee y escribe con más libertad",
+      "lessonCount": 4,
+      "activityCount": 19,
+      "asset": "assets/content/units/u07.json",
+      "prerequisites": [
+        "u01",
+        "u02",
+        "u03",
+        "u04",
+        "u05",
+        "u06"
+      ]
+    },
+    {
+      "id": "u08",
+      "title": "Repaso y primera conversación",
+      "lessonCount": 4,
+      "activityCount": 20,
+      "asset": "assets/content/units/u08.json",
+      "prerequisites": [
+        "u01",
+        "u02",
+        "u03",
+        "u04",
+        "u05",
+        "u06",
+        "u07"
+      ]
+    }
+  ],
+  "resources": {
+    "strokeAssetCatalog": "assets/content/resources/unit_01_stroke_asset_catalog_v1.0.json",
+    "visualAssetCatalog": "assets/content/resources/unit_04_visual_asset_catalog_v1.0.json",
+    "grammarFeedback": "assets/content/resources/unit_05_grammar_feedback_v0.1.json",
+    "dialogueCatalog": "assets/content/resources/unit_06_dialogue_catalog_v1.0.json",
+    "readingCatalog": "assets/content/resources/unit_07_reading_catalog_v1.0.json",
+    "finalAssessmentPolicy": "assets/content/resources/unit_08_assessment_policy_v1.0.json"
+  },
+  "summary": {
+    "unitCount": 8,
+    "lessonCount": 36,
+    "activityCount": 171,
+    "activityTypeCount": 39,
+    "rendererFamilyCount": 9
+  }
+}

@@ -1,0 +1,1613 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u02",
+  "title": "Construye y lee sílabas",
+  "goal": "Comprender cómo las letras se organizan en bloques silábicos, reconocer 받침 y comenzar a leer sin depender de la romanización.",
+  "prerequisites": [
+    "u01"
+  ],
+  "romanizationPolicy": {
+    "default": "hint_only",
+    "note_es": "Desde esta unidad la romanización deja de aparecer como respuesta principal. Se ofrece como pista cuando ayuda a desbloquear al principiante."
+  },
+  "source": {
+    "primary": "Coreano Básico — Aris Davis",
+    "pages": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "validation_note": "Se conservaron los ejemplos y respuestas explícitos del material. Los caracteres que faltaban en la extracción textual se reconstruyeron únicamente cuando estaban visibles o confirmados por la sección de respuestas del propio libro."
+  },
+  "resourceRefs": {},
+  "lessons": [
+    {
+      "id": "u02l01",
+      "title": "Bloques silábicos",
+      "objective": "Combinar consonante y vocal para formar bloques Hangul y distinguir la disposición con vocales verticales u horizontales.",
+      "estimatedMinutes": 15,
+      "sourcePages": [
+        9,
+        10
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u02l01_t01",
+          "type": "explanation",
+          "title": "Una sílaba es un bloque",
+          "text": "Una sílaba coreana se organiza visualmente en un bloque. En esta etapa trabajamos primero con consonante + vocal. Más adelante añadiremos una consonante final.",
+          "payload": {}
+        },
+        {
+          "id": "u02l01_t02",
+          "type": "rule",
+          "title": "Dónde va cada letra",
+          "text": "Si la vocal es vertical, como ㅏ, ㅓ o ㅣ, la consonante y la vocal se colocan lado a lado. Si la vocal es horizontal, como ㅗ, ㅜ o ㅡ, se organizan arriba y abajo.",
+          "payload": {}
+        },
+        {
+          "id": "u02l01_t03",
+          "type": "syllable_examples",
+          "title": "Ejemplos del libro",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "parts": [
+                  "ㄱ",
+                  "ㅏ"
+                ],
+                "result": "가",
+                "romanization": "ga",
+                "tts": "가"
+              },
+              {
+                "parts": [
+                  "ㄴ",
+                  "ㅏ"
+                ],
+                "result": "나",
+                "romanization": "na",
+                "tts": "나"
+              },
+              {
+                "parts": [
+                  "ㄷ",
+                  "ㅏ"
+                ],
+                "result": "다",
+                "romanization": "da",
+                "tts": "다"
+              },
+              {
+                "parts": [
+                  "ㅎ",
+                  "ㅏ"
+                ],
+                "result": "하",
+                "romanization": "ha",
+                "tts": "하"
+              },
+              {
+                "parts": [
+                  "ㅁ",
+                  "ㅜ"
+                ],
+                "result": "무",
+                "romanization": "mu",
+                "tts": "무"
+              },
+              {
+                "parts": [
+                  "ㅂ",
+                  "ㅏ"
+                ],
+                "result": "바",
+                "romanization": "ba",
+                "tts": "바"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u02l01_a01",
+          "type": "syllable_builder",
+          "family": "hangul_structure",
+          "objective": "Formar 가 con ㄱ + ㅏ.",
+          "prompt": "Construye el bloque.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "ㅏ es una vocal vertical: la consonante queda a la izquierda y la vocal a la derecha."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㄱ + ㅏ forman 가.",
+            "wrong": {
+              "default": "No escribas las letras separadas: en Hangul forman un único bloque silábico."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "parts": [
+              "ㄱ",
+              "ㅏ"
+            ],
+            "correct_block": "가",
+            "layout": "vertical_vowel"
+          }
+        },
+        {
+          "id": "u02l01_a02",
+          "type": "syllable_builder",
+          "family": "hangul_structure",
+          "objective": "Formar 무 con ㅁ + ㅜ.",
+          "prompt": "Construye el bloque.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "ㅜ es horizontal: la consonante queda arriba y la vocal debajo."
+          ],
+          "feedback": {
+            "correct": "Correcto. ㅁ + ㅜ forman 무.",
+            "wrong": {
+              "default": "Recuerda que ㅜ se coloca debajo de la consonante dentro del bloque."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "parts": [
+              "ㅁ",
+              "ㅜ"
+            ],
+            "correct_block": "무",
+            "layout": "horizontal_vowel"
+          }
+        },
+        {
+          "id": "u02l01_a03",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Consolidar formación CV.",
+          "prompt": "Relaciona las letras con el bloque que forman.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Todas estas combinaciones aparecen como ejemplos en esta sección."
+          ],
+          "feedback": {
+            "correct": "Bien. Ya estás leyendo bloques en vez de letras aisladas.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos de la lección y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "ㄴ + ㅏ",
+                "right": "나"
+              },
+              {
+                "left": "ㄷ + ㅏ",
+                "right": "다"
+              },
+              {
+                "left": "ㅎ + ㅏ",
+                "right": "하"
+              },
+              {
+                "left": "ㅂ + ㅏ",
+                "right": "바"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u02l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Distinguir composición con vocal horizontal.",
+          "prompt": "¿Cuál de estos bloques está formado por ㅁ + ㅜ?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la vocal ㅜ debajo de la consonante."
+          ],
+          "feedback": {
+            "correct": "Correcto: 무.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "마",
+              "무",
+              "바",
+              "부"
+            ],
+            "correct": [
+              "무"
+            ]
+          }
+        },
+        {
+          "id": "u02l01_a05",
+          "type": "reading_challenge",
+          "family": "reading_speaking",
+          "objective": "Leer una secuencia de sílabas simples.",
+          "prompt": "Lee en voz alta. Usa el botón de audio solo después de intentarlo.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_then_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              "가",
+              "나",
+              "다",
+              "라",
+              "마",
+              "바",
+              "사",
+              "하"
+            ],
+            "tts": {
+              "locale": "ko-KR",
+              "text": "가 나 다 라 마 바 사 하",
+              "slow_available": true
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u02l01_a01",
+          "u02l01_a02",
+          "u02l01_a03",
+          "u02l01_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u02l02",
+      "title": "받침: consonante final",
+      "objective": "Reconocer visualmente cuándo un bloque contiene 받침 y separar sus componentes.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        11
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u02l02_t01",
+          "type": "explanation",
+          "title": "Una consonante puede cerrar el bloque",
+          "text": "Un bloque puede terminar con una consonante. Esa posición se llama 받침 (batchim). En esta etapa no necesitas memorizar todas las reglas de pronunciación: primero aprende a ver la consonante final.",
+          "payload": {}
+        },
+        {
+          "id": "u02l02_t02",
+          "type": "batchim_examples",
+          "title": "Ejemplos del libro",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "word": "산",
+                "parts": [
+                  "ㅅ",
+                  "ㅏ",
+                  "ㄴ"
+                ],
+                "meaning_es": "montaña",
+                "batchim": "ㄴ"
+              },
+              {
+                "word": "손",
+                "parts": [
+                  "ㅅ",
+                  "ㅗ",
+                  "ㄴ"
+                ],
+                "meaning_es": "mano",
+                "batchim": "ㄴ"
+              },
+              {
+                "word": "밤",
+                "parts": [
+                  "ㅂ",
+                  "ㅏ",
+                  "ㅁ"
+                ],
+                "meaning_es": "noche",
+                "batchim": "ㅁ"
+              },
+              {
+                "word": "물",
+                "parts": [
+                  "ㅁ",
+                  "ㅜ",
+                  "ㄹ"
+                ],
+                "meaning_es": "agua",
+                "batchim": "ㄹ"
+              },
+              {
+                "word": "밥",
+                "parts": [
+                  "ㅂ",
+                  "ㅏ",
+                  "ㅂ"
+                ],
+                "meaning_es": "comida/arroz",
+                "batchim": "ㅂ"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u02l02_a01",
+          "type": "batchim_finder",
+          "family": "hangul_structure",
+          "objective": "Identificar 받침 en 산.",
+          "prompt": "Toca la consonante final de 산.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "La consonante final ocupa la parte inferior del bloque."
+          ],
+          "feedback": {
+            "correct": "Correcto. El 받침 de 산 es ㄴ.",
+            "wrong": {
+              "default": "Busca la consonante situada al final del bloque, debajo de la combinación inicial."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "word": "산",
+            "components": [
+              "ㅅ",
+              "ㅏ",
+              "ㄴ"
+            ],
+            "correct": "ㄴ"
+          }
+        },
+        {
+          "id": "u02l02_a02",
+          "type": "batchim_finder",
+          "family": "hangul_structure",
+          "objective": "Identificar 받침 en 물.",
+          "prompt": "¿Qué consonante funciona como 받침 en 물?",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "Separa mentalmente ㅁ + ㅜ + ㄹ."
+          ],
+          "feedback": {
+            "correct": "Correcto. 물 termina con 받침 ㄹ.",
+            "wrong": {
+              "default": "La consonante final no es ㅁ: esa inicia el bloque."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "word": "물",
+            "components": [
+              "ㅁ",
+              "ㅜ",
+              "ㄹ"
+            ],
+            "correct": "ㄹ"
+          }
+        },
+        {
+          "id": "u02l02_a03",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Asociar forma y significado.",
+          "prompt": "Relaciona cada palabra con su significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Todas aparecen en la tabla de ejemplos de 받침."
+          ],
+          "feedback": {
+            "correct": "Perfecto. Estás leyendo bloques con consonante final.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos de la lección y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "산",
+                "right": "montaña"
+              },
+              {
+                "left": "손",
+                "right": "mano"
+              },
+              {
+                "left": "밤",
+                "right": "noche"
+              },
+              {
+                "left": "물",
+                "right": "agua"
+              },
+              {
+                "left": "밥",
+                "right": "comida/arroz"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u02l02_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer 받침 por forma.",
+          "prompt": "¿Cuál de estas palabras tiene ㄹ como 받침?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Observa la consonante que cierra cada bloque."
+          ],
+          "feedback": {
+            "correct": "Correcto. 물 termina en ㄹ.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "산",
+              "밤",
+              "물",
+              "밥"
+            ],
+            "correct": [
+              "물"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u02l02_a01",
+          "u02l02_a02",
+          "u02l02_a03",
+          "u02l02_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u02l03",
+      "title": "Palabras cortas",
+      "objective": "Leer y descomponer palabras breves formadas por bloques conocidos.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        12,
+        13
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u02l03_t01",
+          "type": "reading_list",
+          "title": "Lee antes de traducir",
+          "text": null,
+          "payload": {
+            "items": [
+              "가나다",
+              "산",
+              "손",
+              "물",
+              "한국",
+              "학교"
+            ]
+          }
+        },
+        {
+          "id": "u02l03_t02",
+          "type": "word_breakdown",
+          "title": "Divide palabras en bloques",
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "word": "한국",
+                "blocks": [
+                  "한",
+                  "국"
+                ],
+                "has_batchim": true
+              },
+              {
+                "word": "학교",
+                "blocks": [
+                  "학",
+                  "교"
+                ],
+                "has_batchim": true
+              },
+              {
+                "word": "친구",
+                "blocks": [
+                  "친",
+                  "구"
+                ],
+                "has_batchim": true
+              },
+              {
+                "word": "선생님",
+                "blocks": [
+                  "선",
+                  "생",
+                  "님"
+                ],
+                "has_batchim": true
+              },
+              {
+                "word": "이름",
+                "blocks": [
+                  "이",
+                  "름"
+                ],
+                "has_batchim": true
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u02l03_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Segmentar palabras.",
+          "prompt": "Relaciona cada palabra con sus bloques.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "No separes letras todavía: primero reconoce los bloques completos."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya puedes segmentar palabras en sílabas.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos de la lección y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "한국",
+                "right": "한 + 국"
+              },
+              {
+                "left": "학교",
+                "right": "학 + 교"
+              },
+              {
+                "left": "친구",
+                "right": "친 + 구"
+              },
+              {
+                "left": "선생님",
+                "right": "선 + 생 + 님"
+              },
+              {
+                "left": "이름",
+                "right": "이 + 름"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u02l03_a02",
+          "type": "batchim_finder_multi",
+          "family": "hangul_structure",
+          "objective": "Detectar qué bloques contienen 받침.",
+          "prompt": "En 한국, toca los bloques que contienen 받침.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": "Correcto. Tanto 한 como 국 contienen consonante final.",
+            "wrong": {
+              "default": "Observa la parte inferior de cada bloque."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "word": "한국",
+            "blocks": [
+              {
+                "text": "한",
+                "has_batchim": true
+              },
+              {
+                "text": "국",
+                "has_batchim": true
+              }
+            ],
+            "correct": [
+              "한",
+              "국"
+            ]
+          }
+        },
+        {
+          "id": "u02l03_a03",
+          "type": "batchim_finder_multi",
+          "family": "hangul_structure",
+          "objective": "Detectar 받침 dentro de 학교.",
+          "prompt": "¿Qué bloque de 학교 contiene 받침?",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": "Correcto. 학 tiene 받침; 교 no.",
+            "wrong": {
+              "default": "Compara la parte inferior de 학 y 교."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "word": "학교",
+            "blocks": [
+              {
+                "text": "학",
+                "has_batchim": true
+              },
+              {
+                "text": "교",
+                "has_batchim": false
+              }
+            ],
+            "correct": [
+              "학"
+            ]
+          }
+        },
+        {
+          "id": "u02l03_a04",
+          "type": "reading_challenge",
+          "family": "reading_speaking",
+          "objective": "Leer palabras sin romanización visible.",
+          "prompt": "Intenta leer estas palabras antes de escuchar.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_then_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "items": [
+              "한국",
+              "학교",
+              "친구",
+              "선생님",
+              "이름"
+            ],
+            "tts": {
+              "locale": "ko-KR",
+              "text": "한국, 학교, 친구, 선생님, 이름",
+              "slow_available": true
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u02l03_a01",
+          "u02l03_a02",
+          "u02l03_a03"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u02l04",
+      "title": "Dictado inicial",
+      "objective": "Escribir bloques sencillos a partir de su sonido sin mirar una tabla.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        14
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u02l04_t01",
+          "type": "instruction",
+          "title": "Escucha, piensa, escribe",
+          "text": "El objetivo del dictado es escribir sin mirar una tabla de letras. Puedes repetir el audio y abrir una pista si te bloqueas.",
+          "payload": {}
+        }
+      ],
+      "activities": [
+        {
+          "id": "u02l04_a01",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 가 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: ga."
+          ],
+          "feedback": {
+            "correct": "Correcto: 가.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "가",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "가"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a02",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 나 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: na."
+          ],
+          "feedback": {
+            "correct": "Correcto: 나.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "나",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "나"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a03",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 다 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: da."
+          ],
+          "feedback": {
+            "correct": "Correcto: 다.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "다",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "다"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a04",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 마 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: ma."
+          ],
+          "feedback": {
+            "correct": "Correcto: 마.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "마",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "마"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a05",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 바 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: ba."
+          ],
+          "feedback": {
+            "correct": "Correcto: 바.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "바",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "바"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a06",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 사 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: sa."
+          ],
+          "feedback": {
+            "correct": "Correcto: 사.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "사",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "사"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a07",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 하 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: ha."
+          ],
+          "feedback": {
+            "correct": "Correcto: 하.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "하",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "하"
+            ]
+          }
+        },
+        {
+          "id": "u02l04_a08",
+          "type": "listen_and_type",
+          "family": "text_input",
+          "objective": "Escribir 무 por dictado.",
+          "prompt": "Escucha y escribe el bloque en Hangul.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Pista de lectura inicial: mu."
+          ],
+          "feedback": {
+            "correct": "Correcto: 무.",
+            "wrong": {
+              "default": "Escucha otra vez. Si lo necesitas, abre la pista y construye el bloque con las letras conocidas."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "무",
+              "slow_available": true
+            },
+            "accepted_answers": [
+              "무"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u02l04_a01",
+          "u02l04_a02",
+          "u02l04_a03",
+          "u02l04_a04",
+          "u02l04_a05",
+          "u02l04_a06",
+          "u02l04_a07",
+          "u02l04_a08"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u02l05",
+      "title": "Lee sin romanización",
+      "objective": "Reconocer vocabulario básico directamente en Hangul y relacionarlo con su significado.",
+      "estimatedMinutes": 12,
+      "sourcePages": [
+        15
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u02l05_t01",
+          "type": "instruction",
+          "title": "Primero Hangul",
+          "text": "Intenta leer cada palabra antes de convertirla al español. La romanización queda oculta; el audio está disponible después de tu intento.",
+          "payload": {}
+        },
+        {
+          "id": "u02l05_t02",
+          "type": "reading_list",
+          "title": "Lectura",
+          "text": null,
+          "payload": {
+            "items": [
+              "안녕하세요",
+              "감사합니다",
+              "네",
+              "아니요",
+              "한국",
+              "학교",
+              "친구",
+              "선생님",
+              "물",
+              "커피"
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u02l05_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Comprender vocabulario básico.",
+          "prompt": "Relaciona las palabras con su significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Estas cinco correspondencias están confirmadas por la sección de autocorrección del libro."
+          ],
+          "feedback": {
+            "correct": "Excelente. Ya reconoces vocabulario directamente en Hangul.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos de la lección y prueba otra vez."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "안녕하세요",
+                "right": "Hola"
+              },
+              {
+                "left": "물",
+                "right": "Agua"
+              },
+              {
+                "left": "친구",
+                "right": "Amigo/a"
+              },
+              {
+                "left": "선생님",
+                "right": "Profesor/a"
+              },
+              {
+                "left": "감사합니다",
+                "right": "Gracias"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u02l05_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Leer significado sin romanización.",
+          "prompt": "¿Cuál significa «agua»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La viste antes en los ejemplos de 받침."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물 = agua.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "학교",
+              "물",
+              "친구",
+              "한국"
+            ],
+            "correct": [
+              "물"
+            ]
+          }
+        },
+        {
+          "id": "u02l05_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer expresión básica.",
+          "prompt": "¿Cuál significa «gracias»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es una de las expresiones básicas de cortesía."
+          ],
+          "feedback": {
+            "correct": "Correcto: 감사합니다.",
+            "wrong": {
+              "default": "Revisa el ejemplo y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "감사합니다",
+              "안녕하세요",
+              "아니요",
+              "선생님"
+            ],
+            "correct": [
+              "감사합니다"
+            ]
+          }
+        },
+        {
+          "id": "u02l05_a04",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Relacionar audio y palabra sin romanización.",
+          "prompt": "Escucha y elige la palabra.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Después de escucharlo una vez, intenta reconocer los dos bloques."
+          ],
+          "feedback": {
+            "correct": "Correcto. 친구 = amigo/a.",
+            "wrong": {
+              "default": "Escucha otra vez y compara los bloques iniciales."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "친구",
+              "slow_available": true
+            },
+            "options": [
+              "학교",
+              "친구",
+              "한국",
+              "커피"
+            ],
+            "correct": [
+              "친구"
+            ]
+          }
+        },
+        {
+          "id": "u02l05_a05",
+          "type": "reading_challenge",
+          "family": "reading_speaking",
+          "objective": "Completar una primera lectura sin romanización.",
+          "prompt": "Lee la lista completa. Cuando termines, escucha la versión TTS para comprobar tu lectura.",
+          "scoreMode": "none",
+          "normalization": {},
+          "hints": [],
+          "feedback": {
+            "correct": null,
+            "wrong": {}
+          },
+          "completionRule": "attempt_then_listen",
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": "disabled"
+          },
+          "payload": {
+            "items": [
+              "안녕하세요",
+              "감사합니다",
+              "네",
+              "아니요",
+              "한국",
+              "학교",
+              "친구",
+              "선생님",
+              "물",
+              "커피"
+            ],
+            "tts": {
+              "locale": "ko-KR",
+              "text": "안녕하세요. 감사합니다. 네. 아니요. 한국. 학교. 친구. 선생님. 물. 커피.",
+              "slow_available": true
+            }
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u02l05_a01",
+          "u02l05_a02",
+          "u02l05_a03",
+          "u02l05_a04"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u02l01",
+      "u02l02",
+      "u02l03",
+      "u02l04",
+      "u02l05"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "mastery_items": [
+      "가",
+      "나",
+      "다",
+      "라",
+      "마",
+      "바",
+      "사",
+      "하",
+      "무",
+      "산",
+      "손",
+      "밤",
+      "물",
+      "밥",
+      "한국",
+      "학교",
+      "친구",
+      "선생님",
+      "이름",
+      "안녕하세요",
+      "감사합니다",
+      "네",
+      "아니요",
+      "커피"
+    ]
+  }
+}

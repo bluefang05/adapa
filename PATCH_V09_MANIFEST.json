@@ -1,0 +1,23 @@
+{
+  "version": "0.9",
+  "base": "flutter_adapa_v0_8",
+  "purpose": "Pre-compilation QA and build-blocker corrections",
+  "changed_files": [
+    "pubspec.yaml",
+    "README.md",
+    "QA_PREFLIGHT_V09.md",
+    "android/app/build.gradle.kts",
+    "android/gradle.properties",
+    "lib/features/activity/activity_renderer_host.dart",
+    "test/asset_bundle_integrity_test.dart",
+    "test/production_content_smoke_test.dart",
+    "test/android_contract_test.dart",
+    "tools/static_preflight.py",
+    "tools/preflight.ps1",
+    "tools/preflight.sh",
+    "assets/content/precompilation_audit_v0.9.json",
+    "ANDROID_BUILD_V07.md",
+    "ANDROID_PLATFORM_DECISION_V07.md",
+    "IMPLEMENTATION_V07.md"
+  ]
+}

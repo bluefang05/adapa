@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "1.0",
+  "families": [
+    {
+      "family": "choice",
+      "types": [
+        "image_choice",
+        "listen_and_choose",
+        "multiple_choice",
+        "scenario_choice"
+      ],
+      "instanceCount": 64
+    },
+    {
+      "family": "dialogue",
+      "types": [
+        "dialogue",
+        "dialogue_roleplay",
+        "dialogue_variant",
+        "final_guided_conversation",
+        "guided_dialogue_fill",
+        "tts_dialogue_playback"
+      ],
+      "instanceCount": 16
+    },
+    {
+      "family": "hangul_structure",
+      "types": [
+        "batchim_finder",
+        "batchim_finder_multi",
+        "hangul_recall_grid",
+        "highlight_token",
+        "syllable_builder"
+      ],
+      "instanceCount": 11
+    },
+    {
+      "family": "matching",
+      "types": [
+        "matching"
+      ],
+      "instanceCount": 20
+    },
+    {
+      "family": "ordering",
+      "types": [
+        "conversation_shuffle",
+        "sentence_sequence",
+        "sequence_order",
+        "word_order"
+      ],
+      "instanceCount": 10
+    },
+    {
+      "family": "reading_speaking",
+      "types": [
+        "reading_aloud",
+        "reading_challenge",
+        "speaking_practice",
+        "tts_readback"
+      ],
+      "instanceCount": 7
+    },
+    {
+      "family": "review",
+      "types": [
+        "answer_key_review",
+        "final_self_review",
+        "known_block_marking",
+        "progress_reflection",
+        "scenario_recall",
+        "self_check",
+        "self_review"
+      ],
+      "instanceCount": 8
+    },
+    {
+      "family": "text_input",
+      "types": [
+        "copy_practice",
+        "fill_blank",
+        "free_practice",
+        "free_writing",
+        "listen_and_type",
+        "pattern_response",
+        "short_answer"
+      ],
+      "instanceCount": 32
+    },
+    {
+      "family": "visual_reference",
+      "types": [
+        "stroke_viewer"
+      ],
+      "instanceCount": 3
+    }
+  ],
+  "typeToFamily": {
+    "multiple_choice": "choice",
+    "listen_and_choose": "choice",
+    "image_choice": "choice",
+    "scenario_choice": "choice",
+    "matching": "matching",
+    "short_answer": "text_input",
+    "listen_and_type": "text_input",
+    "fill_blank": "text_input",
+    "free_practice": "text_input",
+    "free_writing": "text_input",
+    "copy_practice": "text_input",
+    "pattern_response": "text_input",
+    "word_order": "ordering",
+    "sequence_order": "ordering",
+    "sentence_sequence": "ordering",
+    "conversation_shuffle": "ordering",
+    "syllable_builder": "hangul_structure",
+    "batchim_finder": "hangul_structure",
+    "batchim_finder_multi": "hangul_structure",
+    "hangul_recall_grid": "hangul_structure",
+    "highlight_token": "hangul_structure",
+    "dialogue": "dialogue",
+    "dialogue_variant": "dialogue",
+    "dialogue_roleplay": "dialogue",
+    "guided_dialogue_fill": "dialogue",
+    "final_guided_conversation": "dialogue",
+    "tts_dialogue_playback": "dialogue",
+    "reading_challenge": "reading_speaking",
+    "reading_aloud": "reading_speaking",
+    "speaking_practice": "reading_speaking",
+    "tts_readback": "reading_speaking",
+    "self_review": "review",
+    "self_check": "review",
+    "progress_reflection": "review",
+    "final_self_review": "review",
+    "answer_key_review": "review",
+    "scenario_recall": "review",
+    "known_block_marking": "review",
+    "stroke_viewer": "visual_reference"
+  }
+}

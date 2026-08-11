@@ -1,0 +1,12 @@
+{
+  "version": "0.14",
+  "source_log": "first real flutter run --release -v",
+  "fixed_compile_errors": [
+    "ActivityFamily.label unresolved in activity_screen.dart",
+    "ActivityFamily.label unresolved in lesson_screen.dart",
+    "_DialogueVariantActivityState._sessionStore undeclared"
+  ],
+  "additional_functional_fix": "Initialize _FinalGuidedConversationActivityState._sessionStore so debounced draft autosave works.",
+  "android_gradle_status_from_user_log": "Reached :app:compileFlutterBuildRelease; Android package/minSdk/targetSdk/AGP configuration passed far enough to compile Dart.",
+  "pedagogical_content_changed": false
+}

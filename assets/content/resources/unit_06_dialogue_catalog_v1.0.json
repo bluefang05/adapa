@@ -1,0 +1,348 @@
+{
+  "schema_version": "1.0",
+  "course_id": "ko_a0_a1",
+  "tts_locale": "ko-KR",
+  "scenes": [
+    {
+      "id": "dlg_first_class",
+      "title_es": "Primer día de clase",
+      "source": "Coreano Básico p.29",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "안녕하세요.",
+          "es": "Hola."
+        },
+        {
+          "speaker": "B",
+          "ko": "안녕하세요.",
+          "es": "Hola."
+        },
+        {
+          "speaker": "A",
+          "ko": "저는 아리스예요. 이름이 뭐예요?",
+          "es": "Soy Aris. ¿Cómo te llamas?"
+        },
+        {
+          "speaker": "B",
+          "ko": "저는 마리아예요.",
+          "es": "Soy María."
+        },
+        {
+          "speaker": "A",
+          "ko": "학생이에요?",
+          "es": "¿Eres estudiante?"
+        },
+        {
+          "speaker": "B",
+          "ko": "네, 학생이에요. 아리스 씨는요?",
+          "es": "Sí, soy estudiante. ¿Y Aris?"
+        },
+        {
+          "speaker": "A",
+          "ko": "저는 선생님이에요.",
+          "es": "Soy profesora."
+        }
+      ]
+    },
+    {
+      "id": "dlg_cafe_short",
+      "title_es": "Cafetería",
+      "source": "Coreano Básico p.30",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "안녕하세요. 주문하시겠어요?",
+          "es": "Hola. ¿Desea ordenar?"
+        },
+        {
+          "speaker": "B",
+          "ko": "네. 커피 하나 주세요.",
+          "es": "Sí. Un café, por favor."
+        },
+        {
+          "speaker": "A",
+          "ko": "네. 더 필요하세요?",
+          "es": "Sí. ¿Necesita algo más?"
+        },
+        {
+          "speaker": "B",
+          "ko": "아니요, 괜찮아요.",
+          "es": "No, está bien."
+        },
+        {
+          "speaker": "A",
+          "ko": "감사합니다.",
+          "es": "Gracias."
+        },
+        {
+          "speaker": "B",
+          "ko": "감사합니다.",
+          "es": "Gracias."
+        }
+      ],
+      "replacement_slots": [
+        {
+          "slot": "drink",
+          "base": "커피",
+          "allowed": [
+            "물",
+            "차",
+            "우유"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dlg_restaurant",
+      "title_es": "Restaurante",
+      "source": "Coreano Básico p.31",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "어서 오세요.",
+          "es": "Bienvenido/a."
+        },
+        {
+          "speaker": "B",
+          "ko": "메뉴 주세요.",
+          "es": "El menú, por favor."
+        },
+        {
+          "speaker": "A",
+          "ko": "네.",
+          "es": "Sí."
+        },
+        {
+          "speaker": "B",
+          "ko": "이거 뭐예요?",
+          "es": "¿Qué es esto?"
+        },
+        {
+          "speaker": "A",
+          "ko": "김치찌개예요.",
+          "es": "Es kimchi jjigae."
+        },
+        {
+          "speaker": "B",
+          "ko": "맛있어요?",
+          "es": "¿Está rico?"
+        },
+        {
+          "speaker": "A",
+          "ko": "네, 맛있어요.",
+          "es": "Sí, está rico."
+        }
+      ]
+    },
+    {
+      "id": "dlg_shopping",
+      "title_es": "Comprando",
+      "source": "Coreano Básico p.32",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "이거 얼마예요?",
+          "es": "¿Cuánto cuesta esto?"
+        },
+        {
+          "speaker": "B",
+          "ko": "만 원이에요.",
+          "es": "Son diez mil won."
+        },
+        {
+          "speaker": "A",
+          "ko": "네, 주세요.",
+          "es": "Sí, deme esto, por favor."
+        },
+        {
+          "speaker": "B",
+          "ko": "감사합니다.",
+          "es": "Gracias."
+        }
+      ]
+    },
+    {
+      "id": "dlg_location",
+      "title_es": "¿Dónde está?",
+      "source": "Coreano Básico p.33",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "실례합니다. 화장실이 어디에 있어요?",
+          "es": "Disculpe. ¿Dónde está el baño?"
+        },
+        {
+          "speaker": "B",
+          "ko": "저기 있어요.",
+          "es": "Está allí."
+        },
+        {
+          "speaker": "A",
+          "ko": "감사합니다.",
+          "es": "Gracias."
+        },
+        {
+          "speaker": "B",
+          "ko": "네.",
+          "es": "Sí."
+        }
+      ],
+      "replacement_slots": [
+        {
+          "slot": "place",
+          "base": "화장실",
+          "allowed": [
+            "학교",
+            "카페",
+            "은행"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dlg_hotel",
+      "title_es": "Hotel",
+      "source": "Coreano Básico p.34",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "안녕하세요. 예약했어요.",
+          "es": "Hola. Tengo una reserva."
+        },
+        {
+          "speaker": "B",
+          "ko": "성함이 어떻게 되세요?",
+          "es": "¿Cuál es su nombre?"
+        },
+        {
+          "speaker": "A",
+          "ko": "아리스 데이비스예요.",
+          "es": "Soy Aris Davis."
+        },
+        {
+          "speaker": "B",
+          "ko": "네, 확인해 드리겠습니다.",
+          "es": "Sí, lo comprobaré."
+        },
+        {
+          "speaker": "A",
+          "ko": "감사합니다.",
+          "es": "Gracias."
+        }
+      ]
+    },
+    {
+      "id": "dlg_classroom",
+      "title_es": "En clase",
+      "source": "Coreano Básico p.35",
+      "turns": [
+        {
+          "speaker": "선생님",
+          "ko": "안녕하세요, 여러분.",
+          "es": "Hola a todos."
+        },
+        {
+          "speaker": "학생",
+          "ko": "안녕하세요, 선생님.",
+          "es": "Hola, profesor/a."
+        },
+        {
+          "speaker": "선생님",
+          "ko": "오늘 한국어를 공부해요.",
+          "es": "Hoy estudiamos coreano."
+        },
+        {
+          "speaker": "학생",
+          "ko": "네!",
+          "es": "¡Sí!"
+        },
+        {
+          "speaker": "선생님",
+          "ko": "한글을 써 보세요.",
+          "es": "Intenta escribir Hangul."
+        },
+        {
+          "speaker": "학생",
+          "ko": "네, 선생님.",
+          "es": "Sí, profesor/a."
+        }
+      ]
+    },
+    {
+      "id": "dlg_dont_understand",
+      "title_es": "Cuando no entiendes",
+      "source": "Primer contacto 69–76",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "이해를 못 했어요.",
+          "es": "No entiendo."
+        },
+        {
+          "speaker": "A",
+          "ko": "한 번 더 말해 주실래요?",
+          "es": "¿Puede repetir, por favor?"
+        },
+        {
+          "speaker": "A",
+          "ko": "좀 더 천천히 말해 줄래요?",
+          "es": "¿Podría hablar más despacio, por favor?"
+        },
+        {
+          "speaker": "A",
+          "ko": "그것을 좀 써줄래요?",
+          "es": "¿Podría escribirlo, por favor?"
+        }
+      ]
+    },
+    {
+      "id": "dlg_oral_review",
+      "title_es": "Repaso oral",
+      "source": "Coreano Básico p.36",
+      "turns": [
+        {
+          "speaker": "A",
+          "ko": "안녕하세요. 저는 __________예요.",
+          "es": "Hola. Soy __________."
+        },
+        {
+          "speaker": "B",
+          "ko": "안녕하세요. 저는 __________예요.",
+          "es": "Hola. Soy __________."
+        },
+        {
+          "speaker": "A",
+          "ko": "이름이 뭐예요?",
+          "es": "¿Cómo te llamas?"
+        },
+        {
+          "speaker": "B",
+          "ko": "저는 __________예요.",
+          "es": "Soy __________."
+        },
+        {
+          "speaker": "A",
+          "ko": "반가워요.",
+          "es": "Encantado/a."
+        },
+        {
+          "speaker": "B",
+          "ko": "______________________________.",
+          "es": "Respuesta libre guiada."
+        },
+        {
+          "speaker": "A",
+          "ko": "커피 좋아해요?",
+          "es": "¿Te gusta el café?"
+        },
+        {
+          "speaker": "B",
+          "ko": "네 / 아니요, __________________.",
+          "es": "Sí / No, __________________."
+        }
+      ],
+      "scored": false
+    }
+  ]
+}

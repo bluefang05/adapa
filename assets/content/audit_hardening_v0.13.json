@@ -1,0 +1,46 @@
+{
+  "version": "0.13",
+  "phase": "external_audit_hardening",
+  "content": {
+    "units": 8,
+    "lessons": 36,
+    "activities": 171,
+    "families": 9,
+    "types": 39
+  },
+  "applied": [
+    "500ms autosave debounce with dispose flush",
+    "visible/retryable persistence save errors",
+    "consistent theory TTS error feedback",
+    "scored text grading contract validation",
+    "UTF-8/Hangul integrity audit",
+    "ReorderableListView onReorderItem migration",
+    "single reset location and consistent wording",
+    "simplified lesson/unit progress copy",
+    "simplified Korean TTS settings",
+    "skip confirmation for untouched scored activities"
+  ],
+  "not_applied": [
+    "guided_dialogue_fill playback patch: no such playback chain exists in current course",
+    "global romanization override: current behavior remains pedagogically scoped"
+  ],
+  "checks": {
+    "broken_local_imports": [],
+    "delimiter_warnings": [],
+    "scored_text_contract_issues": [],
+    "playback_chains": [
+      {
+        "activity": "u08l04_a02",
+        "source": "u08l04_a01",
+        "source_type": "final_guided_conversation"
+      }
+    ],
+    "ordering_uses_onReorderItem": true,
+    "mojibake_markers_in_key_source": false
+  },
+  "flutter_execution_here": false,
+  "release_external_placeholders": [
+    "support email",
+    "public privacy-policy URL"
+  ]
+}

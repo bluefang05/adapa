@@ -1,0 +1,1131 @@
+{
+  "schemaVersion": "1.0",
+  "courseId": "ko_a0_a1",
+  "id": "u05",
+  "title": "Construye frases",
+  "goal": "Reconocer las partículas esenciales, ordenar oraciones sencillas y usar verbos cotidianos en forma educada.",
+  "prerequisites": [
+    "u01",
+    "u02",
+    "u03",
+    "u04"
+  ],
+  "romanizationPolicy": {
+    "default": "hidden",
+    "available_as_hint": true
+  },
+  "source": {
+    "primary": {
+      "title": "Coreano Básico — Aris Davis",
+      "pages": [
+        26,
+        27,
+        28
+      ]
+    },
+    "scope_note": "Esta unidad se limita a reconocer y usar los patrones y ejemplos explícitos de las páginas 26–28. No introduce reglas gramaticales adicionales que el material no explica."
+  },
+  "resourceRefs": {},
+  "lessons": [
+    {
+      "id": "u05l01",
+      "title": "Partículas esenciales",
+      "objective": "Reconocer la función básica de 은/는, 이/가, 을/를, 에 y 에서 dentro de ejemplos sencillos.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        26
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u05l01_t01",
+          "type": "explanation",
+          "title": "Pequeñas marcas con una función",
+          "text": "Las partículas marcan la función de las palabras. Para este nivel inicial, el objetivo es reconocer qué función básica cumple cada una en los ejemplos del material.",
+          "payload": {}
+        },
+        {
+          "id": "u05l01_t02",
+          "type": "grammar_table",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "particle": "은/는",
+                "function_es": "tema",
+                "example": "저는 학생이에요.",
+                "focus": "는"
+              },
+              {
+                "particle": "이/가",
+                "function_es": "sujeto",
+                "example": "고양이가 있어요.",
+                "focus": "가"
+              },
+              {
+                "particle": "을/를",
+                "function_es": "objeto",
+                "example": "물을 마셔요.",
+                "focus": "을"
+              },
+              {
+                "particle": "에",
+                "function_es": "lugar / destino",
+                "example": "학교에 가요.",
+                "focus": "에"
+              },
+              {
+                "particle": "에서",
+                "function_es": "lugar de acción",
+                "example": "한국에서 살아요.",
+                "focus": "에서"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u05l01_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer función de partículas.",
+          "prompt": "Relaciona cada partícula con la función que presenta el libro.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "No necesitas dominar toda la gramática todavía; céntrate en estas cinco funciones."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya reconoces la función básica de las cinco partículas.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos del material."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "은/는",
+                "right": "tema"
+              },
+              {
+                "left": "이/가",
+                "right": "sujeto"
+              },
+              {
+                "left": "을/를",
+                "right": "objeto"
+              },
+              {
+                "left": "에",
+                "right": "lugar / destino"
+              },
+              {
+                "left": "에서",
+                "right": "lugar de acción"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u05l01_a02",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer 을/를 como objeto.",
+          "prompt": "En «물을 마셔요.», ¿qué partícula marca el objeto?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La palabra 물 aparece seguida por la partícula."
+          ],
+          "feedback": {
+            "correct": "Correcto. 물 + 을 → 물을.",
+            "wrong": {
+              "default": "Revisa el ejemplo de la lección y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "는",
+              "가",
+              "을",
+              "에"
+            ],
+            "correct": [
+              "을"
+            ]
+          }
+        },
+        {
+          "id": "u05l01_a03",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer 에.",
+          "prompt": "En «학교에 가요.», ¿qué partícula marca lugar/destino?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "El ejemplo del libro es 학교에 가요."
+          ],
+          "feedback": {
+            "correct": "Correcto. 에 marca aquí el lugar/destino.",
+            "wrong": {
+              "default": "Revisa el ejemplo de la lección y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "에서",
+              "에",
+              "를",
+              "가"
+            ],
+            "correct": [
+              "에"
+            ]
+          }
+        },
+        {
+          "id": "u05l01_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer 에서.",
+          "prompt": "En «한국에서 살아요.», ¿qué partícula aparece como lugar de acción?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La función indicada en la tabla es «lugar de acción»."
+          ],
+          "feedback": {
+            "correct": "Correcto. 에서 aparece aquí como lugar de acción.",
+            "wrong": {
+              "default": "Revisa el ejemplo de la lección y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "에",
+              "에서",
+              "은",
+              "를"
+            ],
+            "correct": [
+              "에서"
+            ]
+          }
+        },
+        {
+          "id": "u05l01_a05",
+          "type": "highlight_token",
+          "family": "hangul_structure",
+          "objective": "Identificar partícula dentro de una frase.",
+          "prompt": "Toca la partícula de tema en la frase.",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "La tabla presenta 은/는 como partícula de tema."
+          ],
+          "feedback": {
+            "correct": "Correcto. 는 marca el tema en 저는 학생이에요.",
+            "wrong": {
+              "default": "Busca la partícula que aparece justo después de 저."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "sentence_tokens": [
+              "저",
+              "는",
+              "학생이에요."
+            ],
+            "correct_tokens": [
+              "는"
+            ]
+          }
+        },
+        {
+          "id": "u05l01_a06",
+          "type": "highlight_token",
+          "family": "hangul_structure",
+          "objective": "Identificar partícula de sujeto.",
+          "prompt": "Toca la partícula de sujeto en «고양이가 있어요.»",
+          "scoreMode": "auto",
+          "normalization": {},
+          "hints": [
+            "La tabla presenta 이/가 como sujeto."
+          ],
+          "feedback": {
+            "correct": "Correcto. 가 aparece como partícula de sujeto.",
+            "wrong": {
+              "default": "Busca la partícula justo después de 고양이."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "sentence_tokens": [
+              "고양이",
+              "가",
+              "있어요."
+            ],
+            "correct_tokens": [
+              "가"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u05l01_a01",
+          "u05l01_a02",
+          "u05l01_a03",
+          "u05l01_a04",
+          "u05l01_a05",
+          "u05l01_a06"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u05l02",
+      "title": "El verbo va al final",
+      "objective": "Reconocer y reconstruir el patrón básico sujeto/tema + objeto/complemento + verbo.",
+      "estimatedMinutes": 14,
+      "sourcePages": [
+        27
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u05l02_t01",
+          "type": "grammar_rule",
+          "title": "Mira el final",
+          "text": "El material explica que el coreano suele presentar el verbo al final. Un patrón inicial útil es: sujeto/tema + objeto + verbo.",
+          "payload": {}
+        },
+        {
+          "id": "u05l02_t02",
+          "type": "sentence_breakdown",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "sentence": "저는 학생이에요.",
+                "parts": [
+                  "저는",
+                  "학생",
+                  "이에요"
+                ],
+                "meaning_es": "Soy estudiante."
+              },
+              {
+                "sentence": "물을 마셔요.",
+                "parts": [
+                  "물",
+                  "을",
+                  "마셔요"
+                ],
+                "meaning_es": "Bebo agua."
+              },
+              {
+                "sentence": "학교에 가요.",
+                "parts": [
+                  "학교",
+                  "에",
+                  "가요"
+                ],
+                "meaning_es": "Voy a la escuela."
+              },
+              {
+                "sentence": "한국어를 공부해요.",
+                "parts": [
+                  "한국어",
+                  "를",
+                  "공부해요"
+                ],
+                "meaning_es": "Estudio coreano."
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u05l02_a01",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Reconstruir «Bebo agua».",
+          "prompt": "Ordena la frase.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "El verbo va al final."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물을 마셔요.",
+            "wrong": {
+              "default": "Coloca 마셔요 al final."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "마셔요.",
+              "물을"
+            ],
+            "correct_order": [
+              "물을",
+              "마셔요."
+            ]
+          }
+        },
+        {
+          "id": "u05l02_a02",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Reconstruir «Voy a la escuela».",
+          "prompt": "Ordena la frase.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "가요 es el verbo del ejemplo."
+          ],
+          "feedback": {
+            "correct": "Correcto: 학교에 가요.",
+            "wrong": {
+              "default": "El verbo 가요 va al final."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "가요.",
+              "학교에"
+            ],
+            "correct_order": [
+              "학교에",
+              "가요."
+            ]
+          }
+        },
+        {
+          "id": "u05l02_a03",
+          "type": "word_order",
+          "family": "ordering",
+          "objective": "Reconstruir «Estudio coreano».",
+          "prompt": "Ordena la frase.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "공부해요 es el verbo."
+          ],
+          "feedback": {
+            "correct": "Correcto: 한국어를 공부해요.",
+            "wrong": {
+              "default": "Coloca 공부해요 al final."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tokens": [
+              "공부해요.",
+              "한국어를"
+            ],
+            "correct_order": [
+              "한국어를",
+              "공부해요."
+            ]
+          }
+        },
+        {
+          "id": "u05l02_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer posición del verbo.",
+          "prompt": "¿Qué elemento aparece al final en «한국어를 공부해요.»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Busca la forma verbal."
+          ],
+          "feedback": {
+            "correct": "Correcto. 공부해요 está al final.",
+            "wrong": {
+              "default": "Revisa el ejemplo de la lección y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "한국어",
+              "를",
+              "공부해요"
+            ],
+            "correct": [
+              "공부해요"
+            ]
+          }
+        },
+        {
+          "id": "u05l02_a05",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Comprender ejemplos estructurales.",
+          "prompt": "Relaciona frase y significado.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Son exactamente los cuatro ejemplos de la página 27."
+          ],
+          "feedback": {
+            "correct": "Muy bien. Ya reconoces el patrón dentro de frases completas.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos del material."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "저는 학생이에요.",
+                "right": "Soy estudiante."
+              },
+              {
+                "left": "물을 마셔요.",
+                "right": "Bebo agua."
+              },
+              {
+                "left": "학교에 가요.",
+                "right": "Voy a la escuela."
+              },
+              {
+                "left": "한국어를 공부해요.",
+                "right": "Estudio coreano."
+              }
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u05l02_a01",
+          "u05l02_a02",
+          "u05l02_a03",
+          "u05l02_a04",
+          "u05l02_a05"
+        ],
+        "minimum_score": 0.75
+      }
+    },
+    {
+      "id": "u05l03",
+      "title": "Verbos cotidianos en -요",
+      "objective": "Reconocer ocho verbos frecuentes en forma de diccionario y forma educada en -요.",
+      "estimatedMinutes": 16,
+      "sourcePages": [
+        28
+      ],
+      "dialogueRef": null,
+      "dialogueRefs": [],
+      "theory": [
+        {
+          "id": "u05l03_t01",
+          "type": "explanation",
+          "title": "Reconoce y usa, sin memorizar toda la conjugación",
+          "text": "El libro no exige dominar toda la conjugación todavía. En esta etapa debes reconocer estas formas frecuentes y usarlas en frases cortas.",
+          "payload": {}
+        },
+        {
+          "id": "u05l03_t02",
+          "type": "verb_table",
+          "title": null,
+          "text": null,
+          "payload": {
+            "items": [
+              {
+                "dictionary": "가다",
+                "polite": "가요",
+                "meaning_es": "ir",
+                "tts": "가요"
+              },
+              {
+                "dictionary": "오다",
+                "polite": "와요",
+                "meaning_es": "venir",
+                "tts": "와요"
+              },
+              {
+                "dictionary": "먹다",
+                "polite": "먹어요",
+                "meaning_es": "comer",
+                "tts": "먹어요"
+              },
+              {
+                "dictionary": "마시다",
+                "polite": "마셔요",
+                "meaning_es": "beber",
+                "tts": "마셔요"
+              },
+              {
+                "dictionary": "공부하다",
+                "polite": "공부해요",
+                "meaning_es": "estudiar",
+                "tts": "공부해요"
+              },
+              {
+                "dictionary": "읽다",
+                "polite": "읽어요",
+                "meaning_es": "leer",
+                "tts": "읽어요"
+              },
+              {
+                "dictionary": "쓰다",
+                "polite": "써요",
+                "meaning_es": "escribir",
+                "tts": "써요"
+              },
+              {
+                "dictionary": "자다",
+                "polite": "자요",
+                "meaning_es": "dormir",
+                "tts": "자요"
+              }
+            ]
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "u05l03_a01",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer pares verbales.",
+          "prompt": "Relaciona forma de diccionario y forma educada.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Estas son las primeras cuatro filas de la tabla."
+          ],
+          "feedback": {
+            "correct": "Correcto. Primera mitad dominada.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos del material."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "가다",
+                "right": "가요"
+              },
+              {
+                "left": "오다",
+                "right": "와요"
+              },
+              {
+                "left": "먹다",
+                "right": "먹어요"
+              },
+              {
+                "left": "마시다",
+                "right": "마셔요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a02",
+          "type": "matching",
+          "family": "matching",
+          "objective": "Reconocer pares verbales.",
+          "prompt": "Relaciona forma de diccionario y forma educada.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "No intentes derivar una regla nueva: reconoce los pares que presenta el material."
+          ],
+          "feedback": {
+            "correct": "Correcto. Ya reconoces las ocho parejas.",
+            "wrong": {
+              "default": "Compara cada elemento con los ejemplos del material."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "pairs": [
+              {
+                "left": "공부하다",
+                "right": "공부해요"
+              },
+              {
+                "left": "읽다",
+                "right": "읽어요"
+              },
+              {
+                "left": "쓰다",
+                "right": "써요"
+              },
+              {
+                "left": "자다",
+                "right": "자요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a03",
+          "type": "listen_and_choose",
+          "family": "choice",
+          "objective": "Asociar audio y verbo.",
+          "prompt": "Escucha y elige la opción correcta.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Es la forma educada que el libro relaciona con «beber»."
+          ],
+          "feedback": {
+            "correct": "Correcto: 마셔요 = beber en esta forma.",
+            "wrong": {
+              "default": "Escucha otra vez y compara la frase completa."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": true,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "tts": {
+              "locale": "ko-KR",
+              "text": "마셔요",
+              "slow_available": true
+            },
+            "options": [
+              "가요",
+              "먹어요",
+              "마셔요",
+              "읽어요"
+            ],
+            "correct": [
+              "마셔요"
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a04",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Reconocer 쓰다 → 써요.",
+          "prompt": "¿Cuál es la forma educada que el libro muestra para 쓰다?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "No necesitas deducirla: está en la tabla de la lección."
+          ],
+          "feedback": {
+            "correct": "Correcto: 쓰다 → 써요.",
+            "wrong": {
+              "쓰요": "El material no presenta 쓰요. La forma de esta tabla es 써요.",
+              "쓰어요": "Para esta unidad usa exactamente la forma enseñada: 써요.",
+              "default": "Vuelve a la tabla y busca 쓰다."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "쓰요",
+              "써요",
+              "쓰어요",
+              "와요"
+            ],
+            "correct": [
+              "써요"
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a05",
+          "type": "multiple_choice",
+          "family": "choice",
+          "objective": "Relacionar verbo y significado.",
+          "prompt": "¿Qué verbo significa «estudiar»?",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "Ya apareció antes en 한국어를 공부해요."
+          ],
+          "feedback": {
+            "correct": "Correcto: 공부하다 = estudiar.",
+            "wrong": {
+              "default": "Revisa el ejemplo de la lección y vuelve a intentarlo."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": false,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "options": [
+              "마시다",
+              "자다",
+              "공부하다",
+              "오다"
+            ],
+            "correct": [
+              "공부하다"
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a06",
+          "type": "fill_blank",
+          "family": "text_input",
+          "objective": "Completar un ejemplo ya trabajado.",
+          "prompt": "Completa: 한국어를 ________. = Estudio coreano.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La forma aparece tanto en esta lección como en la anterior."
+          ],
+          "feedback": {
+            "correct": "Correcto: 한국어를 공부해요.",
+            "wrong": {
+              "default": "Busca la forma educada de 공부하다."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "template": "한국어를 ________.",
+            "accepted_answers": [
+              "공부해요"
+            ]
+          }
+        },
+        {
+          "id": "u05l03_a07",
+          "type": "fill_blank",
+          "family": "text_input",
+          "objective": "Completar «Bebo agua».",
+          "prompt": "Completa: 물을 ________. = Bebo agua.",
+          "scoreMode": "auto",
+          "normalization": {
+            "trim": true,
+            "unicode_normalization": "NFC",
+            "collapse_spaces": true,
+            "ignore_terminal_punctuation": true,
+            "case_sensitive": false
+          },
+          "hints": [
+            "La forma educada de 마시다 en la tabla es 마셔요."
+          ],
+          "feedback": {
+            "correct": "Correcto: 물을 마셔요.",
+            "wrong": {
+              "default": "Busca el verbo que significa beber."
+            }
+          },
+          "completionRule": null,
+          "note": null,
+          "capabilities": {
+            "hasTts": false,
+            "usesKeyboard": true,
+            "usesImages": false,
+            "usesSpeechRecognition": false,
+            "autosave": false,
+            "romanization": null
+          },
+          "payload": {
+            "template": "물을 ________.",
+            "accepted_answers": [
+              "마셔요"
+            ]
+          }
+        }
+      ],
+      "completion": {
+        "required_activity_ids": [
+          "u05l03_a01",
+          "u05l03_a02",
+          "u05l03_a03",
+          "u05l03_a04",
+          "u05l03_a05",
+          "u05l03_a06",
+          "u05l03_a07"
+        ],
+        "minimum_score": 0.75
+      }
+    }
+  ],
+  "completion": {
+    "required_lessons": [
+      "u05l01",
+      "u05l02",
+      "u05l03"
+    ],
+    "unlock_next_unit": true,
+    "review_pool_enabled": true,
+    "mastery_items": [
+      "은/는",
+      "이/가",
+      "을/를",
+      "에",
+      "에서",
+      "저는 학생이에요.",
+      "물을 마셔요.",
+      "학교에 가요.",
+      "한국어를 공부해요.",
+      "가요",
+      "와요",
+      "먹어요",
+      "마셔요",
+      "공부해요",
+      "읽어요",
+      "써요",
+      "자요"
+    ]
+  }
+}

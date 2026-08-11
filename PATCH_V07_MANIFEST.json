@@ -1,0 +1,14 @@
+{
+  "version": "0.7",
+  "base": "flutter_adapa_v0_6",
+  "purpose": "Real Android host project and current supported Flutter Android baseline",
+  "added_or_replaced": [
+    "android/",
+    "pubspec.yaml",
+    "README.md",
+    "ANDROID_PLATFORM_DECISION_V07.md",
+    "ANDROID_BUILD_V07.md",
+    "assets/content/android_project_audit_v0.7.json"
+  ],
+  "important_change": "minSdk moves from intended API 21 compatibility to supported API 24 baseline"
+}
