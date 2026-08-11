@@ -12,76 +12,166 @@ import 'package:adapa/core/progress/progress_snapshot.dart';
 
 void main() {
   group('ProgressController', () {
-    test('75% threshold completes a lesson after all required activities are attempted', () async {
-      final fixture = _Fixture();
-      final controller = ProgressController(repository: fixture.repository, store: fixture.store);
-      await controller.initialize();
+    test(
+      '75% threshold completes a lesson after all required activities are attempted',
+      () async {
+        final fixture = _Fixture();
+        final controller = ProgressController(
+          repository: fixture.repository,
+          store: fixture.store,
+        );
+        await controller.initialize();
 
-      await controller.handleSessionWrite('a1', {'complete': true, 'record_attempt': true});
-      await controller.handleSessionWrite('a2', {'complete': true, 'record_attempt': true});
-      await controller.handleSessionWrite('a3', {'complete': true, 'record_attempt': true});
-      await controller.handleSessionWrite('a4', {'complete': false, 'record_attempt': true});
+        await controller.handleSessionWrite('a1', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        await controller.handleSessionWrite('a2', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        await controller.handleSessionWrite('a3', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        await controller.handleSessionWrite('a4', {
+          'complete': false,
+          'record_attempt': true,
+        });
 
-      final lesson = controller.lessonProgress('l1');
-      expect(lesson.score, 0.75);
-      expect(lesson.completed, isTrue);
-      expect(controller.isUnitComplete('u1'), isTrue);
-      expect(controller.isUnitUnlocked('u2'), isTrue);
-    });
+        final lesson = controller.lessonProgress('l1');
+        expect(lesson.score, 0.75);
+        expect(lesson.completed, isTrue);
+        expect(controller.isUnitComplete('u1'), isTrue);
+        expect(controller.isUnitUnlocked('u2'), isTrue);
+      },
+    );
 
-    test('best result survives a failed retry and attempts accumulate', () async {
-      final fixture = _Fixture();
-      final controller = ProgressController(repository: fixture.repository, store: fixture.store);
-      await controller.initialize();
+    test(
+      'best result survives a failed retry and attempts accumulate',
+      () async {
+        final fixture = _Fixture();
+        final controller = ProgressController(
+          repository: fixture.repository,
+          store: fixture.store,
+        );
+        await controller.initialize();
 
-      await controller.handleSessionWrite('a1', {'complete': false, 'record_attempt': true});
-      await controller.handleSessionWrite('a1', {'complete': true, 'record_attempt': true});
-      await controller.handleSessionWrite('a1', {'complete': false, 'record_attempt': true});
+        await controller.handleSessionWrite('a1', {
+          'complete': false,
+          'record_attempt': true,
+        });
+        await controller.handleSessionWrite('a1', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        await controller.handleSessionWrite('a1', {
+          'complete': false,
+          'record_attempt': true,
+        });
 
-      final progress = controller.activityProgress('a1');
-      expect(progress.attempts, 3);
-      expect(progress.bestScore, 1.0);
-      expect(progress.completed, isTrue);
-    });
+        final progress = controller.activityProgress('a1');
+        expect(progress.attempts, 3);
+        expect(progress.bestScore, 1.0);
+        expect(progress.completed, isTrue);
+      },
+    );
 
-    test('session data is persisted and can hydrate a new controller', () async {
-      final fixture = _Fixture();
-      final first = ProgressController(repository: fixture.repository, store: fixture.store);
-      await first.initialize();
-      await first.handleSessionWrite('open1', {
-        'text': '저는 학생이에요.',
-        'complete': true,
-        'record_attempt': true,
-      });
-      await first.flush();
+    test(
+      'session data is persisted and can hydrate a new controller',
+      () async {
+        final fixture = _Fixture();
+        final first = ProgressController(
+          repository: fixture.repository,
+          store: fixture.store,
+        );
+        await first.initialize();
+        await first.handleSessionWrite('open1', {
+          'text': '저는 학생이에요.',
+          'complete': true,
+          'record_attempt': true,
+        });
+        await first.flush();
 
-      final second = ProgressController(repository: fixture.repository, store: fixture.store);
-      await second.initialize();
-      expect(second.persistedSessionData['open1']?['text'], '저는 학생이에요.');
-      expect(second.activityProgress('open1').completed, isTrue);
-    });
+        final second = ProgressController(
+          repository: fixture.repository,
+          store: fixture.store,
+        );
+        await second.initialize();
+        expect(second.persistedSessionData['open1']?['text'], '저는 학생이에요.');
+        expect(second.activityProgress('open1').completed, isTrue);
+      },
+    );
 
+    test(
+      'daily streak increments once per study day and preserves best streak',
+      () async {
+        final fixture = _Fixture();
+        var now = DateTime(2026, 8, 10, 9);
+        final controller = ProgressController(
+          repository: fixture.repository,
+          store: fixture.store,
+          now: () => now,
+        );
+        await controller.initialize();
 
-    test('save failure is exposed and retry clears the persistence error', () async {
-      final fixture = _Fixture();
-      final store = _FailOnceProgressStore();
-      final controller = ProgressController(repository: fixture.repository, store: store);
-      await controller.initialize();
+        await controller.handleSessionWrite('a1', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        expect(controller.currentStreak, 1);
+        expect(controller.longestStreak, 1);
 
-      await controller.handleSessionWrite('a1', {
-        'complete': true,
-        'record_attempt': true,
-      });
-      await controller.flush();
+        await controller.handleSessionWrite('a2', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        expect(controller.currentStreak, 1);
 
-      expect(controller.hasPersistenceError, isTrue);
-      expect(controller.persistenceError, isNotNull);
+        now = DateTime(2026, 8, 11, 9);
+        await controller.handleSessionWrite('a3', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        expect(controller.currentStreak, 2);
+        expect(controller.longestStreak, 2);
 
-      await controller.retrySave();
+        now = DateTime(2026, 8, 13, 9);
+        await controller.handleSessionWrite('a4', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        expect(controller.currentStreak, 1);
+        expect(controller.longestStreak, 2);
+      },
+    );
 
-      expect(controller.hasPersistenceError, isFalse);
-      expect(store.value, isNotNull);
-    });
+    test(
+      'save failure is exposed and retry clears the persistence error',
+      () async {
+        final fixture = _Fixture();
+        final store = _FailOnceProgressStore();
+        final controller = ProgressController(
+          repository: fixture.repository,
+          store: store,
+        );
+        await controller.initialize();
+
+        await controller.handleSessionWrite('a1', {
+          'complete': true,
+          'record_attempt': true,
+        });
+        await controller.flush();
+
+        expect(controller.hasPersistenceError, isTrue);
+        expect(controller.persistenceError, isNotNull);
+
+        await controller.retrySave();
+
+        expect(controller.hasPersistenceError, isFalse);
+        expect(store.value, isNotNull);
+      },
+    );
   });
 }
 
@@ -124,7 +214,9 @@ class _Fixture {
       prerequisites: const [],
       resourceRefs: const {},
       lessons: [l1],
-      completion: const {'required_lessons': ['l1']},
+      completion: const {
+        'required_lessons': ['l1'],
+      },
       source: const {},
     );
     final u2 = UnitContent(
@@ -133,7 +225,9 @@ class _Fixture {
       prerequisites: const ['u1'],
       resourceRefs: const {},
       lessons: [l2],
-      completion: const {'required_lessons': ['l2']},
+      completion: const {
+        'required_lessons': ['l2'],
+      },
       source: const {},
     );
 
@@ -146,8 +240,22 @@ class _Fixture {
       offlineFirst: true,
       contentVersion: '1',
       units: const [
-        UnitSummary(id: 'u1', title: 'U1', lessonCount: 1, activityCount: 4, asset: 'u1', prerequisites: []),
-        UnitSummary(id: 'u2', title: 'U2', lessonCount: 1, activityCount: 1, asset: 'u2', prerequisites: ['u1']),
+        UnitSummary(
+          id: 'u1',
+          title: 'U1',
+          lessonCount: 1,
+          activityCount: 4,
+          asset: 'u1',
+          prerequisites: [],
+        ),
+        UnitSummary(
+          id: 'u2',
+          title: 'U2',
+          lessonCount: 1,
+          activityCount: 1,
+          asset: 'u2',
+          prerequisites: ['u1'],
+        ),
       ],
       resources: const {},
       summary: const {},
@@ -158,10 +266,13 @@ class _Fixture {
   late final _FakeRepository repository;
   final _MemoryProgressStore store = _MemoryProgressStore();
 
-  ActivityContent _activity(String id, {String scoreMode = 'auto'}) => ActivityContent(
+  ActivityContent _activity(String id, {String scoreMode = 'auto'}) =>
+      ActivityContent(
         id: id,
         type: scoreMode == 'none' ? 'free_writing' : 'multiple_choice',
-        family: scoreMode == 'none' ? ActivityFamily.textInput : ActivityFamily.choice,
+        family: scoreMode == 'none'
+            ? ActivityFamily.textInput
+            : ActivityFamily.choice,
         scoreMode: scoreMode,
         normalization: const {},
         hints: const [],
@@ -196,9 +307,9 @@ class _MemoryProgressStore implements ProgressStore {
   Future<ProgressSnapshot?> load(String courseId) async => value;
 
   @override
-  Future<void> save(ProgressSnapshot snapshot) async => value = ProgressSnapshot.fromJson(snapshot.toJson());
+  Future<void> save(ProgressSnapshot snapshot) async =>
+      value = ProgressSnapshot.fromJson(snapshot.toJson());
 }
-
 
 class _FailOnceProgressStore implements ProgressStore {
   bool _shouldFail = true;

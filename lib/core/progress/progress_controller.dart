@@ -31,7 +31,8 @@ class LessonProgressView {
   final int completedActivities;
   final int activityCount;
 
-  double get activityFraction => activityCount == 0 ? 0 : completedActivities / activityCount;
+  double get activityFraction =>
+      activityCount == 0 ? 0 : completedActivities / activityCount;
 }
 
 class UnitProgressView {
@@ -51,14 +52,22 @@ class UnitProgressView {
   final int completedActivities;
   final int activityCount;
 
-  double get fraction => activityCount == 0 ? 0 : completedActivities / activityCount;
+  double get fraction =>
+      activityCount == 0 ? 0 : completedActivities / activityCount;
 }
 
+typedef NowProvider = DateTime Function();
+
 class ProgressController extends ChangeNotifier {
-  ProgressController({required this.repository, required this.store});
+  ProgressController({
+    required this.repository,
+    required this.store,
+    NowProvider? now,
+  }) : _now = now ?? DateTime.now;
 
   final CourseRepository repository;
   final ProgressStore store;
+  final NowProvider _now;
 
   CourseManifest? _manifest;
   final Map<String, UnitContent> _units = {};
@@ -75,10 +84,15 @@ class ProgressController extends ChangeNotifier {
   bool get initialized => _manifest != null && _snapshot != null;
   CourseManifest get manifest => _manifest!;
   ResumePointer? get resume => _snapshot?.resume;
+  int get currentStreak => _snapshot?.currentStreak ?? 0;
+  int get longestStreak => _snapshot?.longestStreak ?? 0;
+  DateTime? get lastStudyDate => _snapshot?.lastStudyDate;
   String? get persistenceError => _persistenceError;
   bool get hasPersistenceError => _persistenceError != null;
   Map<String, Map<String, dynamic>> get persistedSessionData =>
-      Map<String, Map<String, dynamic>>.from(_snapshot?.sessionData ?? const {});
+      Map<String, Map<String, dynamic>>.from(
+        _snapshot?.sessionData ?? const {},
+      );
 
   Future<void> initialize() async {
     final manifest = await repository.loadManifest();
@@ -99,7 +113,11 @@ class ProgressController extends ChangeNotifier {
 
     final loaded = await store.load(manifest.id);
     _snapshot = _sanitize(
-      loaded ?? ProgressSnapshot.empty(courseId: manifest.id, contentVersion: manifest.contentVersion),
+      loaded ??
+          ProgressSnapshot.empty(
+            courseId: manifest.id,
+            contentVersion: manifest.contentVersion,
+          ),
       manifest,
     );
     notifyListeners();
@@ -109,13 +127,16 @@ class ProgressController extends ChangeNotifier {
     final activities = <String, ActivityProgress>{};
     final sessions = <String, Map<String, dynamic>>{};
     for (final entry in input.activities.entries) {
-      if (_activities.containsKey(entry.key)) activities[entry.key] = entry.value;
+      if (_activities.containsKey(entry.key)) {
+        activities[entry.key] = entry.value;
+      }
     }
     for (final entry in input.sessionData.entries) {
       if (_activities.containsKey(entry.key)) sessions[entry.key] = entry.value;
     }
     final oldResume = input.resume;
-    final resume = oldResume != null && _activities.containsKey(oldResume.activityId)
+    final resume =
+        oldResume != null && _activities.containsKey(oldResume.activityId)
         ? oldResume
         : null;
     return ProgressSnapshot(
@@ -125,29 +146,41 @@ class ProgressController extends ChangeNotifier {
       sessionData: sessions,
       resume: resume,
       updatedAt: input.updatedAt,
+      currentStreak: input.currentStreak,
+      longestStreak: input.longestStreak,
+      lastStudyDate: input.lastStudyDate,
     );
   }
 
   ActivityProgress activityProgress(String activityId) =>
-      _snapshot?.activities[activityId] ?? ActivityProgress(activityId: activityId);
+      _snapshot?.activities[activityId] ??
+      ActivityProgress(activityId: activityId);
 
-  bool isActivityCompleted(String activityId) => activityProgress(activityId).completed;
+  bool isActivityCompleted(String activityId) =>
+      activityProgress(activityId).completed;
 
   LessonProgressView lessonProgress(String lessonId) {
     final lesson = _lessons[lessonId];
     if (lesson == null) {
       return const LessonProgressView(
-        completed:false, attemptedRequired:0, requiredCount:0, score:0,
-        minimumScore:null, completedActivities:0, activityCount:0,
+        completed: false,
+        attemptedRequired: 0,
+        requiredCount: 0,
+        score: 0,
+        minimumScore: null,
+        completedActivities: 0,
+        activityCount: 0,
       );
     }
-    final required = (lesson.completion['required_activity_ids'] as List? ?? const [])
-        .map((e)=>e.toString()).toList(growable:false);
+    final required =
+        (lesson.completion['required_activity_ids'] as List? ?? const [])
+            .map((e) => e.toString())
+            .toList(growable: false);
     final minScore = (lesson.completion['minimum_score'] as num?)?.toDouble();
     final specialRule = lesson.completion['rule']?.toString();
 
     final requiredIds = required.isEmpty
-        ? lesson.activities.map((a)=>a.id).toList(growable:false)
+        ? lesson.activities.map((a) => a.id).toList(growable: false)
         : required;
     var attemptedRequired = 0;
     var unscoredRequiredComplete = true;
@@ -165,8 +198,9 @@ class ProgressController extends ChangeNotifier {
       }
     }
 
-    final score = scored.isEmpty ? (unscoredRequiredComplete ? 1.0 : 0.0)
-        : scored.reduce((a,b)=>a+b) / scored.length;
+    final score = scored.isEmpty
+        ? (unscoredRequiredComplete ? 1.0 : 0.0)
+        : scored.reduce((a, b) => a + b) / scored.length;
     final allRequiredTouched = requiredIds.every((id) {
       final activity = _activities[id];
       final p = activityProgress(id);
@@ -179,7 +213,9 @@ class ProgressController extends ChangeNotifier {
         specialRule == 'complete_required_review';
     final completed = usesRequiredCompletionOnly
         ? requiredIds.every(isActivityCompleted)
-        : allRequiredTouched && unscoredRequiredComplete && score >= (minScore ?? 1.0);
+        : allRequiredTouched &&
+              unscoredRequiredComplete &&
+              score >= (minScore ?? 1.0);
 
     return LessonProgressView(
       completed: completed,
@@ -187,7 +223,9 @@ class ProgressController extends ChangeNotifier {
       requiredCount: requiredIds.length,
       score: score,
       minimumScore: minScore,
-      completedActivities: lesson.activities.where((a)=>isActivityCompleted(a.id)).length,
+      completedActivities: lesson.activities
+          .where((a) => isActivityCompleted(a.id))
+          .length,
       activityCount: lesson.activities.length,
     );
   }
@@ -198,23 +236,33 @@ class ProgressController extends ChangeNotifier {
     final unit = _units[unitId];
     if (unit == null) {
       return const UnitProgressView(
-        completed:false, unlocked:false, completedLessons:0, lessonCount:0,
-        completedActivities:0, activityCount:0,
+        completed: false,
+        unlocked: false,
+        completedLessons: 0,
+        lessonCount: 0,
+        completedActivities: 0,
+        activityCount: 0,
       );
     }
-    final requiredLessons = (unit.completion['required_lessons'] as List? ?? const [])
-        .map((e)=>e.toString()).toList(growable:false);
+    final requiredLessons =
+        (unit.completion['required_lessons'] as List? ?? const [])
+            .map((e) => e.toString())
+            .toList(growable: false);
     final lessonIds = requiredLessons.isEmpty
-        ? unit.lessons.map((l)=>l.id).toList(growable:false)
+        ? unit.lessons.map((l) => l.id).toList(growable: false)
         : requiredLessons;
     final completeLessons = lessonIds.where(isLessonComplete).length;
-    final activities = unit.lessons.expand((l)=>l.activities).toList(growable:false);
+    final activities = unit.lessons
+        .expand((l) => l.activities)
+        .toList(growable: false);
     return UnitProgressView(
       completed: lessonIds.isNotEmpty && completeLessons == lessonIds.length,
       unlocked: isUnitUnlocked(unitId),
       completedLessons: completeLessons,
       lessonCount: lessonIds.length,
-      completedActivities: activities.where((a)=>isActivityCompleted(a.id)).length,
+      completedActivities: activities
+          .where((a) => isActivityCompleted(a.id))
+          .length,
       activityCount: activities.length,
     );
   }
@@ -231,20 +279,22 @@ class ProgressController extends ChangeNotifier {
   bool get courseComplete {
     final manifest = _manifest;
     if (manifest == null || manifest.units.isEmpty) return false;
-    return manifest.units.every((u)=>isUnitComplete(u.id));
+    return manifest.units.every((u) => isUnitComplete(u.id));
   }
 
   double get courseFraction {
-    final all = _activities.keys.toList(growable:false);
+    final all = _activities.keys.toList(growable: false);
     if (all.isEmpty) return 0;
     return all.where(isActivityCompleted).length / all.length;
   }
 
-  int get completedActivityCount => _activities.keys.where(isActivityCompleted).length;
+  int get completedActivityCount =>
+      _activities.keys.where(isActivityCompleted).length;
   int get activityCount => _activities.length;
   int get completedUnitCount => _units.keys.where(isUnitComplete).length;
 
-  String? lessonIdForActivity(String activityId) => _activityToLesson[activityId];
+  String? lessonIdForActivity(String activityId) =>
+      _activityToLesson[activityId];
   String? unitIdForActivity(String activityId) {
     final lessonId = _activityToLesson[activityId];
     return lessonId == null ? null : _lessonToUnit[lessonId];
@@ -279,30 +329,34 @@ class ProgressController extends ChangeNotifier {
     return lesson.activities[index + 1];
   }
 
-
   void markActivityVisited(String activityId) {
     final lessonId = lessonIdForActivity(activityId);
     final unitId = unitIdForActivity(activityId);
     if (lessonId == null || unitId == null) return;
-    _replaceSnapshot(resume: ResumePointer(
-      activityId: activityId,
-      lessonId: lessonId,
-      unitId: unitId,
-      updatedAt: DateTime.now(),
-    ));
+    _replaceSnapshot(
+      resume: ResumePointer(
+        activityId: activityId,
+        lessonId: lessonId,
+        unitId: unitId,
+        updatedAt: DateTime.now(),
+      ),
+    );
     _scheduleSave();
   }
 
-  Future<void> handleSessionWrite(String activityId, Map<String, dynamic> value) async {
+  Future<void> handleSessionWrite(
+    String activityId,
+    Map<String, dynamic> value,
+  ) async {
     if (_snapshot == null || !_activities.containsKey(activityId)) return;
     final activity = _activities[activityId]!;
-    final now = DateTime.now();
+    final now = _now();
     final old = activityProgress(activityId);
     final recordAttempt = value['record_attempt'] == true;
     final reportedComplete = value['complete'] == true;
     final isScored = activity.scoreMode != 'none';
     final score = value['score'] is num
-        ? (value['score'] as num).toDouble().clamp(0.0,1.0).toDouble()
+        ? (value['score'] as num).toDouble().clamp(0.0, 1.0).toDouble()
         : (recordAttempt && isScored ? (reportedComplete ? 1.0 : 0.0) : null);
 
     final nextProgress = ActivityProgress(
@@ -311,15 +365,22 @@ class ProgressController extends ChangeNotifier {
       completed: old.completed || reportedComplete,
       bestScore: score == null
           ? old.bestScore
-          : (old.bestScore == null ? score : (score > old.bestScore! ? score : old.bestScore)),
+          : (old.bestScore == null
+                ? score
+                : (score > old.bestScore! ? score : old.bestScore)),
       lastAttemptAt: recordAttempt ? now : old.lastAttemptAt,
       firstCompletedAt: old.firstCompletedAt ?? (reportedComplete ? now : null),
     );
 
     final activities = Map<String, ActivityProgress>.from(_snapshot!.activities)
       ..[activityId] = nextProgress;
-    final sessions = Map<String, Map<String, dynamic>>.from(_snapshot!.sessionData)
-      ..[activityId] = _cleanSessionValue(value);
+    final sessions = Map<String, Map<String, dynamic>>.from(
+      _snapshot!.sessionData,
+    )..[activityId] = _cleanSessionValue(value);
+    final streak = _nextStreak(
+      now: now,
+      recordStudy: recordAttempt || reportedComplete,
+    );
 
     _snapshot = ProgressSnapshot(
       courseId: _snapshot!.courseId,
@@ -328,6 +389,9 @@ class ProgressController extends ChangeNotifier {
       sessionData: sessions,
       resume: _snapshot!.resume,
       updatedAt: now,
+      currentStreak: streak.current,
+      longestStreak: streak.longest,
+      lastStudyDate: streak.lastStudyDate,
     );
     final nextResume = _resumeAfterWrite(activityId, nextProgress);
     _snapshot = ProgressSnapshot(
@@ -337,6 +401,9 @@ class ProgressController extends ChangeNotifier {
       sessionData: _snapshot!.sessionData,
       resume: nextResume,
       updatedAt: now,
+      currentStreak: _snapshot!.currentStreak,
+      longestStreak: _snapshot!.longestStreak,
+      lastStudyDate: _snapshot!.lastStudyDate,
     );
     notifyListeners();
     _scheduleSave();
@@ -349,25 +416,33 @@ class ProgressController extends ChangeNotifier {
     return result;
   }
 
-  ResumePointer _resumeAfterWrite(String activityId, ActivityProgress progress) {
+  ResumePointer _resumeAfterWrite(
+    String activityId,
+    ActivityProgress progress,
+  ) {
     final lessonId = lessonIdForActivity(activityId)!;
     final unitId = unitIdForActivity(activityId)!;
     final lessonCompleted = isLessonComplete(lessonId);
 
     if (!progress.completed && !lessonCompleted) {
-      return ResumePointer(activityId:activityId, lessonId:lessonId, unitId:unitId, updatedAt:DateTime.now());
+      return ResumePointer(
+        activityId: activityId,
+        lessonId: lessonId,
+        unitId: unitId,
+        updatedAt: DateTime.now(),
+      );
     }
 
     final index = _activityOrder.indexOf(activityId);
-    for (var i=index+1; i<_activityOrder.length; i++) {
+    for (var i = index + 1; i < _activityOrder.length; i++) {
       final candidate = _activityOrder[i];
       final candidateUnit = unitIdForActivity(candidate)!;
       if (!isUnitUnlocked(candidateUnit)) continue;
       return ResumePointer(
-        activityId:candidate,
-        lessonId:lessonIdForActivity(candidate)!,
-        unitId:candidateUnit,
-        updatedAt:DateTime.now(),
+        activityId: candidate,
+        lessonId: lessonIdForActivity(candidate)!,
+        unitId: candidateUnit,
+        updatedAt: DateTime.now(),
       );
     }
 
@@ -377,29 +452,38 @@ class ProgressController extends ChangeNotifier {
         if (isLessonComplete(lesson.id)) continue;
         for (final candidate in lesson.activities) {
           final p = activityProgress(candidate.id);
-          if (!p.completed || (candidate.scoreMode != 'none' && (p.bestScore ?? 0) < 1.0)) {
+          if (!p.completed ||
+              (candidate.scoreMode != 'none' && (p.bestScore ?? 0) < 1.0)) {
             return ResumePointer(
-              activityId:candidate.id,
-              lessonId:lesson.id,
-              unitId:unitId,
-              updatedAt:DateTime.now(),
+              activityId: candidate.id,
+              lessonId: lesson.id,
+              unitId: unitId,
+              updatedAt: DateTime.now(),
             );
           }
         }
       }
     }
-    return ResumePointer(activityId:activityId, lessonId:lessonId, unitId:unitId, updatedAt:DateTime.now());
+    return ResumePointer(
+      activityId: activityId,
+      lessonId: lessonId,
+      unitId: unitId,
+      updatedAt: DateTime.now(),
+    );
   }
 
   void _replaceSnapshot({ResumePointer? resume}) {
     if (_snapshot == null) return;
     _snapshot = ProgressSnapshot(
-      courseId:_snapshot!.courseId,
-      contentVersion:_snapshot!.contentVersion,
-      activities:_snapshot!.activities,
-      sessionData:_snapshot!.sessionData,
-      resume:resume ?? _snapshot!.resume,
-      updatedAt:DateTime.now(),
+      courseId: _snapshot!.courseId,
+      contentVersion: _snapshot!.contentVersion,
+      activities: _snapshot!.activities,
+      sessionData: _snapshot!.sessionData,
+      resume: resume ?? _snapshot!.resume,
+      updatedAt: _now(),
+      currentStreak: _snapshot!.currentStreak,
+      longestStreak: _snapshot!.longestStreak,
+      lastStudyDate: _snapshot!.lastStudyDate,
     );
     notifyListeners();
   }
@@ -454,7 +538,58 @@ class ProgressController extends ChangeNotifier {
     if (manifest == null) return;
     await store.clear(manifest.id);
     _persistenceError = null;
-    _snapshot = ProgressSnapshot.empty(courseId:manifest.id, contentVersion:manifest.contentVersion);
+    _snapshot = ProgressSnapshot.empty(
+      courseId: manifest.id,
+      contentVersion: manifest.contentVersion,
+    );
     notifyListeners();
   }
+
+  _StreakState _nextStreak({required DateTime now, required bool recordStudy}) {
+    final snapshot = _snapshot!;
+    if (!recordStudy) {
+      return _StreakState(
+        current: snapshot.currentStreak,
+        longest: snapshot.longestStreak,
+        lastStudyDate: snapshot.lastStudyDate,
+      );
+    }
+
+    final today = _dateOnly(now);
+    final last = snapshot.lastStudyDate == null
+        ? null
+        : _dateOnly(snapshot.lastStudyDate!);
+    if (last == today) {
+      return _StreakState(
+        current: snapshot.currentStreak,
+        longest: snapshot.longestStreak,
+        lastStudyDate: last,
+      );
+    }
+
+    final yesterday = today.subtract(const Duration(days: 1));
+    final nextCurrent = last == yesterday ? snapshot.currentStreak + 1 : 1;
+    return _StreakState(
+      current: nextCurrent,
+      longest: nextCurrent > snapshot.longestStreak
+          ? nextCurrent
+          : snapshot.longestStreak,
+      lastStudyDate: today,
+    );
+  }
+
+  DateTime _dateOnly(DateTime value) =>
+      DateTime(value.year, value.month, value.day);
+}
+
+class _StreakState {
+  const _StreakState({
+    required this.current,
+    required this.longest,
+    required this.lastStudyDate,
+  });
+
+  final int current;
+  final int longest;
+  final DateTime? lastStudyDate;
 }

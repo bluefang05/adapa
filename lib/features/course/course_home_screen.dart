@@ -86,6 +86,8 @@ class CourseHomeScreen extends StatelessWidget {
                     totalUnits: course.units.length,
                     completedActivities: progress.completedActivityCount,
                     totalActivities: progress.activityCount,
+                    currentStreak: progress.currentStreak,
+                    longestStreak: progress.longestStreak,
                     courseComplete: progress.courseComplete,
                     resumeLessonTitle: resumeLesson?.title,
                     onContinue: progress.courseComplete
@@ -135,6 +137,8 @@ class _CourseHero extends StatelessWidget {
     required this.totalUnits,
     required this.completedActivities,
     required this.totalActivities,
+    required this.currentStreak,
+    required this.longestStreak,
     required this.courseComplete,
     required this.resumeLessonTitle,
     required this.onContinue,
@@ -148,6 +152,8 @@ class _CourseHero extends StatelessWidget {
   final int totalUnits;
   final int completedActivities;
   final int totalActivities;
+  final int currentStreak;
+  final int longestStreak;
   final bool courseComplete;
   final String? resumeLessonTitle;
   final VoidCallback? onContinue;
@@ -244,6 +250,26 @@ class _CourseHero extends StatelessWidget {
             '$completedActivities/$totalActivities actividades',
             style: TextStyle(color: heroMutedColor),
           ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _HeroMetric(
+                icon: Icons.local_fire_department_outlined,
+                text: '$currentStreak día${currentStreak == 1 ? '' : 's'}',
+                color: heroTextColor,
+                backgroundColor: heroTrackColor,
+              ),
+              if (longestStreak > currentStreak)
+                _HeroMetric(
+                  icon: Icons.emoji_events_outlined,
+                  text: 'mejor $longestStreak',
+                  color: heroTextColor,
+                  backgroundColor: heroTrackColor,
+                ),
+            ],
+          ),
           const SizedBox(height: 18),
           FilledButton.icon(
             style: FilledButton.styleFrom(
@@ -264,6 +290,44 @@ class _CourseHero extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HeroMetric extends StatelessWidget {
+  const _HeroMetric({
+    required this.icon,
+    required this.text,
+    required this.color,
+    required this.backgroundColor,
+  });
+
+  final IconData icon;
+  final String text;
+  final Color color;
+  final Color backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 17, color: color),
+            const SizedBox(width: 5),
+            Text(
+              text,
+              style: TextStyle(color: color, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
       ),
     );
   }

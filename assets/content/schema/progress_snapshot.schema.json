@@ -21,6 +21,20 @@
     "updatedAt": {
       "type": "string"
     },
+    "currentStreak": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "longestStreak": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lastStudyDate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "resume": {
       "type": [
         "object",
