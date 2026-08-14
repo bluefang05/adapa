@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../core/evaluation/answer_normalizer.dart';
 import '../../../core/hangul/hangul_composer.dart';
 import '../../../core/models/activity_content.dart';
+import '../../../core/practice/activity_shuffle.dart';
 import '../../../core/runtime/adapa_runtime.dart';
+import '../../../core/services/practice_feedback_service.dart';
 import '../widgets/activity_feedback.dart';
+import '../widgets/shake_feedback.dart';
 
 class HangulStructureActivityRenderer extends StatelessWidget {
   const HangulStructureActivityRenderer({super.key, required this.activity});
@@ -68,12 +71,17 @@ class _SyllableBuilder extends StatefulWidget {
 
 class _SyllableBuilderState extends State<_SyllableBuilder> {
   final List<String> _selected = <String>[];
+  late final List<String> _parts;
   bool? _correct;
 
-  List<String> get _parts =>
+  @override
+  void initState() {
+    super.initState();
+    _parts = ActivityShuffle.copy<String>(
       (widget.activity.payload['parts'] as List? ?? const [])
-          .map((e) => e.toString())
-          .toList(growable: false);
+          .map((e) => e.toString()),
+    );
+  }
 
   String get _answer => widget.activity.payload['correct_block']?.toString() ?? '';
 
@@ -233,57 +241,113 @@ class _SingleSelector extends StatefulWidget {
 }
 
 class _SingleSelectorState extends State<_SingleSelector> {
+  late final List<String> _items;
   String? _selected;
   bool? _correct;
+  bool _resolvingWrongAnswer = false;
+  final Map<String, int> _shakeSignals = <String, int>{};
 
-  void _check() {
-    if (_selected == null) return;
+  @override
+  void initState() {
+    super.initState();
+    _items = ActivityShuffle.copy<String>(widget.items);
+  }
+
+  Future<void> _select(String item) async {
+    if (_resolvingWrongAnswer || _correct == true) return;
+
     final ok = widget.answers.any(
-      (answer) => AnswerNormalizer.equals(_selected!, answer, widget.activity.normalization),
+      (answer) => AnswerNormalizer.equals(
+        item,
+        answer,
+        widget.activity.normalization,
+      ),
     );
+
+    setState(() {
+      _selected = item;
+      _correct = ok;
+    });
     AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
-      'selected': _selected,
+      'selected': item,
       'complete': ok,
       'record_attempt': true,
       'score': ok ? 1.0 : 0.0,
     });
-    setState(() => _correct = ok);
+
+    if (ok) {
+      PracticeFeedbackService.success();
+      return;
+    }
+
+    PracticeFeedbackService.error();
+    setState(() {
+      _resolvingWrongAnswer = true;
+      _shakeSignals[item] = (_shakeSignals[item] ?? 0) + 1;
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 360));
+    if (!mounted) return;
+    setState(() {
+      _selected = null;
+      _resolvingWrongAnswer = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.header != null) ...[
           Center(
-            child: Text(widget.header!, style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w700)),
+            child: Text(
+              widget.header!,
+              style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(height: 16),
         ],
+        Text(
+          'Toca una opción. Si no es, vuelve a intentarlo.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 10),
         Wrap(
           alignment: WrapAlignment.center,
           spacing: 10,
           runSpacing: 10,
           children: [
-            for (final item in widget.items)
-              ChoiceChip(
-                selected: _selected == item,
-                onSelected: (_) => setState(() {
-                  _selected = item;
-                  _correct = null;
-                }),
-                label: Text(item, style: const TextStyle(fontSize: 30)),
+            for (final item in _items)
+              ShakeFeedback(
+                signal: _shakeSignals[item] ?? 0,
+                child: ChoiceChip(
+                  selected: _selected == item,
+                  selectedColor: _selected == item && _correct == false
+                      ? scheme.errorContainer
+                      : null,
+                  onSelected: _resolvingWrongAnswer || _correct == true
+                      ? null
+                      : (_) => _select(item),
+                  avatar: _selected == item
+                      ? Icon(
+                          _correct == true ? Icons.check : Icons.close,
+                          size: 18,
+                        )
+                      : null,
+                  label: Text(item, style: const TextStyle(fontSize: 30)),
+                ),
               ),
           ],
         ),
-        const SizedBox(height: 16),
-        FilledButton(onPressed: _selected == null ? null : _check, child: const Text('Comprobar')),
         if (_correct != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           ActivityFeedback(
             isCorrect: _correct!,
-            message: _correct! ? _correctMessage(widget.activity) : _wrongMessage(widget.activity),
+            message: _correct!
+                ? _correctMessage(widget.activity)
+                : _wrongMessage(widget.activity),
           ),
         ],
       ],
@@ -312,25 +376,60 @@ class _MultiSelector extends StatefulWidget {
 
 class _MultiSelectorState extends State<_MultiSelector> {
   final Set<String> _selected = <String>{};
+  final Map<String, int> _shakeSignals = <String, int>{};
+  late final List<String> _items;
   bool? _correct;
+  bool _resolvingWrongAnswer = false;
 
-  void _toggle(String item) {
+  @override
+  void initState() {
+    super.initState();
+    _items = ActivityShuffle.copy<String>(widget.items);
+  }
+
+  Future<void> _toggle(String item) async {
+    if (_resolvingWrongAnswer || _correct == true) return;
+
     setState(() {
       if (!_selected.add(item)) _selected.remove(item);
       _correct = null;
     });
-  }
 
-  void _check() {
     final expected = widget.answers.toSet();
-    final ok = _selected.length == expected.length && _selected.containsAll(expected);
+    if (expected.isEmpty || _selected.length < expected.length) return;
+
+    final ok = _selected.length == expected.length &&
+        _selected.containsAll(expected);
+
     AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
       'selected': _selected.toList(),
       'complete': ok,
       'record_attempt': true,
       'score': ok ? 1.0 : 0.0,
     });
-    setState(() => _correct = ok);
+
+    if (ok) {
+      PracticeFeedbackService.success();
+      setState(() => _correct = true);
+      return;
+    }
+
+    PracticeFeedbackService.error();
+    final attempted = _selected.toList(growable: false);
+    setState(() {
+      _correct = false;
+      _resolvingWrongAnswer = true;
+      for (final value in attempted) {
+        _shakeSignals[value] = (_shakeSignals[value] ?? 0) + 1;
+      }
+    });
+
+    await Future<void>.delayed(const Duration(milliseconds: 380));
+    if (!mounted) return;
+    setState(() {
+      _selected.clear();
+      _resolvingWrongAnswer = false;
+    });
   }
 
   @override
@@ -340,30 +439,51 @@ class _MultiSelectorState extends State<_MultiSelector> {
       children: [
         if (widget.header != null) ...[
           Center(
-            child: Text(widget.header!, style: const TextStyle(fontSize: 52, fontWeight: FontWeight.w700)),
+            child: Text(
+              widget.header!,
+              style: const TextStyle(fontSize: 52, fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(height: 16),
         ],
+        Text(
+          widget.answers.length <= 1
+              ? 'Toca la respuesta correcta.'
+              : 'Selecciona ${widget.answers.length} opciones. Se comprueban automáticamente.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 10),
         Wrap(
           alignment: WrapAlignment.center,
           spacing: widget.joinAsSentence ? 4 : 10,
           runSpacing: 10,
           children: [
-            for (final item in widget.items)
-              FilterChip(
-                selected: _selected.contains(item),
-                onSelected: (_) => _toggle(item),
-                label: Text(item, style: TextStyle(fontSize: widget.joinAsSentence ? 22.0 : 30.0)),
+            for (final item in _items)
+              ShakeFeedback(
+                signal: _shakeSignals[item] ?? 0,
+                child: FilterChip(
+                  selected: _selected.contains(item),
+                  onSelected: _resolvingWrongAnswer || _correct == true
+                      ? null
+                      : (_) => _toggle(item),
+                  label: Text(
+                    item,
+                    style: TextStyle(
+                      fontSize: widget.joinAsSentence ? 22.0 : 30.0,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
-        const SizedBox(height: 16),
-        FilledButton(onPressed: _selected.isEmpty ? null : _check, child: const Text('Comprobar')),
         if (_correct != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           ActivityFeedback(
             isCorrect: _correct!,
-            message: _correct! ? _correctMessage(widget.activity) : _wrongMessage(widget.activity),
+            message: _correct!
+                ? _correctMessage(widget.activity)
+                : _wrongMessage(widget.activity),
           ),
         ],
       ],
@@ -387,10 +507,15 @@ class _HangulRecallGridState extends State<_HangulRecallGrid> {
   @override
   void initState() {
     super.initState();
-    _items = (widget.activity.payload['items'] as List? ?? const []).map((raw) {
-      final map = Map<String, dynamic>.from(raw as Map);
-      return {'cue':map['cue'].toString(),'answer':map['answer'].toString()};
-    }).toList(growable:false);
+    _items = ActivityShuffle.copy<Map<String, String>>(
+      (widget.activity.payload['items'] as List? ?? const []).map((raw) {
+        final map = Map<String, dynamic>.from(raw as Map);
+        return {
+          'cue': map['cue'].toString(),
+          'answer': map['answer'].toString(),
+        };
+      }),
+    );
     _controllers = List.generate(_items.length, (_) => TextEditingController());
   }
 

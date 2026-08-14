@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../core/content/course_repository.dart';
+import '../../core/models/activity_content.dart';
+import '../../core/models/activity_family.dart';
 import '../../core/models/course_manifest.dart';
 import '../../core/models/lesson_content.dart';
 import '../../core/models/romanization_policy.dart';
 import '../../core/models/unit_content.dart';
 import '../../core/runtime/adapa_runtime.dart';
 import '../lesson/lesson_screen.dart';
+import '../practice/practice_session_screen.dart';
 import '../shared/progress_header_card.dart';
 
 class UnitScreen extends StatelessWidget {
@@ -42,6 +45,7 @@ class UnitScreen extends StatelessWidget {
           final romanization =
               RomanizationPolicy.fromDynamic(unit.romanizationPolicy);
           final progress = AdapaRuntime.of(context).progress;
+          final practiceEntries = _practiceEntries(unit);
 
           return AnimatedBuilder(
             animation: progress,
@@ -84,6 +88,13 @@ class UnitScreen extends StatelessWidget {
                         romanizationPolicy: romanization,
                       ),
                     ),
+                  if (practiceEntries.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    _UnitPracticeSection(
+                      unit: unit,
+                      entries: practiceEntries,
+                    ),
+                  ],
                 ],
               );
             },
@@ -168,4 +179,136 @@ class _LessonTile extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _PracticeEntry {
+  const _PracticeEntry({
+    required this.activity,
+    required this.lessonTitle,
+  });
+
+  final ActivityContent activity;
+  final String lessonTitle;
+}
+
+List<_PracticeEntry> _practiceEntries(UnitContent unit) {
+  final result = <_PracticeEntry>[];
+  for (final lesson in unit.lessons) {
+    for (final activity in lesson.activities) {
+      if (_isReusablePractice(activity)) {
+        result.add(
+          _PracticeEntry(
+            activity: activity,
+            lessonTitle: lesson.title,
+          ),
+        );
+      }
+    }
+  }
+  return result;
+}
+
+bool _isReusablePractice(ActivityContent activity) {
+  return activity.family == ActivityFamily.choice ||
+      activity.family == ActivityFamily.matching ||
+      activity.family == ActivityFamily.ordering ||
+      activity.family == ActivityFamily.hangulStructure;
+}
+
+class _UnitPracticeSection extends StatelessWidget {
+  const _UnitPracticeSection({
+    required this.unit,
+    required this.entries,
+  });
+
+  final UnitContent unit;
+  final List<_PracticeEntry> entries;
+
+  void _open(
+    BuildContext context,
+    List<ActivityContent> activities, {
+    String? title,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PracticeSessionScreen(
+          activities: activities,
+          title: title ?? 'Práctica · ${unit.title}',
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Práctica libre', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 5),
+        Text(
+          'Repite ejercicios de esta unidad cuando quieras. Los intentos aquí no cambian tu progreso.',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 10),
+        Card(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => _open(
+                      context,
+                      entries.map((entry) => entry.activity).toList(growable: false),
+                    ),
+                    icon: const Icon(Icons.play_arrow),
+                    label: Text('Practicar todos · ${entries.length} ejercicios'),
+                  ),
+                ),
+              ),
+              ExpansionTile(
+                leading: const Icon(Icons.grid_view_outlined),
+                title: Text('Ejercicios disponibles (${entries.length})'),
+                subtitle: const Text('Abre cualquiera directamente'),
+                children: [
+                  for (final entry in entries)
+                    ListTile(
+                      leading: Icon(_practiceIcon(entry.activity.family)),
+                      title: Text(
+                        entry.activity.prompt ??
+                            entry.activity.objective ??
+                            entry.activity.family.label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '${entry.lessonTitle} · ${entry.activity.family.label}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _open(
+                        context,
+                        [entry.activity],
+                        title: 'Práctica · ${entry.lessonTitle}',
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+IconData _practiceIcon(ActivityFamily family) {
+  return switch (family) {
+    ActivityFamily.choice => Icons.touch_app_outlined,
+    ActivityFamily.matching => Icons.compare_arrows,
+    ActivityFamily.hangulStructure => Icons.grid_4x4_outlined,
+    _ => Icons.fitness_center_outlined,
+  };
 }

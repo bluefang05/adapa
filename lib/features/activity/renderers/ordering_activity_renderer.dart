@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/evaluation/answer_normalizer.dart';
 import '../../../core/models/activity_content.dart';
+import '../../../core/practice/activity_shuffle.dart';
 import '../../../core/runtime/adapa_runtime.dart';
 import '../widgets/activity_feedback.dart';
 
@@ -11,22 +12,38 @@ class OrderingActivityRenderer extends StatefulWidget {
   final ActivityContent activity;
 
   @override
-  State<OrderingActivityRenderer> createState() => _OrderingActivityRendererState();
+  State<OrderingActivityRenderer> createState() =>
+      _OrderingActivityRendererState();
 }
 
 class _OrderingActivityRendererState extends State<OrderingActivityRenderer> {
-  late List<String> _items;
+  late List<_OrderItem> _items;
   bool? _correct;
 
   @override
   void initState() {
     super.initState();
-    _items = _initialItems();
+    final values = _initialValues();
+    final indexed = <_OrderItem>[
+      for (var i = 0; i < values.length; i++)
+        _OrderItem(
+          id: '${widget.activity.id}:token:$i',
+          value: values[i],
+        ),
+    ];
+    _items = ActivityShuffle.differentFromBy<_OrderItem, String>(
+      indexed,
+      _answer,
+      (item) => item.value,
+    );
   }
 
-  List<String> _initialItems() {
-    final source = widget.activity.payload['tokens'] ?? widget.activity.payload['turns'];
-    return (source as List? ?? const []).map((e) => e.toString()).toList();
+  List<String> _initialValues() {
+    final source =
+        widget.activity.payload['tokens'] ?? widget.activity.payload['turns'];
+    return (source as List? ?? const [])
+        .map((e) => e.toString())
+        .toList(growable: false);
   }
 
   List<String> get _answer =>
@@ -39,10 +56,15 @@ class _OrderingActivityRendererState extends State<OrderingActivityRenderer> {
     final ok = _items.length == _answer.length &&
         List.generate(
           _items.length,
-          (i) => AnswerNormalizer.equals(_items[i], _answer[i], rules),
+          (i) => AnswerNormalizer.equals(
+            _items[i].value,
+            _answer[i],
+            rules,
+          ),
         ).every((value) => value);
+
     AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
-      'order': List<String>.from(_items),
+      'order': [for (final item in _items) item.value],
       'complete': ok,
       'record_attempt': true,
       'score': ok ? 1.0 : 0.0,
@@ -66,33 +88,53 @@ class _OrderingActivityRendererState extends State<OrderingActivityRenderer> {
           itemCount: _items.length,
           onReorderItem: (oldIndex, newIndex) {
             setState(() {
+              // Flutter 3.44+ onReorderItem already adjusts newIndex for the
+              // removal at oldIndex. Do not apply the legacy decrement here.
               final item = _items.removeAt(oldIndex);
               _items.insert(newIndex, item);
               _correct = null;
             });
           },
-          itemBuilder: (context, index) => Card(
-            key: ValueKey('${widget.activity.id}-${_items[index]}'),
-            child: ListTile(
-              leading: CircleAvatar(child: Text('${index + 1}')),
-              title: Text(_items[index], style: const TextStyle(fontSize: 17)),
-              trailing: const Icon(Icons.drag_handle),
-            ),
-          ),
+          itemBuilder: (context, index) {
+            final item = _items[index];
+            return Card(
+              key: ValueKey(item.id),
+              child: ListTile(
+                leading: CircleAvatar(child: Text('${index + 1}')),
+                title: Text(
+                  item.value,
+                  style: const TextStyle(fontSize: 17),
+                ),
+                trailing: const Icon(Icons.drag_handle),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 12),
-        FilledButton(onPressed: _check, child: const Text('Comprobar orden')),
+        FilledButton(
+          onPressed: _check,
+          child: const Text('Comprobar orden'),
+        ),
         if (_correct != null) ...[
           const SizedBox(height: 12),
           ActivityFeedback(
             isCorrect: _correct!,
             message: _correct!
-                ? widget.activity.feedback['correct']?.toString() ?? 'Orden correcto.'
-                : ((widget.activity.feedback['wrong'] as Map?)?['default']?.toString() ??
+                ? widget.activity.feedback['correct']?.toString() ??
+                    'Orden correcto.'
+                : ((widget.activity.feedback['wrong'] as Map?)?['default']
+                        ?.toString() ??
                     'El orden todavía no es correcto.'),
           ),
         ],
       ],
     );
   }
+}
+
+class _OrderItem {
+  const _OrderItem({required this.id, required this.value});
+
+  final String id;
+  final String value;
 }

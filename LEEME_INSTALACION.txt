@@ -1,0 +1,59 @@
+ADAPA - PAQUETE ACUMULATIVO TODO JUNTO
+=====================================
+
+Este ZIP consolida en un solo paquete:
+- practica tactil desde las unidades;
+- sonidos recortados de acierto/error;
+- shake y reintento inmediato;
+- barajado estable de opciones;
+- matching inmediato;
+- ordenamiento desordenado al iniciar y soporte de tokens repetidos;
+- selectores Hangul con feedback inmediato;
+- practica aislada del progreso academico;
+- reinicio / practicar otra vez;
+- auditoria exhaustiva del contenido real;
+- seleccion multiple explicita;
+- ActivityEvaluator fail-closed ante contenido evaluable incompleto;
+- correccion quirurgica de dialogue_variant;
+- pruebas de regresion de los cambios anteriores.
+
+NO NECESITAS INSTALAR LOS ZIPS ANTERIORES.
+Este paquete ya contiene la version mas reciente de cada archivo.
+
+INSTALACION
+-----------
+1. Cierra Flutter/app si esta ejecutandose.
+2. Extrae TODO el contenido de este ZIP directamente en:
+
+   C:\Users\manue\OneDrive\Desktop\proyectos\flutter\adapa_kr
+
+3. Acepta combinar carpetas y reemplazar los archivos incluidos.
+4. Desde la raiz del proyecto ejecuta:
+
+   VALIDAR_ACTUALIZACION.cmd
+
+El validador aplica primero dos parches quirurgicos e idempotentes:
+- lib/core/evaluation/activity_evaluator.dart
+- lib/features/activity/renderers/dialogue_activity_renderer.dart
+
+Ambos crean backup antes de escribir cuando el cambio aun no existe.
+Luego ejecuta pub get, format, analyze, auditoria de contenido,
+pruebas especificas y finalmente flutter test completo.
+
+AUDITORIA SOLA
+--------------
+Para repetir solamente la auditoria:
+
+   AUDITAR_CONTENIDO.cmd
+
+IMPORTANTE
+----------
+- No sustituye tus JSON de unidades por contenido inventado.
+- No reemplaza ProgressController, persistencia, TTS, temas ni Android/Gradle.
+- La practica no penaliza el progreso academico.
+- Las opciones se mantienen estables durante un intento y se vuelven a barajar al reiniciar.
+- Las respuestas coreanas dudosas se reportan; no se corrigen a ciegas.
+
+Este paquete puede aplicarse aunque ya hayas usado una version anterior:
+los archivos incluidos representan el estado acumulativo mas reciente y
+los scripts quirurgicos detectan si su cambio ya fue aplicado.

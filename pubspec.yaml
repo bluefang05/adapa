@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_tts: 4.2.5
+  audioplayers: 6.8.1
   unorm_dart: 0.3.2
   shared_preferences: 2.5.5
 
@@ -24,6 +25,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/audio/
     - assets/content/
     - assets/content/units/
     - assets/content/resources/
