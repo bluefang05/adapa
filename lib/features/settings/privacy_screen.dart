@@ -96,6 +96,16 @@ class PrivacyScreen extends StatelessWidget {
                     'puede depender del sistema Android y del fabricante.',
                   ),
                 ),
+                Divider(height: 1),
+                ListTile(
+                  leading: Icon(Icons.ads_click_outlined),
+                  title: Text('Publicidad (Google AdMob)'),
+                  subtitle: Text(
+                    'Para mantener el curso gratuito, ADAPA muestra banners '
+                    'de Google AdMob. Google puede tratar identificadores de '
+                    'anuncios y diagnósticos según su política de privacidad.',
+                  ),
+                ),
               ],
             ),
           ),
@@ -117,10 +127,20 @@ class PrivacyScreen extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           const Card(
-            child: ListTile(
-              leading: Icon(Icons.info_outline),
-              title: Text('Versión de privacidad'),
-              subtitle: Text('Política preparada para ADAPA v1 — 11 de agosto de 2026'),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.email_outlined),
+                  title: Text('Contacto de soporte y privacidad'),
+                  subtitle: Text('enmandom@gmail.com'),
+                ),
+                Divider(height: 1),
+                ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('Versión de privacidad'),
+                  subtitle: Text('Política oficial de ADAPA — 22 de agosto de 2026'),
+                ),
+              ],
             ),
           ),
         ],

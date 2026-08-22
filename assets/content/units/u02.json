@@ -699,6 +699,18 @@
               }
             ]
           }
+        },
+        {
+          "id": "u02l03_t03",
+          "type": "visual_card",
+          "title": "Vocabulario ilustrado: La familia",
+          "text": "Identifica los bloques silábicos en los miembros de la familia coreana.",
+          "payload": {
+            "image_asset": "visual_family",
+            "hangul": "가족",
+            "meaning_es": "Familia (아버지, 어머니, 오빠, 나, 여동생)",
+            "tts": "가족 아버지 어머니 오빠 나 여동생"
+          }
         }
       ],
       "activities": [
@@ -765,12 +777,12 @@
           "type": "batchim_finder_multi",
           "family": "hangul_structure",
           "objective": "Detectar qué bloques contienen 받침.",
-          "prompt": "En 한국, toca los bloques que contienen 받침.",
+          "prompt": "En 한국어, toca los bloques que contienen 받침.",
           "scoreMode": "auto",
           "normalization": {},
           "hints": [],
           "feedback": {
-            "correct": "Correcto. Tanto 한 como 국 contienen consonante final.",
+            "correct": "Correcto. 한 y 국 contienen consonante final, mientras que 어 no tiene 받침.",
             "wrong": {
               "default": "Observa la parte inferior de cada bloque."
             }
@@ -786,7 +798,7 @@
             "romanization": null
           },
           "payload": {
-            "word": "한국",
+            "word": "한국어",
             "blocks": [
               {
                 "text": "한",
@@ -795,6 +807,10 @@
               {
                 "text": "국",
                 "has_batchim": true
+              },
+              {
+                "text": "어",
+                "has_batchim": false
               }
             ],
             "correct": [

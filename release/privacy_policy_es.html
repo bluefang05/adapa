@@ -3,45 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Política de privacidad — ADAPA</title>
+<title>Política de Privacidad — ADAPA</title>
 <style>
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:760px;margin:0 auto;padding:32px 20px;line-height:1.65;color:#172033;background:#f6f8fc}
-main{background:white;padding:28px;border-radius:20px;border:1px solid #e7ecf3}
-h1,h2{color:#163b65} code{background:#eef2f7;padding:2px 5px;border-radius:5px}
-small{color:#596579}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:780px;margin:0 auto;padding:32px 20px;line-height:1.68;color:#172033;background:#f6f8fc}
+main{background:white;padding:32px 28px;border-radius:20px;border:1px solid #e7ecf3;box-shadow:0 4px 16px rgba(0,0,0,0.03)}
+h1,h2,h3{color:#163b65}
+h1{font-size:1.75rem;margin-top:0}
+h2{font-size:1.25rem;margin-top:1.8rem;border-bottom:1px solid #eef2f7;padding-bottom:6px}
+code{background:#eef2f7;padding:2px 6px;border-radius:5px;font-size:0.9em}
+a{color:#1a73e8;text-decoration:none}
+a:hover{text-decoration:underline}
+ul{padding-left:22px}
+li{margin-bottom:6px}
+.badge{display:inline-block;padding:4px 10px;background:#e8f0fe;color:#1967d2;border-radius:12px;font-size:0.85rem;font-weight:500;margin-bottom:16px}
+footer{margin-top:28px;font-size:0.85rem;color:#596579;border-top:1px solid #eef2f7;padding-top:16px}
 </style>
 </head>
-<body><main>
-<h1>Política de privacidad — ADAPA</h1>
-<p><strong>Fecha de vigencia:</strong> 11 de agosto de 2026</p>
-<p>ADAPA es una aplicación educativa offline-first. Esta versión está diseñada para estudiar
-<strong>Coreano desde cero A0–A1</strong> sin crear una cuenta.</p>
-<h2>Datos que guarda ADAPA</h2>
-<p>ADAPA guarda localmente, mediante el almacenamiento de preferencias del sistema, progreso, actividades completadas, intentos y mejor resultado,
-respuestas o borradores guardados, punto de continuación y ajustes de texto a voz.</p>
-<p>Esta versión no dispone de cuentas de usuario, backend, analítica, publicidad ni sincronización
-propia en la nube.</p>
-<h2>Texto a voz (TTS)</h2>
-<p>Al usar lectura en voz alta, ADAPA entrega el texto al motor TTS instalado o seleccionado en
-Android. Ese motor es un componente separado; su funcionamiento y privacidad dependen del motor,
-su proveedor y la configuración del dispositivo. ADAPA no opera un servidor TTS propio.</p>
-<h2>Conexión a Internet</h2>
-<p>El manifiesto Android de producción no solicita el permiso <code>INTERNET</code>. El contenido
-educativo, las imágenes y los trazos se incluyen con la aplicación.</p>
-<h2>Copias de seguridad</h2>
-<p>ADAPA desactiva el backup en nube de sus datos mediante
-<code>android:allowBackup="false"</code>. Algunas migraciones directas entre dispositivos pueden
-depender de Android o del fabricante.</p>
-<h2>Eliminación de datos</h2>
-<p>El progreso puede borrarse en <strong>Ajustes → Privacidad y datos → Borrar mi progreso
-local</strong>.</p>
-<h2>Menores</h2>
-<p>ADAPA no solicita nombre, correo electrónico, fecha de nacimiento ni otros datos de
-identificación para utilizar el curso.</p>
-<h2>Cambios</h2>
-<p>Si una versión futura añade red, cuentas, analítica, publicidad o servicios externos
-adicionales, esta política deberá actualizarse antes de publicarla.</p>
-<h2>Contacto</h2>
-<p><strong>Correo:</strong> <code>[PENDIENTE_CORREO_DE_SOPORTE]</code></p>
-<small>ADAPA · política preparada para la primera publicación.</small>
-</main></body></html>
+<body>
+<main>
+<span class="badge">Documento Oficial</span>
+<h1>Política de Privacidad — ADAPA</h1>
+<p><strong>Fecha de vigencia:</strong> 22 de agosto de 2026<br>
+<strong>Aplicación:</strong> ADAPA (Coreano desde cero A0–A1)<br>
+<strong>Paquete:</strong> <code>com.enmanuelapps.adapa</code><br>
+<strong>Contacto del desarrollador:</strong> <a href="mailto:enmandom@gmail.com">enmandom@gmail.com</a></p>
+
+<h2>1. Introducción</h2>
+<p>ADAPA es una aplicación móvil educativa diseñada para el aprendizaje del idioma coreano (Hangul, vocabulario, gramática y diálogos). La aplicación está construida bajo un enfoque <strong>local y offline-first</strong>, permitiendo estudiar sin necesidad de registrarse ni crear una cuenta de usuario.</p>
+<p>Esta Política de Privacidad describe cómo se gestiona la información dentro de la aplicación y qué servicios de terceros se utilizan.</p>
+
+<h2>2. Datos almacenados localmente por ADAPA</h2>
+<p>ADAPA <strong>no recopila ni almacena información personal identificable en servidores propios</strong>. Todo el progreso del curso se guarda exclusivamente en el almacenamiento local del dispositivo mediante las preferencias del sistema:</p>
+<ul>
+<li>Progreso del curso y de las lecciones.</li>
+<li>Actividades completadas, puntuaciones e historial de intentos.</li>
+<li>Respuestas guardadas en ejercicios interactivos.</li>
+<li>Racha de días de estudio y punto de continuación.</li>
+<li>Ajustes de usuario (modo visual claro/medio/oscuro, velocidad de lectura de voz).</li>
+</ul>
+
+<h2>3. Servicios de terceros y Publicidad (Google AdMob)</h2>
+<p>Para mantener el acceso gratuito a la aplicación, ADAPA utiliza el servicio de publicidad <strong>Google AdMob</strong> (Google Mobile Ads SDK) proporcionado por Google LLC.</p>
+<h3>Datos tratados por Google AdMob:</h3>
+<p>Google AdMob puede recopilar y procesar automáticamente cierta información de diagnóstico y del dispositivo a través de la conexión a Internet, incluyendo:</p>
+<ul>
+<li>Identificadores de publicidad del dispositivo (como el ID de publicidad de Google / GAID).</li>
+<li>Dirección IP (utilizada para inferir la ubicación geográfica general y para la prevención de fraudes).</li>
+<li>Datos de rendimiento de los anuncios (impresiones, clics, interacciones).</li>
+<li>Diagnósticos de la aplicación y registros de fallos relacionados con la carga de anuncios.</li>
+</ul>
+<p>Para conocer más sobre cómo Google utiliza estos datos y cómo gestionar tus preferencias de publicidad, consulta:</p>
+<ul>
+<li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad de Google</a></li>
+<li><a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">Cómo utiliza Google la información de apps que usan sus servicios</a></li>
+</ul>
+
+<h2>4. Texto a Voz (Text-to-Speech / TTS)</h2>
+<p>ADAPA incluye pronunciación de caracteres y vocabulario en coreano mediante el motor de <strong>Texto a Voz (TTS)</strong> instalado o configurado en tu dispositivo Android (como los Servicios de Voz de Google o el motor del fabricante del dispositivo).</p>
+<ul>
+<li>ADAPA entrega únicamente la cadena de texto coreano al motor local del sistema.</li>
+<li>ADAPA no opera servidores de voz propios ni almacena grabaciones de voz.</li>
+<li>El procesamiento del audio depende de la configuración de privacidad del motor TTS elegido por el usuario en su sistema operativo.</li>
+</ul>
+
+<h2>5. Permisos del dispositivo y Conexión de Red</h2>
+<ul>
+<li><strong>Acceso a Internet (<code>INTERNET</code> y <code>ACCESS_NETWORK_STATE</code>):</strong> Requerido por el SDK de Google AdMob para solicitar y mostrar bloques de anuncios y reportar métricas de entrega. Todo el contenido del curso (textos, gráficos, trazos y audios estructurados) funciona de manera local en el dispositivo.</li>
+<li><strong>Acceso a servicios de voz (<code>TTS_SERVICE</code>):</strong> Utilizado para interactuar con el motor de pronunciación instalado en el sistema Android.</li>
+</ul>
+
+<h2>6. Copias de seguridad y Seguridad de Datos</h2>
+<p>ADAPA desactiva el respaldo automático de datos en la nube de Android (<code>android:allowBackup="false"</code>) para garantizar que tu progreso y configuraciones permanezcan restringidos a tu dispositivo físico.</p>
+
+<h2>7. Control y Eliminación de Datos</h2>
+<p>El usuario mantiene el control total sobre su información:</p>
+<ul>
+<li><strong>Borrado desde la app:</strong> Puedes restablecer todo tu progreso, respuestas e historial en cualquier momento desde <strong>Ajustes → Privacidad y datos → Reiniciar mi progreso</strong>.</li>
+<li><strong>Desinstalación:</strong> Al desinstalar ADAPA desde la configuración de Android, el sistema operativo elimina todos los datos y preferencias locales almacenados por la aplicación.</li>
+</ul>
+
+<h2>8. Privacidad de Menores</h2>
+<p>ADAPA es una herramienta educativa de acceso general apta para estudiantes de todas las edades. La aplicación no solicita nombre, dirección, correo electrónico ni datos sensibles a los usuarios. Los anuncios servidos a través de Google AdMob cumplen con las normativas aplicables de protección a menores y las políticas para desarrolladores de Google Play.</p>
+
+<h2>9. Cambios a esta Política</h2>
+<p>Esta Política de Privacidad puede actualizarse para reflejar futuras mejoras en la aplicación o cambios regulatorios. Cualquier modificación sustancial se reflejará con una nueva fecha de vigencia al inicio de este documento y dentro de la sección de Ajustes de la aplicación.</p>
+
+<h2>10. Contacto</h2>
+<p>Si tienes preguntas, dudas o comentarios acerca de esta Política de Privacidad o del funcionamiento de ADAPA, puedes ponerte en contacto con el desarrollador a través de:</p>
+<p><strong>Correo electrónico:</strong> <a href="mailto:enmandom@gmail.com">enmandom@gmail.com</a><br>
+<strong>Desarrollador:</strong> Enmanuel Apps / ADAPA Team</p>
+
+<footer>
+<p>ADAPA · Política de Privacidad adaptada para Google Play Console y distribución oficial.</p>
+</footer>
+</main>
+</body>
+</html>

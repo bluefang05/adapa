@@ -145,6 +145,28 @@
               }
             ]
           }
+        },
+        {
+          "id": "u03l01_t04",
+          "type": "visual_card",
+          "title": "Saludos en contexto",
+          "text": "Observa el saludo formal educado y el saludo amigable entre personas.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_greeting_formal",
+                "hangul": "안녕하세요!",
+                "meaning_es": "¡Hola! (saludo formal educado)",
+                "tts": "안녕하세요"
+              },
+              {
+                "image_asset": "visual_greeting_informal",
+                "hangul": "반가워요!",
+                "meaning_es": "¡Encantado/a de conocerte!",
+                "tts": "반가워요"
+              }
+            ]
+          }
         }
       ],
       "activities": [
@@ -516,6 +538,18 @@
                 "tts": "반가워요"
               }
             ]
+          }
+        },
+        {
+          "id": "u03l02_t05",
+          "type": "visual_card",
+          "title": "Presentaciones personales",
+          "text": "Al presentarte dices «저는 [nombre]이에요/예요».",
+          "payload": {
+            "image_asset": "visual_intro_names",
+            "hangul": "저는 민수에요 / 저는 수진이에요.",
+            "meaning_es": "Yo soy Minsu / Yo soy Sujin.",
+            "tts": "저는 민수예요 저는 수진이에요"
           }
         }
       ],
@@ -1079,6 +1113,18 @@
                 "tts": "읽어요."
               }
             ]
+          }
+        },
+        {
+          "id": "u03l04_t03",
+          "type": "visual_card",
+          "title": "¡Ánimo con el estudio!",
+          "text": "Toma apuntes en tu cuaderno y practica a diario.",
+          "payload": {
+            "image_asset": "visual_study_motivation",
+            "hangul": "화이팅!",
+            "meaning_es": "¡Mucho ánimo con el estudio!",
+            "tts": "화이팅"
           }
         }
       ],

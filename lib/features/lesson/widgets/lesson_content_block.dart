@@ -95,6 +95,12 @@ class _LessonContentBlockCardState extends State<LessonContentBlockCard> {
         items: _mapList(payload['items']),
       );
     }
+    if (type == 'visual_card' ||
+        type == 'illustration' ||
+        type == 'infographic' ||
+        type == 'image') {
+      return _VisualCard(payload: payload);
+    }
     if (type == 'dialogue_model') {
       return _DialogueTurns(turns: _mapList(payload['turns']));
     }
@@ -484,6 +490,216 @@ class _VisualVocabularyItem extends StatelessWidget {
   }
 }
 
+class _VisualCard extends StatelessWidget {
+  const _VisualCard({required this.payload});
+  final Map<String, dynamic> payload;
+
+  @override
+  Widget build(BuildContext context) {
+    final assetKey = payload['image_asset'] ??
+        payload['asset_id'] ??
+        payload['id'] ??
+        payload['asset'];
+    final items = payload['items'] as List?;
+
+    if (items != null && items.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final raw in items)
+            if (raw is Map)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _SingleVisualCard(
+                  payload: Map<String, dynamic>.from(raw),
+                ),
+              ),
+        ],
+      );
+    }
+
+    if (assetKey == null) return const SizedBox.shrink();
+    return _SingleVisualCard(payload: payload);
+  }
+}
+
+class _SingleVisualCard extends StatelessWidget {
+  const _SingleVisualCard({required this.payload});
+  final Map<String, dynamic> payload;
+
+  @override
+  Widget build(BuildContext context) {
+    final assetKey = (payload['image_asset'] ??
+            payload['asset_id'] ??
+            payload['id'] ??
+            payload['asset'])
+        ?.toString();
+    if (assetKey == null || assetKey.isEmpty) return const SizedBox.shrink();
+
+    final caption = payload['caption_es']?.toString() ??
+        payload['caption']?.toString() ??
+        payload['note_es']?.toString();
+    final hangul = payload['hangul']?.toString();
+    final meaningEs = payload['meaning_es']?.toString();
+    final tts = payload['tts']?.toString() ?? hangul;
+
+    final resolver = AdapaRuntime.of(context).assetResolver;
+    final future = assetKey.startsWith('assets/')
+        ? Future<String?>.value(assetKey)
+        : resolver.visualAsset(assetKey);
+
+    final scheme = Theme.of(context).colorScheme;
+
+    return FutureBuilder<String?>(
+      future: future,
+      builder: (context, snapshot) {
+        final path = snapshot.data;
+        if (path == null) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GestureDetector(
+                onTap: () => _showFullImage(context, path, caption ?? hangul),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(8),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 280),
+                        child: Image.asset(
+                          path,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: Colors.black45,
+                        child: Icon(Icons.zoom_in, size: 16, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (hangul != null || caption != null || meaningEs != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (hangul != null)
+                              Text(
+                                hangul,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            if (meaningEs != null)
+                              Text(
+                                meaningEs,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            if (caption != null && caption != meaningEs)
+                              Text(
+                                caption,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (tts != null && tts.isNotEmpty)
+                        IconButton.filledTonal(
+                          tooltip: 'Escuchar',
+                          onPressed: () => _speakTheoryText(context, tts),
+                          icon: const Icon(Icons.volume_up_outlined),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFullImage(BuildContext context, String assetPath, String? title) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(12),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (title != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 36, bottom: 8),
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                  Flexible(
+                    child: InteractiveViewer(
+                      clipBehavior: Clip.none,
+                      child: Image.asset(assetPath, fit: BoxFit.contain),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.black87),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _HangulTable extends StatelessWidget {
   const _HangulTable({
     required this.items,
@@ -537,26 +753,36 @@ class _NumberTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       children: [
         for (final item in items)
-          Container(
-            width: 105,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLow,
+          Material(
+            color: scheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(15),
+            child: InkWell(
               borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              children: [
-                Text('${item['number']}', style: Theme.of(context).textTheme.labelLarge),
-                Text(item['hangul']?.toString() ?? '',
-                    style: Theme.of(context).textTheme.titleLarge),
-                if (showRomanization && item['romanization'] != null)
-                  Text(item['romanization'].toString()),
-              ],
+              onTap: () {
+                final text = (item['tts_text'] ?? item['hangul'] ?? '').toString();
+                if (text.isNotEmpty) _speakTheoryText(context, text);
+              },
+              child: Container(
+                width: 105,
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Text('${item['number']}', style: Theme.of(context).textTheme.labelLarge),
+                    Text(item['hangul']?.toString() ?? '',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    if (showRomanization && item['romanization'] != null)
+                      Text(item['romanization'].toString()),
+                    const SizedBox(height: 4),
+                    Icon(Icons.volume_up_outlined, size: 16, color: scheme.primary.withValues(alpha: 0.7)),
+                  ],
+                ),
+              ),
             ),
           ),
       ],
@@ -601,14 +827,25 @@ class _BigToken extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
         borderRadius: BorderRadius.circular(14),
+        onTap: text.trim().isEmpty ? null : () => _speakTheoryText(context, text),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(text, style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(width: 8),
+              Icon(Icons.volume_up_outlined, size: 18, color: scheme.primary),
+            ],
+          ),
+        ),
       ),
-      child: Text(text, style: Theme.of(context).textTheme.headlineSmall),
     );
   }
 }
@@ -701,24 +938,52 @@ class _StructuredRows extends StatelessWidget {
     return Column(
       children: [
         for (final item in items)
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(13),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                for (final entry in item.entries)
-                  if (!_internalField(entry.key) &&
-                      (entry.key != 'romanization' || showRomanization))
-                    _FieldChip(label: _labelFor(entry.key), value: _display(entry.value)),
-              ],
-            ),
+          Builder(
+            builder: (context) {
+              final ttsTarget = item['tts']?.toString() ??
+                  item['sentence']?.toString() ??
+                  item['verb']?.toString() ??
+                  item['word']?.toString() ??
+                  item['hangul']?.toString() ??
+                  item['example']?.toString() ??
+                  item['ko']?.toString();
+              final hasTts = ttsTarget != null && ttsTarget.trim().isNotEmpty;
+
+              return Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(13),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          for (final entry in item.entries)
+                            if (!_internalField(entry.key) &&
+                                (entry.key != 'romanization' || showRomanization))
+                              _FieldChip(label: _labelFor(entry.key), value: _display(entry.value)),
+                        ],
+                      ),
+                    ),
+                    if (hasTts) ...[
+                      const SizedBox(width: 6),
+                      IconButton(
+                        tooltip: 'Escuchar pronunciación',
+                        icon: const Icon(Icons.volume_up_outlined),
+                        onPressed: () => _speakTheoryText(context, ttsTarget),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
           ),
       ],
     );

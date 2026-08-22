@@ -6,6 +6,7 @@ import '../../../core/dialogue/dialogue_scene.dart';
 import '../../../core/dialogue/dialogue_variant_builder.dart';
 import '../../../core/evaluation/dialogue_evaluator.dart';
 import '../../../core/models/activity_content.dart';
+import '../../../core/practice/activity_shuffle.dart';
 import '../../../core/runtime/adapa_runtime.dart';
 import '../../../core/session/activity_session_store.dart';
 import '../widgets/activity_feedback.dart';
@@ -278,8 +279,23 @@ class _DialogueVariantActivityState extends State<_DialogueVariantActivity> {
   bool _hydrated = false;
   ActivitySessionStore? _sessionStore;
 
-  List<dynamic> get _choices =>
-      (widget.activity.payload['choices'] as List? ?? const []).toList(growable: false);
+  List<dynamic> get _choices => ActivityShuffle.copy<dynamic>(
+        (widget.activity.payload['choices'] as List? ?? const []).toList(growable: false),
+      );
+
+  static String _valueOf(dynamic option) {
+    if (option is Map) {
+      return (option['ko'] ?? option['value'] ?? option['id'] ?? option).toString();
+    }
+    return option.toString();
+  }
+
+  static String _labelOf(dynamic option) {
+    if (option is Map) {
+      return (option['label_es'] ?? option['es'] ?? option['ko'] ?? option['value'] ?? option).toString();
+    }
+    return option.toString();
+  }
 
   @override
   void didChangeDependencies() {
@@ -288,14 +304,12 @@ class _DialogueVariantActivityState extends State<_DialogueVariantActivity> {
     if (_hydrated) return;
     _hydrated = true;
     final saved = _sessionStore?.read(widget.activity.id);
-    final seen = (saved?['seen'] as List? ?? const []).map((e)=>e.toString());
+    final seen = (saved?['seen'] as List? ?? const []).map((e) => e.toString());
     _seen.addAll(seen);
   }
 
   void _select(dynamic option) {
-    final value = option is Map
-        ? (option['ko'] ?? option['value'] ?? option['id'] ?? option).toString()
-        : option.toString();
+    final value = _valueOf(option);
     setState(() {
       _selected = option;
       _seen.add(value);
@@ -324,7 +338,7 @@ class _DialogueVariantActivityState extends State<_DialogueVariantActivity> {
         }
         final scene = snapshot.data;
         if (scene == null) return const Text('No se pudo cargar el diálogo.');
-        final choice = _selected?.toString();
+        final choice = _selected == null ? null : _valueOf(_selected);
         final variant = choice == null
             ? scene
             : DialogueVariantBuilder.applySlot(
@@ -341,8 +355,8 @@ class _DialogueVariantActivityState extends State<_DialogueVariantActivity> {
               children: [
                 for (final option in _choices)
                   ChoiceChip(
-                    label: Text(option.toString()),
-                    selected: choice == option.toString(),
+                    label: Text(_labelOf(option)),
+                    selected: choice == _valueOf(option),
                     onSelected: (_) => _select(option),
                   ),
               ],

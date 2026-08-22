@@ -420,8 +420,17 @@ class ProgressController extends ChangeNotifier {
     String activityId,
     ActivityProgress progress,
   ) {
-    final lessonId = lessonIdForActivity(activityId)!;
-    final unitId = unitIdForActivity(activityId)!;
+    final lessonId = lessonIdForActivity(activityId);
+    final unitId = unitIdForActivity(activityId);
+    if (lessonId == null || unitId == null) {
+      return _snapshot?.resume ??
+          ResumePointer(
+            activityId: activityId,
+            lessonId: 'u01l01',
+            unitId: 'u01',
+            updatedAt: DateTime.now(),
+          );
+    }
     final lessonCompleted = isLessonComplete(lessonId);
 
     if (!progress.completed && !lessonCompleted) {

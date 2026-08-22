@@ -31,7 +31,10 @@ class ActivityEvaluator {
         .map((e) => e.toString())
         .toList(growable: false);
     if (answers.isEmpty) {
-      return EvaluationResult(isCorrect: value.trim().isNotEmpty);
+      return const EvaluationResult(
+        isCorrect: false,
+        message: 'La actividad no tiene respuestas configuradas.',
+      );
     }
 
     final matches = answers.any(

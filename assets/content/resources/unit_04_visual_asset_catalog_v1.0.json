@@ -181,6 +181,645 @@
       "purpose": "image_choice",
       "labels_baked_in": false,
       "status": "generated_v1"
+    },
+    {
+      "id": "visual_greeting_formal",
+      "hangul": "안녕하세요!",
+      "meaning_es": "¡Hola! (saludo formal)",
+      "asset": "assets/vocabulary/u04/adapa_visual_01.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_01",
+      "hangul": "안녕하세요!",
+      "meaning_es": "¡Hola! (saludo formal)",
+      "asset": "assets/vocabulary/u04/adapa_visual_01.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_greeting_informal",
+      "hangul": "반가워요!",
+      "meaning_es": "¡Encantado/a de conocerte! (saludo amigable)",
+      "asset": "assets/vocabulary/u04/adapa_visual_02.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_02",
+      "hangul": "반가워요!",
+      "meaning_es": "¡Encantado/a de conocerte!",
+      "asset": "assets/vocabulary/u04/adapa_visual_02.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_intro_names",
+      "hangul": "저는 민수에요 / 저는 수진이에요.",
+      "meaning_es": "Presentaciones: Yo soy Minsu / Yo soy Sujin.",
+      "asset": "assets/vocabulary/u04/adapa_visual_03.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_03",
+      "hangul": "저는 민수에요 / 저는 수진이에요.",
+      "meaning_es": "Presentaciones personales",
+      "asset": "assets/vocabulary/u04/adapa_visual_03.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_hangul_order",
+      "hangul": "가 → 각 → 강",
+      "meaning_es": "Orden de trazo y composición de sílabas en Hangul",
+      "asset": "assets/vocabulary/u04/adapa_visual_04.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_04",
+      "hangul": "가 → 각 → 강",
+      "meaning_es": "Orden de trazo en Hangul",
+      "asset": "assets/vocabulary/u04/adapa_visual_04.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_family",
+      "hangul": "가족",
+      "meaning_es": "Familia (아버지, 어머니, 오빠, 나, 여동생)",
+      "asset": "assets/vocabulary/u04/adapa_visual_05.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_05",
+      "hangul": "가족",
+      "meaning_es": "Familia",
+      "asset": "assets/vocabulary/u04/adapa_visual_05.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_clock",
+      "hangul": "시계",
+      "meaning_es": "La hora y el reloj",
+      "asset": "assets/vocabulary/u04/adapa_visual_06.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_06",
+      "hangul": "시계",
+      "meaning_es": "Reloj / La hora",
+      "asset": "assets/vocabulary/u04/adapa_visual_06.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_calendar",
+      "hangul": "달력",
+      "meaning_es": "Días de la semana y meses (월, 화, 수, 목, 금, 토, 일)",
+      "asset": "assets/vocabulary/u04/adapa_visual_07.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_07",
+      "hangul": "달력",
+      "meaning_es": "Calendario y días",
+      "asset": "assets/vocabulary/u04/adapa_visual_07.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_routine",
+      "hangul": "일과 / 시간표",
+      "meaning_es": "Horario y rutina diaria (수업, 점심, 운동, 숙제, 저녁)",
+      "asset": "assets/vocabulary/u04/adapa_visual_08.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_08",
+      "hangul": "일과 / 시간표",
+      "meaning_es": "Rutina diaria",
+      "asset": "assets/vocabulary/u04/adapa_visual_08.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_korean_meal",
+      "hangul": "한국 음식",
+      "meaning_es": "Comida coreana (밥, 김치, 국)",
+      "asset": "assets/vocabulary/u04/adapa_visual_09.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_09",
+      "hangul": "한국 음식",
+      "meaning_es": "Comida coreana",
+      "asset": "assets/vocabulary/u04/adapa_visual_09.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_cafe_order",
+      "hangul": "커피 한 잔 주세요.",
+      "meaning_es": "Un café, por favor (pedir en una cafetería)",
+      "asset": "assets/vocabulary/u04/adapa_visual_10.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_10",
+      "hangul": "커피 한 잔 주세요.",
+      "meaning_es": "Pedido en cafetería",
+      "asset": "assets/vocabulary/u04/adapa_visual_10.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_clothing",
+      "hangul": "옷",
+      "meaning_es": "Prendas de vestir (후드티, 바지, 신발)",
+      "asset": "assets/vocabulary/u04/adapa_visual_11.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_11",
+      "hangul": "옷",
+      "meaning_es": "Ropa",
+      "asset": "assets/vocabulary/u04/adapa_visual_11.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_supermarket",
+      "hangul": "슈퍼마켓 / 마트",
+      "meaning_es": "Supermercado y compras",
+      "asset": "assets/vocabulary/u04/adapa_visual_12.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_12",
+      "hangul": "슈퍼마켓",
+      "meaning_es": "Supermercado",
+      "asset": "assets/vocabulary/u04/adapa_visual_12.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_directions",
+      "hangul": "장소와 길찾기",
+      "meaning_es": "Lugares en la ciudad (학교, 우체국, 은행)",
+      "asset": "assets/vocabulary/u04/adapa_visual_13.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_13",
+      "hangul": "장소와 길찾기",
+      "meaning_es": "Mapa de lugares",
+      "asset": "assets/vocabulary/u04/adapa_visual_13.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_bus",
+      "hangul": "버스",
+      "meaning_es": "Transporte en autobús urbano (101번 버스)",
+      "asset": "assets/vocabulary/u04/adapa_visual_14.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_14",
+      "hangul": "버스",
+      "meaning_es": "Autobús",
+      "asset": "assets/vocabulary/u04/adapa_visual_14.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_weather",
+      "hangul": "날씨",
+      "meaning_es": "El clima (맑음/해, 구름, 비, 눈)",
+      "asset": "assets/vocabulary/u04/adapa_visual_15.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_15",
+      "hangul": "날씨",
+      "meaning_es": "El clima",
+      "asset": "assets/vocabulary/u04/adapa_visual_15.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_seasons",
+      "hangul": "사계절",
+      "meaning_es": "Las 4 estaciones (봄, 여름, 가을, 겨울)",
+      "asset": "assets/vocabulary/u04/adapa_visual_16.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_16",
+      "hangul": "사계절",
+      "meaning_es": "Las cuatro estaciones",
+      "asset": "assets/vocabulary/u04/adapa_visual_16.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_verb_hada",
+      "hangul": "하다 → 해요",
+      "meaning_es": "Presente del verbo hacer (하다)",
+      "asset": "assets/vocabulary/u04/adapa_visual_17.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_17",
+      "hangul": "하다 → 해요",
+      "meaning_es": "Presente con 하다",
+      "asset": "assets/vocabulary/u04/adapa_visual_17.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_past_tense",
+      "hangul": "과거 시제 - 었/았어요",
+      "meaning_es": "Conjugación en pasado (먹었어요)",
+      "asset": "assets/vocabulary/u04/adapa_visual_18.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_18",
+      "hangul": "과거 시제 - 었/았어요",
+      "meaning_es": "Pasado en coreano",
+      "asset": "assets/vocabulary/u04/adapa_visual_18.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_future_tense",
+      "hangul": "미래 시제 - (으)ㄹ 거예요",
+      "meaning_es": "Conjugación en futuro (갈 거예요)",
+      "asset": "assets/vocabulary/u04/adapa_visual_19.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_19",
+      "hangul": "미래 시제 - (으)ㄹ 거예요",
+      "meaning_es": "Futuro en coreano",
+      "asset": "assets/vocabulary/u04/adapa_visual_19.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_particles_core",
+      "hangul": "은/는 · 이/가 · 을/를",
+      "meaning_es": "Partículas básicas: tema, sujeto y objeto",
+      "asset": "assets/vocabulary/u04/adapa_visual_20.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_20",
+      "hangul": "은/는 · 이/가 · 을/를",
+      "meaning_es": "Partículas coreanas",
+      "asset": "assets/vocabulary/u04/adapa_visual_20.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_topik_levels",
+      "hangul": "TOPIK 등급",
+      "meaning_es": "Niveles del examen oficial TOPIK (1 al 6)",
+      "asset": "assets/vocabulary/u04/adapa_visual_21.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_21",
+      "hangul": "TOPIK 등급",
+      "meaning_es": "Niveles TOPIK",
+      "asset": "assets/vocabulary/u04/adapa_visual_21.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_study_motivation",
+      "hangul": "화이팅!",
+      "meaning_es": "¡Mucho ánimo! Cuaderno de apuntes y estudio",
+      "asset": "assets/vocabulary/u04/adapa_visual_22.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_22",
+      "hangul": "화이팅!",
+      "meaning_es": "Ánimo de estudio",
+      "asset": "assets/vocabulary/u04/adapa_visual_22.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_palace_culture",
+      "hangul": "경복궁",
+      "meaning_es": "Palacios y arquitectura tradicional de Corea",
+      "asset": "assets/vocabulary/u04/adapa_visual_23.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_23",
+      "hangul": "경복궁",
+      "meaning_es": "Palacio coreano",
+      "asset": "assets/vocabulary/u04/adapa_visual_23.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_korean_traditions",
+      "hangul": "한복 · 부채 · 탈",
+      "meaning_es": "Tradiciones coreanas: Hanbok, abanico y máscara",
+      "asset": "assets/vocabulary/u04/adapa_visual_24.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_24",
+      "hangul": "한복 · 부채 · 탈",
+      "meaning_es": "Tradiciones coreanas",
+      "asset": "assets/vocabulary/u04/adapa_visual_24.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_korean_table",
+      "hangul": "한식 한상차림",
+      "meaning_es": "Mesa tradicional coreana con acompañamientos (반찬)",
+      "asset": "assets/vocabulary/u04/adapa_visual_25.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_25",
+      "hangul": "한식 한상차림",
+      "meaning_es": "Mesa tradicional 한식",
+      "asset": "assets/vocabulary/u04/adapa_visual_25.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_cafe_exterior",
+      "hangul": "카페",
+      "meaning_es": "Fachada de cafetería coreana",
+      "asset": "assets/vocabulary/u04/adapa_visual_26.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_26",
+      "hangul": "카페",
+      "meaning_es": "Fachada de café",
+      "asset": "assets/vocabulary/u04/adapa_visual_26.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_family_generations",
+      "hangul": "3대 가족",
+      "meaning_es": "Tres generaciones de la familia coreana",
+      "asset": "assets/vocabulary/u04/adapa_visual_27.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_27",
+      "hangul": "3대 가족",
+      "meaning_es": "Familia de 3 generaciones",
+      "asset": "assets/vocabulary/u04/adapa_visual_27.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_clothing_items",
+      "hangul": "옷과 치마",
+      "meaning_es": "Prendas de vestir: sudadera, vaqueros, falda y zapatillas",
+      "asset": "assets/vocabulary/u04/adapa_visual_28.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_28",
+      "hangul": "옷과 치마",
+      "meaning_es": "Prendas de vestir",
+      "asset": "assets/vocabulary/u04/adapa_visual_28.png",
+      "purpose": "infographic",
+      "labels_baked_in": false,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_emotions_adjectives",
+      "hangul": "행복하다 · 춥다",
+      "meaning_es": "Emociones y adjetivos: estar feliz / tener frío",
+      "asset": "assets/vocabulary/u04/adapa_visual_29.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_29",
+      "hangul": "행복하다 · 춥다",
+      "meaning_es": "Emociones y sensaciones",
+      "asset": "assets/vocabulary/u04/adapa_visual_29.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "visual_question_words",
+      "hangul": "누가 · 언제 · 어디 · 왜 · 어떻게",
+      "meaning_es": "Partículas y palabras interrogativas en coreano",
+      "asset": "assets/vocabulary/u04/adapa_visual_30.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "adapa_visual_30",
+      "hangul": "누가 · 언제 · 어디 · 왜 · 어떻게",
+      "meaning_es": "Palabras interrogativas",
+      "asset": "assets/vocabulary/u04/adapa_visual_30.png",
+      "purpose": "infographic",
+      "labels_baked_in": true,
+      "status": "integrated_v1"
+    },
+    {
+      "id": "obj_book",
+      "hangul": "책",
+      "meaning_es": "libro",
+      "asset": "assets/vocabulary/common/obj_book.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_pencil",
+      "hangul": "연필",
+      "meaning_es": "lápiz",
+      "asset": "assets/vocabulary/common/obj_pencil.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_notebook",
+      "hangul": "공책",
+      "meaning_es": "cuaderno",
+      "asset": "assets/vocabulary/common/obj_notebook.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_backpack",
+      "hangul": "가방",
+      "meaning_es": "mochila / bolso",
+      "asset": "assets/vocabulary/common/obj_backpack.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_apple",
+      "hangul": "사과",
+      "meaning_es": "manzana",
+      "asset": "assets/vocabulary/common/obj_apple.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_cat",
+      "hangul": "고양이",
+      "meaning_es": "gato",
+      "asset": "assets/vocabulary/common/obj_cat.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_dog",
+      "hangul": "개",
+      "meaning_es": "perro",
+      "asset": "assets/vocabulary/common/obj_dog.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_mountain",
+      "hangul": "산",
+      "meaning_es": "montaña",
+      "asset": "assets/vocabulary/common/obj_mountain.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_chair",
+      "hangul": "의자",
+      "meaning_es": "silla",
+      "asset": "assets/vocabulary/common/obj_chair.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_desk",
+      "hangul": "책상",
+      "meaning_es": "escritorio",
+      "asset": "assets/vocabulary/common/obj_desk.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
+    },
+    {
+      "id": "obj_clock",
+      "hangul": "시계",
+      "meaning_es": "reloj",
+      "asset": "assets/vocabulary/common/obj_clock.jpg",
+      "purpose": "image_choice",
+      "labels_baked_in": false,
+      "status": "generated_v1"
     }
   ]
 }

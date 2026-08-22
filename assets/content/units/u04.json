@@ -468,6 +468,28 @@
               }
             ]
           }
+        },
+        {
+          "id": "u04l02_t02",
+          "type": "visual_card",
+          "title": "Mesa tradicional coreana (한식)",
+          "text": "La comida tradicional coreana se sirve con arroz (밥), sopa/guiso (국/찌개) y varios acompañamientos (반찬) como el kimchi.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_korean_meal",
+                "hangul": "한국 음식",
+                "meaning_es": "Comida coreana tradicional (밥, 김치, 국)",
+                "tts": "밥 김치 국"
+              },
+              {
+                "image_asset": "visual_korean_table",
+                "hangul": "한식 한상차림",
+                "meaning_es": "Mesa coreana con guiso y guarniciones (반찬)",
+                "tts": "한식 한상차림"
+              }
+            ]
+          }
         }
       ],
       "activities": [
@@ -773,6 +795,18 @@
                 "tts": "메뉴 주세요."
               }
             ]
+          }
+        },
+        {
+          "id": "u04l03_t03",
+          "type": "visual_card",
+          "title": "Pedir en una cafetería o restaurante",
+          "text": "Usa «[cosa] 주세요» para pedir educadamente.",
+          "payload": {
+            "image_asset": "visual_cafe_order",
+            "hangul": "커피 한 잔 주세요.",
+            "meaning_es": "Un café, por favor.",
+            "tts": "커피 한 잔 주세요"
           }
         }
       ],
@@ -1321,6 +1355,28 @@
                 "es": "¿Hay algún museo por aquí?",
                 "tts": "이 근처에 박물관이 있나요?",
                 "source": "Primer contacto"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u04l05_t03",
+          "type": "visual_card",
+          "title": "Lugares y transporte en la ciudad",
+          "text": "Muévete en autobús urbano y ubica los principales lugares de la ciudad.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_bus",
+                "hangul": "버스",
+                "meaning_es": "Autobús urbano (101번 버스)",
+                "tts": "버스"
+              },
+              {
+                "image_asset": "visual_directions",
+                "hangul": "장소와 길찾기",
+                "meaning_es": "Mapa de lugares: escuela (학교), banco (은행), correos (우체국)",
+                "tts": "학교 은행 우체국"
               }
             ]
           }

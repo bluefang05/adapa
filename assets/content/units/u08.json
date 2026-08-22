@@ -937,6 +937,18 @@
           "title": "Tu primera conversación en coreano",
           "text": "Sin romanización. Sin traducir palabra por palabra. Usa Hangul.",
           "payload": {}
+        },
+        {
+          "id": "u08l04_t02",
+          "type": "visual_card",
+          "title": "Hoja de ruta y niveles TOPIK",
+          "text": "Con los contenidos de este curso dominas la base del nivel TOPIK I (Básico 1 y 2).",
+          "payload": {
+            "image_asset": "visual_topik_levels",
+            "hangul": "TOPIK 등급 (1~6급)",
+            "meaning_es": "Niveles oficiales TOPIK: Básico (1-2), Intermedio (3-4) y Avanzado (5-6)",
+            "tts": "토픽"
+          }
         }
       ],
       "activities": [

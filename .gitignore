@@ -47,3 +47,7 @@ app.*.map.json
 # Local Android release signing credentials.
 /android/key.properties
 *.jks
+.gradle/
+/android/.gradle/
+/android/build/
+

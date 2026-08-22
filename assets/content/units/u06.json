@@ -378,6 +378,28 @@
               }
             ]
           }
+        },
+        {
+          "id": "u06l02_t04",
+          "type": "visual_card",
+          "title": "En la cafetería coreana",
+          "text": "Pide tu bebida favorita en la cafetería.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_cafe_exterior",
+                "hangul": "카페",
+                "meaning_es": "Cafetería coreana",
+                "tts": "카페"
+              },
+              {
+                "image_asset": "visual_cafe_order",
+                "hangul": "커피 한 잔 주세요.",
+                "meaning_es": "Un café, por favor.",
+                "tts": "커피 한 잔 주세요"
+              }
+            ]
+          }
         }
       ],
       "activities": [
@@ -908,6 +930,18 @@
               "카페가 어디에 있어요?",
               "은행이 어디에 있어요?"
             ]
+          }
+        },
+        {
+          "id": "u06l04_t03",
+          "type": "visual_card",
+          "title": "Palabras interrogativas (의문사)",
+          "text": "Aprende las 5 preguntas clave en coreano: quién, cuándo, dónde, por qué y cómo.",
+          "payload": {
+            "image_asset": "visual_question_words",
+            "hangul": "누가 · 언제 · 어디 · 왜 · 어떻게",
+            "meaning_es": "Quién, Cuándo, Dónde, Por qué, Cómo",
+            "tts": "누가 언제 어디 왜 어떻게"
           }
         }
       ],
@@ -1617,6 +1651,28 @@
                 "ko": "그것을 좀 써줄래요?",
                 "es": "¿Podría escribirlo, por favor?",
                 "tts": "그것을 좀 써줄래요?"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u06l07_t03",
+          "type": "visual_card",
+          "title": "Cultura y tradiciones coreanas",
+          "text": "Conoce los palacios históricos y símbolos de la vestimenta y cultura tradicional.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_palace_culture",
+                "hangul": "경복궁",
+                "meaning_es": "Palacio de Gyeongbokgung y arquitectura tradicional",
+                "tts": "경복궁"
+              },
+              {
+                "image_asset": "visual_korean_traditions",
+                "hangul": "한복 · 부채 · 탈",
+                "meaning_es": "Vestimenta tradicional (Hanbok), abanico y máscara",
+                "tts": "한복 부채 탈"
               }
             ]
           }

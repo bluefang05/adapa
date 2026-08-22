@@ -123,8 +123,8 @@
           "id": "u01l01_a01",
           "type": "multiple_choice",
           "family": "choice",
-          "objective": "Reconocer ㅏ.",
-          "prompt": "¿Cuál de estas vocales corresponde a «a»?",
+          "objective": "Reconocer las 10 vocales básicas del Hangul.",
+          "prompt": "Selecciona la vocal coreana correspondiente al sonido:",
           "scoreMode": "auto",
           "normalization": {
             "trim": true,
@@ -134,21 +134,18 @@
             "ignore_terminal_punctuation": true
           },
           "hints": [
-            "Busca la vocal que el material presenta como «a de casa»."
+            "Observa la orientación de los trazos y escucha su pronunciación."
           ],
           "feedback": {
-            "correct": "Correcto. ㅏ corresponde a «a».",
+            "correct": "¡Excelente! Has dominado el reconocimiento de las 10 vocales básicas.",
             "wrong": {
-              "ㅓ": "ㅓ se presenta como «eo». Compárala visualmente con ㅏ.",
-              "ㅗ": "ㅗ corresponde a «o».",
-              "ㅜ": "ㅜ corresponde a «u».",
-              "default": "Revisa la tabla de vocales y vuelve a intentarlo."
+              "default": "Compara la forma con la tabla de vocales y vuelve a intentarlo."
             }
           },
           "completionRule": null,
           "note": null,
           "capabilities": {
-            "hasTts": false,
+            "hasTts": true,
             "usesKeyboard": false,
             "usesImages": false,
             "usesSpeechRecognition": false,
@@ -156,6 +153,19 @@
             "romanization": null
           },
           "payload": {
+            "options_per_round": 3,
+            "items": [
+              { "target": "ㅏ", "romanization": "a", "sound": "아", "prompt": "¿Cuál de estas vocales corresponde a «a»?" },
+              { "target": "ㅑ", "romanization": "ya", "sound": "야", "prompt": "¿Cuál de estas vocales corresponde a «ya»?" },
+              { "target": "ㅓ", "romanization": "eo", "sound": "어", "prompt": "¿Cuál de estas vocales corresponde a «eo»?" },
+              { "target": "ㅕ", "romanization": "yeo", "sound": "여", "prompt": "¿Cuál de estas vocales corresponde a «yeo»?" },
+              { "target": "ㅗ", "romanization": "o", "sound": "오", "prompt": "¿Cuál de estas vocales corresponde a «o»?" },
+              { "target": "ㅛ", "romanization": "yo", "sound": "요", "prompt": "¿Cuál de estas vocales corresponde a «yo»?" },
+              { "target": "ㅜ", "romanization": "u", "sound": "우", "prompt": "¿Cuál de estas vocales corresponde a «u»?" },
+              { "target": "ㅠ", "romanization": "yu", "sound": "유", "prompt": "¿Cuál de estas vocales corresponde a «yu»?" },
+              { "target": "ㅡ", "romanization": "eu", "sound": "으", "prompt": "¿Cuál de estas vocales corresponde a «eu»?" },
+              { "target": "ㅣ", "romanization": "i", "sound": "이", "prompt": "¿Cuál de estas vocales corresponde a «i»?" }
+            ],
             "options": [
               "ㅏ",
               "ㅓ",
@@ -470,6 +480,18 @@
           "title": "No memorices todo de golpe",
           "text": "Primero distingue las formas. Después las usarás dentro de sílabas, donde el sonido será más fácil de fijar.",
           "payload": {}
+        },
+        {
+          "id": "u01l02_t04",
+          "type": "infographic",
+          "title": "Orden de trazos y composición",
+          "text": "Las letras coreanas se trazan siempre de arriba a abajo y de izquierda a derecha.",
+          "payload": {
+            "image_asset": "visual_hangul_order",
+            "caption_es": "Orden de trazo: de arriba a abajo y de izquierda a derecha (가 → 각 → 강)",
+            "hangul": "가 → 각 → 강",
+            "tts": "가 각 강"
+          }
         }
       ],
       "activities": [
@@ -531,8 +553,8 @@
           "id": "u01l02_a02",
           "type": "multiple_choice",
           "family": "choice",
-          "objective": "Reconocer ㅇ.",
-          "prompt": "¿Qué consonante puede ser silenciosa al inicio y sonar «ng» al final?",
+          "objective": "Reconocer las 14 consonantes básicas del Hangul.",
+          "prompt": "Selecciona la consonante coreana correspondiente:",
           "scoreMode": "auto",
           "normalization": {
             "trim": true,
@@ -542,18 +564,18 @@
             "ignore_terminal_punctuation": true
           },
           "hints": [
-            "Es la consonante circular."
+            "Observa la forma geométrica de cada consonante."
           ],
           "feedback": {
-            "correct": "Correcto. ㅇ es silenciosa al inicio de una sílaba y puede sonar ng al final.",
+            "correct": "¡Excelente! Has reconocido con éxito las consonantes básicas del Hangul.",
             "wrong": {
-              "default": "Busca la consonante de forma circular."
+              "default": "Compara la forma con la tabla de consonantes y vuelve a intentarlo."
             }
           },
           "completionRule": null,
           "note": null,
           "capabilities": {
-            "hasTts": false,
+            "hasTts": true,
             "usesKeyboard": false,
             "usesImages": false,
             "usesSpeechRecognition": false,
@@ -561,6 +583,23 @@
             "romanization": null
           },
           "payload": {
+            "options_per_round": 3,
+            "items": [
+              { "target": "ㄱ", "romanization": "g/k", "sound": "기역", "prompt": "¿Cuál consonante corresponde a «g / k»?" },
+              { "target": "ㄴ", "romanization": "n", "sound": "니은", "prompt": "¿Cuál consonante corresponde a «n»?" },
+              { "target": "ㄷ", "romanization": "d/t", "sound": "디귿", "prompt": "¿Cuál consonante corresponde a «d / t»?" },
+              { "target": "ㄹ", "romanization": "r/l", "sound": "리을", "prompt": "¿Cuál consonante corresponde a «r / l»?" },
+              { "target": "ㅁ", "romanization": "m", "sound": "미음", "prompt": "¿Cuál consonante corresponde a «m»?" },
+              { "target": "ㅂ", "romanization": "b/p", "sound": "비읍", "prompt": "¿Cuál consonante corresponde a «b / p»?" },
+              { "target": "ㅅ", "romanization": "s", "sound": "시옷", "prompt": "¿Cuál consonante corresponde a «s»?" },
+              { "target": "ㅇ", "romanization": "—/ng", "sound": "이응", "prompt": "¿Qué consonante es silenciosa al inicio y suena «ng» al final?" },
+              { "target": "ㅈ", "romanization": "j", "sound": "지읒", "prompt": "¿Cuál consonante corresponde al sonido cercano a «j»?" },
+              { "target": "ㅊ", "romanization": "ch", "sound": "치읓", "prompt": "¿Cuál consonante corresponde a «ch»?" },
+              { "target": "ㅋ", "romanization": "k (aspirada)", "sound": "키읔", "prompt": "¿Cuál consonante corresponde a «k» aspirada?" },
+              { "target": "ㅌ", "romanization": "t (aspirada)", "sound": "티읕", "prompt": "¿Cuál consonante corresponde a «t» aspirada?" },
+              { "target": "ㅍ", "romanization": "p (aspirada)", "sound": "피읖", "prompt": "¿Cuál consonante corresponde a «p» aspirada?" },
+              { "target": "ㅎ", "romanization": "h", "sound": "히읗", "prompt": "¿Cuál consonante corresponde a «h» suave?" }
+            ],
             "options": [
               "ㅎ",
               "ㅇ",

@@ -1,0 +1,53 @@
+GUÍA DE RESPUESTAS PARA GOOGLE PLAY CONSOLE — SEGURIDAD DE LOS DATOS (DATA SAFETY)
+
+Aplicación: ADAPA (com.enmanuelapps.adapa)
+Contacto: enmandom@gmail.com
+
+
+1. RECOPILACIÓN Y SEGURIDAD DE DATOS (PREGUNTAS GENERALES)
+
+- ¿Tu aplicación recopila o comparte alguno de los tipos de datos de usuario requeridos?
+  -> SÍ (debido a la integración del SDK de Google AdMob).
+
+- ¿Todos los datos recopilados por tu aplicación se cifran en tránsito?
+  -> SÍ (Google AdMob utiliza conexiones seguras HTTPS).
+
+- ¿Proporcionas a los usuarios una forma de solicitar que se eliminen sus datos?
+  -> SÍ (los usuarios pueden reiniciar todos sus datos y progreso desde Ajustes -> Privacidad y datos -> Reiniciar mi progreso, y al desinstalar la app se eliminan todos los datos locales).
+
+
+2. TIPOS DE DATOS A DECLARAR (POR EL SDK DE GOOGLE ADMOB)
+
+A. ID del dispositivo u otros IDs:
+   - ¿Qué tipo de IDs? -> Identificador de publicidad de Google (GAID / Advertising ID).
+   - ¿Se recopila, se comparte o ambos? -> Recopilado y compartido (por el SDK de AdMob).
+   - ¿Se procesa de forma efímera? -> No.
+   - ¿Es obligatorio u opcional? -> Obligatorio (para el funcionamiento de los anuncios).
+   - Fines de la recopilación:
+     [X] Publicidad o marketing
+     [X] Analítica
+     [X] Prevención de fraudes, seguridad y cumplimiento
+
+B. Información y rendimiento de aplicaciones:
+   - ¿Qué datos? -> Registros de fallos (Crash logs) y Diagnósticos / Métricas de rendimiento.
+   - ¿Se recopila, se comparte o ambos? -> Recopilado.
+   - ¿Se procesa de forma efímera? -> No.
+   - ¿Es obligatorio u opcional? -> Obligatorio.
+   - Fines de la recopilación:
+     [X] Analítica
+     [X] Prevención de fraudes, seguridad y cumplimiento
+
+C. Ubicación (Aproximada):
+   - ¿Qué datos? -> Ubicación aproximada (derivada de la dirección IP por AdMob).
+   - ¿Se recopila, se comparte o ambos? -> Recopilado y compartido.
+   - Fines:
+     [X] Publicidad o marketing
+     [X] Prevención de fraudes, seguridad y cumplimiento
+
+
+3. URL DE LA POLÍTICA DE PRIVACIDAD EN PLAY CONSOLE
+
+En el campo "URL de la política de privacidad" de Google Play Console, debes colocar el enlace web público donde esté alojada tu política (por ejemplo, en GitHub Pages, Google Sites, Notion público o tu sitio web).
+
+El archivo HTML listo para subir a tu servidor o GitHub Pages se encuentra en:
+release/privacy_policy_es.html

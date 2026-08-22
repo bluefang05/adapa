@@ -84,6 +84,18 @@
               }
             ]
           }
+        },
+        {
+          "id": "u05l01_t03",
+          "type": "visual_card",
+          "title": "Diagrama de partículas básicas",
+          "text": "Comprende la relación entre el tema (은/는), el sujeto (이/가) y el objeto directo (을/를).",
+          "payload": {
+            "image_asset": "visual_particles_core",
+            "hangul": "은/는 · 이/가 · 을/를",
+            "meaning_es": "Partículas de tema, sujeto y objeto directo",
+            "tts": "은 는 이 가 을 를"
+          }
         }
       ],
       "activities": [
@@ -749,6 +761,34 @@
                 "polite": "자요",
                 "meaning_es": "dormir",
                 "tts": "자요"
+              }
+            ]
+          }
+        },
+        {
+          "id": "u05l03_t03",
+          "type": "visual_card",
+          "title": "Tiempos verbales ilustrados",
+          "text": "Compara las conjugaciones en presente, pasado y futuro.",
+          "payload": {
+            "items": [
+              {
+                "image_asset": "visual_verb_hada",
+                "hangul": "하다 → 해요",
+                "meaning_es": "Presente: hacer (하다)",
+                "tts": "하다 해요"
+              },
+              {
+                "image_asset": "visual_past_tense",
+                "hangul": "과거 시제 - 었/았어요",
+                "meaning_es": "Pasado: comí / comiste / comió (먹었어요)",
+                "tts": "먹었어요"
+              },
+              {
+                "image_asset": "visual_future_tense",
+                "hangul": "미래 시제 - (으)ㄹ 거예요",
+                "meaning_es": "Futuro: iré / irás / irá (갈 거예요)",
+                "tts": "갈 거예요"
               }
             ]
           }

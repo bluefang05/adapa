@@ -1,6 +1,7 @@
 import 'package:adapa/core/models/activity_content.dart';
 import 'package:adapa/core/models/activity_family.dart';
 import 'package:adapa/features/practice/practice_session_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/runtime_harness.dart';
@@ -11,7 +12,12 @@ void main() {
   testWidgets(
     'choice with multiple correct answers requires the complete set and retries',
     (tester) async {
-      final harness = await RuntimeHarness.create();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final harness = await RuntimeHarness.create(loadCourse: false);
       addTearDown(harness.dispose);
 
       final activity = ActivityContent(
@@ -63,7 +69,7 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('B'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 60));
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Conjunto correcto.'), findsOneWidget);
       expect(find.text('Práctica completada'), findsOneWidget);
@@ -74,7 +80,7 @@ void main() {
   testWidgets(
     'multiple correct values remain alternative single-tap answers unless explicitly multi-select',
     (tester) async {
-      final harness = await RuntimeHarness.create();
+      final harness = await RuntimeHarness.create(loadCourse: false);
       addTearDown(harness.dispose);
 
       final activity = ActivityContent(
@@ -109,7 +115,7 @@ void main() {
       );
       await tester.tap(find.text('B'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 60));
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Bien.'), findsOneWidget);
       expect(find.text('Práctica completada'), findsOneWidget);

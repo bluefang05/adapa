@@ -33,9 +33,14 @@ class AssetResolver {
   }
 
   Future<String?> visualAsset(String id) async {
+    if (id.startsWith('assets/')) return id;
     _visualById ??= await _loadVisuals();
     final item = _visualById![id];
-    return item is Map ? item['asset']?.toString() : null;
+    if (item is Map) return item['asset']?.toString();
+    if (_visualById!['visual_$id'] is Map) {
+      return (_visualById!['visual_$id'] as Map)['asset']?.toString();
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>?> reading(String id) async {

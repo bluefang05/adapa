@@ -4,6 +4,7 @@ import '../../core/content/course_repository.dart';
 import '../../core/models/course_manifest.dart';
 import '../../core/runtime/adapa_runtime.dart';
 import '../activity/activity_screen.dart';
+import '../common/widgets/admob_banner.dart';
 import '../settings/settings_screen.dart';
 import '../unit/unit_screen.dart';
 
@@ -120,6 +121,9 @@ class CourseHomeScreen extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          bottomNavigationBar: const SafeArea(
+            child: AdmobBannerWidget(),
           ),
         );
       },
@@ -423,14 +427,40 @@ class _LearningPathUnit extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               summary.title,
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          Chip(label: Text(status)),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: state.completed
+                                  ? scheme.primaryContainer
+                                  : state.unlocked
+                                  ? scheme.secondaryContainer
+                                  : scheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              status,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: state.completed
+                                    ? scheme.onPrimaryContainer
+                                    : state.unlocked
+                                    ? scheme.onSecondaryContainer
+                                    : scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),

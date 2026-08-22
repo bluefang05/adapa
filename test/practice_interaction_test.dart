@@ -96,6 +96,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('A'));
+    await tester.pump();
     await tester.tap(find.widgetWithText(ActionChip, '2'));
     await tester.pump(const Duration(milliseconds: 80));
     expect(find.text('No coincide.'), findsOneWidget);
@@ -103,11 +104,13 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(find.text('A'));
+    await tester.pump();
     await tester.tap(find.widgetWithText(ActionChip, '1'));
     await tester.pump();
     expect(find.text('1/2 parejas resueltas'), findsOneWidget);
 
     await tester.tap(find.text('B'));
+    await tester.pump();
     await tester.tap(find.widgetWithText(ActionChip, '2'));
     await tester.pump();
     expect(find.text('2/2 parejas resueltas'), findsOneWidget);

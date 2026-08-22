@@ -9,26 +9,32 @@ import 'package:audioplayers/audioplayers.dart';
 class PracticeFeedbackService {
   PracticeFeedbackService._();
 
-  static final AudioPlayer _successPlayer = AudioPlayer();
-  static final AudioPlayer _errorPlayer = AudioPlayer();
+  static AudioPlayer? _successPlayer;
+  static AudioPlayer? _errorPlayer;
 
   static const String _successAsset = 'audio/practice_success.mp3';
   static const String _errorAsset = 'audio/practice_error.mp3';
 
+  static bool enabled = true;
+
   static void success() {
-    unawaited(_play(_successPlayer, _successAsset, volume: 0.72));
+    if (!enabled) return;
+    unawaited(_play(() => _successPlayer ??= AudioPlayer(), _successAsset, volume: 0.72));
   }
 
   static void error() {
-    unawaited(_play(_errorPlayer, _errorAsset, volume: 0.68));
+    if (!enabled) return;
+    unawaited(_play(() => _errorPlayer ??= AudioPlayer(), _errorAsset, volume: 0.68));
   }
 
   static Future<void> _play(
-    AudioPlayer player,
+    AudioPlayer Function() getPlayer,
     String asset, {
     required double volume,
   }) async {
+    if (!enabled) return;
     try {
+      final player = getPlayer();
       await player.stop();
       await player.play(AssetSource(asset), volume: volume);
     } catch (_) {

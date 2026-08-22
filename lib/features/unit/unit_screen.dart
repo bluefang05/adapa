@@ -8,6 +8,7 @@ import '../../core/models/lesson_content.dart';
 import '../../core/models/romanization_policy.dart';
 import '../../core/models/unit_content.dart';
 import '../../core/runtime/adapa_runtime.dart';
+import '../common/widgets/admob_banner.dart';
 import '../lesson/lesson_screen.dart';
 import '../practice/practice_session_screen.dart';
 import '../shared/progress_header_card.dart';
@@ -100,6 +101,9 @@ class UnitScreen extends StatelessWidget {
             },
           );
         },
+      ),
+      bottomNavigationBar: const SafeArea(
+        child: AdmobBannerWidget(),
       ),
     );
   }

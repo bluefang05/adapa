@@ -20,7 +20,7 @@ if (hasReleaseSigning) {
 
 android {
     namespace = "com.enmanuelapps.adapa"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -50,6 +50,10 @@ android {
 
     buildTypes {
         release {
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             // Never fall back to the debug key for a publishable artifact.
             // `tools/release_gate.ps1` refuses to build Play artifacts until
             // android/key.properties and its keystore are present.

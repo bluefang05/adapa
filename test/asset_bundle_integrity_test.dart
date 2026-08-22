@@ -33,7 +33,7 @@ void main() {
       paths.add(item['asset'].toString());
     }
 
-    expect(paths.length, 131);
+    expect(paths.length, 172);
 
     for (final path in paths) {
       final data = await rootBundle.load(path);

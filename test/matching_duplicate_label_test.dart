@@ -41,11 +41,13 @@ void main() {
     expect(chips, findsNWidgets(2));
 
     await tester.tap(find.text('학생'));
+    await tester.pump();
     await tester.tap(chips.first);
     await tester.pump();
     expect(find.text('1/2 parejas resueltas'), findsOneWidget);
 
     await tester.tap(find.text('선생님'));
+    await tester.pump();
     final remaining = find.byWidgetPredicate(
       (widget) =>
           widget is ActionChip &&

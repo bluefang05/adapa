@@ -34,23 +34,31 @@ void main() {
     expect(tester.takeException(), isNull);
 
     final unitFinder = find.text('Descubre el Hangul');
-    await tester.scrollUntilVisible(unitFinder, 220);
+    await tester.scrollUntilVisible(unitFinder, 200, scrollable: find.byType(Scrollable).first);
+    await tester.pumpAndSettle();
     await tester.tap(unitFinder);
     await tester.pumpAndSettle();
 
     expect(find.text('Vocales básicas'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('Vocales básicas'));
+    final lessonFinder = find.text('Vocales básicas');
+    await tester.scrollUntilVisible(lessonFinder, 200, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
+    await tester.tap(lessonFinder);
     await tester.pumpAndSettle();
 
     expect(find.text('Aprende'), findsOneWidget);
-    expect(find.text('Practica'), findsOneWidget);
+    final practiceFinder = find.text('Practica');
+    await tester.scrollUntilVisible(practiceFinder, 200, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
+    expect(practiceFinder, findsOneWidget);
     expect(tester.takeException(), isNull);
 
     final activityFinder =
-        find.text('¿Cuál de estas vocales corresponde a «a»?');
-    await tester.scrollUntilVisible(activityFinder, 260);
+        find.text('Selecciona la vocal coreana correspondiente al sonido:');
+    await tester.scrollUntilVisible(activityFinder, 200, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
     await tester.tap(activityFinder);
     await tester.pumpAndSettle();
 
@@ -74,7 +82,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Voz coreana'), findsOneWidget);
-    expect(find.text('Comprobar ko-KR'), findsOneWidget);
+    expect(find.text('Probar voz coreana'), findsOneWidget);
     expect(find.text('Velocidad'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

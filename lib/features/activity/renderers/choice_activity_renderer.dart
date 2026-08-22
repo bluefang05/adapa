@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/models/activity_content.dart';
@@ -7,6 +10,22 @@ import '../../../core/services/practice_feedback_service.dart';
 import '../widgets/activity_feedback.dart';
 import '../widgets/shake_feedback.dart';
 import '../widgets/tts_controls.dart';
+
+class _ChoiceRound {
+  const _ChoiceRound({
+    required this.prompt,
+    required this.options,
+    required this.correct,
+    this.tts,
+    this.feedbackMessage,
+  });
+
+  final String prompt;
+  final List<dynamic> options;
+  final List<String> correct;
+  final dynamic tts;
+  final String? feedbackMessage;
+}
 
 class ChoiceActivityRenderer extends StatefulWidget {
   const ChoiceActivityRenderer({super.key, required this.activity});
@@ -18,27 +37,168 @@ class ChoiceActivityRenderer extends StatefulWidget {
 }
 
 class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
-  late final List<dynamic> _shuffledOptions;
+  late final List<_ChoiceRound> _rounds;
+  int _roundIndex = 0;
+  late List<dynamic> _currentShuffledOptions;
   final Set<String> _selected = <String>{};
   bool? _correct;
   bool _resolvingWrongAnswer = false;
   final Map<String, int> _shakeSignals = <String, int>{};
+  bool _activityCompleted = false;
 
-  List<dynamic> get _options => _shuffledOptions;
+  _ChoiceRound get _currentRound => _rounds[_roundIndex];
+
+  Timer? _autoPlayTimer;
+
+  List<dynamic> get _options => _currentShuffledOptions;
 
   @override
   void initState() {
     super.initState();
-    _shuffledOptions = ActivityShuffle.copy<dynamic>(
-      widget.activity.payload['options'] as List? ?? const [],
-    );
+    _rounds = _buildRounds();
+    _prepareRoundOptions();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _triggerAutoPlay());
   }
 
-  List<String> get _answers =>
-      (widget.activity.payload['correct'] as List? ?? const [])
-          .map((e) => e.toString())
-          .toSet()
-          .toList(growable: false);
+  @override
+  void dispose() {
+    _autoPlayTimer?.cancel();
+    super.dispose();
+  }
+
+  void _triggerAutoPlay() {
+    if (!mounted) return;
+    _autoPlayTimer?.cancel();
+    final tts = _currentRound.tts;
+    if (widget.activity.type == 'listen_and_choose' ||
+        (widget.activity.capabilities['hasTts'] == true && tts != null)) {
+      final text = tts is Map ? (tts['text'] ?? '').toString() : tts?.toString() ?? '';
+      if (text.isNotEmpty) {
+        _autoPlayTimer = Timer(const Duration(milliseconds: 320), () {
+          if (!mounted) return;
+          try {
+            final runtime = AdapaRuntime.of(context);
+            runtime.tts.speak(text, rate: runtime.settings.normalTtsRate);
+          } catch (_) {}
+        });
+      }
+    }
+  }
+
+  void _onTileTap(String val) {
+    if (_resolvingWrongAnswer || _correct == true) return;
+    if (val.trim().isNotEmpty && val.length <= 4 && widget.activity.type != 'listen_and_choose') {
+      try {
+        final runtime = AdapaRuntime.of(context);
+        runtime.tts.speak(val, rate: runtime.settings.normalTtsRate);
+      } catch (_) {}
+    }
+    _choose(val);
+  }
+
+  List<_ChoiceRound> _buildRounds() {
+    final payload = widget.activity.payload;
+
+    // 1. Explicit rounds array
+    final rawRounds = payload['rounds'];
+    if (rawRounds is List && rawRounds.isNotEmpty) {
+      final rounds = <_ChoiceRound>[];
+      for (final r in rawRounds) {
+        if (r is Map) {
+          final opts = r['options'] as List? ?? [];
+          final corr = (r['correct'] as List? ?? [r['correct']])
+              .where((e) => e != null)
+              .map((e) => e.toString())
+              .toList();
+          rounds.add(
+            _ChoiceRound(
+              prompt: r['prompt']?.toString() ?? widget.activity.prompt ?? '',
+              options: opts,
+              correct: corr,
+              tts: r['tts'],
+              feedbackMessage: r['feedback']?.toString(),
+            ),
+          );
+        }
+      }
+      if (rounds.isNotEmpty) return rounds;
+    }
+
+    // 2. Multi-item pool (e.g. all 10 vowels or consonants in a lesson)
+    final items = payload['items'];
+    if (items is List && items.isNotEmpty) {
+      final allTargets = <String>[];
+      for (final it in items) {
+        if (it is Map) {
+          final t = (it['target'] ?? it['hangul'] ?? it['ko'] ?? it['value'] ?? it['id'])?.toString();
+          if (t != null && t.isNotEmpty) allTargets.add(t);
+        } else if (it is String) {
+          allTargets.add(it);
+        }
+      }
+
+      final optionsPerRound = (payload['options_per_round'] as num?)?.toInt() ?? 3;
+      final rounds = <_ChoiceRound>[];
+      final random = Random();
+
+      for (final it in items) {
+        if (it is Map) {
+          final target = (it['target'] ?? it['hangul'] ?? it['ko'] ?? it['value'] ?? it['id'])?.toString() ?? '';
+          final hintLabel = (it['romanization'] ?? it['meaning_es'] ?? it['sound'] ?? it['help_es'] ?? it['label'])?.toString() ?? '';
+          final prompt = it['prompt']?.toString() ?? 'Selecciona la opción que corresponde a «$hintLabel»:';
+          
+          List<dynamic> roundOptions;
+          if (it['options'] is List && (it['options'] as List).isNotEmpty) {
+            roundOptions = (it['options'] as List).toList();
+          } else {
+            // Pick distractors from pool
+            final distractors = allTargets.where((t) => t != target).toList()..shuffle(random);
+            final picked = distractors.take(optionsPerRound - 1).toList();
+            roundOptions = [...picked, target]..shuffle(random);
+          }
+
+          dynamic tts = it['tts'] ?? it['tts_payload'];
+          if (tts == null && (it['sound'] != null || it['tts_text'] != null || target.isNotEmpty)) {
+            tts = {
+              'text': (it['sound'] ?? it['tts_text'] ?? target).toString(),
+              'locale': 'ko-KR',
+            };
+          }
+
+          rounds.add(
+            _ChoiceRound(
+              prompt: prompt,
+              options: roundOptions,
+              correct: [target],
+              tts: tts,
+              feedbackMessage: it['feedback']?.toString(),
+            ),
+          );
+        }
+      }
+      if (rounds.isNotEmpty) return rounds;
+    }
+
+    // 3. Fallback: single round
+    final opts = payload['options'] as List? ?? const [];
+    final corr = (payload['correct'] as List? ?? const [])
+        .map((e) => e.toString())
+        .toList();
+    return [
+      _ChoiceRound(
+        prompt: widget.activity.prompt ?? '',
+        options: opts,
+        correct: corr,
+        tts: payload['tts'],
+      ),
+    ];
+  }
+
+  void _prepareRoundOptions() {
+    _currentShuffledOptions = ActivityShuffle.copy<dynamic>(_currentRound.options);
+  }
+
+  List<String> get _answers => _currentRound.correct;
 
   bool get _isMultiAnswer =>
       widget.activity.payload['selection_mode']?.toString() == 'multiple' ||
@@ -91,14 +251,31 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
 
     AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
       'selected': _selected.toList(growable: false),
-      'complete': ok,
+      'complete': ok && (_rounds.length <= 1 || _roundIndex >= _rounds.length - 1),
       'record_attempt': true,
       'score': ok ? 1.0 : 0.0,
     });
 
     if (ok) {
       PracticeFeedbackService.success();
-      setState(() => _correct = true);
+      setState(() {
+        _correct = true;
+        if (_rounds.length <= 1 || _roundIndex >= _rounds.length - 1) {
+          _activityCompleted = true;
+        }
+      });
+      if (_rounds.length > 1 && _roundIndex < _rounds.length - 1) {
+        await Future<void>.delayed(const Duration(milliseconds: 480));
+        if (!mounted) return;
+        setState(() {
+          _roundIndex++;
+          _prepareRoundOptions();
+          _selected.clear();
+          _correct = null;
+          _resolvingWrongAnswer = false;
+        });
+        _triggerAutoPlay();
+      }
       return;
     }
 
@@ -131,13 +308,27 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
 
     AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
       'selected': value,
-      'complete': ok,
+      'complete': ok && (_rounds.length <= 1 || _roundIndex >= _rounds.length - 1),
       'record_attempt': true,
       'score': ok ? 1.0 : 0.0,
     });
 
     if (ok) {
       PracticeFeedbackService.success();
+      if (_rounds.length > 1 && _roundIndex < _rounds.length - 1) {
+        await Future<void>.delayed(const Duration(milliseconds: 480));
+        if (!mounted) return;
+        setState(() {
+          _roundIndex++;
+          _prepareRoundOptions();
+          _selected.clear();
+          _correct = null;
+          _resolvingWrongAnswer = false;
+        });
+        _triggerAutoPlay();
+      } else {
+        setState(() => _activityCompleted = true);
+      }
       return;
     }
 
@@ -156,7 +347,10 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
   }
 
   String _feedbackMessage() {
-    if (_correct == true) {
+    if (_activityCompleted || _correct == true) {
+      if (_currentRound.feedbackMessage != null) {
+        return _currentRound.feedbackMessage!;
+      }
       return widget.activity.feedback['correct']?.toString() ?? 'Correcto.';
     }
     final wrong = widget.activity.feedback['wrong'];
@@ -172,10 +366,65 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
 
   @override
   Widget build(BuildContext context) {
-    final tts = widget.activity.payload['tts'];
+    final tts = _currentRound.tts;
+    final totalRounds = _rounds.length;
+    final scheme = Theme.of(context).colorScheme;
+    final isShortCharacterGrid = !_isMultiAnswer &&
+        (_rounds.length > 1 || widget.activity.payload['display_mode'] == 'grid') &&
+        _options.isNotEmpty &&
+        _options.every((opt) => _labelOf(opt).replaceAll('\n', '').length <= 4) &&
+        widget.activity.type != 'image_choice';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (totalRounds > 1) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${_roundIndex + 1} / $totalRounds',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: scheme.onPrimaryContainer,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: (_roundIndex + (_activityCompleted ? 1 : 0)) / totalRounds,
+                      minHeight: 8,
+                      backgroundColor: scheme.surfaceContainerHigh,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            _currentRound.prompt,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         if (tts is Map) ...[
           TtsControls(
             text: (tts['text'] ?? '').toString(),
@@ -201,13 +450,23 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
             multiAnswer: _isMultiAnswer,
             onSelected: _choose,
           )
+        else if (isShortCharacterGrid)
+          _CharacterTileGrid(
+            options: _options,
+            selected: _selected,
+            correct: _correct,
+            shakeSignals: _shakeSignals,
+            enabled: !_resolvingWrongAnswer && _correct != true,
+            valueOf: _valueOf,
+            labelOf: _labelOf,
+            onSelected: _onTileTap,
+          )
         else
           for (final option in _options)
             Builder(
               builder: (context) {
                 final value = _valueOf(option);
                 final selected = _selected.contains(value);
-                final scheme = Theme.of(context).colorScheme;
                 final cardColor = !selected
                     ? null
                     : _correct == true
@@ -237,7 +496,7 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
                       ),
                       title: Text(
                         _labelOf(option),
-                        style: const TextStyle(fontSize: 17),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -252,6 +511,129 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _CharacterTileGrid extends StatelessWidget {
+  const _CharacterTileGrid({
+    required this.options,
+    required this.selected,
+    required this.correct,
+    required this.shakeSignals,
+    required this.enabled,
+    required this.valueOf,
+    required this.labelOf,
+    required this.onSelected,
+  });
+
+  final List<dynamic> options;
+  final Set<String> selected;
+  final bool? correct;
+  final Map<String, int> shakeSignals;
+  final bool enabled;
+  final String Function(dynamic) valueOf;
+  final String Function(dynamic) labelOf;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    Widget buildTile(dynamic option) {
+      final val = valueOf(option);
+      final isSelected = selected.contains(val);
+      final label = labelOf(option);
+
+      final borderColor = !isSelected
+          ? scheme.outlineVariant
+          : correct == true
+              ? scheme.primary
+              : correct == false
+                  ? scheme.error
+                  : scheme.secondary;
+
+      final cardColor = !isSelected
+          ? scheme.surfaceContainerLow
+          : correct == true
+              ? scheme.primaryContainer
+              : correct == false
+                  ? scheme.errorContainer
+                  : scheme.secondaryContainer;
+
+      return ShakeFeedback(
+        signal: shakeSignals[val] ?? 0,
+        child: Material(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(18),
+          elevation: isSelected ? 2 : 0,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: enabled ? () => onSelected(val) : null,
+            child: Container(
+              height: options.length <= 3 ? 96 : 84,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  width: isSelected ? 3 : 1.5,
+                  color: borderColor,
+                ),
+              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: label.length <= 2 ? 36 : 22,
+                  fontWeight: FontWeight.w800,
+                  color: !isSelected
+                      ? scheme.onSurface
+                      : correct == true
+                          ? scheme.onPrimaryContainer
+                          : correct == false
+                              ? scheme.onErrorContainer
+                              : scheme.onSecondaryContainer,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (options.length <= 3) {
+      return Row(
+        children: [
+          for (int i = 0; i < options.length; i++) ...[
+            if (i > 0) const SizedBox(width: 10),
+            Expanded(child: buildTile(options[i])),
+          ],
+        ],
+      );
+    }
+
+    final rows = <Widget>[];
+    for (int i = 0; i < options.length; i += 2) {
+      final hasSecond = i + 1 < options.length;
+      rows.add(
+        Row(
+          children: [
+            Expanded(child: buildTile(options[i])),
+            const SizedBox(width: 10),
+            Expanded(
+              child: hasSecond ? buildTile(options[i + 1]) : const SizedBox(),
+            ),
+          ],
+        ),
+      );
+      if (i + 2 < options.length) {
+        rows.add(const SizedBox(height: 10));
+      }
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: rows,
     );
   }
 }
