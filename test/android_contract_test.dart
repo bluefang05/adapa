@@ -8,7 +8,7 @@ void main() {
     final manifest =
         File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
 
-    expect(gradle, contains('applicationId = "com.enmanuelapps.adapa"'));
+    expect(gradle, contains('applicationId = "com.enmanuelapps.adapakr"'));
     expect(gradle, contains('minSdk = 24'));
     expect(gradle, contains('targetSdk = flutter.targetSdkVersion'));
     expect(gradle, contains('id("kotlin-android")'));

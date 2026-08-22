@@ -19,7 +19,7 @@ if (hasReleaseSigning) {
 }
 
 android {
-    namespace = "com.enmanuelapps.adapa"
+    namespace = "com.enmanuelapps.adapakr"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.enmanuelapps.adapa"
+        applicationId = "com.enmanuelapps.adapakr"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
