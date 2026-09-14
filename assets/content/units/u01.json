@@ -500,7 +500,7 @@
           "type": "matching",
           "family": "matching",
           "objective": "Reconocer consonantes muy frecuentes.",
-          "prompt": "Relaciona cada consonante con la ayuda inicial.",
+          "prompt": "Relaciona cada consonante con la ayuda sonora inicial.",
           "scoreMode": "auto",
           "normalization": {
             "trim": true,

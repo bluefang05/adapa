@@ -1,0 +1,4 @@
+Correcciones para actividades y pronunciación:
+- Texto más claro en la actividad de consonantes básicas.
+- Mensaje visible si el dispositivo no tiene voz coreana instalada.
+- Evita enviar respuestas en español al lector de pronunciación coreana.

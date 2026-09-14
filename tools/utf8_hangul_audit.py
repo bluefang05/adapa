@@ -6,6 +6,9 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='backslashreplace')
+
 TEXT_SUFFIXES = {'.dart', '.json', '.yaml', '.yml', '.md', '.html', '.txt', '.kt', '.kts', '.xml'}
 MOJIBAKE_MARKERS = ('ΓÇ', '├', 'φò', 'Ω░', 'πä', 'πà', '\ufffd')
 

@@ -15,4 +15,4 @@ Al crear/completar la carpeta Android del proyecto:
 </queries>
 ```
 
-ADAPA solicita `ko-KR`. Si el motor del dispositivo no lo ofrece, el widget muestra un aviso en lugar de reproducir deliberadamente la frase con una voz de otro idioma.
+ADAPA solicita `ko-KR`, pero acepta variantes coreanas que algunos motores reportan como `ko_KR`, `ko` o etiquetas extendidas de coreano. Si el dispositivo no ofrece ninguna voz coreana compatible, el widget muestra un aviso en lugar de reproducir deliberadamente la frase con una voz de otro idioma.

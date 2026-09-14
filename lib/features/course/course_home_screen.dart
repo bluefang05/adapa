@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/content/course_repository.dart';
 import '../../core/models/course_manifest.dart';
 import '../../core/runtime/adapa_runtime.dart';
+import '../../core/runtime/testing_flags.dart';
 import '../activity/activity_screen.dart';
 import '../common/widgets/admob_banner.dart';
 import '../settings/settings_screen.dart';
@@ -27,7 +28,9 @@ class CourseHomeScreen extends StatelessWidget {
     }
 
     for (final unit in progress.manifest.units) {
-      if (!progress.isUnitUnlocked(unit.id)) continue;
+      if (!unlockAllContentForTesting && !progress.isUnitUnlocked(unit.id)) {
+        continue;
+      }
       final content = progress.unitById(unit.id);
       if (content == null) continue;
       for (final lesson in content.lessons) {

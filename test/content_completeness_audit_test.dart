@@ -867,7 +867,16 @@ Future<void> _auditRawContentJson(_AuditCollector audit) async {
 }
 
 Future<void> _scanPotentialMojibake(_AuditCollector audit) async {
-  const suspicious = <String>['├', 'ΓÇ', 'φò', '∞¥', 'πà', 'πä', '┬', '╕Ω'];
+  const suspicious = <String>[
+    '\u251c',
+    '\u0393\u00c7',
+    '\u03c6\u00f2',
+    '\u221e\u00a5',
+    '\u03c0\u00e0',
+    '\u03c0\u00e4',
+    '\u252c',
+    '\u2555\u03a9',
+  ];
   const roots = <String>['lib', 'assets/content'];
   for (final root in roots) {
     final directory = Directory(root);

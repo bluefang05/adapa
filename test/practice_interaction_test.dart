@@ -37,10 +37,7 @@ void main() {
 
       await tester.pumpWidget(
         harness.wrap(
-          PracticeSessionScreen(
-            activities: [activity],
-            title: 'Práctica',
-          ),
+          PracticeSessionScreen(activities: [activity], title: 'Práctica'),
         ),
       );
       await tester.pumpAndSettle();
@@ -65,8 +62,9 @@ void main() {
     },
   );
 
-  testWidgets('matching rejects a wrong pair immediately and keeps retrying',
-      (tester) async {
+  testWidgets('matching rejects a wrong pair immediately and keeps retrying', (
+    tester,
+  ) async {
     final harness = await RuntimeHarness.create();
     addTearDown(harness.dispose);
 
@@ -115,5 +113,42 @@ void main() {
     await tester.pump();
     expect(find.text('2/2 parejas resueltas'), findsOneWidget);
     expect(harness.session.read(activity.id)?['complete'], isTrue);
+  });
+
+  testWidgets('matching shows answer options before cards', (tester) async {
+    final harness = await RuntimeHarness.create();
+    addTearDown(harness.dispose);
+
+    final activity = ActivityContent(
+      id: 'matching_options_visible_test',
+      type: 'matching',
+      family: ActivityFamily.matching,
+      scoreMode: 'auto',
+      normalization: const {},
+      hints: const [],
+      feedback: const {},
+      capabilities: const {},
+      payload: const {
+        'pairs': [
+          {'left': 'ㄱ', 'right': 'g/k'},
+          {'left': 'ㄴ', 'right': 'n'},
+          {'left': 'ㅁ', 'right': 'm'},
+          {'left': 'ㅅ', 'right': 's'},
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      harness.wrap(MatchingActivityRenderer(activity: activity)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Opciones'), findsOneWidget);
+    expect(find.text('Tarjetas'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Opciones')).dy,
+      lessThan(tester.getTopLeft(find.text('Tarjetas')).dy),
+    );
+    expect(find.widgetWithText(ActionChip, 'g/k'), findsOneWidget);
   });
 }

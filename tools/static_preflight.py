@@ -47,7 +47,7 @@ if gradle_path.exists():
     )
     ok('minSdk = 24' in gradle, "minSdk 24 contract changed")
     ok(
-        'applicationId = "com.enmanuelapps.adapa"' in gradle,
+        'applicationId = "com.enmanuelapps.adapakr"' in gradle,
         "Unexpected Android applicationId",
     )
 
@@ -127,7 +127,7 @@ if visual_catalog:
 for rel in sorted(asset_refs):
     ok((ROOT / rel).exists(), f"Missing physical asset: {rel}")
 
-ok(len(asset_refs) == 131, f"Expected 131 production image refs, found {len(asset_refs)}")
+ok(len(asset_refs) == 172, f"Expected 172 production image refs, found {len(asset_refs)}")
 
 # 6. pubspec must declare each leaf stroke directory.
 pubspec = (ROOT / "pubspec.yaml").read_text(encoding="utf-8")
@@ -143,7 +143,7 @@ ok(len(stroke_leafs) == 29, f"Expected 29 stroke asset directories, found {len(s
 dart_files = list((ROOT / "lib").rglob("*.dart")) + list((ROOT / "test").rglob("*.dart"))
 for dart_file in dart_files:
     text = dart_file.read_text(encoding="utf-8")
-    for rel in re.findall(r"import\s+'([^']+)';", text):
+    for rel in re.findall(r"^\s*import\s+'([^']+)';", text, re.MULTILINE):
         if rel.startswith(("package:", "dart:")):
             continue
         target = (dart_file.parent / rel).resolve()

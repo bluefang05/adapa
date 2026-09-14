@@ -1,0 +1,4 @@
+ADAPA 1.0.5
+
+- Acceso temporal a todas las unidades para probar libremente las actividades.
+- Se conserva el progreso del estudiante.

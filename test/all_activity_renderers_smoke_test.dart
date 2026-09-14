@@ -46,6 +46,13 @@ void main() {
               'Renderer failed for ${activity.id} '
               '(${activity.type}/${activity.family.name})',
         );
+        expect(
+          find.textContaining(RegExp('no soportado|no implementado')),
+          findsNothing,
+          reason:
+              'Renderer fallback shown for ${activity.id} '
+              '(${activity.type}/${activity.family.name})',
+        );
       }
     },
   );

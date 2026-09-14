@@ -51,3 +51,4 @@ app.*.map.json
 /android/.gradle/
 /android/build/
 
+qa_logs/

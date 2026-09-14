@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.0.5+19 — Temporary open testing route
+
+- Temporarily unlocked all course units so every activity can be tested freely.
+- Preserved progress tracking and the prerequisite rules for easy restoration before production release.
+
+## 1.0.4+18 — Activity respondibility audit
+
+- Fixed matching activities so answer options are visible before the cards to match, avoiding screens that look impossible to answer.
+- Added regression coverage to ensure production activities do not fall back to unsupported or unimplemented renderer messages.
+- Tightened bundled content assets so internal audit reports are not packaged with the app.
+- Revalidated Korean TTS, content completeness, activity renderers, mobile navigation, and Android debug build.
+
+## 1.0.3+17 — Activity pronunciation and prompt fixes
+
+- Clarified the basic consonants matching prompt so learners know they are matching each consonant with its initial sound hint.
+- Fixed activity pronunciation playback so Korean TTS failures show a Spanish message instead of failing silently.
+- Prevented short Spanish answer labels from being sent to Korean TTS in choice activities.
+
+## 1.0.2+16 — Korean TTS compatibility
+
+- Improved Korean pronunciation playback by accepting compatible device TTS locale variants such as `ko_KR`, `ko`, and extended Korean tags while still rejecting non-Korean fallback voices.
+- Added regression coverage for Korean TTS locale matching.
+- Added `AGENTS.md` so future AI/code assistants can work safely with the project structure, content rules, TTS behavior, and release-sensitive areas.
+
 ## 0.14.0+14 — First real compiler fixes
 
 - Made `ActivityFamily.label` an enum instance member so all UI call sites compile.

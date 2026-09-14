@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:adapa/core/content/course_repository.dart';
@@ -33,10 +32,12 @@ class SynchronousCourseRepository implements CourseRepository {
   Future<CourseManifest> loadManifest() => SynchronousFuture(manifest);
 
   @override
-  Future<UnitContent> loadUnit(UnitSummary unit) => SynchronousFuture(units[unit.id]!);
+  Future<UnitContent> loadUnit(UnitSummary unit) =>
+      SynchronousFuture(units[unit.id]!);
 
   @override
-  Future<Map<String, dynamic>> loadResource(String assetPath) => SynchronousFuture({});
+  Future<Map<String, dynamic>> loadResource(String assetPath) =>
+      SynchronousFuture({});
 }
 
 Widget buildAdBar() {
@@ -83,14 +84,21 @@ Future<void> loadFonts() async {
   final fontFile = File(r'C:\Windows\Fonts\malgun.ttf');
   if (fontFile.existsSync()) {
     final bytes = fontFile.readAsBytesSync();
-    for (final fontName in ['Roboto', 'Noto Sans KR', 'sans-serif', 'Segoe UI']) {
+    for (final fontName in [
+      'Roboto',
+      'Noto Sans KR',
+      'sans-serif',
+      'Segoe UI',
+    ]) {
       final loader = FontLoader(fontName);
       loader.addFont(Future.value(ByteData.view(bytes.buffer)));
       await loader.load();
     }
   }
 
-  final iconFile = File(r'C:\src\flutter\bin\cache\artifacts\material_fonts\MaterialIcons-Regular.otf');
+  final iconFile = File(
+    r'C:\src\flutter\bin\cache\artifacts\material_fonts\MaterialIcons-Regular.otf',
+  );
   if (iconFile.existsSync()) {
     final iconBytes = iconFile.readAsBytesSync();
     final iconLoader = FontLoader('MaterialIcons');
@@ -99,7 +107,11 @@ Future<void> loadFonts() async {
   }
 }
 
-Future<void> captureScreen(WidgetTester tester, Widget widget, String filename) async {
+Future<void> captureScreen(
+  WidgetTester tester,
+  Widget widget,
+  String filename,
+) async {
   tester.view.physicalSize = const Size(1080, 1920);
   tester.view.devicePixelRatio = 2.625;
 
@@ -112,7 +124,10 @@ Future<void> captureScreen(WidgetTester tester, Widget widget, String filename) 
   final syncRepo = SynchronousCourseRepository(manifest, units);
 
   final harness = await RuntimeHarness.create(loadCourse: false);
-  final progress = ProgressController(repository: syncRepo, store: MemoryProgressStore());
+  final progress = ProgressController(
+    repository: syncRepo,
+    store: MemoryProgressStore(),
+  );
   await progress.initialize();
 
   final key = GlobalKey();
@@ -129,22 +144,22 @@ Future<void> captureScreen(WidgetTester tester, Widget widget, String filename) 
         theme: AdapaTheme.light().copyWith(
           textTheme: AdapaTheme.light().textTheme.apply(fontFamily: 'Roboto'),
         ),
-        home: RepaintBoundary(
-          key: key,
-          child: widget,
-        ),
+        home: RepaintBoundary(key: key, child: widget),
       ),
     ),
   );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 150));
 
-  final boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+  final boundary =
+      key.currentContext!.findRenderObject() as RenderRepaintBoundary;
   final ui.Image image = await boundary.toImage(pixelRatio: 2.625);
-  final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  final ByteData? byteData = await image.toByteData(
+    format: ui.ImageByteFormat.png,
+  );
   final bytes = byteData!.buffer.asUint8List();
   File('release/play_store/screenshots/$filename').writeAsBytesSync(bytes);
-  print('CAPTURED: $filename (${bytes.length} bytes)');
+  debugPrint('CAPTURED: $filename (${bytes.length} bytes)');
 }
 
 void main() {
@@ -240,7 +255,10 @@ void main() {
     await captureScreen(
       tester,
       Scaffold(
-        appBar: AppBar(title: const Text('Construcción de Sílabas'), elevation: 0),
+        appBar: AppBar(
+          title: const Text('Construcción de Sílabas'),
+          elevation: 0,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: ActivityRendererHost(activity: act),
@@ -280,7 +298,10 @@ void main() {
     await captureScreen(
       tester,
       Scaffold(
-        appBar: AppBar(title: const Text('Vocabulario Esencial · Cotidiano'), elevation: 0),
+        appBar: AppBar(
+          title: const Text('Vocabulario Esencial · Cotidiano'),
+          elevation: 0,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: ActivityRendererHost(activity: act),
@@ -307,10 +328,22 @@ void main() {
       capabilities: const {'hasTts': false},
       payload: const {
         'options': [
-          {'ko': '안녕하세요 (Annyeonghaseyo)', 'es': 'Hola · Saludo formal y cortés'},
-          {'ko': '감사합니다 (Gamsahamnida)', 'es': 'Muchas gracias · Agradecimiento'},
-          {'ko': '죄송합니다 (Joesonghamnida)', 'es': 'Lo siento / Disculpe · Disculpa formal'},
-          {'ko': '안녕히 가세요 (Annyeonghi gaseyo)', 'es': 'Adiós · Despedida a quien se va'},
+          {
+            'ko': '안녕하세요 (Annyeonghaseyo)',
+            'es': 'Hola · Saludo formal y cortés',
+          },
+          {
+            'ko': '감사합니다 (Gamsahamnida)',
+            'es': 'Muchas gracias · Agradecimiento',
+          },
+          {
+            'ko': '죄송합니다 (Joesonghamnida)',
+            'es': 'Lo siento / Disculpe · Disculpa formal',
+          },
+          {
+            'ko': '안녕히 가세요 (Annyeonghi gaseyo)',
+            'es': 'Adiós · Despedida a quien se va',
+          },
         ],
         'correct': ['안녕하세요 (Annyeonghaseyo)'],
         'selection_mode': 'single',
@@ -320,7 +353,10 @@ void main() {
     await captureScreen(
       tester,
       Scaffold(
-        appBar: AppBar(title: const Text('Saludos y Cortesía Cotidiana'), elevation: 0),
+        appBar: AppBar(
+          title: const Text('Saludos y Cortesía Cotidiana'),
+          elevation: 0,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: ActivityRendererHost(activity: act),

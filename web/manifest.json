@@ -1,11 +1,11 @@
 {
-    "name": "adapa_kr",
-    "short_name": "adapa_kr",
+    "name": "ADAPA",
+    "short_name": "ADAPA",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "ADAPA offline-first language learning app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

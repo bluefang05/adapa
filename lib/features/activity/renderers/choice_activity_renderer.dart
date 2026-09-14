@@ -73,27 +73,46 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
     if (widget.activity.type == 'listen_and_choose' ||
         (widget.activity.capabilities['hasTts'] == true && tts != null)) {
       final text = tts is Map ? (tts['text'] ?? '').toString() : tts?.toString() ?? '';
+      final locale = tts is Map ? (tts['locale'] ?? 'ko-KR').toString() : 'ko-KR';
       if (text.isNotEmpty) {
-        _autoPlayTimer = Timer(const Duration(milliseconds: 320), () {
+        _autoPlayTimer = Timer(const Duration(milliseconds: 320), () async {
           if (!mounted) return;
           try {
             final runtime = AdapaRuntime.of(context);
-            runtime.tts.speak(text, rate: runtime.settings.normalTtsRate);
-          } catch (_) {}
+            await runtime.tts.speak(
+              text,
+              locale: locale,
+              rate: runtime.settings.normalTtsRate,
+            );
+          } catch (_) {
+            _showTtsUnavailableMessage();
+          }
         });
       }
     }
   }
 
-  void _onTileTap(String val) {
+  Future<void> _onTileTap(String val) async {
     if (_resolvingWrongAnswer || _correct == true) return;
-    if (val.trim().isNotEmpty && val.length <= 4 && widget.activity.type != 'listen_and_choose') {
+    _choose(val);
+    if (_containsKorean(val) && widget.activity.type != 'listen_and_choose') {
       try {
         final runtime = AdapaRuntime.of(context);
-        runtime.tts.speak(val, rate: runtime.settings.normalTtsRate);
-      } catch (_) {}
+        await runtime.tts.speak(val, rate: runtime.settings.normalTtsRate);
+      } catch (_) {
+        _showTtsUnavailableMessage();
+      }
     }
-    _choose(val);
+  }
+
+  bool _containsKorean(String value) =>
+      RegExp(r'[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]').hasMatch(value);
+
+  void _showTtsUnavailableMessage() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No hay una voz coreana disponible.')),
+    );
   }
 
   List<_ChoiceRound> _buildRounds() {
@@ -425,14 +444,24 @@ class _ChoiceActivityRendererState extends State<ChoiceActivityRenderer> {
           ),
           const SizedBox(height: 10),
         ],
-        if (tts is Map) ...[
-          TtsControls(
-            text: (tts['text'] ?? '').toString(),
-            locale: (tts['locale'] ?? 'ko-KR').toString(),
-            slowAvailable: tts['slow_available'] != false,
-          ),
-          const SizedBox(height: 16),
-        ],
+        Builder(
+          builder: (context) {
+            final ttsText = tts is Map ? (tts['text'] ?? '').toString() : (tts?.toString() ?? '');
+            final ttsLocale = tts is Map ? (tts['locale'] ?? 'ko-KR').toString() : 'ko-KR';
+            final slowAvail = tts is Map ? tts['slow_available'] != false : true;
+            if (ttsText.trim().isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: TtsControls(
+                  text: ttsText,
+                  locale: ttsLocale,
+                  slowAvailable: slowAvail,
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
         Text(
           _isMultiAnswer
               ? 'Selecciona ${_answers.length} respuestas. Se comprueban automáticamente.'

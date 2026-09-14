@@ -19,6 +19,7 @@ class MatchingActivityRenderer extends StatefulWidget {
 
 class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
   String? _activePairId;
+  String? _activeRightOptionId;
   final Set<String> _resolvedPairIds = <String>{};
   final Set<String> _usedRightOptionIds = <String>{};
   final Map<String, int> _leftShakeSignals = <String, int>{};
@@ -63,35 +64,67 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
     return null;
   }
 
+  _RightOption? _rightOptionById(String id) {
+    for (final opt in _rightOptions) {
+      if (opt.id == id) return opt;
+    }
+    return null;
+  }
+
   void _selectLeft(_MatchPair pair) {
     if (_resolvingWrongPair ||
         _resolvedPairIds.contains(pair.id) ||
         _correct == true) {
       return;
     }
+
+    final rightId = _activeRightOptionId;
+    if (rightId != null) {
+      final opt = _rightOptionById(rightId);
+      if (opt != null) {
+        _evaluate(pair, opt);
+        return;
+      }
+    }
+
     setState(() {
       _activePairId = pair.id;
+      _activeRightOptionId = null;
       _correct = null;
     });
   }
 
-  Future<void> _assign(_RightOption option) async {
-    final pairId = _activePairId;
-    if (pairId == null ||
-        _resolvingWrongPair ||
+  void _selectRight(_RightOption option) {
+    if (_resolvingWrongPair ||
         _usedRightOptionIds.contains(option.id) ||
         _correct == true) {
       return;
     }
 
-    final activePair = _pairById(pairId);
-    final ok = activePair != null && option.label == activePair.right;
+    final leftId = _activePairId;
+    if (leftId != null) {
+      final pair = _pairById(leftId);
+      if (pair != null) {
+        _evaluate(pair, option);
+        return;
+      }
+    }
+
+    setState(() {
+      _activeRightOptionId = option.id;
+      _activePairId = null;
+      _correct = null;
+    });
+  }
+
+  Future<void> _evaluate(_MatchPair pair, _RightOption option) async {
+    final ok = option.label == pair.right;
     if (!ok) {
       PracticeFeedbackService.error();
       setState(() {
         _correct = false;
         _resolvingWrongPair = true;
-        _leftShakeSignals[pairId] = (_leftShakeSignals[pairId] ?? 0) + 1;
+        _leftShakeSignals[pair.id] = (_leftShakeSignals[pair.id] ?? 0) + 1;
         _rightShakeSignals[option.id] =
             (_rightShakeSignals[option.id] ?? 0) + 1;
       });
@@ -99,6 +132,7 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
       if (!mounted) return;
       setState(() {
         _activePairId = null;
+        _activeRightOptionId = null;
         _resolvingWrongPair = false;
       });
       return;
@@ -106,20 +140,18 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
 
     PracticeFeedbackService.success();
     setState(() {
-      _resolvedPairIds.add(pairId);
+      _resolvedPairIds.add(pair.id);
       _usedRightOptionIds.add(option.id);
       _activePairId = null;
+      _activeRightOptionId = null;
       _correct = null;
     });
 
     if (_resolvedPairIds.length == _pairs.length && _pairs.isNotEmpty) {
       AdapaRuntime.of(context).sessionStore.write(widget.activity.id, {
-        // Preserve the existing session-data contract (left -> right).
-        // Duplicate left labels are rejected by the content audit because they
-        // would be visually ambiguous for the learner.
         'matches': <String, String>{
-          for (final pair in _pairs)
-            if (_resolvedPairIds.contains(pair.id)) pair.left: pair.right,
+          for (final p in _pairs)
+            if (_resolvedPairIds.contains(p.id)) p.left: p.right,
         },
         'complete': true,
         'record_attempt': true,
@@ -136,7 +168,7 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Toca un elemento de la izquierda y luego su pareja. Si no coincide, puedes probar otra vez.',
+          'Toca una tarjeta y su opción correspondiente en cualquier orden.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
@@ -145,36 +177,8 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
           style: Theme.of(context).textTheme.labelLarge,
         ),
         const SizedBox(height: 12),
-        for (final pair in _pairs)
-          ShakeFeedback(
-            signal: _leftShakeSignals[pair.id] ?? 0,
-            child: Card(
-              key: ValueKey(pair.id),
-              color: _resolvedPairIds.contains(pair.id)
-                  ? scheme.primaryContainer
-                  : _activePairId == pair.id
-                      ? scheme.secondaryContainer
-                      : null,
-              child: ListTile(
-                onTap: () => _selectLeft(pair),
-                leading: Icon(
-                  _resolvedPairIds.contains(pair.id)
-                      ? Icons.check_circle
-                      : _activePairId == pair.id
-                          ? Icons.touch_app
-                          : Icons.radio_button_unchecked,
-                ),
-                title: Text(
-                  pair.left,
-                  style: const TextStyle(fontSize: 18),
-                ),
-                trailing: _resolvedPairIds.contains(pair.id)
-                    ? Chip(label: Text(pair.right))
-                    : const Icon(Icons.chevron_right),
-              ),
-            ),
-          ),
-        const SizedBox(height: 12),
+        Text('Opciones', style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -184,30 +188,64 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
                 signal: _rightShakeSignals[option.id] ?? 0,
                 child: ActionChip(
                   key: ValueKey(option.id),
-                  onPressed: _activePairId == null ||
-                          _resolvingWrongPair ||
+                  onPressed:
+                      _resolvingWrongPair ||
                           _usedRightOptionIds.contains(option.id) ||
                           _correct == true
                       ? null
-                      : () => _assign(option),
+                      : () => _selectRight(option),
+                  backgroundColor: _activeRightOptionId == option.id
+                      ? scheme.secondaryContainer
+                      : null,
                   avatar: _usedRightOptionIds.contains(option.id)
                       ? const Icon(Icons.check, size: 18)
-                      : null,
+                      : (_activeRightOptionId == option.id
+                          ? const Icon(Icons.touch_app, size: 18)
+                          : null),
                   label: Text(option.label),
                 ),
               ),
           ],
         ),
+        const SizedBox(height: 12),
+        Text('Tarjetas', style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 8),
+        for (final pair in _pairs)
+          ShakeFeedback(
+            signal: _leftShakeSignals[pair.id] ?? 0,
+            child: Card(
+              key: ValueKey(pair.id),
+              color: _resolvedPairIds.contains(pair.id)
+                  ? scheme.primaryContainer
+                  : _activePairId == pair.id
+                  ? scheme.secondaryContainer
+                  : null,
+              child: ListTile(
+                onTap: () => _selectLeft(pair),
+                leading: Icon(
+                  _resolvedPairIds.contains(pair.id)
+                      ? Icons.check_circle
+                      : _activePairId == pair.id
+                      ? Icons.touch_app
+                      : Icons.radio_button_unchecked,
+                ),
+                title: Text(pair.left, style: const TextStyle(fontSize: 18)),
+                trailing: _resolvedPairIds.contains(pair.id)
+                    ? Chip(label: Text(pair.right))
+                    : const Icon(Icons.chevron_right),
+              ),
+            ),
+          ),
         if (_correct != null) ...[
           const SizedBox(height: 16),
           ActivityFeedback(
             isCorrect: _correct!,
             message: _correct!
                 ? widget.activity.feedback['correct']?.toString() ??
-                    'Todas las parejas están correctas.'
+                      'Todas las parejas están correctas.'
                 : ((widget.activity.feedback['wrong'] as Map?)?['default']
-                        ?.toString() ??
-                    'Esa pareja no corresponde. Prueba otra vez.'),
+                          ?.toString() ??
+                      'Esa pareja no corresponde. Prueba otra vez.'),
           ),
         ],
       ],
@@ -216,11 +254,7 @@ class _MatchingActivityRendererState extends State<MatchingActivityRenderer> {
 }
 
 class _MatchPair {
-  const _MatchPair({
-    required this.id,
-    required this.left,
-    required this.right,
-  });
+  const _MatchPair({required this.id, required this.left, required this.right});
 
   final String id;
   final String left;

@@ -76,11 +76,17 @@ class _StrokeViewerState extends State<_StrokeViewer> {
     });
   }
 
-  void _speak(String text) {
+  Future<void> _speak(String text) async {
     try {
       final runtime = AdapaRuntime.of(context);
-      runtime.tts.speak(text, rate: runtime.settings.normalTtsRate);
-    } catch (_) {}
+      await runtime.tts.speak(text, rate: runtime.settings.normalTtsRate);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay una voz coreana disponible.')),
+        );
+      }
+    }
   }
 
   void _chooseSet(int index, String? char) {

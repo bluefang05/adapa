@@ -27,7 +27,10 @@ class ActivityEvaluator {
       return _structural(value, payload, normalization);
     }
 
-    final answers = (payload['accepted_answers'] as List? ?? const [])
+    final rawAnswers = payload['accepted_answers'] ?? payload['correct'];
+    final answers = (rawAnswers is List
+            ? rawAnswers
+            : (rawAnswers != null ? [rawAnswers] : const []))
         .map((e) => e.toString())
         .toList(growable: false);
     if (answers.isEmpty) {
@@ -37,9 +40,21 @@ class ActivityEvaluator {
       );
     }
 
-    final matches = answers.any(
+    var matches = answers.any(
       (answer) => AnswerNormalizer.equals(value, answer, normalization),
     );
+
+    if (!matches && payload['template'] != null) {
+      final template = payload['template'].toString();
+      for (final answer in answers) {
+        final fullSentence = template.replaceAll(RegExp(r'_+'), answer);
+        if (AnswerNormalizer.equals(value, fullSentence, normalization)) {
+          matches = true;
+          break;
+        }
+      }
+    }
+
     return EvaluationResult(isCorrect: matches);
   }
 

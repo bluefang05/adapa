@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -51,7 +49,11 @@ class _AdmobBannerWidgetState extends State<AdmobBannerWidget> {
   }
 
   Future<void> _loadBanner() async {
-    if (kIsWeb || _isLoading || WidgetsBinding.instance.runtimeType.toString().contains('Test')) return;
+    if (kIsWeb ||
+        _isLoading ||
+        WidgetsBinding.instance.runtimeType.toString().contains('Test')) {
+      return;
+    }
     _isLoading = true;
 
     // Clean up any previously loaded ad instance before re-requesting
@@ -69,7 +71,9 @@ class _AdmobBannerWidgetState extends State<AdmobBannerWidget> {
       if (width > 0) {
         try {
           final adaptiveSize =
-              await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+              await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                width,
+              );
           if (adaptiveSize != null) {
             targetSize = adaptiveSize;
           }

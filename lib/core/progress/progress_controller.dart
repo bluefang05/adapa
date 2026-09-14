@@ -8,6 +8,7 @@ import '../models/course_manifest.dart';
 import '../models/lesson_content.dart';
 import '../models/unit_content.dart';
 import '../persistence/progress_store.dart';
+import '../runtime/testing_flags.dart';
 import 'activity_progress.dart';
 import 'progress_snapshot.dart';
 import 'resume_pointer.dart';
@@ -272,6 +273,7 @@ class ProgressController extends ChangeNotifier {
   bool isUnitUnlocked(String unitId) {
     final unit = _units[unitId];
     if (unit == null) return false;
+    if (unlockAllContentForTesting) return true;
     if (unit.prerequisites.isEmpty) return true;
     return unit.prerequisites.every(isUnitComplete);
   }

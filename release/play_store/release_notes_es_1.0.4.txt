@@ -1,0 +1,4 @@
+Correcciones para actividades:
+- Las actividades de emparejamiento ahora muestran las opciones antes de las tarjetas.
+- Se reforzaron verificaciones para evitar pantallas de ejercicio no soportado.
+- Se ajustó el paquete para incluir solo contenido necesario del curso.

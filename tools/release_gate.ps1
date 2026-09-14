@@ -1,4 +1,7 @@
 $ErrorActionPreference = "Stop"
+if (Get-Variable PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
+    $PSNativeCommandUseErrorActionPreference = $false
+}
 
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
@@ -40,8 +43,15 @@ function Run-Step {
     Write-Host ""
     Write-Host "=== $Name ===" -ForegroundColor Cyan
     "=== $Name ===" | Out-File $Log -Append -Encoding utf8
-    & $Command 2>&1 | Tee-Object -FilePath $Log -Append
-    if ($LASTEXITCODE -ne 0) {
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $Command 2>&1 | Tee-Object -FilePath $Log -Append
+        $ExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+    if ($ExitCode -ne 0) {
         throw "$Name falló. Revisa $Log"
     }
 }
@@ -56,7 +66,12 @@ Run-Step "Clean" { flutter clean }
 Run-Step "Packages" { flutter pub get }
 Run-Step "Dependency compatibility" { flutter analyze --suggestions }
 Run-Step "Analyze" { flutter analyze }
-Run-Step "Tests" { flutter test }
+Run-Step "Tests" {
+    $Tests = Get-ChildItem test -Filter *.dart |
+        Where-Object { $_.Name -ne "generate_play_store_screenshots_test.dart" } |
+        ForEach-Object { $_.FullName }
+    flutter test $Tests
+}
 Run-Step "Release APK" { flutter build apk --release }
 Run-Step "Release AAB" { flutter build appbundle --release }
 
