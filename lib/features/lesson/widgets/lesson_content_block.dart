@@ -796,52 +796,139 @@ class _ComparisonPairs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
-        for (final pair in pairs)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _BigToken(text: pair['simple']?.toString() ?? ''),
+        for (final pair in pairs) ...[
+          Builder(
+            builder: (context) {
+              final leftText = pair['polite']?.toString() ??
+                  pair['simple']?.toString() ??
+                  pair['formal']?.toString() ??
+                  pair['left']?.toString() ??
+                  pair['before']?.toString() ??
+                  '';
+              final rightText = pair['informal']?.toString() ??
+                  pair['double']?.toString() ??
+                  pair['after']?.toString() ??
+                  pair['right']?.toString() ??
+                  '';
+
+              final leftBadge = pair.containsKey('polite')
+                  ? 'Educado'
+                  : (pair.containsKey('simple') ? 'Simple' : null);
+              final rightBadge = pair.containsKey('informal')
+                  ? 'Informal'
+                  : (pair.containsKey('double') ? 'Doble' : null);
+
+              final meaning = pair['meaning_es']?.toString() ??
+                  pair['meaning']?.toString() ??
+                  pair['translation']?.toString();
+
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Icon(Icons.arrow_forward),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _BigToken(
+                            text: leftText,
+                            badge: leftBadge,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(Icons.arrow_forward, size: 20),
+                        ),
+                        Expanded(
+                          child: _BigToken(
+                            text: rightText,
+                            badge: rightBadge,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (meaning != null && meaning.trim().isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        meaning,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                 ),
-                Expanded(
-                  child: _BigToken(text: pair['double']?.toString() ?? ''),
-                ),
-              ],
-            ),
+              );
+            },
           ),
+        ],
       ],
     );
   }
 }
 
 class _BigToken extends StatelessWidget {
-  const _BigToken({required this.text});
+  const _BigToken({required this.text, this.badge});
   final String text;
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
     return Material(
-      color: scheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(14),
+      color: scheme.surface,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         onTap: text.trim().isEmpty ? null : () => _speakTheoryText(context, text),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(text, style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(width: 8),
-              Icon(Icons.volume_up_outlined, size: 18, color: scheme.primary),
+              if (badge != null) ...[
+                Text(
+                  badge!,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: scheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+              ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      text,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                    ),
+                  ),
+                  if (text.trim().isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    Icon(Icons.volume_up_outlined, size: 18, color: scheme.primary),
+                  ],
+                ],
+              ),
             ],
           ),
         ),
@@ -1023,9 +1110,42 @@ class _FieldChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text('$label: $value'),
-      backgroundColor: Colors.white,
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isExample = label == 'Ejemplo' || label == 'Frase' || value.length > 12;
+
+    return Container(
+      constraints: isExample ? const BoxConstraints(minWidth: double.infinity) : null,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.7),
+          width: 0.8,
+        ),
+      ),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: scheme.primary,
+              ),
+            ),
+            TextSpan(
+              text: value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: isExample ? FontWeight.w600 : FontWeight.w500,
+                color: scheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+        softWrap: true,
+      ),
     );
   }
 }

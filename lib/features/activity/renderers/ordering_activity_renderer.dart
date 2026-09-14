@@ -78,11 +78,12 @@ class _OrderingActivityRendererState extends State<OrderingActivityRenderer> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Mantén pulsado y arrastra para cambiar el orden.',
+          'Usa las flechas o arrastra el icono para cambiar el orden.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
         ReorderableListView.builder(
+          buildDefaultDragHandles: false,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _items.length,
@@ -105,7 +106,44 @@ class _OrderingActivityRendererState extends State<OrderingActivityRenderer> {
                   item.value,
                   style: const TextStyle(fontSize: 17),
                 ),
-                trailing: const Icon(Icons.drag_handle),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.keyboard_arrow_up),
+                      tooltip: 'Mover arriba',
+                      onPressed: index > 0
+                          ? () {
+                              setState(() {
+                                final current = _items.removeAt(index);
+                                _items.insert(index - 1, current);
+                                _correct = null;
+                              });
+                            }
+                          : null,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      tooltip: 'Mover abajo',
+                      onPressed: index < _items.length - 1
+                          ? () {
+                              setState(() {
+                                final current = _items.removeAt(index);
+                                _items.insert(index + 1, current);
+                                _correct = null;
+                              });
+                            }
+                          : null,
+                    ),
+                    ReorderableDragStartListener(
+                      index: index,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        child: Icon(Icons.drag_handle),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
