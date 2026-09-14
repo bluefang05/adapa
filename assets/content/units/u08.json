@@ -465,7 +465,9 @@
           },
           "payload": {
             "accepted_answers": [
-              "이름이 뭐예요"
+              "이름이 뭐예요",
+              "성함이 어떻게 되세요",
+              "이름이 무엇입니까"
             ]
           }
         },
@@ -489,7 +491,7 @@
           "feedback": {
             "correct": "Pedido bien formado con 주세요.",
             "wrong": {
-              "default": "Escribe primero el objeto y termina con 주세요."
+              "default": "Asegúrate de terminar en 주세요 y de incluir un objeto antes."
             }
           },
           "completionRule": null,
@@ -552,7 +554,9 @@
           },
           "payload": {
             "accepted_answers": [
-              "이거 얼마예요"
+              "이거 얼마예요",
+              "이것 얼마예요",
+              "이것은 얼마예요"
             ]
           }
         },
