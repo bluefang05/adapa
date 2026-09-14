@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.6+20 — Korean phonetic normalization, template evaluation, and answer expansion
+
+- Added `KoreanPhoneticNormalizer` to handle isolated jamos and vowels cleanly in Android Google TTS.
+- Added template sentence evaluation flexibility in text input activities.
+- Implemented bidirectional tap interaction in matching activities so users can select right or left options first.
+- Added arrow controls to ordering activities for enhanced touch accessibility.
+- Expanded accepted answer variations across units U03, U04, U05, U07, and U08.
+- Restored standard prerequisite progression route for production release (`unlockAllContentForTesting = false`).
+
 ## 1.0.5+19 — Temporary open testing route
 
 - Temporarily unlocked all course units so every activity can be tested freely.
