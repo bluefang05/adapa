@@ -1,0 +1,6 @@
+﻿ADAPA 1.0.6
+
+- Mejora integral de pronunciación y normalización fonética TTS en Hangul.
+- Mayor flexibilidad en la validación de respuestas y plantillas.
+- Interacción bidireccional en actividades de emparejamiento.
+- Controles de flechas en ordenamiento para mayor accesibilidad móvil.

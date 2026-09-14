@@ -1,7 +1,7 @@
 name: adapa
 description: ADAPA offline-first language learning app.
 publish_to: 'none'
-version: 1.0.5+19
+version: 1.0.6+20
 
 environment:
   sdk: '>=3.12.0 <4.0.0'
