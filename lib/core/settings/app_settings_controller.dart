@@ -45,12 +45,8 @@ class AppSettingsController extends ChangeNotifier {
         .clamp(0.20, 0.70)
         .toDouble();
     _slowTtsRate = (await _preferences.getDouble(_slowRateKey) ?? 0.30)
-        .clamp(0.15, 0.55)
+        .clamp(0.15, _normalTtsRate)
         .toDouble();
-
-    if (_slowTtsRate > _normalTtsRate) {
-      _slowTtsRate = _normalTtsRate;
-    }
     notifyListeners();
   }
 

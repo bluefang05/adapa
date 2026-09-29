@@ -80,6 +80,7 @@ class ProgressController extends ChangeNotifier {
 
   ProgressSnapshot? _snapshot;
   Future<void> _saveQueue = Future<void>.value();
+  Future<void>? _resetOperation;
   String? _persistenceError;
 
   bool get initialized => _manifest != null && _snapshot != null;
@@ -332,6 +333,7 @@ class ProgressController extends ChangeNotifier {
   }
 
   void markActivityVisited(String activityId) {
+    if (_resetOperation != null) return;
     final lessonId = lessonIdForActivity(activityId);
     final unitId = unitIdForActivity(activityId);
     if (lessonId == null || unitId == null) return;
@@ -350,6 +352,7 @@ class ProgressController extends ChangeNotifier {
     String activityId,
     Map<String, dynamic> value,
   ) async {
+    if (_resetOperation != null) await _saveQueue;
     if (_snapshot == null || !_activities.containsKey(activityId)) return;
     final activity = _activities[activityId]!;
     final now = _now();
@@ -535,25 +538,36 @@ class ProgressController extends ChangeNotifier {
   }
 
   Future<void> retrySave() async {
-    final snapshot = _snapshot;
-    if (snapshot == null) return;
-    await _persistSnapshot(snapshot);
+    if (_resetOperation != null) await _saveQueue;
+    _scheduleSave();
+    await flush();
   }
 
   Future<void> flush() async {
     await _saveQueue;
   }
 
-  Future<void> resetCourseProgress() async {
+  Future<void> resetCourseProgress() {
+    final pending = _resetOperation;
+    if (pending != null) return pending;
     final manifest = _manifest;
-    if (manifest == null) return;
-    await store.clear(manifest.id);
-    _persistenceError = null;
-    _snapshot = ProgressSnapshot.empty(
-      courseId: manifest.id,
-      contentVersion: manifest.contentVersion,
-    );
-    notifyListeners();
+    if (manifest == null) return Future<void>.value();
+    // Clear only after older saves finish. New study writes wait for this reset.
+    final operation = _saveQueue.then((_) async {
+      await store.clear(manifest.id);
+      _persistenceError = null;
+      _snapshot = ProgressSnapshot.empty(
+        courseId: manifest.id,
+        contentVersion: manifest.contentVersion,
+      );
+      notifyListeners();
+    }).whenComplete(() => _resetOperation = null);
+    _resetOperation = operation;
+    // Report reset failures to the caller without blocking future saves.
+    _saveQueue = operation.catchError((Object error, StackTrace stackTrace) {
+      _setPersistenceError(error, stackTrace);
+    });
+    return operation;
   }
 
   _StreakState _nextStreak({required DateTime now, required bool recordStudy}) {

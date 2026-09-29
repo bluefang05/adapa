@@ -62,11 +62,14 @@ class RuntimeHarness {
   final ActivitySessionStore session;
   final AppSettingsController settings;
 
-  static Future<RuntimeHarness> create({bool loadCourse = true}) async {
+  static Future<RuntimeHarness> create({
+    bool loadCourse = true,
+    ProgressStore? store,
+  }) async {
     final repository = DiskCourseRepository();
     final progress = ProgressController(
       repository: repository,
-      store: MemoryProgressStore(),
+      store: store ?? MemoryProgressStore(),
     );
     if (loadCourse) {
       await progress.initialize();

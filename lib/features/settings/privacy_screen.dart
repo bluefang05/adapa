@@ -29,7 +29,19 @@ class PrivacyScreen extends StatelessWidget {
     );
 
     if (confirmed != true || !context.mounted) return;
-    await progress.resetCourseProgress();
+    try {
+      await progress.resetCourseProgress();
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No se pudo reiniciar el progreso. Inténtalo de nuevo.',
+          ),
+        ),
+      );
+      return;
+    }
     if (!context.mounted) return;
     AdapaRuntime.of(context).sessionStore.clear();
     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:adapa/core/content/course_repository.dart';
@@ -12,6 +14,85 @@ import 'package:adapa/core/progress/progress_snapshot.dart';
 
 void main() {
   group('ProgressController', () {
+    test('reset waits for pending saves before clearing progress', () async {
+      final store = _DelayedProgressStore();
+      final controller = ProgressController(
+        repository: _Fixture().repository,
+        store: store,
+      );
+      await controller.initialize();
+      await controller.handleSessionWrite('a1', {
+        'complete': true,
+        'record_attempt': true,
+      });
+      await store.started.future;
+      final reset = controller.resetCourseProgress();
+      store.release.complete();
+      await reset;
+      await controller.flush();
+
+      expect(store.value, isNull);
+      expect(controller.completedActivityCount, 0);
+      final restored = ProgressController(
+        repository: _Fixture().repository,
+        store: store,
+      );
+      await restored.initialize();
+      expect(restored.completedActivityCount, 0);
+    });
+
+    test('retry cannot overwrite newer progress with an older save', () async {
+      final store = _DelayedProgressStore();
+      final controller = ProgressController(
+        repository: _Fixture().repository,
+        store: store,
+      );
+      await controller.initialize();
+      await controller.handleSessionWrite('a1', {
+        'complete': true,
+        'record_attempt': true,
+      });
+      await store.started.future;
+      await controller.handleSessionWrite('a2', {
+        'complete': true,
+        'record_attempt': true,
+      });
+      final retry = controller.retrySave();
+      await Future<void>.delayed(Duration.zero);
+      expect(store.concurrentSave, isFalse);
+      store.release.complete();
+      await retry;
+      await controller.flush();
+      expect(store.value!.activities['a2']!.completed, isTrue);
+    });
+
+    test('study writes during reset are saved after the reset', () async {
+      final store = _DelayedProgressStore();
+      final controller = ProgressController(
+        repository: _Fixture().repository,
+        store: store,
+      );
+      await controller.initialize();
+      await controller.handleSessionWrite('a1', {
+        'complete': true,
+        'record_attempt': true,
+      });
+      await store.started.future;
+      final reset = controller.resetCourseProgress();
+      final write = controller.handleSessionWrite('a2', {
+        'complete': true,
+        'record_attempt': true,
+      });
+      store.release.complete();
+      await reset;
+      await write;
+      await controller.flush();
+
+      expect(controller.isActivityCompleted('a1'), isFalse);
+      expect(controller.isActivityCompleted('a2'), isTrue);
+      expect(store.value!.activities.keys, ['a2']);
+    });
+
     test(
       '75% threshold completes a lesson after all required activities are attempted',
       () async {
@@ -328,5 +409,24 @@ class _FailOnceProgressStore implements ProgressStore {
       throw StateError('simulated storage failure');
     }
     value = ProgressSnapshot.fromJson(snapshot.toJson());
+  }
+}
+
+class _DelayedProgressStore extends _MemoryProgressStore {
+  final started = Completer<void>();
+  final release = Completer<void>();
+  bool _saving = false;
+  bool concurrentSave = false;
+
+  @override
+  Future<void> save(ProgressSnapshot snapshot) async {
+    if (_saving) concurrentSave = true;
+    _saving = true;
+    if (!started.isCompleted) {
+      started.complete();
+      await release.future;
+    }
+    await super.save(snapshot);
+    _saving = false;
   }
 }

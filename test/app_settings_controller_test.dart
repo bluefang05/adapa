@@ -54,4 +54,16 @@ void main() {
     expect(settings.normalTtsRate, 0.70);
     expect(settings.slowTtsRate, 0.15);
   });
+
+  test('slow rates allowed by settings survive a restart', () async {
+    final preferences = MemoryKeyValueStore();
+    final settings = AppSettingsController(preferences: preferences);
+    await settings.initialize();
+    await settings.setNormalTtsRate(0.70);
+    await settings.setSlowTtsRate(0.65);
+
+    final restored = AppSettingsController(preferences: preferences);
+    await restored.initialize();
+    expect(restored.slowTtsRate, 0.65);
+  });
 }
